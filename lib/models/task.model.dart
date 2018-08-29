@@ -5,5 +5,5 @@ class Task {
   final List<Ressource> award;
   final List<Ressource> require;
 
-  const Task({this.coste, this.award,this.require});
+  const Task({this.cost, this.award,this.require});
 }
