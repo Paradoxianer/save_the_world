@@ -1,4 +1,4 @@
-import 'package:save_the_world_flutter_app/Ressource.dart';
+import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class Task {
   final List<Ressource> cost;
