@@ -22,11 +22,14 @@ class RessourceTable extends StatelessWidget {
   }
 
   TableRow returnRow(row){
-    List<RessourceItem> list = new List<RessourceItem>();
+    List<Widget> list = new List<Widget>();
     int start = row*column;
     int end = start + column;
-    for(var i =  start; i < end && i<ressourceList.length; i++){
-      list.add(new RessourceItem(ressourceList[i]));
+    for(var i =  start; i < end; i++){
+      if (i<ressourceList.length)
+        list.add(new RessourceItem(ressourceList[i]));
+      else
+        list.add(new Text(""));
     }
     return new TableRow(children: list);
   }
