@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'home_page.dart';
 
 void main() {
@@ -8,6 +10,12 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
+    List<Ressource> ressourceList = new List<Ressource>();
+    ressourceList.add(Ressource(name: "test",description: "bla",icon:Icons.add,value: 200.toDouble(),modifer: null));
+    ressourceList.add(Ressource(name: "test",description: "bla",icon:Icons.map,value: 20.toDouble(),modifer: null));
+    ressourceList.add(Ressource(name: "test",description: "bla",icon:Icons.attach_money,value: -50.toDouble(),modifer: null));
+    ressourceList.add(Ressource(name: "test",description: "bla",icon:Icons.public,value: 40.toDouble(),modifer: null));
     return MaterialApp(
       home: DefaultTabController(
         length: 3,
@@ -106,9 +114,7 @@ class MyApp extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              Icon(Icons.directions_car),
-              Icon(Icons.directions_transit),
-              Icon(Icons.directions_bike),
+              new RessourceTable(ressourceList: ressourceList),
             ],
           ),
         ),
@@ -117,16 +123,3 @@ class MyApp extends StatelessWidget {
   }
 }
 
-/*
-tabs: [
-                Tab(text: "100 €",icon: Icon(Icons.home)),
-                Tab(text: "100 €",icon: Icon(Icons.attach_money)),
-                Tab(text: "10",icon: Icon(Icons.school)),
-                Tab(text: "20",icon: Icon(Icons.whatshot)),
-                Tab(text: "20",icon: Icon(Icons.public)),
-                Tab(text: "20",icon: Icon(Icons.poll)),
-                Tab(text: "20",icon: Icon(Icons.book)),
-                Tab(text: "20",icon: Icon(Icons.show_chart)),
-                Tab(text: "20",icon: Icon(Icons.group)),
-              ],
- */
