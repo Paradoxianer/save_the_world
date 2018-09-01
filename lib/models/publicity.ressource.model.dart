@@ -6,7 +6,7 @@ class Publicity extends Ressource {
         super(
           name:"Bekanntheit",
           description:"wie bekannt du bist",
-          icon : Icons.group,
+          icon : Icons.accessibility,
           value: value,
           modifier: null
       );
