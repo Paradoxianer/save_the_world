@@ -6,18 +6,24 @@ class RessourceTable extends StatelessWidget {
 
   final List<Ressource> ressourceList;
   final int rows = 2;
+  double size;
   int column = 0;
 
-  RessourceTable({this.ressourceList});
+
+  RessourceTable({this.ressourceList,this.size=20.0});
 
   @override
   Widget build(BuildContext context) {
-    column = ((ressourceList.length/rows) + (ressourceList.length % rows / ressourceList.length % rows)).ceil();
+    if (ressourceList.length == 1)
+      column = 1;
+    else
+      column = ((ressourceList.length/rows) + (ressourceList.length % rows / ressourceList.length % rows)).ceil();
     List<TableRow> list = new List<TableRow>();
     for (var i =0; i<rows;i++) {
       list.add(returnRow(i));
     }
     return Table(
+        defaultColumnWidth: FixedColumnWidth(size+5.0),
         children: list
     );
   }
@@ -28,7 +34,7 @@ class RessourceTable extends StatelessWidget {
     int end = start + column;
     for(var i =  start; i < end; i++){
       if (i<ressourceList.length)
-        list.add(new RessourceItem(ressourceList[i]));
+        list.add(new RessourceItem(ressourceList[i],size));
       else
         list.add(new Text(""));
     }
