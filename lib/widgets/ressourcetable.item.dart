@@ -3,6 +3,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressource.item.dart';
 
 class RessourceTable extends StatelessWidget {
+
   final List<Ressource> ressourceList;
   final int rows = 2;
   int column = 0;
@@ -17,7 +18,7 @@ class RessourceTable extends StatelessWidget {
       list.add(returnRow(i));
     }
     return Table(
-      children: list
+        children: list
     );
   }
 
