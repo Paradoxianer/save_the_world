@@ -6,6 +6,6 @@ class Ressource extends GameElement {
   final double min = 0.0;
   final double value;
   final double max = 100.0;
-  const Ressource ({String name,String description, IconData icon,this.value,List<Modifier> modifer}) :
+  const Ressource ({String name,String description, IconData icon,this.value,List<Modifier> modifier}) :
     super(name: name,description : description, icon : icon);
 }
