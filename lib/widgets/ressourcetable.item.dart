@@ -14,13 +14,16 @@ class RessourceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (ressourceList.length == 1)
-      column = 1;
-    else
-      column = ((ressourceList.length/rows) + (ressourceList.length % rows / ressourceList.length % rows)).ceil();
     List<TableRow> list = new List<TableRow>();
-    for (var i =0; i<rows;i++) {
-      list.add(returnRow(i));
+    if (ressourceList != null) {
+      if (ressourceList.length == 1)
+        column = 1;
+      else
+        column = ((ressourceList.length / rows) +
+            (ressourceList.length % rows / ressourceList.length % rows)).ceil();
+      for (var i = 0; i < rows; i++) {
+        list.add(returnRow(i));
+      }
     }
     return Table(
         defaultColumnWidth: FixedColumnWidth(size+5.0),
