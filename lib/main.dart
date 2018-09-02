@@ -126,7 +126,7 @@ final List<Task> toDo = <Task>[
   ),
   Task(
     name: "Predigt schreiben",
-    description: "wenn du für andere betest, dann passiert was",
+    description: "wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
     cost:<Ressource>[
       Time(value:8.0),
       Faith(value:100.0)
@@ -134,5 +134,42 @@ final List<Task> toDo = <Task>[
     award: <Ressource> [
       Member(value: 0.2),
     ],
+  ),
+  Task(
+    name: "Kasse führen",
+    description: "die Kasse die muss in Ordnung sein",
+    cost:<Ressource>[
+      Time(value:2.0)
+    ],
+    award: <Ressource> [
+      Money(value: 1.0),
+    ],
+  ),
+  Task(
+    name: "Korps aufräumen",
+    description: "immer schön Ordnung schaffen. Wenn nicht gibt ein Problem mit den Mitgliedern :)",
+    cost:<Ressource>[
+      Time(value:1.0)
+    ],
+    award: null
+  ),
+  Task(
+    name: "Seelsorge",
+    description: "Pastor... ich hab da ein Problem",
+    cost:<Ressource>[
+      Time(value:1.0),
+      Wisdome(value: 1.0)
+    ],
+    award: <Ressource> [
+      Wisdome(value: 1.5)
+    ],
+  ),
+  Task(
+    name: "Mails...",
+    description: "Sie haben Post",
+    cost:<Ressource>[
+      Time(value:1.0)
+    ],
+    award: null
   ),
 ];
