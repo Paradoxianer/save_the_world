@@ -19,10 +19,12 @@ class TaskItem extends StatelessWidget {
       onTap: _handleTap,
     );
   }
+
   void _handleTap() {
     int listSize = task.cost.length;
     for (int i = 0; i < listSize; i++) {
       Game.ressources[task.cost[i].name].subtract(task.cost[i]);
+      print(Game.ressources[task.cost[i].name].name + " " + Game.ressources[task.cost[i].name].value.toString()+"\n");
       }
     task.modify();
     Game.tasks.remove(this);
