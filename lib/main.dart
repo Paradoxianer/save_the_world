@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
@@ -17,7 +18,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
+    Game game = new Game();
     List<Ressource> cost = new List<Ressource>();
     cost.add(Money(value:100.0));
     cost.add(Ressource(name: "Time",description: "bla",icon:Icons.access_time,value: 50.toDouble(),modifier: null));
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
                     ),
                     Expanded(
                       child: RessourceTable(
-                        ressourceList: globalRes,
+                        ressourceList: Game.ressources.values.toList(),
                         size: 25.0,
                       )
                     ),
@@ -68,8 +69,8 @@ class MyApp extends StatelessWidget {
             children: [
               ListView.builder(
                   itemBuilder: (BuildContext context, int index) =>
-                      TaskItem(task : toDo[index]),
-                itemCount: toDo.length,
+                      TaskItem(task : Game.tasks[index]),
+                itemCount: Game.tasks.length,
               )
               //new RessourceTable(ressourceList: ressourceList),
             ],
@@ -171,5 +172,15 @@ final List<Task> toDo = <Task>[
       Time(value:1.0)
     ],
     award: null
+  ),
+  Task(
+      name: "schlafen",
+      description: "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
+      cost:<Ressource>[
+        Time(value:8.0)
+      ],
+      award: <Ressource> [
+        Time(value: 24.0)
+      ],
   ),
 ];
