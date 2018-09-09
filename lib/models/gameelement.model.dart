@@ -22,5 +22,11 @@ class GameElement extends GameItem {
     return myModifier.indexOf(mod);
   }
 
+  void modify(){
+    int listSize = myModifier.length;
+    for (int i = 0; i < listSize; i++) {
+      myModifier[i].modify();
+    }
+  }
 
 }
