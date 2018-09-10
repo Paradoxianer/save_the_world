@@ -3,9 +3,8 @@ import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 
 class Modifier extends GameItem {
   GameElement workOnItem;
-  GameElement elementToWorkWith;
 
-  Modifier({this.workOnItem,this.elementToWorkWith}){
+  Modifier({this.workOnItem}){
     this.addedToElement(workOnItem);
   }
 
