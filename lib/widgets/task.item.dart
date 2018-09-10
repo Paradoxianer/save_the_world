@@ -27,6 +27,11 @@ class TaskItem extends StatelessWidget {
       print(Game.ressources[task.cost[i].name].name + " " + Game.ressources[task.cost[i].name].value.toString()+"\n");
       }
     task.modify();
+    listSize = task.award.length;
+    for (int i = 0; i < listSize; i++) {
+      Game.ressources[task.award[i].name].add(task.award[i]);
+      print(Game.ressources[task.award[i].name].name + " " + Game.ressources[task.award[i].name].value.toString()+"\n");
+    }
     Game.tasks.remove(this);
   }
 }
