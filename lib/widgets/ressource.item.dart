@@ -8,16 +8,21 @@ class RessourceItem extends StatefulWidget {
   RessourceItem(this.ressource,[this.size=30.0]);
   @override
   RessourceItemState createState() => RessourceItemState(ressource, size);
-}
 
+}
 
 class RessourceItemState extends State<RessourceItem> {
   Ressource ressource;
   double size;
 
-  RessourceItemState(this.ressource,[this.size=30.0]);
+  RessourceItemState(this.ressource,[this.size=30.0]){
+      ressource.addListener(valueChanged);
+  }
 
-
+  valueChanged(){
+    setState(() {
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
