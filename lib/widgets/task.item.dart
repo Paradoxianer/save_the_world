@@ -22,16 +22,25 @@ class TaskItem extends StatelessWidget {
 
   void _handleTap() {
     int listSize = task.cost.length;
+    bool canDo = true;
     for (int i = 0; i < listSize; i++) {
-      Game.ressources[task.cost[i].name].subtract(task.cost[i]);
-      print(Game.ressources[task.cost[i].name].name + " " + Game.ressources[task.cost[i].name].value.toString()+"\n");
-      }
-    task.modify();
-    listSize = task.award.length;
-    for (int i = 0; i < listSize; i++) {
-      Game.ressources[task.award[i].name].add(task.award[i]);
-      print(Game.ressources[task.award[i].name].name + " " + Game.ressources[task.award[i].name].value.toString()+"\n");
+      canDo =
+          canDo && Game.ressources[task.cost[i].name].canSubtract(task.cost[i]);
     }
-    Game.tasks.remove(this);
+    if (canDo == true) {
+      int listSize = task.cost.length;
+      for (int i = 0; i < listSize; i++) {
+        Game.ressources[task.cost[i].name].subtract(task.cost[i]);
+      }
+      listSize = task.award.length;
+      for (int i = 0; i < listSize; i++) {
+        Game.ressources[task.award[i].name].add(task.award[i]);
+      }
+      Game.tasks.remove(this);
+      task.modify();
+    }
+    else {
+      print("to less ressources");
+    }
   }
 }
