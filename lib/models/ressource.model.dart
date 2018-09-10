@@ -31,7 +31,7 @@ class Ressource extends GameElement {
 
   bool canAdd(Ressource other){
     if (this.name == other.name){
-      if ((this.value+other.value)<max)
+      if ((this.value+other.value)<=max)
         return true;
       else
         return false;
@@ -42,7 +42,7 @@ class Ressource extends GameElement {
 
   bool canSubtract(Ressource other){
     if (this.name == other.name){
-      if ((this.value-other.value)>min)
+      if ((this.value-other.value)>=min)
         return true;
       else
         return false;
