@@ -20,13 +20,6 @@ class Game{
     ressources[Member().name]=Member(value:1.0);
     ressources[Publicity().name]=Publicity(value: 1.0);
     ressources[Wisdome().name]=Wisdome(value: 10.0);
-    /*<Fait.name,>,
-    Money(value: 100.0),
-    Time(value: 24.0),
-    Member(value:1.0),
-    Publicity(value: 0.0),
-    Wisdome(value: 10.0)
-    ];*/
     tasks = <Task>[
       Task(
         name: "studieren",
@@ -109,6 +102,16 @@ class Game{
             Time(value:1.0)
           ],
           award: null
+      ),
+      Task(
+        name: "schlafen",
+        description: "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
+        cost:<Ressource>[
+          Time(value:8.0)
+        ],
+        award: <Ressource> [
+          Time(value: 24.0)
+        ],
       ),
     ];
 
