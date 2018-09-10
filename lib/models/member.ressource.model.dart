@@ -9,5 +9,8 @@ class Member extends Ressource {
           icon : Icons.group,
           value: value,
           modifier: null
-   );
+   ){
+     this.min = 1.0;
+     this.max = double.maxFinite;
+   }
 }

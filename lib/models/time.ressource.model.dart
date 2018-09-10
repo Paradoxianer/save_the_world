@@ -9,5 +9,9 @@ class Time extends Ressource {
           icon : Icons.access_time,
           value: value,
           modifier: null
-      );
+      )
+  {
+    this.min = 0.0;
+    this.max = 24.0;
+  }
 }

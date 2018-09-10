@@ -9,5 +9,9 @@ class Money extends Ressource {
           icon : Icons.attach_money,
           value: value,
           modifier: null
-  );
+  ){
+    this.min = 0.0;
+    this.max = double.maxFinite;
+  }
+
 }

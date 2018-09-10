@@ -10,5 +10,8 @@ class Faith extends Ressource {
           icon: const IconData(59401, fontFamily: "SaveTheWorldFont"),
           value: value,
           modifier: null
-      );
+      ){
+      this.min = double.negativeInfinity;
+      this.max = double.maxFinite;
+   }
 }

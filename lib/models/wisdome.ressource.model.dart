@@ -9,5 +9,8 @@ class Wisdome extends Ressource {
           icon : Icons.school,
           value: value,
           modifier: null
-      );
+      ){
+    this.min=double.negativeInfinity;
+    this.max=double.maxFinite;
+  }
 }
