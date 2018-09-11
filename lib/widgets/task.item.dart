@@ -4,6 +4,75 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 
 
+class TaskProgressIndicator extends StatefulWidget {
+  final Task task;
+
+  TaskProgressIndicator({this.task});
+
+  @override
+  TaskProgressIndicatorState createState() =>
+      new TaskProgressIndicatorState(task);
+}
+
+class TaskProgressIndicatorState extends State<TaskProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  Task task;
+
+  TaskProgressIndicatorState(Task task) {
+    this.task = task;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    int duration = 5000;
+    if (task.timeToSolve != double.infinity)
+      duration = task.timeToSolve.toInt();
+    else
+      duration = task.duration.toInt();
+    task.controller = new AnimationController(
+        duration: Duration(milliseconds: duration),
+        vsync: this
+    );
+    task.controller.addListener(listen);
+    task.controller.addListener(task.listen);
+    if (task.timeToSolve != double.infinity) {
+      task.controller.reverse();
+    }
+    print(task.name + " - status: " + task.controller.status.toString());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    LinearProgressIndicator progressIndicator;
+    if (task.controller.status == AnimationStatus.dismissed) {
+      progressIndicator = new LinearProgressIndicator(
+          value: task.controller.value,
+          backgroundColor: Colors.white
+      );
+    }
+    else {
+      if (task.controller.status == AnimationStatus.reverse) {
+        progressIndicator = new LinearProgressIndicator(
+          value: task.controller.value,
+          backgroundColor: Colors.redAccent,
+        );
+      }
+      else
+        progressIndicator =
+        new LinearProgressIndicator(value: task.controller.value);
+    }
+    return progressIndicator;
+  }
+
+  listen() {
+    setState(() {});
+  }
+
+}
+
+
+
 class TaskItem extends StatelessWidget {
   final Task task;
 
@@ -11,12 +80,21 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: RessourceTable(ressourceList: task.cost),
-      title: Text(task.name),
-      subtitle: Text(task.description),
-      trailing: RessourceTable(ressourceList: task.award),
-      onTap: _handleTap,
+    return Container(
+      margin: EdgeInsets.all(6.0),
+      child: Column(
+        children: <Widget>[
+          ListTile(
+            contentPadding: EdgeInsets.all(0.0),
+            leading: RessourceTable(ressourceList: task.cost),
+            title: Text(task.name),
+            subtitle: Text(task.description),
+            trailing: RessourceTable(ressourceList: task.award),
+            onTap: _handleTap,
+          ),
+          TaskProgressIndicator(task: task)
+        ],
+      ),
     );
   }
 
@@ -28,16 +106,7 @@ class TaskItem extends StatelessWidget {
           canDo && Game.ressources[task.cost[i].name].canSubtract(task.cost[i]);
     }
     if (canDo == true) {
-      int listSize = task.cost.length;
-      for (int i = 0; i < listSize; i++) {
-        Game.ressources[task.cost[i].name].subtract(task.cost[i]);
-      }
-      listSize = task.award.length;
-      for (int i = 0; i < listSize; i++) {
-        Game.ressources[task.award[i].name].add(task.award[i]);
-      }
-      Game.tasks.remove(this);
-      task.modify();
+      task.start();
     }
     else {
       print("to less ressources");
