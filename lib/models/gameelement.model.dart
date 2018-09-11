@@ -3,6 +3,7 @@ import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 
 class GameElement extends GameItem {
+  ChangeNotifier notifier;
   List<Modifier> myModifier;
 
   GameElement({String name, String description, IconData icon,this.myModifier}):
@@ -29,4 +30,11 @@ class GameElement extends GameItem {
     }
   }
 
+  addListener(VoidCallback listener) {
+    notifier.addListener(listener);
+  }
+
+  removeListener(VoidCallback listener) {
+    notifier.removeListener(listener);
+  }
 }
