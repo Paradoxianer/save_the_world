@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -63,7 +62,7 @@ class Game{
           Faith(value:100.0)
         ],
         award: <Ressource> [
-          Member(value: 0.2),
+          Member(value: 0.02),
         ],
       ),
       Task(
@@ -75,6 +74,7 @@ class Game{
         award: <Ressource> [
           Money(value: 1.0),
         ],
+          duration: 1000.0
       ),
       Task(
           name: "Korps aufräumen",
@@ -82,7 +82,8 @@ class Game{
           cost:<Ressource>[
             Time(value:1.0)
           ],
-          award: null
+          award: null,
+          timeToSolve: 1000.0
       ),
       Task(
         name: "Seelsorge",
@@ -96,12 +97,24 @@ class Game{
         ],
       ),
       Task(
+        name: "Bibellesen",
+        description: "Zeit mit Gott",
+        cost: <Ressource>[
+          Time(value: 1.0),
+        ],
+        award: <Ressource>[
+          Faith(value: 2.0),
+          Wisdome(value: 1.5)
+        ],
+      ),
+      Task(
           name: "Mails...",
           description: "Sie haben Post",
           cost:<Ressource>[
             Time(value:1.0)
           ],
-          award: null
+          award: null,
+          timeToSolve: 50000.0
       ),
       Task(
         name: "schlafen",
@@ -110,10 +123,9 @@ class Game{
           Time(value:8.0)
         ],
         award: <Ressource> [
-          Time(value: 24.0)
+          Time(value: 16.0)
         ],
       ),
     ];
-
   }
 }
