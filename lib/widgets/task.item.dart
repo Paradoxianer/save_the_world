@@ -68,7 +68,7 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator>
 class TaskItem extends StatelessWidget {
   final Task task;
 
-  const TaskItem({this.task});
+  TaskItem({this.task}) :super(key: ObjectKey(task));
 
   @override
   Widget build(BuildContext context) {
