@@ -22,6 +22,19 @@ class Task extends GameElement {
     if (myModifier==null){
       myModifier = new List<Modifier>();
     }
+    int timeDuration;
+    if (timeToSolve != double.infinity)
+      timeDuration = timeToSolve.toInt();
+    else
+      timeDuration = duration.toInt();
+    controller = new AnimationController(
+        duration: Duration(milliseconds: timeDuration),
+        vsync: Game.tick
+    );
+    controller.addListener(listen);
+    if (timeToSolve != double.infinity) {
+      controller.reverse(from: 0.99);
+    }
   }
 
   void miss() {

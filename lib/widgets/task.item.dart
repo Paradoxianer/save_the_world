@@ -25,21 +25,13 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator>
   @override
   void initState() {
     super.initState();
-    int duration = 5000;
-    if (task.timeToSolve != double.infinity)
-      duration = task.timeToSolve.toInt();
-    else
-      duration = task.duration.toInt();
-    task.controller = new AnimationController(
-        duration: Duration(milliseconds: duration),
-        vsync: this
-    );
     task.controller.addListener(listen);
-    task.controller.addListener(task.listen);
-    if (task.timeToSolve != double.infinity) {
-      task.controller.reverse();
-    }
-    print(task.name + " - status: " + task.controller.status.toString());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    task.controller.removeListener(listen);
   }
 
   @override

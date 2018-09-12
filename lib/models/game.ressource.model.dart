@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -11,6 +12,8 @@ class Game{
   static Map<String,Ressource> ressources = new Map<String,Ressource>();
 
   static List<Task> tasks;
+
+  static TestVSync tick = new TestVSync();
 
   Game(){
     ressources[Faith().name]=Faith(value: 100.0);
@@ -55,26 +58,27 @@ class Game{
         ],
       ),
       Task(
-        name: "Predigt schreiben",
-        description: "wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
-        cost:<Ressource>[
-          Time(value:8.0),
-          Faith(value:100.0)
-        ],
-        award: <Ressource> [
-          Member(value: 0.02),
-        ],
+          name: "Predigt schreiben",
+          description: "wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
+          cost: <Ressource>[
+            Time(value: 8.0),
+            Faith(value: 100.0)
+          ],
+          award: <Ressource>[
+            Member(value: 0.02),
+          ],
+          duration: 2000.0
       ),
       Task(
-        name: "Kasse führen",
-        description: "die Kasse die muss in Ordnung sein",
-        cost:<Ressource>[
-          Time(value:2.0)
-        ],
-        award: <Ressource> [
-          Money(value: 1.0),
-        ],
-          duration: 1000.0
+          name: "Kasse führen",
+          description: "die Kasse die muss in Ordnung sein",
+          cost: <Ressource>[
+            Time(value: 2.0)
+          ],
+          award: <Ressource>[
+            Money(value: 1.0),
+          ],
+          duration: 2000.0
       ),
       Task(
           name: "Korps aufräumen",
@@ -83,7 +87,7 @@ class Game{
             Time(value:1.0)
           ],
           award: null,
-          timeToSolve: 1000.0
+          timeToSolve: 20000.0
       ),
       Task(
         name: "Seelsorge",
@@ -117,14 +121,15 @@ class Game{
           timeToSolve: 50000.0
       ),
       Task(
-        name: "schlafen",
-        description: "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
-        cost:<Ressource>[
-          Time(value:8.0)
-        ],
-        award: <Ressource> [
-          Time(value: 16.0)
-        ],
+          name: "schlafen",
+          description: "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
+          cost: <Ressource>[
+            Time(value: 8.0)
+          ],
+          award: <Ressource>[
+            Time(value: 16.0)
+          ],
+          duration: 8000.0
       ),
     ];
   }
