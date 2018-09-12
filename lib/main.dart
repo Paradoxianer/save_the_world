@@ -9,7 +9,7 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
-import 'package:save_the_world_flutter_app/widgets/task.item.dart';
+import 'package:save_the_world_flutter_app/widgets/task.list.dart';
 
 void main() {
   runApp(new MyApp());
@@ -18,7 +18,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Game game = new Game();
+    Game game = Game.getInstance();
     List<Ressource> cost = new List<Ressource>();
     cost.add(Money(value:100.0));
     cost.add(Ressource(name: "Time",description: "bla",icon:Icons.access_time,value: 50.toDouble(),modifier: null));
@@ -67,12 +67,7 @@ class MyApp extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              ListView.builder(
-                  itemBuilder: (BuildContext context, int index) =>
-                      TaskItem(task : Game.tasks[index]),
-                itemCount: Game.tasks.length,
-              )
-              //new RessourceTable(ressourceList: ressourceList),
+              TaskList()
             ],
           ),
         ),
