@@ -31,9 +31,9 @@ class Task extends GameElement {
         duration: Duration(milliseconds: timeDuration),
         vsync: Game.tick
     );
-    controller.addListener(listen);
+    //  controller.addListener(listen);
     if (timeToSolve != double.infinity) {
-      controller.reverse(from: 0.99);
+      controller.reverse(from: 0.99).whenComplete(miss);
     }
   }
 
@@ -45,6 +45,7 @@ class Task extends GameElement {
         missed[i].modify();
       }
     }
+    Game.getInstance().removeTask(this);
   }
 
   start() {
@@ -56,7 +57,7 @@ class Task extends GameElement {
           Game.ressources[cost[i].name].subtract(cost[i]);
         }
       }
-      controller.forward();
+      controller.forward().whenComplete(finished);
     }
   }
 
@@ -75,7 +76,7 @@ class Task extends GameElement {
     switch (controller.status) {
       case AnimationStatus.dismissed:
       //we need to check if its from reset or from reverse
-      //miss();
+        miss();
         break;
       case AnimationStatus.forward:
         break;
