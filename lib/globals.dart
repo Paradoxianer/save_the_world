@@ -16,6 +16,20 @@ final List<String> credit = <String>[
 
 final List<Task> testTasks = <Task>[
   Task(
+      name: "Ein zwischenmenschliches Problem klären",
+      description: "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
+      cost: <Ressource>[
+        Time(value: 3.0),
+        Wisdome(value: 100.0)
+      ],
+      award: <Ressource>[
+        Member(value: 0.25),
+        Wisdome(value: 101.0)
+      ],
+      duration: 6000.0,
+      timeToSolve: 6000.0
+  ),
+  Task(
     name: "studieren",
     description: "man lernt was",
     cost: <Ressource>[
@@ -103,8 +117,8 @@ final List<Task> testTasks = <Task>[
         Time(value: 1.0),
       ],
       award: <Ressource>[
-        Faith(value: 2.0),
-        Wisdome(value: 1.5)
+        Faith(value: 5.0),
+        Wisdome(value: 2.0)
       ],
       duration: 2000.0
   ),
@@ -156,5 +170,5 @@ final List<Task> testTasks = <Task>[
         Money(value: 10.0)
       ],
       duration: 8000.0
-  ),
+  )
 ];
