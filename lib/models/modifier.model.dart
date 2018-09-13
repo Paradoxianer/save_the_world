@@ -4,7 +4,9 @@ import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 class Modifier extends GameItem {
   GameElement workOnItem;
 
-  Modifier({this.workOnItem}){
+  Modifier({String name, String description, GameElement workOnItem = null}) :
+        super(icon: null, name: name, description: description) {
+    this.workOnItem = workOnItem;
     this.addedToElement(workOnItem);
   }
 
