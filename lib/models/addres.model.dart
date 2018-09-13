@@ -8,7 +8,7 @@ class AddRes extends Modifier {
   List<Ressource> ressources;
   Map<String, Ressource> workOnRes;
 
-  AddRes(List<Ressource> ressources, [Map<String, Ressource> workOnRes = null])
+  AddRes({List<Ressource> ressources, Map<String, Ressource> workOnRes = null})
       :
         super(name: "AddRes", description: "Adds a list of Ressource") {
     this.ressources = ressources;
