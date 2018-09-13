@@ -1,8 +1,12 @@
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -27,7 +31,17 @@ final List<Task> testTasks = <Task>[
         Wisdome(value: 101.0)
       ],
       duration: 6000.0,
-      timeToSolve: 6000.0
+      timeToSolve: 6000.0,
+      missed: <Modifier>[
+        SubtractRes(
+            ressources: <Ressource>[
+              Member(value: 0.5)
+            ]
+        ),
+        AddTask(
+            task: "Ein zwischenmenschliches Problem klären"
+        )
+      ]
   ),
   Task(
     name: "studieren",
@@ -73,9 +87,17 @@ final List<Task> testTasks = <Task>[
       ],
       award: <Ressource>[
         Member(value: 0.02),
-        Faith(value: 20.0)
+        Faith(value: 60.0)
       ],
-      duration: 8000.0
+      duration: 8000.0,
+      modifer: <Modifier>[
+        AddTask(
+            task: "Gottesdienst halten"
+        ),
+        RemoveTask(
+            task: "Predigt schreiben"
+        )
+      ]
   ),
   Task(
       name: "Kasse führen",
@@ -130,7 +152,10 @@ final List<Task> testTasks = <Task>[
       ],
       award: null,
       timeToSolve: 50000.0,
-      duration: 2000.0
+      duration: 2000.0,
+      missed: <Modifier>[
+        AddTask(task: "Rechnung nicht bezahlt")
+      ]
   ),
   Task(
       name: "schlafen",
@@ -142,21 +167,6 @@ final List<Task> testTasks = <Task>[
         Time(value: 16.0)
       ],
       duration: 16000.0
-  ),
-  Task(
-      name: "Gottesdienst halten",
-      description: "schön mit Predigt, lieder und natürlich Bibelles",
-      cost: <Ressource>[
-        Member(value: 2.0),
-        Time(value: 2.0),
-        Faith(value: 200.0)
-      ],
-      award: <Ressource>[
-        Faith(value: 250.0),
-        Member(value: 2.5),
-        Money(value: 20.0)
-      ],
-      duration: 4000.0
   ),
   Task(
       name: "Spender anschreiben",
@@ -171,4 +181,65 @@ final List<Task> testTasks = <Task>[
       ],
       duration: 8000.0
   )
+];
+
+
+final List<Task> hiddenTasks = <Task>[
+  Task(
+      name: "Gottesdienst halten",
+      description: "schön mit Predigt, lieder und natürlich Bibelles",
+      cost: <Ressource>[
+        Member(value: 2.0),
+        Time(value: 2.0),
+        Faith(value: 200.0)
+      ],
+      award: <Ressource>[
+        Faith(value: 250.0),
+        Member(value: 2.5),
+        Money(value: 20.0)
+      ],
+      duration: 4000.0,
+      modifer: <Modifier>[
+        RemoveTask(
+            task: "Gottesdienst halten"
+        ),
+        AddTask(
+            task: "Predigt schreiben"
+        )
+      ]
+  ),
+  Task(
+      name: "Ein zwischenmenschliches Problem klären",
+      description: "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
+      cost: <Ressource>[
+        Time(value: 3.0),
+        Wisdome(value: 100.0)
+      ],
+      award: <Ressource>[
+        Member(value: 0.25),
+        Wisdome(value: 101.0)
+      ],
+      duration: 6000.0,
+      timeToSolve: 6000.0
+  ),
+  Task(
+      name: "Rechnung nicht bezahlt",
+      description: "ohoh du hast wohl die Rechnung nicht bezahlt",
+      cost: <Ressource>[
+        Money(value: 25.0),
+      ],
+      award: <Ressource>[
+        Wisdome(value: 1.0)
+      ],
+      duration: 1000.0,
+      timeToSolve: 60000.0,
+      missed: <Modifier>[
+        AddTask(
+            task: "Rechnung nicht bezahlt"
+        ),
+        AddTask(
+            task: "Rechnung nicht bezahlt"
+        )
+      ]
+  ),
 ];
