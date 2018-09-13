@@ -35,7 +35,7 @@ class Game {
   }
 
   void addTask(Task task) {
-    tasks.add(task);
+    tasks.insert(0, task);
     notifier.notifyListeners();
   }
 
