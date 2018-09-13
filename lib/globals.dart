@@ -108,7 +108,10 @@ final List<Task> testTasks = <Task>[
       award: <Ressource>[
         Money(value: 0.10),
       ],
-      duration: 4000.0
+      duration: 4000.0,
+      modifer: <Modifier>[
+        AddTask(task: "Buchen")
+      ]
   ),
   Task(
       name: "Korps aufräumen",
@@ -184,7 +187,7 @@ final List<Task> testTasks = <Task>[
 ];
 
 
-final List<Task> hiddenTasks = <Task>[
+final List<Task> onHoldTaks = <Task>[
   Task(
       name: "Gottesdienst halten",
       description: "schön mit Predigt, lieder und natürlich Bibelles",
@@ -240,6 +243,40 @@ final List<Task> hiddenTasks = <Task>[
         AddTask(
             task: "Rechnung nicht bezahlt"
         )
+      ]
+  ),
+  Task(
+      name: "Buchen",
+      description: "alle Ein und Ausgaben immer schön buchen",
+      cost: <Ressource>[
+        Time(value: 0.5),
+      ],
+      award: <Ressource>[
+        Wisdome(value: 0.01),
+        Publicity(value: 0.01)
+      ],
+      timeToSolve: 8000.0,
+      duration: 1000.0,
+      modifer: <Modifier>[
+        AddTask(task: "Abrechnung"),
+        RemoveTask(task: "Buchen")
+      ]
+  ),
+  Task(
+      name: "Abrechnung",
+      description: "muss auch stimmen",
+      cost: <Ressource>[
+        Time(value: 0.5),
+      ],
+      award: <Ressource>[
+        Wisdome(value: 0.01),
+        Publicity(value: 0.01)
+      ],
+      timeToSolve: 4000.0,
+      duration: 1000.0,
+      modifer: <Modifier>[
+        AddTask(task: "Kasse führen"),
+        RemoveTask(task: "Abrechnung")
       ]
   ),
 ];
