@@ -21,10 +21,10 @@ class Game {
   Game(){
     notifier = new ChangeNotifier();
     tick = new TestVSync();
-    ressources[Faith().name] = Faith(value: 250.0);
+    ressources[Faith().name] = Faith(value: 100.0);
     ressources[Money().name]=Money(value: 10.0);
     ressources[Time().name]=Time(value: 24.0);
-    ressources[Member().name] = Member(value: 10.0);
+    ressources[Member().name] = Member(value: 2.0);
     ressources[Publicity().name]=Publicity(value: 1.0);
     ressources[Wisdome().name]=Wisdome(value: 10.0);
     tasks = testTasks;
