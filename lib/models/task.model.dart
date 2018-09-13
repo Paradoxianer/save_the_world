@@ -50,7 +50,10 @@ class Task extends GameElement {
 
   start() {
     if (controller.status != AnimationStatus.forward) {
+      controller.stop(canceled: true);
+      //we need to set the new duration
       controller.reset();
+      controller.duration = new Duration(milliseconds: duration.toInt());
       if (cost != null) {
         int listSize = cost.length;
         for (int i = 0; i < listSize; i++) {
