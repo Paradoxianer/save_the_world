@@ -17,6 +17,7 @@ class Game {
   static TestVSync tick;
   static ChangeNotifier notifier;
   static Game mInstance;
+  List<Task> allTasks;
 
   Game(){
     notifier = new ChangeNotifier();
@@ -28,6 +29,9 @@ class Game {
     ressources[Publicity().name]=Publicity(value: 1.0);
     ressources[Wisdome().name]=Wisdome(value: 10.0);
     tasks = testTasks;
+    allTasks = new List<Task>();
+    allTasks.addAll(testTasks);
+    allTasks.addAll(hiddenTasks);
   }
 
   void addTask(Task task) {
@@ -56,5 +60,9 @@ class Game {
 
   removeListener(VoidCallback listener) {
     notifier.removeListener(listener);
+  }
+
+  List<Task> availableTasks() {
+    return allTasks;
   }
 }
