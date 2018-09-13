@@ -34,7 +34,7 @@ class RessourceItemState extends State<RessourceItem> {
           size: size
         ),
         Text(
-            ressource.value.toString(),
+            ressource.value.toStringAsFixed(1),
             textScaleFactor: (size/30.0)
         ),
       ],
