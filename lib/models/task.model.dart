@@ -64,6 +64,10 @@ class Task extends GameElement {
     }
   }
 
+  stop() {
+    controller.stop(canceled: true);
+  }
+
   finished() {
     if (award != null) {
       int listSize = award.length;
