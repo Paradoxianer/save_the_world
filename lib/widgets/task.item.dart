@@ -26,6 +26,7 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator>
   void initState() {
     super.initState();
     task.controller.addListener(listen);
+    task.init();
   }
 
   @override
@@ -91,17 +92,22 @@ class TaskItem extends StatelessWidget {
   }
 
   void _handleTap() {
-    int listSize = task.cost.length;
-    bool canDo = true;
-    for (int i = 0; i < listSize; i++) {
-      canDo =
-          canDo && Game.ressources[task.cost[i].name].canSubtract(task.cost[i]);
+    if (task.cost != null) {
+      int listSize = task.cost.length;
+      bool canDo = true;
+      for (int i = 0; i < listSize; i++) {
+        canDo =
+            canDo &&
+                Game.ressources[task.cost[i].name].canSubtract(task.cost[i]);
+      }
+      if (canDo == true) {
+        task.start();
+      }
+      else {
+        print("to less ressources");
+      }
     }
-    if (canDo == true) {
+    else
       task.start();
-    }
-    else {
-      print("to less ressources");
-    }
   }
 }
