@@ -17,35 +17,48 @@ class Task extends GameElement {
 
   Task(
       {String name, String description, this.cost, this.award, this.require, this.duration = 5000.0, this.timeToSolve = double
-          .infinity, List<Modifier> modifer, List<Modifier>missed = null}) :
-        super(name : name, description : description, myModifier : modifer){
-    if (myModifier==null){
+          .infinity, List<Modifier> modifer, List<Modifier>missed}) :
+        super(name: name, description: description, myModifier: modifer) {
+    if (myModifier == null) {
       myModifier = new List<Modifier>();
     }
+    if (controller == null) {
+      controller = new AnimationController(
+          duration: Duration(milliseconds: duration.toInt()),
+          vsync: Game.tick
+      );
+    }
+  }
+
+  void init() {
     int timeDuration;
     if (timeToSolve != double.infinity)
       timeDuration = timeToSolve.toInt();
     else
       timeDuration = duration.toInt();
-    controller = new AnimationController(
-        duration: Duration(milliseconds: timeDuration),
-        vsync: Game.tick
-    );
-    //  controller.addListener(listen);
+    if (controller == null) {
+      controller = new AnimationController(
+          duration: Duration(milliseconds: timeDuration),
+          vsync: Game.tick
+      );
+    }
+    else
+      controller.reset();
     if (timeToSolve != double.infinity) {
       controller.reverse(from: 0.99).whenComplete(miss);
     }
   }
 
   void miss() {
-    print("ohhh was ganz schlimmes ist passiert!!!");
+    print(name + " ohhh was ganz schlimmes ist passiert!!! running " +
+        missed.toString());
     if (missed != null) {
       int listSize = missed.length;
       for (int i = 0; i < listSize; i++) {
+        print("calling " + missed[i].toString());
         missed[i].modify();
       }
     }
-    Game.getInstance().removeTask(this);
   }
 
   start() {
@@ -79,19 +92,4 @@ class Task extends GameElement {
     controller.reset();
   }
 
-  listen() {
-    switch (controller.status) {
-      case AnimationStatus.dismissed:
-      //we need to check if its from reset or from reverse
-        miss();
-        break;
-      case AnimationStatus.forward:
-        break;
-      case AnimationStatus.completed:
-        finished();
-        break;
-      case AnimationStatus.reverse:
-        break;
-    }
-  }
 }
