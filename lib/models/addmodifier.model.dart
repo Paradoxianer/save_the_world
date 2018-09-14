@@ -17,7 +17,11 @@ class AddModifer extends Modifier {
   }
 
   modify() {
-    Task found = Game.tasks.firstWhere((tsk) => tsk.name == nameOfTask);
+    Task found;
+    if (nameOfTask != null)
+      found = Game.tasks.firstWhere((tsk) => tsk.name == nameOfTask);
+    else
+      found = workOnItem;
     if (found != null) {
       found.myModifier.addAll(mymodifer);
     }
