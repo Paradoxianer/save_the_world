@@ -20,7 +20,10 @@ class StartTask extends Modifier {
   modify() {
     Task found = Game.tasks.firstWhere((tsk) => tsk.name == nameOfTask);
     if (found != null) {
-      found.start();
+      if (reverse == false)
+        found.start();
+      else
+        found.controller.reverse(from: 0.99);
     }
   }
 }
