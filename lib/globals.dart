@@ -110,7 +110,8 @@ final List<Task> testTasks = <Task>[
       ],
       duration: 4000.0,
       modifer: <Modifier>[
-        AddTask(task: "Buchen")
+        AddTask(task: "Buchen"),
+        RemoveTask(task: "Kasse führen")
       ]
   ),
   Task(

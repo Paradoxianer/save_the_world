@@ -31,7 +31,7 @@ class Game {
     tasks = testTasks;
     allTasks = new List<Task>();
     allTasks.addAll(testTasks);
-    allTasks.addAll(hiddenTasks);
+    allTasks.addAll(onHoldTaks);
   }
 
   void addTask(Task task) {
