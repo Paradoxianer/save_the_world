@@ -32,7 +32,11 @@ final List<Task> testTasks = <Task>[
       ],
       duration: 6000.0,
       timeToSolve: 6000.0,
+    modifier: <Modifier>[
+      RemoveTask(task: "Ein zwischenmenschliches Problem klären")
+    ],
       missed: <Modifier>[
+        RemoveTask(task: "Ein zwischenmenschliches Problem klären"),
         SubtractRes(
             ressources: <Ressource>[
               Member(value: 0.5)
@@ -40,6 +44,26 @@ final List<Task> testTasks = <Task>[
         ),
         AddTask(
             task: "Ein zwischenmenschliches Problem klären"
+        )
+      ],
+  ),
+  Task(
+      name: "Gottesdienst vorbereiten",
+      description: "dann muss noch die Predigt vorbereitet werden aber bald gibt es einen Gottesdienst",
+      cost: <Ressource>[
+        Time(value: 1.0),
+        Faith(value: 100.0)
+      ],
+      award: <Ressource>[
+        Faith(value: 100.0)
+      ],
+      duration: 8000.0,
+      modifier: <Modifier>[
+        AddTask(
+            task: "Predigt schreiben"
+        ),
+        RemoveTask(
+            task: "Gottesdienst vorbereiten"
         )
       ]
   ),
@@ -78,27 +102,7 @@ final List<Task> testTasks = <Task>[
       Member(value: 0.10),
     ],
   ),
-  Task(
-      name: "Predigt schreiben",
-      description: "wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
-      cost: <Ressource>[
-        Time(value: 8.0),
-        Faith(value: 100.0)
-      ],
-      award: <Ressource>[
-        Member(value: 0.02),
-        Faith(value: 60.0)
-      ],
-      duration: 8000.0,
-      modifer: <Modifier>[
-        AddTask(
-            task: "Gottesdienst halten"
-        ),
-        RemoveTask(
-            task: "Predigt schreiben"
-        )
-      ]
-  ),
+
   Task(
       name: "Kasse führen",
       description: "die Kasse die muss in Ordnung sein",
@@ -109,7 +113,7 @@ final List<Task> testTasks = <Task>[
         Money(value: 0.10),
       ],
       duration: 4000.0,
-      modifer: <Modifier>[
+      modifier: <Modifier>[
         AddTask(task: "Buchen"),
         RemoveTask(task: "Kasse führen")
       ]
@@ -121,8 +125,11 @@ final List<Task> testTasks = <Task>[
         Time(value: 1.0)
       ],
       award: null,
-      timeToSolve: 20000.0,
-      duration: 2000.0
+      timeToSolve: 70000.0,
+      duration: 20000.0,
+      missed: <Modifier>[
+        AddTask(task: "Ein zwischenmenschliches Problem klären")
+      ]
   ),
   Task(
     name: "Seelsorge",
@@ -173,6 +180,19 @@ final List<Task> testTasks = <Task>[
       duration: 16000.0
   ),
   Task(
+      name: "die Nacht durcharbeiten",
+      description: "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
+      cost: <Ressource>[
+        Faith(value: 5.0),
+        Wisdome(value: 10.0),
+        Publicity(value: 10.0),
+      ],
+      award: <Ressource>[
+        Time(value: 6.0)
+      ],
+      duration: 8000.0
+  ),
+  Task(
       name: "Spender anschreiben",
       description: "vielleicht bringt ja ein netter Brief was",
       cost: <Ressource>[
@@ -184,14 +204,61 @@ final List<Task> testTasks = <Task>[
         Money(value: 10.0)
       ],
       duration: 8000.0
+  ),
+  Task(
+      name: "Einen Basar planen",
+      description: "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
+      cost: <Ressource>[
+        Time(value: 3.0),
+        Faith(value: 10.0),
+        Wisdome(value: 2.0)
+      ],
+      award: <Ressource>[
+        Faith(value: 8.0)
+      ],
+      duration: 6000.0,
+      modifier: <Modifier>[
+        AddTask(task: "Alle für den Basar anfragen"),
+        RemoveTask(task: "Einen Basar planen")
+      ]
+  ),
+  Task(
+      name: "Freizeit",
+      description: "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
+      cost: null,
+      award: <Ressource>[
+        Time(value: 0.3)
+      ],
+      duration: 9000.0
   )
 ];
 
 
 final List<Task> onHoldTaks = <Task>[
   Task(
+      name: "Predigt schreiben",
+      description: "wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
+      cost: <Ressource>[
+        Time(value: 8.0),
+        Faith(value: 100.0)
+      ],
+      award: <Ressource>[
+        Member(value: 0.02),
+        Faith(value: 60.0)
+      ],
+      duration: 8000.0,
+      modifier: <Modifier>[
+        AddTask(
+            task: "Gottesdienst halten"
+        ),
+        RemoveTask(
+            task: "Predigt schreiben"
+        )
+      ]
+  ),
+  Task(
       name: "Gottesdienst halten",
-      description: "schön mit Predigt, lieder und natürlich Bibelles",
+      description: "schön mit Predigt, Lieder und natürlich Bibellesen",
       cost: <Ressource>[
         Member(value: 2.0),
         Time(value: 2.0),
@@ -203,28 +270,14 @@ final List<Task> onHoldTaks = <Task>[
         Money(value: 20.0)
       ],
       duration: 4000.0,
-      modifer: <Modifier>[
+      modifier: <Modifier>[
         RemoveTask(
             task: "Gottesdienst halten"
         ),
         AddTask(
-            task: "Predigt schreiben"
+            task: "Gottesdienst vorbereiten"
         )
       ]
-  ),
-  Task(
-      name: "Ein zwischenmenschliches Problem klären",
-      description: "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
-      cost: <Ressource>[
-        Time(value: 3.0),
-        Wisdome(value: 100.0)
-      ],
-      award: <Ressource>[
-        Member(value: 0.25),
-        Wisdome(value: 101.0)
-      ],
-      duration: 6000.0,
-      timeToSolve: 6000.0
   ),
   Task(
       name: "Rechnung nicht bezahlt",
@@ -235,14 +288,21 @@ final List<Task> onHoldTaks = <Task>[
       award: <Ressource>[
         Wisdome(value: 1.0)
       ],
-      duration: 1000.0,
+      duration: 10000.0,
       timeToSolve: 60000.0,
+      modifier: <Modifier>[
+        RemoveTask(
+            task: "Rechnung nicht bezahlt"
+        )
+      ],
       missed: <Modifier>[
         AddTask(
             task: "Rechnung nicht bezahlt"
         ),
-        AddTask(
-            task: "Rechnung nicht bezahlt"
+        SubtractRes(
+            ressources: <Ressource>[
+              Money(value: 5.0)
+            ]
         )
       ]
   ),
@@ -258,7 +318,7 @@ final List<Task> onHoldTaks = <Task>[
       ],
       timeToSolve: 8000.0,
       duration: 1000.0,
-      modifer: <Modifier>[
+      modifier: <Modifier>[
         AddTask(task: "Abrechnung"),
         RemoveTask(task: "Buchen")
       ]
@@ -273,11 +333,49 @@ final List<Task> onHoldTaks = <Task>[
         Wisdome(value: 0.01),
         Publicity(value: 0.01)
       ],
-      timeToSolve: 4000.0,
+      timeToSolve: 40000.0,
       duration: 1000.0,
-      modifer: <Modifier>[
+      modifier: <Modifier>[
         AddTask(task: "Kasse führen"),
         RemoveTask(task: "Abrechnung")
       ]
   ),
+  Task(
+      name: "Alle für den Basar anfragen",
+      description: "ein Basar mach nur mit vielen Angeboten sinn",
+      cost: <Ressource>[
+        Member(value: 5.0),
+        Time(value: 8.0),
+        Faith(value: 10.0),
+        Wisdome(value: 5.0)
+      ],
+      award: <Ressource>[
+        Faith(value: 6.0),
+        Wisdome(value: 2.0)
+      ],
+      duration: 16000.0,
+      modifier: <Modifier>[
+        AddTask(task: "Basar"),
+        RemoveTask(task: "Alle für den Basar anfragen")
+      ]
+  ),
+  Task(
+      name: "Basar",
+      description: "jippi ein Basar",
+      cost: <Ressource>[
+        Money(value: 100.0),
+        Time(value: 10.0),
+        Wisdome(value: 10.0)
+      ],
+      award: <Ressource>[
+        Member(value: 5.3),
+        Money(value: 800.0),
+        Wisdome(value: 20.0)
+      ],
+      duration: 20000.0,
+      modifier: <Modifier>[
+        AddTask(task: "Einen Basar planen"),
+        RemoveTask(task: "Basar")
+      ]
+  )
 ];
