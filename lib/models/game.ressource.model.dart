@@ -35,6 +35,7 @@ class Game {
   }
 
   void addTask(Task task) {
+    tasks.remove(task);
     tasks.insert(0, task);
     task.init();
     notifier.notifyListeners();
@@ -42,8 +43,6 @@ class Game {
 
   void removeTask(Task task) {
     tasks.remove(task);
-    print("removed: " + task.toString());
-    print("infomring" + notifier.toString());
     notifier.notifyListeners();
   }
 
