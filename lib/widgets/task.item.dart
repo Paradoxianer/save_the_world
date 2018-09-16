@@ -20,13 +20,13 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator>
 
   TaskProgressIndicatorState(Task task) {
     this.task = task;
+    //task.init();
   }
 
   @override
   void initState() {
     super.initState();
     task.controller.addListener(listen);
-    task.init();
   }
 
   @override
