@@ -24,8 +24,9 @@ class AddTask extends Modifier {
       if (workOnList != null) {
         workOnList.add(found);
       }
-      else
+      else {
         Game.getInstance().addTask(found);
+      }
     }
   }
 }
