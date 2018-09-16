@@ -11,23 +11,25 @@ class Task extends GameElement {
   List<Ressource> cost;
   List<Ressource> award;
   List<Ressource> require;
-  List<Task> missed;
+  List<Modifier> missed;
 
   AnimationController controller;
 
   Task(
       {String name, String description, this.cost, this.award, this.require, this.duration = 5000.0, this.timeToSolve = double
-          .infinity, List<Modifier> modifer, List<Modifier>missed}) :
-        super(name: name, description: description, myModifier: modifer) {
+          .infinity, List<Modifier> modifier, List<Modifier> missed}) :
+        super(name: name, description: description, myModifier: modifier) {
     if (myModifier == null) {
       myModifier = new List<Modifier>();
     }
+    this.missed = missed;
     if (controller == null) {
       controller = new AnimationController(
           duration: Duration(milliseconds: duration.toInt()),
           vsync: Game.tick
       );
     }
+    init();
   }
 
   void init() {
@@ -36,14 +38,8 @@ class Task extends GameElement {
       timeDuration = timeToSolve.toInt();
     else
       timeDuration = duration.toInt();
-    if (controller == null) {
-      controller = new AnimationController(
-          duration: Duration(milliseconds: timeDuration),
-          vsync: Game.tick
-      );
-    }
-    else
-      controller.reset();
+    controller.duration = Duration(milliseconds: timeDuration);
+    controller.reset();
     if (timeToSolve != double.infinity) {
       controller.reverse(from: 0.99).whenComplete(miss);
     }
@@ -55,7 +51,6 @@ class Task extends GameElement {
     if (missed != null) {
       int listSize = missed.length;
       for (int i = 0; i < listSize; i++) {
-        print("calling " + missed[i].toString());
         missed[i].modify();
       }
     }
