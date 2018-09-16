@@ -35,6 +35,7 @@ class Game {
   }
 
   void addTask(Task task) {
+    //TODO: Maby check if the task is already running? bevore removing?
     tasks.remove(task);
     tasks.insert(0, task);
     task.init();
