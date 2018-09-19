@@ -67,17 +67,33 @@ class Task extends GameElement {
       timeToSolve: json['timeToSolve'],
       modifier: moList,
       missed: miList,
+        controllerStatus: json['controllerStatus'],
+        controllerValue: json['controllerValue']
     );
   }
 
   Map<String, dynamic> toJson() {
+    String miString;
+    String moString;
+    String cString;
+    String aString;
+    if (cost != null)
+      cString = cost.map((i) => i.toJson()).toString();
+    if (award != null)
+      aString = award.map((i) => i.toJson()).toString();
+    if (missed != null)
+      miString = missed.map((i) => i.toJson()).toString();
+    if (myModifier != null)
+      moString = myModifier.map((i) => i.toJson()).toString();
     return <String, dynamic>{
       'name': name,
       'description': description,
-      'cost': cost.map((i) => i.toJson()).toString(),
-      'award': award.map((i) => i.toJson().toString()),
-      //'missed': missed.map((i) => i.toJson().toString()),
-      'modifier': myModifier.map((i) => i.toJson().toString())
+      'cost': cString,
+      'award': aString,
+      'missed': miString,
+      'modifier': moString,
+      'controllerStatus': controller.status,
+      'controllerValue': controller.value
     };
   }
 
