@@ -14,4 +14,15 @@ class Money extends Ressource {
     this.max = double.maxFinite;
   }
 
+  factory Money.fromJson(Map<String, dynamic> json){
+    return Money(value: json['value']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'value': value
+    };
+  }
+
 }
