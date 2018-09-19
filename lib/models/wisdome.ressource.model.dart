@@ -2,15 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class Wisdome extends Ressource {
-  Wisdome({double value}):
+  Wisdome({double value}) :
         super(
-          name:"Weisheit",
-          description:"wieviel Weisheit du hast",
-          icon : Icons.school,
+          name: "Weisheit",
+          description: "wieviel Weisheit du hast",
+          icon: Icons.school,
           value: value,
           modifier: null
-      ){
-    this.min=double.negativeInfinity;
-    this.max=double.maxFinite;
+      ) {
+    this.min = double.negativeInfinity;
+    this.max = double.maxFinite;
+  }
+
+  factory Wisdome.fromJson(Map<String, dynamic> json){
+    return Wisdome(value: json['value']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'value': value
+    };
   }
 }
