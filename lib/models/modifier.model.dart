@@ -19,7 +19,7 @@ class Modifier extends GameItem {
   }
 
   factory Modifier.fromJson(Map<String, dynamic> json){
-    String whatModifier = json['what'];
+    String whatModifier = json['name'];
     switch (whatModifier) {
       case "AddRes":
         return AddRes();
@@ -60,7 +60,14 @@ class Modifier extends GameItem {
     }
   }
 
-  modify(){}
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'description': description,
+    };
+  }
+
+  modify() {}
 
   addedToElement(GameElement workOn){
     if (workOnItem != null) {
