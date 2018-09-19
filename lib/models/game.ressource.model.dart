@@ -36,6 +36,7 @@ class Game {
     allTasks.addAll(onHoldTaks);
     updateDuration = new Duration(seconds: 5);
     tick.createTicker(updateGame);
+    print(tasks.map((i) => i.toJson()).toString());
   }
 
   void addTask(Task task) {
