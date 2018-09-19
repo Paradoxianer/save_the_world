@@ -10,13 +10,12 @@ class Task extends GameElement {
 
   List<Ressource> cost;
   List<Ressource> award;
-  List<Ressource> require;
   List<Modifier> missed;
 
   AnimationController controller;
 
   Task(
-      {String name, String description, this.cost, this.award, this.require, this.duration = 5000.0, this.timeToSolve = double
+      {String name, String description, this.cost, this.award, this.duration = 5000.0, this.timeToSolve = double
           .infinity, List<Modifier> modifier, List<Modifier> missed}) :
         super(name: name, description: description, myModifier: modifier) {
     if (myModifier == null) {
@@ -30,6 +29,63 @@ class Task extends GameElement {
       );
     }
     init();
+  }
+
+  factory Task.fromJson(Map<String, dynamic> json){
+    var cList = json['cost'] as List;
+    var aList = json['award'] as List;
+    var miList = json['missed'] as List;
+    var moList = json['modifier'] as List;
+    List<Ressource> costList = cList.map((i) => Ressource.fromJson(i)).toList();
+    List<Ressource> awardList = aList.map((i) => Ressource.fromJson(i))
+        .toList();
+    return Task(
+      name: json['name'],
+      description: json['description'],
+      cost: costList,
+      award: awardList,
+      duration: json['duration'],
+      timeToSolve: json['timeToSolve'],
+      modifier: moList,
+      missed: miList,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    //ToDo: implement toJson in Task
+    return null;
+  }
+
+  Modifier buildModifier(Map<String, dynamic> json) {
+    String whatModifier = json['what'];
+    switch (whatModifier) {
+      case "AddRes":
+        break;
+      case "RemoveRes":
+        break;
+      case "AddTask":
+        break;
+      case "RemoveTask":
+        break;
+      case "AddModifier":
+        break;
+      case "RemoveModifier":
+        break;
+      case "AddMissed":
+        break;
+      case "RemoveMissed":
+        break;
+      case "StopTask":
+        break;
+      case "StartTask":
+        break;
+      case "NewDuration":
+        return null;
+        break;
+      case "RemoveMissed":
+        return null;
+        break;
+    }
   }
 
   void init() {
@@ -86,5 +142,6 @@ class Task extends GameElement {
     modify();
     controller.reset();
   }
+
 
 }
