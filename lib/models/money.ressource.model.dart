@@ -4,7 +4,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Money extends Ressource {
   Money({double value}):
         super(
-          name:"Geld",
+          name: "Money",
           description:"wieviel Geld du hast",
           icon : Icons.attach_money,
           value: value,

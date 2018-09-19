@@ -4,7 +4,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Publicity extends Ressource {
   Publicity({double value}) :
         super(
-          name: "Bekanntheit",
+          name: "Publicity",
           description: "wie bekannt du bist",
           icon: Icons.live_tv,
           value: value,

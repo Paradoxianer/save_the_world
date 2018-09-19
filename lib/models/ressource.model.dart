@@ -38,7 +38,7 @@ class Ressource extends GameElement {
       case "Time":
         return Time(value: json['value']);
         break;
-      case "Weisheit":
+      case "Wisdom":
         return Wisdom(value: json['value']);
         break;
     }

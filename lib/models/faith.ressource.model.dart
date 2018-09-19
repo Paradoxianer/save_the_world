@@ -4,7 +4,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Faith extends Ressource {
    Faith({double value}):
         super(
-          name:"Glauben",
+           name: "Faith",
           description:"wieviel Glauben du hast",
           //icon : Icons.accessibility,
           icon: const IconData(59401, fontFamily: "SaveTheWorldFont"),

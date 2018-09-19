@@ -4,7 +4,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Time extends Ressource {
   Time({double value}) :
         super(
-          name: "Zeit",
+          name: "Time",
           description: "wieviel Zeit du hast",
           icon: Icons.access_time,
           value: value,

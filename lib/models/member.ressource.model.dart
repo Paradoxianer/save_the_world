@@ -4,7 +4,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Member extends Ressource {
    Member({double value}):
         super(
-          name:"Mitglieder",
+           name: "Member",
           description:"wieviele Mitglieder hast du",
           icon : Icons.group,
           value: value,
