@@ -7,10 +7,33 @@ class Ressource extends GameElement {
   double value;
   double max = 100.0;
 
-  Ressource ({String name,String description, IconData icon,this.value,List<Modifier> modifier}) :
+  Ressource({String name, String description, IconData icon, this.value, List<
+      Modifier> modifier, this.min, this.max}) :
     super(name: name,description : description, icon : icon){
     notifier=new ChangeNotifier();
   }
+
+  factory Ressource.fromJson(Map<String, dynamic> json){
+    var moList = json['modifier'] as List;
+    List<Modifier> modiferList = moList.map((i) => Modifier.fromJson(i))
+        .toList();
+    return Ressource(
+        name: json['name'],
+        description: json['description'],
+        icon: json['icon'],
+        value: json['value'],
+        modifier: moList,
+        min: json['min'],
+        max: json['max']
+    );
+  }
+
+
+  Map<String, dynamic> toJson() {
+    //ToDo: implement toJson in Task
+    return null;
+  }
+
 
   subtract(Ressource other){
     this.value-=other.value;
