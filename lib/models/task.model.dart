@@ -16,7 +16,9 @@ class Task extends GameElement {
 
   Task(
       {String name, String description, this.cost, this.award, this.duration = 5000.0, this.timeToSolve = double
-          .infinity, List<Modifier> modifier, List<Modifier> missed}) :
+          .infinity, List<Modifier> modifier, List<
+          Modifier> missed, double controllerValue = null, AnimationStatus controllerStatus = null})
+      :
         super(name: name, description: description, myModifier: modifier) {
     if (myModifier == null) {
       myModifier = new List<Modifier>();
@@ -28,7 +30,24 @@ class Task extends GameElement {
           vsync: Game.tick
       );
     }
+    if (controllerValue != null)
+      controller.value = controllerValue;
     init();
+    if (controllerStatus != null) {
+      switch (controllerStatus) {
+        case AnimationStatus.forward:
+          controller.forward();
+          break;
+        case AnimationStatus.reverse:
+          controller.reverse();
+          break;
+        case AnimationStatus.dismissed:
+          controller.reset();
+          break;
+        case AnimationStatus.completed:
+          break;
+      }
+    }
   }
 
   factory Task.fromJson(Map<String, dynamic> json){
