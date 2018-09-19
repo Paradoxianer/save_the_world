@@ -18,6 +18,8 @@ class Game {
   static ChangeNotifier notifier;
   static Game mInstance;
   List<Task> allTasks;
+  TickerFuture ticker;
+  Duration updateDuration;
 
   Game(){
     notifier = new ChangeNotifier();
@@ -32,6 +34,8 @@ class Game {
     allTasks = new List<Task>();
     allTasks.addAll(testTasks);
     allTasks.addAll(onHoldTaks);
+    updateDuration = new Duration(seconds: 5);
+    tick.createTicker(updateGame);
   }
 
   void addTask(Task task) {
@@ -65,5 +69,8 @@ class Game {
 
   List<Task> availableTasks() {
     return allTasks;
+  }
+
+  updateGame(Duration elapse) {
   }
 }
