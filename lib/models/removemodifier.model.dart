@@ -10,8 +10,8 @@ class RemoveModifer extends Modifier {
 
   RemoveModifer({String task, List<Modifier> modifier})
       : super(
-            name: "AddModifer",
-            description: "Adds the given list of Modifier to the given task") {
+      name: "RemoveModifer",
+      description: "Removes the given list of Modifier to the given task") {
     this.nameOfTask = task;
     this.mymodifer = modifier;
   }
