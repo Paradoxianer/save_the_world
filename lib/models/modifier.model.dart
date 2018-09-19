@@ -1,5 +1,13 @@
+import 'package:save_the_world_flutter_app/models/addmodifier.model.dart';
+import 'package:save_the_world_flutter_app/models/addres.model.dart';
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
+import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
+import 'package:save_the_world_flutter_app/models/starttaks.model.dart';
+import 'package:save_the_world_flutter_app/models/stoptaks.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 
 class Modifier extends GameItem {
   GameElement workOnItem;
@@ -8,6 +16,48 @@ class Modifier extends GameItem {
         super(icon: null, name: name, description: description) {
     this.workOnItem = workOnItem;
     this.addedToElement(workOnItem);
+  }
+
+  factory Modifier.fromJson(Map<String, dynamic> json){
+    String whatModifier = json['what'];
+    switch (whatModifier) {
+      case "AddRes":
+        return AddRes();
+        break;
+      case "SubtractRes":
+        return SubtractRes();
+        break;
+      case "AddTask":
+        return AddTask();
+        break;
+      case "RemoveTask":
+        return RemoveTask();
+        break;
+      case "AddModifier":
+        return AddModifer();
+        break;
+      case "RemoveModifier":
+        return RemoveModifer();
+        break;
+      case "AddMissed":
+        return null;
+        break;
+      case "RemoveMissed":
+        return null;
+        break;
+      case "StopTask":
+        return StopTask();
+        break;
+      case "StartTask":
+        return StartTask();
+        break;
+      case "NewDuration":
+        return null;
+        break;
+      case "RemoveMissed":
+        return null;
+        break;
+    }
   }
 
   modify(){}
