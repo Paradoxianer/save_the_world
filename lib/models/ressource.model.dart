@@ -30,15 +30,14 @@ class Ressource extends GameElement {
 
 
   Map<String, dynamic> toJson() {
-    //ToDo: implement the rest of toJson in Task
+    //ToDo: implement json of the modifier list.
     return <String, dynamic>{
       'name': name,
-      'icon': icon.toString(),
+      'icon': icon,
       'min': min,
       'value': value,
-      'max': max
+      'max': max,
     };
-    return null;
   }
 
 
