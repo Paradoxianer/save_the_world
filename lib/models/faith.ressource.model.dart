@@ -14,4 +14,15 @@ class Faith extends Ressource {
       this.min = double.negativeInfinity;
       this.max = double.maxFinite;
    }
+
+   factory Faith.fromJson(Map<String, dynamic> json){
+     return Faith(value: json['value']);
+   }
+
+   Map<String, dynamic> toJson() {
+     return <String, dynamic>{
+       'name': name,
+       'value': value
+     };
+   }
 }
