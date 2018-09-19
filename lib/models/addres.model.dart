@@ -28,7 +28,7 @@ class AddRes extends Modifier {
       rString = ressources.map((i) => i.toJson()).toString();
     return <String, dynamic>{
       'name': name,
-      'ressources': rString;
+      'ressources': rString
     };
   }
 
