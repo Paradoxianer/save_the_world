@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
-class Wisdome extends Ressource {
-  Wisdome({double value}) :
+class Wisdom extends Ressource {
+  Wisdom({double value}) :
         super(
           name: "Weisheit",
           description: "wieviel Weisheit du hast",
@@ -14,8 +14,8 @@ class Wisdome extends Ressource {
     this.max = double.maxFinite;
   }
 
-  factory Wisdome.fromJson(Map<String, dynamic> json){
-    return Wisdome(value: json['value']);
+  factory Wisdom.fromJson(Map<String, dynamic> json){
+    return Wisdom(value: json['value']);
   }
 
   Map<String, dynamic> toJson() {
