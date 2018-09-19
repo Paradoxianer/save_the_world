@@ -17,6 +17,17 @@ class AddTask extends Modifier {
     this.workOnList = workOnList;
   }
 
+  factory AddTask.fromJson(Map<String, dynamic> json){
+    return AddTask(task: json['task']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'task': nameOfTask
+    };
+  }
+
   modify() {
     Task found = Game.getInstance().availableTasks().firstWhere((tsk) =>
     tsk.name == nameOfTask);
