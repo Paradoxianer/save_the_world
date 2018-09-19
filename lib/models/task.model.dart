@@ -71,8 +71,14 @@ class Task extends GameElement {
   }
 
   Map<String, dynamic> toJson() {
-    //ToDo: implement toJson in Task
-    return null;
+    return <String, dynamic>{
+      'name': name,
+      'description': description,
+      'cost': cost.map((i) => i.toJson()).toString(),
+      'award': award.map((i) => i.toJson().toString()),
+      //'missed': missed.map((i) => i.toJson().toString()),
+      'modifier': myModifier.map((i) => i.toJson().toString())
+    };
   }
 
   Modifier buildModifier(Map<String, dynamic> json) {
