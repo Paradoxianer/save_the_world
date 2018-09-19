@@ -10,6 +10,22 @@ class SubtractRes extends Modifier {
 
   SubtractRes({this.ressources, this.workOnRes = null}) : super();
 
+  factory SubtractRes.fromJson(Map<String, dynamic> json){
+    var resList = json['ressources'] as List;
+    List<Ressource> ressourceList = resList.map((i) => Ressource.fromJson(i))
+        .toList();
+    return SubtractRes(ressources: ressourceList);
+  }
+
+  Map<String, dynamic> toJson() {
+    String rString;
+    if (ressources != null)
+      rString = ressources.map((i) => i.toJson()).toString();
+    return <String, dynamic>{
+      'name': name,
+      'ressources': rString
+    };
+  }
   modify() {
     int listSize = ressources.length;
     if (workOnRes != null) {
