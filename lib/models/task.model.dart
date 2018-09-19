@@ -58,6 +58,10 @@ class Task extends GameElement {
     List<Ressource> costList = cList.map((i) => Ressource.fromJson(i)).toList();
     List<Ressource> awardList = aList.map((i) => Ressource.fromJson(i))
         .toList();
+    List<Modifier> missedList = miList.map((i) => Modifier.fromJson(i))
+        .toList();
+    List<Modifier> modifierList = miList.map((i) => Modifier.fromJson(i))
+        .toList();
     return Task(
       name: json['name'],
       description: json['description'],
@@ -65,8 +69,8 @@ class Task extends GameElement {
       award: awardList,
       duration: json['duration'],
       timeToSolve: json['timeToSolve'],
-      modifier: moList,
-      missed: miList,
+        modifier: modifierList,
+        missed: missedList,
         controllerStatus: json['controllerStatus'],
         controllerValue: json['controllerValue']
     );
