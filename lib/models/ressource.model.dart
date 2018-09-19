@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
+import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
+import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 class Ressource extends GameElement {
   double min = 0.0;
@@ -14,18 +20,28 @@ class Ressource extends GameElement {
   }
 
   factory Ressource.fromJson(Map<String, dynamic> json){
-    var moList = json['modifier'] as List;
-    List<Modifier> modiferList = moList.map((i) => Modifier.fromJson(i))
-        .toList();
-    return Ressource(
-        name: json['name'],
-        description: json['description'],
-        icon: json['icon'],
-        value: json['value'],
-        modifier: moList,
-        min: json['min'],
-        max: json['max']
-    );
+    String whatModifier = json['name'];
+    switch (whatModifier) {
+      case "Faith":
+        return Faith(value: json['value']);
+        break;
+      case "Member":
+        return Member
+          (value: json['value']);
+        break;
+      case "Money":
+        return Money(value: json['value']);
+        break;
+      case "Publicity":
+        return Publicity(value: json['value']);
+        break;
+      case "Time":
+        return Time(value: json['value']);
+        break;
+      case "Wisdom":
+        return Wisdome(value: json['value']);
+        break;
+    }
   }
 
 
