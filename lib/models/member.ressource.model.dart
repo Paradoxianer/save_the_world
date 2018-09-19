@@ -13,4 +13,15 @@ class Member extends Ressource {
      this.min = 1.0;
      this.max = double.maxFinite;
    }
+
+   factory Member.fromJson(Map<String, dynamic> json){
+     return Member(value: json['value']);
+   }
+
+   Map<String, dynamic> toJson() {
+     return <String, dynamic>{
+       'name': name,
+       'value': value
+     };
+   }
 }
