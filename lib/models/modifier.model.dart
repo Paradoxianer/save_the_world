@@ -63,7 +63,6 @@ class Modifier extends GameItem {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'description': description,
     };
   }
 
