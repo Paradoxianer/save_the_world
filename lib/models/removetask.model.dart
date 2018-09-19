@@ -5,19 +5,30 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 
 class RemoveTask extends Modifier {
   GameElement workOnItem;
-  String taskName;
+  String nameOfTask;
   List<Task> workOnList;
 
   RemoveTask({String task, List<Task> workOnList = null})
       : super(name: "RemoveTask", description: "Modifer which remove Tasks") {
-    this.taskName = task;
+    this.nameOfTask = task;
     this.workOnList = workOnList;
+  }
+
+  factory RemoveTask.fromJson(Map<String, dynamic> json){
+    return RemoveTask(task: json['task']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'name': name,
+      'task': nameOfTask
+    };
   }
 
   modify() {
     Task found = Game.getInstance()
         .availableTasks()
-        .firstWhere((tsk) => tsk.name == taskName);
+        .firstWhere((tsk) => tsk.name == nameOfTask);
     if (found != null) {
       if (workOnList != null) {
         workOnList.remove(found);
