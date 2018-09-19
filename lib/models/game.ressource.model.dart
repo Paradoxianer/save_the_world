@@ -29,7 +29,7 @@ class Game {
     ressources[Time().name]=Time(value: 24.0);
     ressources[Member().name] = Member(value: 2.0);
     ressources[Publicity().name]=Publicity(value: 1.0);
-    ressources[Wisdome().name]=Wisdome(value: 10.0);
+    ressources[Wisdom().name] = Wisdom(value: 10.0);
     tasks = testTasks;
     allTasks = new List<Task>();
     allTasks.addAll(testTasks);

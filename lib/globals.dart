@@ -24,11 +24,11 @@ final List<Task> testTasks = <Task>[
       description: "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
       cost: <Ressource>[
         Time(value: 3.0),
-        Wisdome(value: 100.0)
+        Wisdom(value: 100.0)
       ],
       award: <Ressource>[
         Member(value: 0.25),
-        Wisdome(value: 101.0)
+        Wisdom(value: 101.0)
       ],
       duration: 6000.0,
       timeToSolve: 6000.0,
@@ -76,7 +76,7 @@ final List<Task> testTasks = <Task>[
     ],
     award: <Ressource>[
       Faith(value: 50.00),
-      Wisdome(value: 50.0),
+      Wisdom(value: 50.0),
     ],
   ),
   Task(
@@ -136,10 +136,10 @@ final List<Task> testTasks = <Task>[
     description: "Pastor... ich hab da ein Problem",
     cost: <Ressource>[
       Time(value: 1.0),
-      Wisdome(value: 1.0)
+      Wisdom(value: 1.0)
     ],
     award: <Ressource>[
-      Wisdome(value: 2.0),
+      Wisdom(value: 2.0),
       Member(value: 0.25)
     ],
   ),
@@ -151,7 +151,7 @@ final List<Task> testTasks = <Task>[
       ],
       award: <Ressource>[
         Faith(value: 5.0),
-        Wisdome(value: 2.0)
+        Wisdom(value: 2.0)
       ],
       duration: 2000.0
   ),
@@ -184,7 +184,7 @@ final List<Task> testTasks = <Task>[
       description: "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
       cost: <Ressource>[
         Faith(value: 5.0),
-        Wisdome(value: 10.0),
+        Wisdom(value: 10.0),
         Publicity(value: 10.0),
       ],
       award: <Ressource>[
@@ -211,7 +211,7 @@ final List<Task> testTasks = <Task>[
       cost: <Ressource>[
         Time(value: 3.0),
         Faith(value: 10.0),
-        Wisdome(value: 2.0)
+        Wisdom(value: 2.0)
       ],
       award: <Ressource>[
         Faith(value: 8.0)
@@ -286,7 +286,7 @@ final List<Task> onHoldTaks = <Task>[
         Money(value: 25.0),
       ],
       award: <Ressource>[
-        Wisdome(value: 1.0)
+        Wisdom(value: 1.0)
       ],
       duration: 10000.0,
       timeToSolve: 60000.0,
@@ -313,7 +313,7 @@ final List<Task> onHoldTaks = <Task>[
         Time(value: 0.5),
       ],
       award: <Ressource>[
-        Wisdome(value: 0.01),
+        Wisdom(value: 0.01),
         Publicity(value: 0.01)
       ],
       timeToSolve: 8000.0,
@@ -330,7 +330,7 @@ final List<Task> onHoldTaks = <Task>[
         Time(value: 0.5),
       ],
       award: <Ressource>[
-        Wisdome(value: 0.01),
+        Wisdom(value: 0.01),
         Publicity(value: 0.01)
       ],
       timeToSolve: 40000.0,
@@ -347,11 +347,11 @@ final List<Task> onHoldTaks = <Task>[
         Member(value: 5.0),
         Time(value: 8.0),
         Faith(value: 10.0),
-        Wisdome(value: 5.0)
+        Wisdom(value: 5.0)
       ],
       award: <Ressource>[
         Faith(value: 6.0),
-        Wisdome(value: 2.0)
+        Wisdom(value: 2.0)
       ],
       duration: 16000.0,
       modifier: <Modifier>[
@@ -365,12 +365,12 @@ final List<Task> onHoldTaks = <Task>[
       cost: <Ressource>[
         Money(value: 100.0),
         Time(value: 10.0),
-        Wisdome(value: 10.0)
+        Wisdom(value: 10.0)
       ],
       award: <Ressource>[
         Member(value: 5.3),
         Money(value: 800.0),
-        Wisdome(value: 20.0)
+        Wisdom(value: 20.0)
       ],
       duration: 20000.0,
       modifier: <Modifier>[
