@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:save_the_world_flutter_app/data_manager.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -24,14 +25,15 @@ class Game {
   Duration updateDuration;
   int stage;
 
-  Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
+  Game({List<Task> tasksList, List<Task> allTasksList, this.stage, List<
+      Ressource> resList}) {
     notifier = new ChangeNotifier();
     tick = new TestVSync();
     if (tasks == null)
       tasks = testTasks;
     else
       tasks = tasks;
-    initRes();
+    initRes(resList);
     if (allTasksList == null) {
       allTasks = new List<Task>();
       allTasks.addAll(testTasks);
@@ -41,26 +43,39 @@ class Game {
       allTasks = allTasksList;
     updateDuration = new Duration(seconds: 5);
     tick.createTicker(updateGame);
+    DataManager dataManager = new DataManager();
+    dataManager.writeList(0, json.encode(this));
   }
 
-  initRes() {
-    ressources[Faith().name] = Faith(value: 100.0);
-    ressources[Money().name] = Money(value: 10.0);
-    ressources[Time().name] = Time(value: 24.0);
-    ressources[Member().name] = Member(value: 2.0);
-    ressources[Publicity().name] = Publicity(value: 1.0);
-    ressources[Wisdom().name] = Wisdom(value: 10.0);
+  initRes(List<Ressource> resList) {
+    if (resList == null) {
+      ressources[Faith().name] = Faith(value: 100.0);
+      ressources[Money().name] = Money(value: 10.0);
+      ressources[Time().name] = Time(value: 24.0);
+      ressources[Member().name] = Member(value: 2.0);
+      ressources[Publicity().name] = Publicity(value: 1.0);
+      ressources[Wisdom().name] = Wisdom(value: 10.0);
+    }
+    else {
+      int resLength = resList.length;
+      for (int i = 0; i < resLength; i++) {
+        ressources[resList[i].name] = resList[i];
+      }
+    }
   }
 
   factory Game.fromJson(Map<String, dynamic> json){
     var tList = json['tasks'] as List;
     var atList = json['allTasks'] as List;
+    var rsList = json['ressources'] as List;
     List<Task> tksList = tList.map((i) => Task.fromJson(i)).toList();
     List<Task> aTasksList = atList.map((i) => Task.fromJson(i)).toList();
+    List<Ressource> ressourceList = rsList.map((i) => Ressource.fromJson(i));
     return Game(
         tasksList: tksList,
         allTasksList: aTasksList,
-        stage: json['stage']
+        stage: json['stage'],
+        resList: ressourceList
     );
   }
 
@@ -68,6 +83,7 @@ class Game {
     return <String, dynamic>{
       'tasks': json.encode(tasks),
       'alltasks': json.encode(allTasks),
+      'ressources': json.encode(ressources.values.toList()),
       'stage': stage
     };
   }
