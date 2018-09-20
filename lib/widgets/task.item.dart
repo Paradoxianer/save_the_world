@@ -38,6 +38,8 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator>
   @override
   Widget build(BuildContext context) {
     LinearProgressIndicator progressIndicator;
+    //TODO: optimzie this and set the color when the direction of the Animation
+    // is changed so we save the if else statement everytime on build :)
     if (task.controller.status == AnimationStatus.dismissed) {
       progressIndicator = new LinearProgressIndicator(
           value: task.controller.value,
