@@ -24,8 +24,7 @@ class Game {
   Duration updateDuration;
   int stage;
 
-  Game({List<Task> tasksList = null, List<
-      Task> allTasksList = null, this.stage}) {
+  Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
     notifier = new ChangeNotifier();
     tick = new TestVSync();
     if (tasks == null)
