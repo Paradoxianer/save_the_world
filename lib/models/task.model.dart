@@ -18,7 +18,7 @@ class Task extends GameElement {
 
   Task({String name, String description, this.cost, this.award, this.duration = 5000.0, this.timeToSolve = double
       .infinity, List<Modifier> modifier, List<
-      Modifier> missed, double controllerValue = null, AnimationStatus controllerStatus = null})
+      Modifier> missed, double controllerValue, AnimationStatus controllerStatus})
       :
         super(name: name, description: description, myModifier: modifier) {
     if (myModifier == null) {
@@ -61,7 +61,7 @@ class Task extends GameElement {
         .toList();
     List<Modifier> missedList = miList.map((i) => Modifier.fromJson(i))
         .toList();
-    List<Modifier> modifierList = miList.map((i) => Modifier.fromJson(i))
+    List<Modifier> modifierList = moList.map((i) => Modifier.fromJson(i))
         .toList();
     return Task(
         name: json['name'],
