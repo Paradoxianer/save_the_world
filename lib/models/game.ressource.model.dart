@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
@@ -20,23 +22,55 @@ class Game {
   List<Task> allTasks;
   TickerFuture ticker;
   Duration updateDuration;
+  int stage;
 
-  Game(){
+  Game({List<Task> tasksList = null, List<
+      Task> allTasksList = null, this.stage}) {
     notifier = new ChangeNotifier();
     tick = new TestVSync();
-    ressources[Faith().name] = Faith(value: 100.0);
-    ressources[Money().name]=Money(value: 10.0);
-    ressources[Time().name]=Time(value: 24.0);
-    ressources[Member().name] = Member(value: 2.0);
-    ressources[Publicity().name]=Publicity(value: 1.0);
-    ressources[Wisdom().name] = Wisdom(value: 10.0);
-    tasks = testTasks;
-    allTasks = new List<Task>();
-    allTasks.addAll(testTasks);
-    allTasks.addAll(onHoldTaks);
+    if (tasks == null)
+      tasks = testTasks;
+    else
+      tasks = tasks;
+    initRes();
+    if (allTasksList == null) {
+      allTasks = new List<Task>();
+      allTasks.addAll(testTasks);
+      allTasks.addAll(onHoldTaks);
+    }
+    else
+      allTasks = allTasksList;
     updateDuration = new Duration(seconds: 5);
     tick.createTicker(updateGame);
-    print(tasks.map((i) => i.toJson()).toString());
+  }
+
+  initRes() {
+    ressources[Faith().name] = Faith(value: 100.0);
+    ressources[Money().name] = Money(value: 10.0);
+    ressources[Time().name] = Time(value: 24.0);
+    ressources[Member().name] = Member(value: 2.0);
+    ressources[Publicity().name] = Publicity(value: 1.0);
+    ressources[Wisdom().name] = Wisdom(value: 10.0);
+  }
+
+  factory Game.fromJson(Map<String, dynamic> json){
+    var tList = json['tasks'] as List;
+    var atList = json['allTasks'] as List;
+    List<Task> tksList = tList.map((i) => Task.fromJson(i)).toList();
+    List<Task> aTasksList = atList.map((i) => Task.fromJson(i)).toList();
+    return Game(
+        tasksList: tksList,
+        allTasksList: aTasksList,
+        stage: json['stage']
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'tasks': json.encode(tasks),
+      'alltasks': json.encode(allTasks),
+      'stage': stage
+    };
   }
 
   void addTask(Task task) {

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
@@ -23,12 +25,9 @@ class AddRes extends Modifier {
   }
 
   Map<String, dynamic> toJson() {
-    String rString;
-    if (ressources != null)
-      rString = ressources.map((i) => i.toJson()).toString();
     return <String, dynamic>{
       'name': name,
-      'ressources': rString
+      'ressources': json.encode(ressources)
     };
   }
 
