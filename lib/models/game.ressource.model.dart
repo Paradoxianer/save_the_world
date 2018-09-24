@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
+import 'package:save_the_world_flutter_app/data_manager.dart'
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -22,9 +22,11 @@ class Game {
   List<Task> allTasks;
   TickerFuture ticker;
   Duration updateDuration;
+  DataManager dataManager;
   int stage;
 
   Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
+    dataManager = new DataManager();
     notifier = new ChangeNotifier();
     tick = new TestVSync();
     if (tasks == null)
@@ -41,6 +43,7 @@ class Game {
       allTasks = allTasksList;
     updateDuration = new Duration(seconds: 5);
     tick.createTicker(updateGame);
+    loadState();
   }
 
   initRes() {
@@ -103,6 +106,14 @@ class Game {
 
   List<Task> availableTasks() {
     return allTasks;
+  }
+
+  saveState() {
+
+  }
+
+  loadState() {
+
   }
 
   updateGame(Duration elapse) {
