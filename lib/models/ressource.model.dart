@@ -73,6 +73,11 @@ class Ressource extends GameElement {
     notifier.notifyListeners();
   }
 
+  setValue(double newVal) {
+    value = newVal;
+    notifier.notifyListeners();
+  }
+
   bool canAdd(Ressource other){
     if (this.name == other.name){
       if ((this.value+other.value)<=max)
