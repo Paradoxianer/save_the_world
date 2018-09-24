@@ -12,14 +12,14 @@ class DataManager {
     return directory.path;
   }
 
-  Future<File> workingFileFor(int stage) async {
+  Future<File> workingFileFor(String name) async {
     final path = await getPath();
-    return File('$path/$stage.list.json');
+    return File('$path/' + name + '.json');
   }
 
-  Future<String> readList(int stage) async {
+  Future<String> readData(String name) async {
     try {
-      final file = await workingFileFor(0);
+      final file = await workingFileFor(name);
       // Read the file
       String content = await file.readAsString();
       return content;
@@ -29,9 +29,9 @@ class DataManager {
     }
   }
 
-  Future<File> writeCounter(int counter) async {
+  Future<File> writeList(String file, String jsonString) async {
     final file = await workingFileFor(0);
     // Write the file
-    return file.writeAsString('$counter');
+    return file.writeAsString(jsonString);
   }
 }
