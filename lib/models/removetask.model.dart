@@ -8,7 +8,7 @@ class RemoveTask extends Modifier {
   String nameOfTask;
   List<Task> workOnList;
 
-  RemoveTask({String task, List<Task> workOnList = null})
+  RemoveTask({String task, List<Task> workOnList})
       : super(name: "RemoveTask", description: "Modifer which remove Tasks") {
     this.nameOfTask = task;
     this.workOnList = workOnList;

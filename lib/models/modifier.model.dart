@@ -12,7 +12,7 @@ import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 class Modifier extends GameItem {
   GameElement workOnItem;
 
-  Modifier({String name, String description, GameElement workOnItem = null}) :
+  Modifier({String name, String description, GameElement workOnItem}) :
         super(icon: null, name: name, description: description) {
     this.workOnItem = workOnItem;
     this.addedToElement(workOnItem);

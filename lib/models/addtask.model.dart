@@ -8,7 +8,7 @@ class AddTask extends Modifier {
   String nameOfTask;
   List<Task> workOnList;
 
-  AddTask({String task, List<Task> workOnList = null})
+  AddTask({String task, List<Task> workOnList})
       : super(
             name: "AddTask",
             description:
