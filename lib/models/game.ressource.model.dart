@@ -1,8 +1,9 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:save_the_world_flutter_app/data_manager.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
-import 'package:save_the_world_flutter_app/data_manager.dart'
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -42,7 +43,7 @@ class Game {
     else
       allTasks = allTasksList;
     updateDuration = new Duration(seconds: 5);
-    tick.createTicker(updateGame);
+    tick.createTicker(updateGame).start();
     loadState();
   }
 
@@ -109,13 +110,50 @@ class Game {
   }
 
   saveState() {
-
+    print("saveState");
+    List<String> activeTasks = new List<String>();
+    int tLength = tasks.length;
+    for (int i = 0; i < tLength; i++) {
+      activeTasks.add(tasks[i].name);
+    }
+    dataManager.writeJson("gameRes", json.encode(ressources));
+    dataManager.writeJson("allTasks", json.encode(allTasks));
+    dataManager.writeJson("activeTasks", json.encode(activeTasks));
   }
 
   loadState() {
+    print("loadState");
+    List<String> activeTasks = new List<String>();
+    dataManager.readData("gameRes").then(loadRes);
+    dataManager.readData("allTasks").then(loadAllTask);
+    dataManager.readData("activeTasks").then(loadActiveTasks);
+  }
 
+  loadRes(String jsn) {
+    Map<String, dynamic> resMap = json.decode(jsn);
+    print(resMap);
+    List<String> ressourceNames = ressources.keys.toList();
+    int rLength = ressourceNames.length;
+    Ressource tmpRes;
+    for (int i = 0; i < rLength; i++) {
+      ressources[ressourceNames[i]].setValue(
+          resMap[ressourceNames[i]]['value']);
+    }
+  }
+
+  loadAllTask(String jsn) {
+    print("loadAllTask" + jsn);
+  }
+
+  loadActiveTasks(String jsn) {
+    print("loadActiveTasks" + jsn);
   }
 
   updateGame(Duration elapse) {
+    int rest = (elapse.inSeconds % updateDuration.inSeconds);
+    if (rest == 0) {
+      saveState();
+    }
   }
+
 }
