@@ -24,7 +24,6 @@ class TaskListState extends State<TaskList> {
   }
 
   valueChanged() {
-    print("TaksList.valueChanged");
     setState(() {});
   }
 
