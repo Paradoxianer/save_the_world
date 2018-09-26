@@ -31,9 +31,8 @@ class DataManager {
 
   Future<File> writeJson(String fileName, String jsonString) async {
     File file = await workingFileFor(fileName);
-    file.delete();
     file = await workingFileFor(fileName);
     // Write the file
-    return file.writeAsString(jsonString);
+    return file.writeAsString(jsonString, mode: FileMode.write);
   }
 }
