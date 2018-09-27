@@ -18,7 +18,7 @@ class Task extends GameElement {
 
   Task({String name, String description, this.cost, this.award, this.duration = 5000.0, this.timeToSolve = double
       .infinity, List<Modifier> modifier, List<
-      Modifier> missed, double controllerValue, AnimationStatus controllerStatus})
+      Modifier> missed, double controllerValue, String controllerStatus})
       :
         super(name: name, description: description, myModifier: modifier) {
     if (myModifier == null) {
@@ -36,44 +36,54 @@ class Task extends GameElement {
     init();
     if (controllerStatus != null) {
       switch (controllerStatus) {
-        case AnimationStatus.forward:
+        case "AnimationStatus.forward":
           controller.forward();
           break;
-        case AnimationStatus.reverse:
+        case "AnimationStatus.reverse":
           controller.reverse();
           break;
-        case AnimationStatus.dismissed:
+        case "AnimationStatus.dismissed":
           controller.reset();
           break;
-        case AnimationStatus.completed:
+        case "AnimationStatus.completed":
           break;
       }
     }
   }
 
-  factory Task.fromJson(Map<String, dynamic> json){
-    var cList = json['cost'] as List;
-    var aList = json['award'] as List;
-    var miList = json['missed'] as List;
-    var moList = json['modifier'] as List;
-    List<Ressource> costList = cList.map((i) => Ressource.fromJson(i)).toList();
-    List<Ressource> awardList = aList.map((i) => Ressource.fromJson(i))
-        .toList();
-    List<Modifier> missedList = miList.map((i) => Modifier.fromJson(i))
-        .toList();
-    List<Modifier> modifierList = moList.map((i) => Modifier.fromJson(i))
-        .toList();
+  factory Task.fromJson(Map<String, dynamic> jsn){
+    print("Task.fromJson " + jsn.toString());
+    List<Ressource> costList;
+    List<Ressource> awardList;
+    List<Modifier> missedList;
+    List<Modifier> modifierList;
+    if (jsn['cost'] != null) {
+      var cList = json.decode(jsn['cost']) as List;
+      costList = cList.map((i) => Ressource.fromJson(i)).toList();
+    }
+    if (jsn['award'] != null) {
+      var aList = json.decode(jsn['award']) as List;
+      awardList = aList.map((i) => Ressource.fromJson(i)).toList();
+    }
+    if (jsn['missed'] != null) {
+      var miList = json.decode(jsn['missed']) as List;
+      missedList = miList.map((i) => Modifier.fromJson(i)).toList();
+    }
+    if (jsn['modifier'] != null) {
+      var moList = json.decode(jsn['modifier']) as List;
+      modifierList = moList.map((i) => Modifier.fromJson(i)).toList();
+    }
     return Task(
-        name: json['name'],
-        description: json['description'],
+        name: jsn['name'],
+        description: jsn['description'],
         cost: costList,
         award: awardList,
-        duration: json['duration'],
-        timeToSolve: json['timeToSolve'],
+        duration: jsn['duration'],
+        timeToSolve: jsn['timeToSolve'],
         modifier: modifierList,
         missed: missedList,
-        controllerStatus: json['controllerStatus'],
-        controllerValue: json['controllerValue']
+        controllerStatus: jsn['controllerStatus'],
+        controllerValue: json.decode(jsn['controllerValue'])
     );
   }
 
