@@ -22,7 +22,7 @@ class Game {
   static Game mInstance;
   List<Task> allTasks;
   TickerFuture ticker;
-  Duration updateDuration;
+  Duration saveDuration;
   DataManager dataManager;
   int stage;
 
@@ -42,7 +42,7 @@ class Game {
     }
     else
       allTasks = allTasksList;
-    updateDuration = new Duration(seconds: 5);
+    saveDuration = new Duration(seconds: 10);
     tick.createTicker(updateGame).start();
     loadState();
   }
@@ -117,21 +117,19 @@ class Game {
       activeTasks.add(tasks[i].name);
     }
     dataManager.writeJson("gameRes", json.encode(ressources));
-    dataManager.writeJson("allTasks", json.encode(allTasks));
     dataManager.writeJson("activeTasks", json.encode(activeTasks));
+    dataManager.writeJson("allTasks", json.encode(allTasks));
   }
 
   loadState() {
     print("loadState");
-    List<String> activeTasks = new List<String>();
     dataManager.readData("gameRes").then(loadRes);
-    dataManager.readData("allTasks").then(loadAllTask);
-    dataManager.readData("activeTasks").then(loadActiveTasks);
+    dataManager.readData("allTasks").then(loadAllTasks);
   }
 
   loadRes(String jsn) {
+    print("loadRes" + jsn);
     Map<String, dynamic> resMap = json.decode(jsn);
-    print(resMap);
     List<String> ressourceNames = ressources.keys.toList();
     int rLength = ressourceNames.length;
     Ressource tmpRes;
@@ -141,16 +139,36 @@ class Game {
     }
   }
 
-  loadAllTask(String jsn) {
-    print("loadAllTask" + jsn);
+  loadAllTasks(String jsn) {
+    print("loadAllTasks" + jsn);
+    /*final parsed = json.decode(jsn).cast<Map<String, dynamic>>();
+    List<Task> tmpList= parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
+    print("allTasks loaded");
+    if (tmpList!=null)
+      allTasks=tmpList;
+    print("now we should read all active Tasks");*/
+    dataManager.readData("activeTasks").then(loadActiveTasks);
   }
 
   loadActiveTasks(String jsn) {
     print("loadActiveTasks" + jsn);
+    //var parsed = json.decode(jsn) as List;
+    /*  List<String>tmpList = new List<String>.from(json.decode(jsn));
+    Game.tasks.removeRange(0, Game.tasks.length);
+    int tmpListLenght = tmpList.length;
+    Task found;
+    for(int i =0;i<tmpListLenght;i++){
+      found = Game.getInstance().availableTasks().firstWhere((tsk) =>
+      tsk.name == tmpList[i]);
+      if (found != null)
+        Game.getInstance().addTask(found);
+    }
+
+    print(tmpList);*/
   }
 
   updateGame(Duration elapse) {
-    int rest = (elapse.inSeconds % updateDuration.inSeconds);
+    int rest = (elapse.inSeconds % saveDuration.inSeconds);
     if (rest == 0) {
       saveState();
     }

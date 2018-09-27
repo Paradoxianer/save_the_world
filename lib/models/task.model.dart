@@ -53,33 +53,49 @@ class Task extends GameElement {
 
   factory Task.fromJson(Map<String, dynamic> jsn){
     print("Task.fromJson " + jsn.toString());
+    String nName = jsn['name'];
+    String dDescription = jsn['description'];
+    double dDuration = jsn['duration'];
+    double timeToSolve = double.tryParse(jsn['timeToSolve']);
     List<Ressource> costList;
     List<Ressource> awardList;
     List<Modifier> missedList;
     List<Modifier> modifierList;
     if (jsn['cost'] != null) {
       var cList = json.decode(jsn['cost']) as List;
-      costList = cList.map((i) => Ressource.fromJson(i)).toList();
+      if (cList != null)
+        costList = cList.map((i) => Ressource.fromJson(i)).toList();
+      else
+        costList = new List<Ressource>();
     }
     if (jsn['award'] != null) {
       var aList = json.decode(jsn['award']) as List;
-      awardList = aList.map((i) => Ressource.fromJson(i)).toList();
+      if (aList != null)
+        awardList = aList.map((i) => Ressource.fromJson(i)).toList();
+      else
+        awardList = new List<Ressource>();
     }
     if (jsn['missed'] != null) {
       var miList = json.decode(jsn['missed']) as List;
-      missedList = miList.map((i) => Modifier.fromJson(i)).toList();
+      if (miList != null)
+        missedList = miList.map((i) => Modifier.fromJson(i)).toList();
+      else
+        missedList = new List<Modifier>();
     }
     if (jsn['modifier'] != null) {
       var moList = json.decode(jsn['modifier']) as List;
-      modifierList = moList.map((i) => Modifier.fromJson(i)).toList();
+      if (moList != null)
+        modifierList = moList.map((i) => Modifier.fromJson(i)).toList();
+      else
+        modifierList = new List<Modifier>();
     }
     return Task(
-        name: jsn['name'],
-        description: jsn['description'],
+        name: nName,
+        description: dDescription,
         cost: costList,
         award: awardList,
-        duration: jsn['duration'],
-        timeToSolve: jsn['timeToSolve'],
+        duration: dDuration,
+        timeToSolve: timeToSolve,
         modifier: modifierList,
         missed: missedList,
         controllerStatus: jsn['controllerStatus'],
@@ -98,6 +114,8 @@ class Task extends GameElement {
     return <String, dynamic>{
       'name': name,
       'description': description,
+      'duration': duration,
+      'timeToSolve': timeToSolve.toString(),
       'cost': json.encode(cost),
       'award': json.encode(award),
       'missed': json.encode(missed),
