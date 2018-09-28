@@ -42,7 +42,7 @@ class Game {
     }
     else
       allTasks = allTasksList;
-    saveDuration = new Duration(seconds: 10);
+    saveDuration = new Duration(seconds: 5);
     tick.createTicker(updateGame).start();
     loadState();
   }
@@ -76,11 +76,13 @@ class Game {
     };
   }
 
-  void addTask(Task task) {
+  void addTask(Task task, {bool needInit = true}) {
     //TODO: Maby check if the task is already running? bevore removing?
-    tasks.remove(task);
+    if (needInit)
+      tasks.remove(task);
     tasks.insert(0, task);
-    task.init();
+    if (needInit)
+      task.init();
     notifier.notifyListeners();
   }
 
@@ -128,48 +130,50 @@ class Game {
   }
 
   loadRes(String jsn) {
-    print("loadRes" + jsn);
-    Map<String, dynamic> resMap = json.decode(jsn);
-    List<String> ressourceNames = ressources.keys.toList();
-    int rLength = ressourceNames.length;
-    Ressource tmpRes;
-    for (int i = 0; i < rLength; i++) {
-      ressources[ressourceNames[i]].setValue(
-          resMap[ressourceNames[i]]['value']);
+    if (jsn != null) {
+      print("loadRes" + jsn);
+      Map<String, dynamic> resMap = json.decode(jsn);
+      List<String> ressourceNames = ressources.keys.toList();
+      int rLength = ressourceNames.length;
+      Ressource tmpRes;
+      for (int i = 0; i < rLength; i++) {
+        ressources[ressourceNames[i]].setValue(
+            resMap[ressourceNames[i]]['value']);
+      }
     }
   }
 
   loadAllTasks(String jsn) {
     print("loadAllTasks" + jsn);
-    /*final parsed = json.decode(jsn).cast<Map<String, dynamic>>();
+    final parsed = json.decode(jsn).cast<Map<String, dynamic>>();
     List<Task> tmpList= parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
     print("allTasks loaded");
     if (tmpList!=null)
       allTasks=tmpList;
-    print("now we should read all active Tasks");*/
+    print("now we should read all active Tasks");
     dataManager.readData("activeTasks").then(loadActiveTasks);
   }
 
   loadActiveTasks(String jsn) {
     print("loadActiveTasks" + jsn);
-    //var parsed = json.decode(jsn) as List;
-    /*  List<String>tmpList = new List<String>.from(json.decode(jsn));
+    var parsed = json.decode(jsn) as List;
+    List<String>tmpList = new List<String>.from(json.decode(jsn));
     Game.tasks.removeRange(0, Game.tasks.length);
     int tmpListLenght = tmpList.length;
     Task found;
-    for(int i =0;i<tmpListLenght;i++){
+    for (int i = (tmpListLenght - 1); i > 0; i--) {
+      print("tmpList[" + i.toString() + "]=" + tmpList[i] + "\n");
       found = Game.getInstance().availableTasks().firstWhere((tsk) =>
       tsk.name == tmpList[i]);
       if (found != null)
-        Game.getInstance().addTask(found);
+        Game.getInstance().addTask(found, needInit: false);
     }
 
-    print(tmpList);*/
   }
 
   updateGame(Duration elapse) {
     int rest = (elapse.inSeconds % saveDuration.inSeconds);
-    if (rest == 0) {
+    if ((rest == 0) && (elapse.inSeconds > 0)) {
       saveState();
     }
   }
