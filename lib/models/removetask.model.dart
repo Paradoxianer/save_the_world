@@ -26,14 +26,19 @@ class RemoveTask extends Modifier {
   }
 
   modify() {
-    Task found = Game.getInstance()
-        .availableTasks()
-        .firstWhere((tsk) => tsk.name == nameOfTask);
-    if (found != null) {
-      if (workOnList != null) {
-        workOnList.remove(found);
-      } else
-        Game.getInstance().removeTask(found);
+    try {
+      Task found = Game.getInstance()
+          .availableTasks()
+          .firstWhere((tsk) => tsk.name == nameOfTask);
+      if (found != null) {
+        if (workOnList != null) {
+          workOnList.remove(found);
+        } else
+          Game.getInstance().removeTask(found);
+      }
+    }
+    catch (e) {
+      print(e.toString());
     }
   }
 }
