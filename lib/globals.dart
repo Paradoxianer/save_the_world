@@ -309,6 +309,7 @@ final List<Task> onHoldTaks = <Task>[
         )
       ],
       modifier: <Modifier>[
+        RemoveTask(task: "Mails beantworten"),
         AddTask(task: "Mails...")
       ]
   ),
@@ -328,5 +329,9 @@ final List<Task> onHoldTaks = <Task>[
         RemoveTask(task: "Korps fegen und putzen"),
         AddTask(task: "Korps fegen und putzen"),
       ],
-      modifier: <Modifier>[AddTask(task: "Korps aufräumen")]),
+      modifier: <Modifier>[
+        AddTask(task: "Korps aufräumen"),
+        RemoveTask(task: "Korps fegen und putzen")
+      ]
+  ),
 ];
