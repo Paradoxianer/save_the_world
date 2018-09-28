@@ -11,10 +11,14 @@ class SubtractRes extends Modifier {
   Map<String, Ressource> workOnRes;
 
   SubtractRes({this.ressources, this.workOnRes}) :
-        super(name: "SubtractRes", description: "Removes a list of Ressource");
+        super(name: "SubtractRes", description: "Removes a list of Ressource") {
+    if (ressources == null) {
+      ressources = new List<Ressource>();
+    }
+  }
 
-  factory SubtractRes.fromJson(Map<String, dynamic> json){
-    var resList = json['ressources'] as List;
+  factory SubtractRes.fromJson(Map<String, dynamic> jsn){
+    var resList = json.decode(jsn['ressources']) as List;
     List<Ressource> ressourceList = resList.map((i) => Ressource.fromJson(i))
         .toList();
     return SubtractRes(ressources: ressourceList);
@@ -28,6 +32,8 @@ class SubtractRes extends Modifier {
   }
 
   modify() {
+    print("modify()" + this.name + "\t" + this.ressources.toString() + "\t" +
+        this.workOnItem.toString());
     int listSize = ressources.length;
     if (workOnRes != null) {
       for (int i = 0; i < listSize; i++) {
