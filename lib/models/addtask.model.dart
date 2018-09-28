@@ -29,6 +29,7 @@ class AddTask extends Modifier {
   }
 
   modify() {
+    print("modify" + this.name + "\t" + this.nameOfTask);
     Task found = Game.getInstance().availableTasks().firstWhere((tsk) =>
     tsk.name == nameOfTask);
     if (found != null) {

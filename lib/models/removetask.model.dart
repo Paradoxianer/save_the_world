@@ -27,6 +27,7 @@ class RemoveTask extends Modifier {
 
   modify() {
     try {
+      print("modify()" + this.name + "\t" + this.nameOfTask);
       Task found = Game.getInstance()
           .availableTasks()
           .firstWhere((tsk) => tsk.name == nameOfTask);
