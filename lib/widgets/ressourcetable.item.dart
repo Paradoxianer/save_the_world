@@ -16,7 +16,7 @@ class RessourceTable extends StatelessWidget {
   Widget build(BuildContext context) {
     List<TableRow> list = new List<TableRow>();
     if (ressourceList != null) {
-      if (ressourceList.length == 1)
+      if (ressourceList.length <= 1)
         column = 1;
       else
         column = ((ressourceList.length / rows) +
