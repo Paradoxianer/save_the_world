@@ -18,23 +18,23 @@ class Modifier extends GameItem {
     this.addedToElement(workOnItem);
   }
 
-  factory Modifier.fromJson(Map<String, dynamic> json){
-    String whatModifier = json['name'];
+  factory Modifier.fromJson(Map<String, dynamic> jsn){
+    String whatModifier = jsn['name'];
     switch (whatModifier) {
       case "AddRes":
-        return AddRes();
+        return AddRes.fromJson(jsn);
         break;
       case "SubtractRes":
-        return SubtractRes();
+        return SubtractRes.fromJson(jsn);
         break;
       case "AddTask":
-        return AddTask();
+        return AddTask.fromJson(jsn);
         break;
       case "RemoveTask":
-        return RemoveTask();
+        return RemoveTask.fromJson(jsn);
         break;
       case "AddModifier":
-        return AddModifer();
+        return AddModifer.fromJson(jsn);
         break;
       case "RemoveModifier":
         return RemoveModifer();
