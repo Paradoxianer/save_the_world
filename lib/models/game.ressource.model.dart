@@ -42,7 +42,7 @@ class Game {
     }
     else
       allTasks = allTasksList;
-    saveDuration = new Duration(seconds: 5);
+    saveDuration = new Duration(seconds: 10);
     tick.createTicker(updateGame).start();
     loadState();
   }
@@ -144,31 +144,35 @@ class Game {
   }
 
   loadAllTasks(String jsn) {
-    print("loadAllTasks" + jsn);
-    final parsed = json.decode(jsn).cast<Map<String, dynamic>>();
-    List<Task> tmpList= parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
-    print("allTasks loaded");
-    if (tmpList!=null)
-      allTasks=tmpList;
-    print("now we should read all active Tasks");
-    dataManager.readData("activeTasks").then(loadActiveTasks);
+    if (jsn != null) {
+      print("loadAllTasks" + jsn);
+      final parsed = json.decode(jsn).cast<Map<String, dynamic>>();
+      List<Task> tmpList = parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson))
+          .toList();
+      print("allTasks loaded");
+      if (tmpList != null)
+        allTasks = tmpList;
+      print("now we should read all active Tasks");
+      dataManager.readData("activeTasks").then(loadActiveTasks);
+    }
   }
 
   loadActiveTasks(String jsn) {
-    print("loadActiveTasks" + jsn);
-    var parsed = json.decode(jsn) as List;
-    List<String>tmpList = new List<String>.from(json.decode(jsn));
-    Game.tasks.removeRange(0, Game.tasks.length);
-    int tmpListLenght = tmpList.length;
-    Task found;
-    for (int i = (tmpListLenght - 1); i > 0; i--) {
-      print("tmpList[" + i.toString() + "]=" + tmpList[i] + "\n");
-      found = Game.getInstance().availableTasks().firstWhere((tsk) =>
-      tsk.name == tmpList[i]);
-      if (found != null)
-        Game.getInstance().addTask(found, needInit: false);
+    if (jsn != null) {
+      print("loadActiveTasks" + jsn);
+      var parsed = json.decode(jsn) as List;
+      List<String>tmpList = new List<String>.from(json.decode(jsn));
+      Game.tasks.removeRange(0, Game.tasks.length);
+      int tmpListLenght = tmpList.length;
+      Task found;
+      for (int i = (tmpListLenght - 1); i > 0; i--) {
+        print("tmpList[" + i.toString() + "]=" + tmpList[i] + "\n");
+        found = Game.getInstance().availableTasks().firstWhere((tsk) =>
+        tsk.name == tmpList[i]);
+        if (found != null)
+          Game.getInstance().addTask(found, needInit: false);
+      }
     }
-
   }
 
   updateGame(Duration elapse) {
