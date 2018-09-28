@@ -31,24 +31,18 @@ class Task extends GameElement {
           vsync: Game.tick
       );
     }
-    if (controllerValue != null)
-      controller.value = controllerValue;
     init();
     if (controllerStatus != null) {
-      switch (controllerStatus) {
-        case "AnimationStatus.forward":
+      if (controllerStatus.compareTo("AnimationStatus.forward") == 0)
           controller.forward();
-          break;
-        case "AnimationStatus.reverse":
+      else if (controllerStatus.compareTo("AnimationStatus.reverse") == 0)
           controller.reverse();
-          break;
-        case "AnimationStatus.dismissed":
+      else if (controllerStatus.compareTo("AnimationStatus.dismissed") == 0)
           controller.reset();
-          break;
-        case "AnimationStatus.completed":
-          break;
-      }
+      else if (controllerStatus.compareTo("AnimationStatus.completed") == 0);
     }
+    if (controllerValue != null)
+      controller.value = controllerValue;
   }
 
   factory Task.fromJson(Map<String, dynamic> jsn){
