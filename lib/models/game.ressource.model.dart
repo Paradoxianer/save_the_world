@@ -165,7 +165,7 @@ class Game {
       Game.tasks.removeRange(0, Game.tasks.length);
       int tmpListLenght = tmpList.length;
       Task found;
-      for (int i = (tmpListLenght - 1); i > 0; i--) {
+      for (int i = (tmpListLenght - 1); i >= 0; i--) {
         print("tmpList[" + i.toString() + "]=" + tmpList[i] + "\n");
         found = Game.getInstance().availableTasks().firstWhere((tsk) =>
         tsk.name == tmpList[i]);
