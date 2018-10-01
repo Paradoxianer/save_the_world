@@ -15,7 +15,44 @@ final List<String> credit = <String>[
   "Icon made by freepik from www.flaticon.com",
   "Icon made by becris from www.flaticon.com",
   "Icon made by fjstudio from www.flaticon.com"
+
 ];
+
+final Map<int, String> stages = {
+  20: "Hausgemeinde",
+  40: "Gemeinschaftsgruppe",
+  80: "Kleine Gemeinde",
+  140: "Mittlere Gemeinde",
+  200: "Mittelgroße Gemeinde",
+  400: "Große Gemeinde",
+  600: "Sehr große Gemeinde",
+  800: "Fast eine MegaChurch",
+  1100: "MegaChurch Level 1",
+  1800: "MegaChurch Level 2",
+  2800: "MegaChurch Level 3",
+  4500: "Beeinflussende Kirche Level 1",
+  10000: "Beeinflussende Kirche Level 2",
+  20000: "Beeinflussende Kirche Level 3",
+  50000: "Eine Bewegung Level 1",
+  100000: "Eine Bewegung Level 2",
+  250000: "Eine Bewegung Level 3",
+  500000: "Globale Bewegung Level 1",
+  1000000: "Globale Bewegung Level 2",
+  1500000: "Globale Bewegung Level 3",
+  2500000: "Globale Größe Level 1",
+  5000000: "Globale Größe Level 2",
+  7500000: "Globale Größe Level 3",
+  10000000: "Globaler Beeinflusser Level 1",
+  20000000: "Globaler Beeinflusser Level 2",
+  40000000: "Globaler Beeinflusser Level 3",
+  80000000: "Denomination Level 1",
+  160000000: "Denomination Level 2",
+  320000000: "Denomination Level 3",
+  1280000000: "Weltkirche Level 1",
+  2560000000: "Weltkirche Level 2",
+  5120000000: "Weltkirche Level 3",
+  7600000000: "Du hast die Welt gerettet - Jesus kommt wieder - YEAR"
+};
 
 final List<Task> testTasks = <Task>[
   Task(
