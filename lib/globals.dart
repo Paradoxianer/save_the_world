@@ -143,7 +143,10 @@ final List<Task> testTasks = <Task>[
         RemoveTask(task: "Korps aufräumen"),
         AddTask(task: "Korps aufräumen"),
       ],
-      modifier: <Modifier>[AddTask(task: "Korps fegen und putzen")]
+      modifier: <Modifier>[
+        AddTask(task: "Korps fegen und putzen"),
+        RemoveTask(task: "Korps aufräumen")
+      ]
   ),
   Task(
     name: "Seelsorge",
