@@ -32,17 +32,23 @@ class Task extends GameElement {
       );
     }
     init();
+
     if (controllerStatus != null) {
-      if (controllerStatus.compareTo("AnimationStatus.forward") == 0)
-          controller.forward();
+      if (controllerStatus.compareTo("AnimationStatus.forward") == 0) {
+        if (controllerValue != null)
+          controller.forward(from: controllerValue).whenComplete(finished);
+        else
+          controller.forward().whenComplete(finished);
+      }
       else if (controllerStatus.compareTo("AnimationStatus.reverse") == 0)
-          controller.reverse();
+        if (controllerValue != null)
+          controller.reverse(from: controllerValue).whenComplete(miss);
+        else
+          controller.reverse().whenComplete(miss);
       else if (controllerStatus.compareTo("AnimationStatus.dismissed") == 0)
           controller.reset();
       else if (controllerStatus.compareTo("AnimationStatus.completed") == 0);
     }
-    if (controllerValue != null)
-      controller.value = controllerValue;
   }
 
   factory Task.fromJson(Map<String, dynamic> jsn){
@@ -92,7 +98,7 @@ class Task extends GameElement {
         timeToSolve: timeToSolve,
         modifier: modifierList,
         missed: missedList,
-        controllerStatus: jsn['controllerStatus'],
+        controllerStatus: json.decode(jsn['controllerStatus']),
         controllerValue: json.decode(jsn['controllerValue'])
     );
   }
@@ -133,6 +139,7 @@ class Task extends GameElement {
   }
 
   void miss() {
+    print(this.name + "\ttask.miss()");
     if (missed != null) {
       int listSize = missed.length;
       for (int i = 0; i < listSize; i++) {
@@ -142,6 +149,7 @@ class Task extends GameElement {
   }
 
   start() {
+    print(this.name + "\ttask.start()");
     if (controller.status != AnimationStatus.forward) {
       controller.stop(canceled: true);
       //we need to set the new duration
@@ -158,6 +166,7 @@ class Task extends GameElement {
   }
 
   stop() {
+    print(this.name + "\ttask.stop()");
     controller.stop(canceled: true);
   }
 
