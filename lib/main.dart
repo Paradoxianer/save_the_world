@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
+import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
 
@@ -22,10 +23,23 @@ class MyApp extends StatelessWidget {
                   children: <Widget>[
                     FittedBox(
                       child:
-                      IconButton(
-                        icon: Icon(Icons.home),
-                        onPressed: null,
-                      ),
+                      Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            Text("0",
+                                style: new TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 24.0
+                                )
+                            ),
+                            IconButton(
+                                icon: Icon(Icons.home),
+                                onPressed: null,
+                                iconSize: 35.0
+                            ),
+                          ]
+                      )
                     ),
                     Expanded(
                       child: RessourceTable(
@@ -41,7 +55,8 @@ class MyApp extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              TaskList()
+              TaskList(),
+              LevelList(),
             ],
           ),
         ),
