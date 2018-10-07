@@ -6,6 +6,7 @@ import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
@@ -318,5 +319,25 @@ final List<Task> onHoldTaks = <Task>[
       modifier: <Modifier>[
         RemoveTask(task: "Hauskreis"),
         AddTask(task: "Hauskreis vorbereiten")
-      ])
+      ]),
+  Task(
+      name: "Einen Gottesdienstraum zu Mieten suchen..",
+      description: "wir sind so groß... wir sollten jetzt wirklich anfangen einen kleinen Saal für den Gottesdienst zu miieten.. dafür müssen aber alle schön suchen... aber wenn wir das schaffen schaffen wir alles :)",
+      duration: 100000.0,
+      cost: <Ressource>[
+        Member(value: 16.0),
+        Faith(value: 500.0),
+        Time(value: 10.0),
+        Wisdom(value: 200.0)
+      ],
+      award: <Ressource>[
+        Member(value: 17.0),
+        Faith(value: 550.0),
+        Wisdom(value: 220.0)
+      ],
+      modifier: <Modifier>[
+        SetMax(ressource: "Member", newMax: 40.0),
+        RemoveTask(task: "Einen Gottesdienstraum zu Mieten suchen..")
+      ]
+  )
 ];
