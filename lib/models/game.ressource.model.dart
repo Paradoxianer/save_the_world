@@ -45,6 +45,7 @@ class Game {
     saveDuration = new Duration(seconds: 10);
     tick.createTicker(updateGame).start();
     loadState();
+    ressources[Member().name].addListener(levelListener);
   }
 
   initRes() {
@@ -182,4 +183,25 @@ class Game {
     }
   }
 
+  levelListener() {
+    //TODO: run through the level Map and find the right level if the level has changed then we need to load the new Tasklist
+    int members = ressources[Member().name].value.ceil();
+    int maxMembers = 0;
+    int found;
+    int levelLength = stages.length;
+    List<int> levelList = stages.keys.toList();
+    for (int i = 0; (i < levelLength && found == null); i++) {
+      if (levelList[i] > members) {
+        found = i;
+      }
+      else
+        maxMembers = levelList[i];
+    }
+    print("Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
+        stages[levelList[found]]);
+  }
+
+  mainView() {
+    print("MainView pressed");
+  }
 }
