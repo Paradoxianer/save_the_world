@@ -19,6 +19,7 @@ class Game {
   static List<Task> tasks;
   static TestVSync tick;
   static ChangeNotifier notifier;
+  static ChangeNotifier stagenNotifier;
   static Game mInstance;
   List<Task> allTasks;
   TickerFuture ticker;
@@ -29,6 +30,7 @@ class Game {
   Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
     dataManager = new DataManager();
     notifier = new ChangeNotifier();
+    stagenNotifier = new ChangeNotifier();
     tick = new TestVSync();
     if (tasks == null)
       tasks = testTasks;
@@ -106,6 +108,10 @@ class Game {
 
   removeListener(VoidCallback listener) {
     notifier.removeListener(listener);
+  }
+
+  addStageListener(VoidCallback listener) {
+    stagenNotifier.addListener(listener);
   }
 
   List<Task> availableTasks() {
