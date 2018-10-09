@@ -9,8 +9,14 @@ class LevelList extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return ListTile(
           contentPadding: EdgeInsets.all(0.0),
-          leading: Text("Mitglieder: " + stageList[index].toString()),
-          title: Text(stages[stageList[index]]),
+          leading: Container(
+              padding: EdgeInsets.all(5.0),
+              child: Text(index.toString(),
+                  textScaleFactor: 2.0
+              )
+          ),
+          title: Text("bis " + stageList[index].toString() + " Mitglieder"),
+          subtitle: Text(stages[stageList[index]]),
         );
       },
       itemCount: stages.length,
