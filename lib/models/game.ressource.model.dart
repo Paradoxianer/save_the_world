@@ -187,24 +187,31 @@ class Game {
     if ((rest == 0) && (elapse.inSeconds > 0)) {
       saveState();
     }
+
   }
 
   levelListener() {
-    //TODO: run through the level Map and find the right level if the level has changed then we need to load the new Tasklist
-    int members = ressources[Member().name].value.ceil();
+    double members = ressources[Member().name].value;
     int maxMembers = 0;
     int found;
     int levelLength = stages.length;
     List<int> levelList = stages.keys.toList();
-    for (int i = 0; (i < levelLength && found == null); i++) {
-      if (levelList[i] > members) {
+    int i;
+    for (i = 0; (i < levelLength && found == null); i++) {
+      if (levelList[i].toDouble() > members) {
         found = i;
       }
       else
         maxMembers = levelList[i];
     }
-    print("Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
-        stages[levelList[found]]);
+    if (found != stage) {
+      stage = found;
+      stagenNotifier.notifyListeners();
+      //TODO: load the new levelists... and publish it. maybe show a nice Animation
+      print(
+          "Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
+              stages[levelList[found]]);
+    }
   }
 
   mainView() {
