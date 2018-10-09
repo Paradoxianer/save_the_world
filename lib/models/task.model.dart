@@ -13,12 +13,15 @@ class Task extends GameElement {
   List<Ressource> cost;
   List<Ressource> award;
   List<Modifier> missed;
+  List<Modifier> online;
+
 
   AnimationController controller;
 
   Task({String name, String description, this.cost, this.award, this.duration = 5000.0, this.timeToSolve = double
-      .infinity, List<Modifier> modifier, List<
-      Modifier> missed, double controllerValue, String controllerStatus})
+      .infinity, List<Modifier> modifier,
+    List<
+        Modifier> missed, this.online, double controllerValue, String controllerStatus})
       :
         super(name: name, description: description, myModifier: modifier) {
     if (myModifier == null) {
@@ -61,6 +64,7 @@ class Task extends GameElement {
     List<Ressource> awardList;
     List<Modifier> missedList;
     List<Modifier> modifierList;
+    List<Modifier> onlineList;
     if (jsn['cost'] != null) {
       var cList = json.decode(jsn['cost']) as List;
       if (cList != null)
@@ -89,6 +93,13 @@ class Task extends GameElement {
       else
         modifierList = new List<Modifier>();
     }
+    if (jsn['online'] != null) {
+      var oList = json.decode(jsn['online']) as List;
+      if (oList != null)
+        onlineList = oList.map((i) => Modifier.fromJson(i)).toList();
+      else
+        onlineList = new List<Modifier>();
+    }
     return Task(
         name: nName,
         description: dDescription,
@@ -98,6 +109,7 @@ class Task extends GameElement {
         timeToSolve: timeToSolve,
         modifier: modifierList,
         missed: missedList,
+        online: onlineList,
         controllerStatus: json.decode(jsn['controllerStatus']),
         controllerValue: json.decode(jsn['controllerValue'])
     );
@@ -120,6 +132,7 @@ class Task extends GameElement {
       'award': json.encode(award),
       'missed': json.encode(missed),
       'modifier': json.encode(myModifier),
+      'online': json.encode(online),
       'controllerStatus': json.encode(cStatus),
       'controllerValue': json.encode(cValue)
     };
@@ -135,6 +148,12 @@ class Task extends GameElement {
     controller.reset();
     if (timeToSolve != double.infinity) {
       controller.reverse(from: 0.99).whenComplete(miss);
+    }
+    if (online != null) {
+      int listSize = online.length;
+      for (int i = 0; i < listSize; i++) {
+        online[i].modify();
+      }
     }
   }
 
