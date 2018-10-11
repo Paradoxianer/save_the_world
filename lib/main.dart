@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
+import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
 
 void main() {
@@ -21,26 +22,7 @@ class MyApp extends StatelessWidget {
                 preferredSize:  const Size.fromHeight(50.0),
                 child: Row(
                   children: <Widget>[
-                    FittedBox(
-                      child:
-                      Stack(
-                          alignment: Alignment.center,
-                          children: <Widget>[
-                            Text("0",
-                                style: new TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                    fontSize: 24.0
-                                )
-                            ),
-                            IconButton(
-                                icon: Icon(Icons.home),
-                                onPressed: null,
-                                iconSize: 35.0
-                            ),
-                          ]
-                      )
-                    ),
+                    StageItem(),
                     Expanded(
                       child: RessourceTable(
                         ressourceList: Game.ressources.values.toList(),
