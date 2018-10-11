@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class DataManager {
-  String _localPath;
-  File _workingFile;
 
   Future<String> getPath() async {
     final directory = await getApplicationDocumentsDirectory();

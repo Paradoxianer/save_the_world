@@ -51,7 +51,7 @@ final Map<int, String> stages = {
   1280000000: "Weltkirche Level 1",
   2560000000: "Weltkirche Level 2",
   5120000000: "Weltkirche Level 3",
-  7600000000: "Du hast die Welt gerettet - Jesus kommt wieder - YEAR"
+  7600000000: "Du hast die Welt gerettet - Jesus kommt wieder - YEAH"
 };
 
 final List<Task> testTasks = <Task>[
@@ -76,7 +76,7 @@ final List<Task> testTasks = <Task>[
       description:
       "dann muss noch die Predigt vorbereitet werden aber bald gibt es einen Gottesdienst",
       cost: <Ressource>[Time(value: 1.0), Faith(value: 100.0)],
-      award: <Ressource>[Faith(value: 100.0)],
+      award: <Ressource>[Faith(value: 101.0)],
       duration: 8000.0,
       modifier: <Modifier>[
         AddTask(task: "Predigt schreiben"),
