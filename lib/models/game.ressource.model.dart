@@ -142,7 +142,6 @@ class Game {
       Map<String, dynamic> resMap = json.decode(jsn);
       List<String> ressourceNames = ressources.keys.toList();
       int rLength = ressourceNames.length;
-      Ressource tmpRes;
       for (int i = 0; i < rLength; i++) {
         ressources[ressourceNames[i]].setValue(
             resMap[ressourceNames[i]]['value']);
@@ -167,7 +166,6 @@ class Game {
   loadActiveTasks(String jsn) {
     if (jsn != null) {
       print("loadActiveTasks" + jsn);
-      var parsed = json.decode(jsn) as List;
       List<String>tmpList = new List<String>.from(json.decode(jsn));
       Game.tasks.removeRange(0, Game.tasks.length);
       int tmpListLenght = tmpList.length;
