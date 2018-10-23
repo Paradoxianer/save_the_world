@@ -58,6 +58,7 @@ class Modifier extends GameItem {
         return null;
         break;
     }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
