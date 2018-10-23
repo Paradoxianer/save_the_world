@@ -50,7 +50,7 @@ class Task extends GameElement {
           controller.reverse().whenComplete(miss);
       else if (controllerStatus.compareTo("AnimationStatus.dismissed") == 0)
           controller.reset();
-      else if (controllerStatus.compareTo("AnimationStatus.completed") == 0);
+      //else if (controllerStatus.compareTo("AnimationStatus.completed") == 0);
     }
   }
 
