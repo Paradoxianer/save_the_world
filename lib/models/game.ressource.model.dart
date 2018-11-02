@@ -9,9 +9,11 @@ import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
+import 'package:save_the_world_flutter_app/stages.dart';
 
 class Game {
 
@@ -28,6 +30,9 @@ class Game {
   int stage;
 
   Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
+    if (stage == null)
+      stage = 0;
+    print(stages);
     dataManager = new DataManager();
     notifier = new ChangeNotifier();
     stagenNotifier = new ChangeNotifier();
@@ -38,9 +43,7 @@ class Game {
       tasks = tasks;
     initRes();
     if (allTasksList == null) {
-      allTasks = new List<Task>();
-      allTasks.addAll(testTasks);
-      allTasks.addAll(onHoldTaks);
+      allTasks = allStage[stage].allTasks;
     }
     else
       allTasks = allTasksList;
@@ -115,7 +118,8 @@ class Game {
   }
 
   List<Task> availableTasks() {
-    return allTasks;
+    return allStage[stage].allTasks;
+    //return allTasks;
   }
 
   saveState() {
@@ -192,8 +196,8 @@ class Game {
     double members = ressources[Member().name].value;
     int maxMembers = 0;
     int found;
-    int levelLength = stages.length;
-    List<int> levelList = stages.keys.toList();
+    int levelLength = levels.length;
+    List<int> levelList = levels.keys.toList();
     int i;
     for (i = 0; (i < levelLength && found == null); i++) {
       if (levelList[i].toDouble() > members) {
@@ -208,11 +212,7 @@ class Game {
       //TODO: load the new levelists... and publish it. maybe show a nice Animation
       print(
           "Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
-              stages[levelList[found]]);
+              levels[levelList[found]]);
     }
-  }
-
-  mainView() {
-    print("MainView pressed");
   }
 }
