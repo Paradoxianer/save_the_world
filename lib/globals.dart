@@ -18,7 +18,7 @@ final List<String> credit = <String>[
 
 ];
 
-final Map<int, String> stages = {
+final Map<int, String> levels = {
   20: "Hausgemeinde",
   40: "Gemeinschaftsgruppe",
   80: "Kleine Gemeinde",
