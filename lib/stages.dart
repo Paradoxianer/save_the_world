@@ -13,7 +13,7 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
-final List<Stage> allStage = <Stage>[
+final List<Stage> allStages = <Stage>[
   Stage(
     level: 0,
     activeTasks: <String>[
@@ -27,15 +27,18 @@ final List<Stage> allStage = <Stage>[
       "Mails...",
       "Spender anschreiben",
       "Einen Basar planen",
-      "die Nacht durcharbeiten",
+      "Die Nacht durcharbeiten",
       "schlafen",
       "Freizeit",
+      "Hauskreis gründen",
       "Einen Gottesdienstraum zu Mieten suchen",
     ],
     randomTasks: <String>[
       "Rechnung nicht bezahlt",
       "Der Heilige Geist möchte wirken",
       "Kassendifferenz finden",
+      "Jemand ist gestorben",
+      "Jemand möchte heiraten",
     ],
     allTasks: <Task>[
       Task(
@@ -85,6 +88,10 @@ final List<Stage> allStage = <Stage>[
         duration: 8000.0,
         cost: <Ressource>[Time(value: 1.0), Faith(value: 100.0)],
         award: <Ressource>[Faith(value: 101.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Gottesdienst vorbereiten"),
+          AddTask(task: "Predigt schreiben")
+        ],
       ),
       Task(
         name: "Predigt schreiben",
@@ -467,7 +474,7 @@ final List<Stage> allStage = <Stage>[
         ],
       ),
       Task(
-        name: "Einen Gottesdienstraum zum Mieten suchen",
+        name: "Einen Gottesdienstraum zu Mieten suchen",
         description:
             "wir sind so groß... wir sollten jetzt wirklich anfangen einen kleinen Saal für den Gottesdienst zu miieten.. dafür müssen aber alle schön suchen... aber wenn wir das schaffen schaffen wir alles",
         duration: 100000.0,
@@ -485,41 +492,6 @@ final List<Stage> allStage = <Stage>[
         modifier: <Modifier>[
           RemoveTask(task: "Einen Gottesdienstraum zum Mieten suchen.."),
           SetMax(ressource: "Member", newMax: 40.0),
-        ],
-      ),
-      Task(
-        name: "Korps aufräumen",
-        description:
-            "immer schön Ordnung schaffen. Wenn nicht gibt ein Problem mit den Mitgliedern :)",
-        duration: 20000.0,
-        timeToSolve: 70000.0,
-        cost: <Ressource>[Time(value: 1.0)],
-        missed: <Modifier>[
-          AddTask(task: "Ein zwischenmenschliches Problem klären"),
-          RemoveTask(task: "Korps aufräumen"),
-          AddTask(task: "Korps aufräumen"),
-        ],
-        modifier: <Modifier>[
-          RemoveTask(task: "Korps aufräumen"),
-          AddTask(task: "Korps fegen und putzen")
-        ],
-      ),
-      Task(
-        name: "Korps fegen und putzen",
-        description:
-            "Na hier siehts aber aus.. früher hätte ich das ja selber gemacht... aber hier muss mal gewischt werden",
-        duration: 20000.0,
-        timeToSolve: 70000.0,
-        cost: <Ressource>[Time(value: 1.0)],
-        award: <Ressource>[Publicity(value: 0.1), Member(value: 0.05)],
-        missed: <Modifier>[
-          AddTask(task: "Ein zwischenmenschliches Problem klären"),
-          RemoveTask(task: "Korps fegen und putzen"),
-          AddTask(task: "Korps fegen und putzen")
-        ],
-        modifier: <Modifier>[
-          RemoveTask(task: "Korps fegen und putzen"),
-          AddTask(task: "Korps aufräumen")
         ],
       )
     ],
@@ -541,6 +513,8 @@ final List<Stage> allStage = <Stage>[
       "Rechnung nicht bezahlt",
       "Ein zwischenmenschliches Problem klären",
       "Rechnung nicht bezahlt",
+      "Jemand ist gestorben",
+      "Jemand möchte heiraten",
     ],
     allTasks: <Task>[
       Task(
@@ -563,7 +537,7 @@ final List<Stage> allStage = <Stage>[
       Task(
         name: "Streit in der Gemeinde",
         description:
-            "Es ist eskaliert: Das ist mir echt zu viel, der andere ist sooooo doof",
+        "Es ist eskaliert: Das ist mir echt zu viel, der andere ist sooooo doof.",
         timeToSolve: 6000.0,
         cost: <Ressource>[
           Time(value: 3.0),
@@ -589,6 +563,10 @@ final List<Stage> allStage = <Stage>[
         duration: 9000.0,
         cost: <Ressource>[Time(value: 3.0), Faith(value: 100.0)],
         award: <Ressource>[Faith(value: 130.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Gottesdienst vorbereiten"),
+          AddTask(task: "Predigt schreiben")
+        ],
       ),
       Task(
         name: "Predigt schreiben",
@@ -629,10 +607,9 @@ final List<Stage> allStage = <Stage>[
         cost: <Ressource>[Money(value: 400.0), Time(value: 8.0)],
         award: <Ressource>[Faith(value: 200.00), Wisdom(value: 100.0)],
       ),
-      Task(),
       Task(
         name: "Beten für andere",
-        description: "wenn du für Andere betest, dann passiert was",
+        description: "wenn du für Andere betest, dann passiert etwas",
         cost: <Ressource>[Time(value: 2.0)],
         award: <Ressource>[
           Faith(value: 2.0),
@@ -948,7 +925,7 @@ final List<Stage> allStage = <Stage>[
         ],
       ),
       Task(
-        name: " Hauskreis",
+        name: "Hauskreis",
         description: "lecker Essen, Gemeinschaft, Bibellesen... Super!",
         duration: 10000.0,
         cost: <Ressource>[Time(value: 2.0), Member(value: 4.0)],
@@ -967,9 +944,7 @@ final List<Stage> allStage = <Stage>[
         description: "Ach ja. Die Miete für den Gemeindesaal",
         duration: 2000.0,
         timeToSolve: 70000.0,
-        cost: <Ressource>[
-          Money(value: 500.0),
-        ],
+        cost: <Ressource>[Money(value: 500.0)],
         award: <Ressource>[Wisdom(value: 1.0)],
         missed: <Modifier>[
           RemoveTask(task: "Miete zahlen"),
@@ -979,7 +954,7 @@ final List<Stage> allStage = <Stage>[
       ),
       Task(
         name: "Geistesgaben entdecken",
-        description: "Findet heraus wie man sich am Besten einbringen kann",
+        description: "Findet heraus welche Gaben dir Gott gegeben hat",
         duration: 5000.0,
         cost: <Ressource>[Time(value: 5.0), Faith(value: 20.0)],
         award: <Ressource>[Faith(value: 60.0), Wisdom(value: 5.0)],
@@ -988,6 +963,7 @@ final List<Stage> allStage = <Stage>[
           AddTask(task: "Aufgaben verteilen")
         ],
       ),
+      Task(),
       Task(
         name: "Aufgaben verteilen",
         description:
@@ -1059,48 +1035,6 @@ final List<Stage> allStage = <Stage>[
         award: <Ressource>[Member(value: 0.3), Publicity(value: 3.0)],
       ),
       Task(
-        name: "Pressearbeit",
-        description: "Du willst dich in Film und Fernsehen zeigen",
-        duration: 10000.0,
-        cost: <Ressource>[Publicity(value: 15.0), Time(value: 1.0)],
-        award: <Ressource>[Wisdom(value: 5.0)],
-        modifier: <Modifier>[
-          AddTask(task: "Interview geben"),
-          RemoveTask(task: "Pressearbeit")
-        ],
-      ),
-      Task(
-        name: "Interview geben",
-        description: "Vielleicht hören es ja die richtigen Leute",
-        duration: 5000.0,
-        cost: <Ressource>[Time(value: 3.0), Faith(value: 30.0)],
-        award: <Ressource>[
-          Faith(value: 15.0),
-          Publicity(value: 10.0),
-          Member(value: 0.3)
-        ],
-        modifier: <Modifier>[
-          AddTask(task: "Spendergespräch führen"),
-          RemoveTask(task: "Interview geben")
-        ],
-      ),
-      Task(
-        name: "Spendergespräch führen",
-        description:
-            "Er kennt dein Interview und ist interessiert an der Arbeitm, die ihr macht  ",
-        duration: 10000.0,
-        cost: <Ressource>[
-          Time(value: 6.0),
-          Wisdom(value: 20.0),
-          Faith(value: 20.0)
-        ],
-        award: <Ressource>[Publicity(value: 0.1)],
-        modifier: <Modifier>[
-          AddTask(task: "Anruf von dem Spender"),
-          RemoveTask(task: "Spendergespräch führen")
-        ],
-      ),
-      Task(
         name: "Anruf von dem Spender",
         description: "Was die Person wohl für eine Nachricht hat?",
         duration: 1000.0,
@@ -1120,6 +1054,25 @@ final List<Stage> allStage = <Stage>[
         cost: <Ressource>[Time(value: 2.0), Money(value: 70.0)],
         award: <Ressource>[Wisdom(value: 20.0), Faith(value: 70.0)],
       ),
+      Task(
+        name: "Seelsorgerat einsetzen",
+        description:
+        "Wir brauchen mehrere geistliche Leuten um zu schauen wie es um die Seele der Mitglieder geht ",
+        cost: <Ressource>[
+          Faith(value: 2500.0),
+          Member(value: 4.0),
+          Time(value: 10.0),
+          Wisdom(value: 1000.0)
+        ],
+        award: <Ressource>[
+          Faith(value: 1500.0),
+          Member(value: 8.0),
+          Wisdom(value: 1000.0)
+        ],
+        modifier: <Modifier>[AddTask(task: "Korpsrat einsetzen")],
+      ),
+      Task(),
+      Task(),
       Task(),
       Task(),
       Task(),
@@ -1127,7 +1080,22 @@ final List<Stage> allStage = <Stage>[
       Task(),
       Task(
         name: "Korpsrat einsetzen",
-        cost: <Ressource>[Faith(value: 2500.0)],
+        description: "Der kann mir sicher viele Hinweise geben, wo es brennt",
+        cost: <Ressource>[
+          Faith(value: 2500.0),
+          Member(value: 8.0),
+          Time(value: 10.0),
+          Wisdom(value: 1000.0)
+        ],
+        award: <Ressource>[
+          Faith(value: 1500.0),
+          Member(value: 8.0),
+          Wisdom(value: 1000.0)
+        ],
+        modifier: <Modifier>[
+          RemoveTask(task: "Korpsrat einsetzen"),
+          SetMax(ressource: "Member", newMax: 40.0),
+        ],
       )
     ],
   ),
@@ -1135,7 +1103,6 @@ final List<Stage> allStage = <Stage>[
     level: 2,
     activeTasks: <String>[
       "Leute fühlen sich nicht in die Familie integriert",
-      "Online Podcast?",
       "Programme starten",
       "Abrechnung",
       "Besondere Veranstaltungen",
@@ -1156,7 +1123,9 @@ final List<Stage> allStage = <Stage>[
       "Mailingbeauftragter",
       "Die andere Gruppe ist aber doof",
       "Entscheiden vom Pastor widersetzen",
-      "EIgenen Gemeindesaal bauen",
+      "Korpsrat",
+      "Seelsorgerat",
+      "Kleingruppenverantwortlichen einsetzen",
     ],
     randomTasks: <String>[],
     allTasks: <Task>[
@@ -1206,6 +1175,10 @@ final List<Stage> allStage = <Stage>[
         duration: 9000.0,
         cost: <Ressource>[Time(value: 3.0), Faith(value: 100.0)],
         award: <Ressource>[Faith(value: 105.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Gottesdienst vorbereiten"),
+          AddTask(task: "Predigt schreiben")
+        ],
       ),
       Task(
         name: "Predigt schreiben",
@@ -1629,7 +1602,7 @@ final List<Stage> allStage = <Stage>[
         name: "Für den Einsatzwagen einkaufen",
         description: "Am besten Eintopf!",
         duration: 3000.0,
-        cost: <Ressource>[Time(value: 2.0), Money(value: 2.0)],
+        cost: <Ressource>[Time(value: 2.0), Money(value: 100.0)],
         award: <Ressource>[
           Publicity(value: 6.0),
         ],
@@ -1642,6 +1615,10 @@ final List<Stage> allStage = <Stage>[
         name: "Mit dem Einsatzwagen raus",
         description: "Ab zum Kotti",
         duration: 6000.0,
+        cost: <Ressource>[Time(value: 3.0), Money(value: 20.0)],
+        award: <Ressource>[
+          Publicity(value: 6.0),
+        ],
         modifier: <Modifier>[
           AddTask(task: "Für den Einsatzwagen einkaufen"),
           RemoveTask(task: "Mit dem Einsatzwagen raus")
@@ -1657,6 +1634,48 @@ final List<Stage> allStage = <Stage>[
         online: <Modifier>[
           RemoveTask(task: "Für den Einsatzwagen einkaufen"),
           RemoveTask(task: "Mit dem Einsatzwagen raus")
+        ],
+      ),
+      Task(
+        name: "Pressearbeit",
+        description: "Du willst dich in Film und Fernsehen zeigen",
+        duration: 10000.0,
+        cost: <Ressource>[Publicity(value: 15.0), Time(value: 1.0)],
+        award: <Ressource>[Wisdom(value: 5.0)],
+        modifier: <Modifier>[
+          AddTask(task: "Interview geben"),
+          RemoveTask(task: "Pressearbeit")
+        ],
+      ),
+      Task(
+        name: "Interview geben",
+        description: "Vielleicht hören es ja die richtigen Leute",
+        duration: 5000.0,
+        cost: <Ressource>[Time(value: 3.0), Faith(value: 30.0)],
+        award: <Ressource>[
+          Faith(value: 15.0),
+          Publicity(value: 10.0),
+          Member(value: 0.3)
+        ],
+        modifier: <Modifier>[
+          AddTask(task: "Spendergespräch führen"),
+          RemoveTask(task: "Interview geben")
+        ],
+      ),
+      Task(
+        name: "Spendergespräch führen",
+        description:
+        "Er kennt dein Interview und ist interessiert an der Arbeitm, die ihr macht  ",
+        duration: 10000.0,
+        cost: <Ressource>[
+          Time(value: 6.0),
+          Wisdom(value: 20.0),
+          Faith(value: 20.0)
+        ],
+        award: <Ressource>[Publicity(value: 0.1)],
+        modifier: <Modifier>[
+          AddTask(task: "Anruf von dem Spender"),
+          RemoveTask(task: "Spendergespräch führen")
         ],
       )
     ],
