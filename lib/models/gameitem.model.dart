@@ -5,4 +5,10 @@ class GameItem {
   final String name;
   final String description;
   const GameItem({this.icon,this.name, this.description});
+
+  @override
+  String toString() {
+    return 'GameItem{name: $name, description: $description}';
+  }
+
 }
