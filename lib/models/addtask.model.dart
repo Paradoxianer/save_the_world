@@ -30,8 +30,7 @@ class AddTask extends Modifier {
 
   modify() {
     print("modify" + this.name + "\t" + this.nameOfTask);
-    Task found = Game.getInstance().availableTasks().firstWhere((tsk) =>
-    tsk.name == nameOfTask);
+    Task found = Game.getInstance().getTask(nameOfTask);
     if (found != null) {
       if (workOnList != null) {
         workOnList.add(found);
