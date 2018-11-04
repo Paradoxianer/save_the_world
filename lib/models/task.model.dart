@@ -34,8 +34,6 @@ class Task extends GameElement {
           vsync: Game.tick
       );
     }
-    init();
-
     if (controllerStatus != null) {
       if (controllerStatus.compareTo("AnimationStatus.forward") == 0) {
         if (controllerValue != null)
@@ -149,12 +147,7 @@ class Task extends GameElement {
     if (timeToSolve != double.infinity) {
       controller.reverse(from: 0.99).whenComplete(miss);
     }
-    if (online != null) {
-      int listSize = online.length;
-      for (int i = 0; i < listSize; i++) {
-        online[i].modify();
-      }
-    }
+    goOnline();
   }
 
   void miss() {
@@ -200,5 +193,18 @@ class Task extends GameElement {
     controller.reset();
   }
 
+  goOnline() {
+    if (online != null) {
+      int listSize = online.length;
+      for (int i = 0; i < listSize; i++) {
+        online[i].modify();
+      }
+    }
+  }
+
+  @override
+  String toString() {
+    return 'Task{name: $name, description: $description, duration: $duration, timeToSolve: $timeToSolve}';
+  }
 
 }
