@@ -9,7 +9,6 @@ import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -32,7 +31,7 @@ class Game {
   Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
     if (stage == null)
       stage = 0;
-    print(stages);
+    print(stage);
     dataManager = new DataManager();
     notifier = new ChangeNotifier();
     stagenNotifier = new ChangeNotifier();
@@ -42,11 +41,7 @@ class Game {
     else
       tasks = tasks;
     initRes();
-    if (allTasksList == null) {
-      allTasks = allStage[stage].allTasks;
-    }
-    else
-      allTasks = allTasksList;
+    allTasks = allStages[stage].allTasks;
     saveDuration = new Duration(seconds: 10);
     tick.createTicker(updateGame).start();
     loadState();
@@ -118,7 +113,7 @@ class Game {
   }
 
   List<Task> availableTasks() {
-    return allStage[stage].allTasks;
+    return allStages[stage].allTasks;
     //return allTasks;
   }
 
@@ -194,17 +189,14 @@ class Game {
 
   levelListener() {
     double members = ressources[Member().name].value;
-    int maxMembers = 0;
     int found;
     int levelLength = levels.length;
     List<int> levelList = levels.keys.toList();
     int i;
     for (i = 0; (i < levelLength && found == null); i++) {
       if (levelList[i].toDouble() > members) {
-        found = i;
+        found = i - 1;
       }
-      else
-        maxMembers = levelList[i];
     }
     if (found != stage) {
       stage = found;
@@ -213,6 +205,22 @@ class Game {
       print(
           "Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
               levels[levelList[found]]);
+      loadStage(found);
+      
+    }
+  }
+
+  loadStage(int stg) {
+    allTasks = allStages[stg].allTasks;
+    int lgth = allStages[stg].activeTasks.length;
+    for (int i = 0; i < lgth; i++) {
+      if (allTasks != null) {
+        Task found = allTasks.firstWhere((tsk) =>
+        tsk.name == allStages[stg].activeTasks[i]);
+        if (found != null) {
+          addTask(found);
+        }
+      }
     }
   }
 }
