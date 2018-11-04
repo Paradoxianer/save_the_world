@@ -37,14 +37,13 @@ class Game {
     stagenNotifier = new ChangeNotifier();
     tick = new TestVSync();
     if (tasks == null)
-      tasks = testTasks;
-    else
-      tasks = tasks;
+      tasks = new List<Task>();
     initRes();
     allTasks = allStages[stage].allTasks;
     saveDuration = new Duration(seconds: 10);
     tick.createTicker(updateGame).start();
-    loadState();
+    loadStage(stage);
+    initRes();
     ressources[Member().name].addListener(levelListener);
   }
 
@@ -79,17 +78,30 @@ class Game {
 
   void addTask(Task task, {bool needInit = true}) {
     //TODO: Maby check if the task is already running? bevore removing?
+    print("addTask: " + task.toString() + "needInit" + needInit.toString() +
+        "\n");
     if (needInit)
       tasks.remove(task);
     tasks.insert(0, task);
     if (needInit)
       task.init();
     notifier.notifyListeners();
+    // task.goOnline();
   }
 
   void removeTask(Task task) {
     tasks.remove(task);
     notifier.notifyListeners();
+  }
+
+  Task getTask(String name) {
+    Task found = allTasks.firstWhere((tsk) =>
+    tsk.name == name,
+        orElse: () => null);
+    if (found == null) {
+      print("getTask - Error could not find name: " + name);
+    }
+    return found;
   }
 
   static Game getInstance() {
@@ -184,7 +196,6 @@ class Game {
     if ((rest == 0) && (elapse.inSeconds > 0)) {
       saveState();
     }
-
   }
 
   levelListener() {
@@ -206,17 +217,15 @@ class Game {
           "Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
               levels[levelList[found]]);
       loadStage(found);
-      
     }
   }
 
   loadStage(int stg) {
     allTasks = allStages[stg].allTasks;
-    int lgth = allStages[stg].activeTasks.length;
-    for (int i = 0; i < lgth; i++) {
+    int lgth = allStages[stg].activeTasks.length - 1;
+    for (int i = lgth; i >= 0; i--) {
       if (allTasks != null) {
-        Task found = allTasks.firstWhere((tsk) =>
-        tsk.name == allStages[stg].activeTasks[i]);
+        Task found = getTask(allStages[stg].activeTasks[i]);
         if (found != null) {
           addTask(found);
         }
