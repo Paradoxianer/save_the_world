@@ -60,7 +60,6 @@ class Ressource extends GameElement {
   }
 
   subtract(Ressource other) {
-    print("subtract" + other.toString() + "\n");
     if (other != null) {
       this.value -= other.value;
       if (this.value < min) {
@@ -71,7 +70,6 @@ class Ressource extends GameElement {
   }
 
   add(Ressource other) {
-    print("add" + other.toString() + "\n");
     if (other != null) {
       this.value += other.value;
       if (this.value > max) {
@@ -82,7 +80,6 @@ class Ressource extends GameElement {
   }
 
   setValue(double newVal) {
-    print(name + "setValue(" + newVal.toString() + ")\n");
     value = newVal;
     notifier.notifyListeners();
   }
@@ -97,7 +94,7 @@ class Ressource extends GameElement {
       } else
         return false;
     } else
-      return true;
+      return false;
   }
 
   bool canSubtract(Ressource other) {
@@ -110,7 +107,7 @@ class Ressource extends GameElement {
       } else
         return false;
     } else
-      return true;
+      return false;
   }
 
   @override

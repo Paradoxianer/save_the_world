@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,8 +16,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
 class Game {
-
-  static Map<String,Ressource> ressources = new Map<String,Ressource>();
+  static Map<String, Ressource> ressources = new Map<String, Ressource>();
   static List<Task> tasks;
   static TestVSync tick;
   static ChangeNotifier notifier;
@@ -24,23 +24,27 @@ class Game {
   static Game mInstance;
   List<Task> allTasks;
   TickerFuture ticker;
+  Duration saveCalled;
   Duration saveDuration;
+  Duration randDuration;
+  Duration randCalled;
   DataManager dataManager;
   int stage;
 
   Game({List<Task> tasksList, List<Task> allTasksList, this.stage}) {
-    if (stage == null)
-      stage = 0;
+    if (stage == null) stage = 0;
     print(stage);
     dataManager = new DataManager();
     notifier = new ChangeNotifier();
     stagenNotifier = new ChangeNotifier();
     tick = new TestVSync();
-    if (tasks == null)
-      tasks = new List<Task>();
+    if (tasks == null) tasks = new List<Task>();
     initRes();
     allTasks = allStages[stage].allTasks;
-    saveDuration = new Duration(seconds: 10);
+    saveDuration = new Duration(seconds: 5);
+    saveCalled = new Duration(seconds: 0);
+    randDuration = new Duration(seconds: 10);
+    randCalled = new Duration(seconds: 0);
     tick.createTicker(updateGame).start();
     loadStage(stage);
     initRes();
@@ -56,16 +60,13 @@ class Game {
     ressources[Wisdom().name] = Wisdom(value: 10.0);
   }
 
-  factory Game.fromJson(Map<String, dynamic> json){
+  factory Game.fromJson(Map<String, dynamic> json) {
     var tList = json['tasks'] as List;
     var atList = json['allTasks'] as List;
     List<Task> tksList = tList.map((i) => Task.fromJson(i)).toList();
     List<Task> aTasksList = atList.map((i) => Task.fromJson(i)).toList();
     return Game(
-        tasksList: tksList,
-        allTasksList: aTasksList,
-        stage: json['stage']
-    );
+        tasksList: tksList, allTasksList: aTasksList, stage: json['stage']);
   }
 
   Map<String, dynamic> toJson() {
@@ -78,15 +79,11 @@ class Game {
 
   void addTask(Task task, {bool needInit = true}) {
     //TODO: Maby check if the task is already running? bevore removing?
-    print("addTask: " + task.toString() + "needInit" + needInit.toString() +
-        "\n");
-    if (needInit)
-      tasks.remove(task);
+    if (needInit) tasks.remove(task);
     tasks.insert(0, task);
-    if (needInit)
-      task.init();
+    if (needInit) task.init();
     notifier.notifyListeners();
-    // task.goOnline();
+    task.goOnline();
   }
 
   void removeTask(Task task) {
@@ -95,9 +92,8 @@ class Game {
   }
 
   Task getTask(String name) {
-    Task found = allTasks.firstWhere((tsk) =>
-    tsk.name == name,
-        orElse: () => null);
+    Task found =
+    allTasks.firstWhere((tsk) => tsk.name == name, orElse: () => null);
     if (found == null) {
       print("getTask - Error could not find name: " + name);
     }
@@ -154,48 +150,60 @@ class Game {
       List<String> ressourceNames = ressources.keys.toList();
       int rLength = ressourceNames.length;
       for (int i = 0; i < rLength; i++) {
-        ressources[ressourceNames[i]].setValue(
-            resMap[ressourceNames[i]]['value']);
+        ressources[ressourceNames[i]]
+            .setValue(resMap[ressourceNames[i]]['value']);
       }
     }
   }
 
   loadAllTasks(String jsn) {
     if (jsn != null) {
-      print("loadAllTasks" + jsn);
       final parsed = json.decode(jsn).cast<Map<String, dynamic>>();
-      List<Task> tmpList = parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson))
-          .toList();
-      print("allTasks loaded");
-      if (tmpList != null)
-        allTasks = tmpList;
-      print("now we should read all active Tasks");
+      List<Task> tmpList =
+      parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
+      if (tmpList != null) allTasks = tmpList;
       dataManager.readData("activeTasks").then(loadActiveTasks);
     }
   }
 
   loadActiveTasks(String jsn) {
     if (jsn != null) {
-      print("loadActiveTasks" + jsn);
-      List<String>tmpList = new List<String>.from(json.decode(jsn));
+      List<String> tmpList = new List<String>.from(json.decode(jsn));
       Game.tasks.removeRange(0, Game.tasks.length);
       int tmpListLenght = tmpList.length;
       Task found;
       for (int i = (tmpListLenght - 1); i >= 0; i--) {
-        print("tmpList[" + i.toString() + "]=" + tmpList[i] + "\n");
-        found = Game.getInstance().availableTasks().firstWhere((tsk) =>
-        tsk.name == tmpList[i]);
-        if (found != null)
-          Game.getInstance().addTask(found, needInit: false);
+        found = Game.getInstance()
+            .availableTasks()
+            .firstWhere((tsk) => tsk.name == tmpList[i]);
+        if (found != null) Game.getInstance().addTask(found, needInit: false);
       }
     }
   }
 
   updateGame(Duration elapse) {
-    int rest = (elapse.inSeconds % saveDuration.inSeconds);
-    if ((rest == 0) && (elapse.inSeconds > 0)) {
+    Duration d1 = elapse - saveCalled;
+    Duration d2 = elapse - randCalled;
+    if (d1 > saveDuration) {
       saveState();
+      saveCalled = elapse;
     }
+    if (d2 > randDuration) {
+      int rand = Random().nextInt(2);
+      print(
+          "its possible thats something will happen" + rand.toString() + "\n");
+      if (rand == 1) {
+        int lgth = allStages[stage].randomTasks.length;
+        Task thisHappens =
+        getTask(allStages[stage].randomTasks[Random().nextInt(lgth)]);
+        if (thisHappens != null) {
+          print("ohhh no this will happen:" + thisHappens.name + "\n");
+          addTask(thisHappens);
+        }
+      }
+      randCalled = elapse;
+    }
+
   }
 
   levelListener() {
@@ -206,16 +214,17 @@ class Game {
     int i;
     for (i = 0; (i < levelLength && found == null); i++) {
       if (levelList[i].toDouble() > members) {
-        found = i - 1;
+        found = i;
       }
     }
     if (found != stage) {
       stage = found;
       stagenNotifier.notifyListeners();
       //TODO: load the new levelists... and publish it. maybe show a nice Animation
-      print(
-          "Ich bin stage: " + found.toString() + ". Das heißt ich bin eine: " +
-              levels[levelList[found]]);
+      print("Ich bin stage: " +
+          found.toString() +
+          ". Das heißt ich bin eine: " +
+          levels[levelList[found]]);
       loadStage(found);
     }
   }

@@ -32,8 +32,6 @@ class SubtractRes extends Modifier {
   }
 
   modify() {
-    print("modify()" + this.name + "\t" + this.ressources.toString() + "\t" +
-        this.workOnItem.toString());
     int listSize = ressources.length;
     if (workOnRes != null) {
       for (int i = 0; i < listSize; i++) {
