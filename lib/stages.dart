@@ -1,3 +1,4 @@
+import 'package:save_the_world_flutter_app/models/addres.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -37,6 +38,10 @@ final List<Stage> allStages = <Stage>[
       "Rechnung nicht bezahlt",
       "Der Heilige Geist möchte wirken",
       "Kassendifferenz finden",
+      "Ein zwischenmenschliches Problem klären",
+      "Rechnung nicht bezahlt",
+      "Der Heilige Geist möchte wirken",
+      "Kassendifferenz finden",
       "Jemand ist gestorben",
       "Jemand möchte heiraten",
     ],
@@ -44,7 +49,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Ein zwischenmenschliches Problem klären",
         description:
-            "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
+        "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
         duration: 6000.0,
         timeToSolve: 6000.0,
         cost: <Ressource>[Time(value: 3.0), Wisdom(value: 100.0)],
@@ -61,7 +66,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Streit in der Gemeinde",
         description:
-            "Es ist eskaliert: Das ist mir echt zu viel der ist sooooo doof",
+        "Es ist eskaliert: Das ist mir echt zu viel der ist sooooo doof",
         timeToSolve: 6000.0,
         cost: <Ressource>[
           Time(value: 3.0),
@@ -84,7 +89,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Gottesdienst vorbereiten",
         description:
-            "dann muss noch die Predigt vorbereitet werden aber bald gibt es einen Gottesdienst",
+        "dann muss noch die Predigt vorbereitet werden aber bald gibt es einen Gottesdienst",
         duration: 8000.0,
         cost: <Ressource>[Time(value: 1.0), Faith(value: 100.0)],
         award: <Ressource>[Faith(value: 101.0)],
@@ -96,7 +101,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Predigt schreiben",
         description:
-            "erst wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
+        "erst wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
         duration: 8000.0,
         cost: <Ressource>[Time(value: 8.0), Faith(value: 120.0)],
         award: <Ressource>[Member(value: 0.02), Faith(value: 60.0)],
@@ -171,7 +176,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Buchen",
         description:
-            "alle Ein und Ausgaben immer schön ins Programm eintragen, damit hier alles stimmt",
+        "alle Ein und Ausgaben immer schön ins Programm eintragen, damit hier alles stimmt",
         duration: 2000.0,
         timeToSolve: 100000.0,
         cost: <Ressource>[Time(value: 0.5)],
@@ -220,7 +225,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Kassendifferenz finden",
         description:
-            "Mist die Kasse stimmt nicht mit der Abrechnung überein... den Fehler muss ich finden..",
+        "Mist die Kasse stimmt nicht mit der Abrechnung überein... den Fehler muss ich finden..",
         duration: 10000.0,
         timeToSolve: 70000.0,
         cost: <Ressource>[Time(value: 2.0)],
@@ -318,7 +323,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "schlafen",
         description:
-            "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
+        "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
         duration: 16000.0,
         cost: <Ressource>[Time(value: 8.0)],
         award: <Ressource>[Time(value: 16.0)],
@@ -326,7 +331,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Die Nacht durcharbeiten",
         description:
-            "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
+        "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
         duration: 8000.0,
         cost: <Ressource>[
           Faith(value: 5.0),
@@ -338,7 +343,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Einen Basar planen",
         description:
-            "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
+        "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
         duration: 6000.0,
         cost: <Ressource>[
           Time(value: 3.0),
@@ -389,7 +394,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Freizeit",
         description:
-            "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
+        "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
         duration: 9000.0,
         cost: <Ressource>[Publicity(value: 0.1)],
         award: <Ressource>[Time(value: 0.3)],
@@ -397,7 +402,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Wirtschaftsmission",
         description:
-            "durch die Kneipen ziehen Infomaterial verteilen, mit Menschen quatschen und Geld sammeln",
+        "durch die Kneipen ziehen Infomaterial verteilen, mit Menschen quatschen und Geld sammeln",
         cost: <Ressource>[Money(value: 20.0), Time(value: 4.5)],
         award: <Ressource>[Money(value: 100.00), Publicity(value: 1.5)],
         modifier: <Modifier>[
@@ -408,7 +413,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Hauskreis gründen",
         description:
-            "Hmm... so Gemeinschaft und gemeinsam Bibellernen... ich glaube das wäre gut!",
+        "Hmm... so Gemeinschaft und gemeinsam Bibellernen... ich glaube das wäre gut!",
         duration: 20000.0,
         cost: <Ressource>[
           Member(value: 1.0),
@@ -425,7 +430,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Erstes Hauskreistreffen",
         description:
-            "lasst uns ersteinmal klären ob wir wirklich nen Hauskreis wollen",
+        "lasst uns ersteinmal klären ob wir wirklich nen Hauskreis wollen",
         duration: 20000.0,
         cost: <Ressource>[
           Member(value: 2.0),
@@ -445,7 +450,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Hauskreis vorbereiten",
         description:
-            "Ich freu mich lecker Essen, Gemeinschaft, Bibellesen... aber ich sollte noch mal checken ob alle kommen und ein Thema brauchen wir auch noch.",
+        "Ich freu mich lecker Essen, Gemeinschaft, Bibellesen... aber ich sollte noch mal checken ob alle kommen und ein Thema brauchen wir auch noch.",
         duration: 10000.0,
         cost: <Ressource>[
           Time(value: 1.5),
@@ -459,7 +464,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: " Hauskreis",
+        name: "Hauskreis",
         description: "lecker Essen, Gemeinschaft, Bibellesen... Super!",
         duration: 10000.0,
         cost: <Ressource>[Time(value: 2.0), Member(value: 4.0)],
@@ -474,9 +479,209 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
+        name: "Jemand ist gestorben",
+        description:
+        "Oh nein - ein Telefonaruf - leider ist jemand zur Herrlichkeit befördert wurden ... gut dass er Christ war... er weiß jetzt wo er ist. Du darfst die Beerdigung machen",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 0.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[
+          Publicity(value: 1.0),
+          Faith(value: 40.0),
+          Wisdom(value: 60.0)
+        ],
+        online: <Modifier>[
+          SubtractRes(ressources: <Ressource>[Member(value: 1.0)])
+        ],
+        modifier: <Modifier>[
+          RemoveTask(task: "Jemand ist gestorben"),
+          AddTask(task: "Trauergespräch führen")
+        ],
+      ),
+      Task(
+        name: "Trauergespräch führen",
+        description:
+        "Ich würde gern  für Sie beten und die Beerdigung mit ihnen Vorbereiten.",
+        duration: 10000.0,
+        timeToSolve: 10000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 2.0),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[
+          Publicity(value: 1.0),
+          Faith(value: 40.0),
+          Wisdom(value: 60.0)
+        ],
+        modifier: <Modifier>[
+          RemoveTask(task: "Trauergespräch führen"),
+          AddTask(task: "Beerdigung")
+        ],
+      ),
+      Task(
+        name: "Beerdigung",
+        description:
+        "Zur Herrlichkeit befördert. Wir sind traurig, aber er/ sie wird sehen was er/sie geglaubt hat",
+        duration: 10000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 2.0),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[
+          Member(value: 0.2),
+          Faith(value: 70.0),
+          Wisdom(value: 60.0),
+          Money(value: 100.0)
+        ],
+        modifier: <Modifier>[
+          RemoveTask(task: "Beerdigung"),
+          AddTask(task: "Beerdigung")
+        ],
+      ),
+      Task(
+        name: "Jemand möchte heiraten",
+        description:
+        "nach dem Gottesdienst kommen zwei zu Dir: Wir möchten heiraten",
+        duration: 100000.0,
+        timeToSolve: 10000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 0.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[
+          Publicity(value: 1.0),
+          Faith(value: 40.0),
+          Wisdom(value: 60.0)
+        ],
+        online: <Modifier>[
+          AddRes(ressources: <Ressource>[Faith(value: 50.0)])
+        ],
+        modifier: <Modifier>[
+          RemoveTask(task: "Jemand möchte heiraten"),
+          AddTask(task: "Heiratsvorbereitung 1")
+        ],
+      ),
+      Task(
+        name: "Heriatsvorbereitung 1",
+        description:
+        "In einer Beziehung muss man richtig streiten und versöhnen lernen",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 1.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[Faith(value: 60.0), Wisdom(value: 60.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Heiratsvorbereitung 1"),
+          AddTask(task: "Heiratsvorbereitung 2")
+        ],
+      ),
+      Task(
+        name: "Heriatsvorbereitung 2",
+        description:
+        "Ihr müsst verstehen man tickt unterschiedlich in einer Beziehung",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 1.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[Faith(value: 60.0), Wisdom(value: 60.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Heiratsvorbereitung 2"),
+          AddTask(task: "Heiratsvorbereitung 3")
+        ],
+      ),
+      Task(
+        name: "Heriatsvorbereitung 3",
+        description:
+        "Wir bringen alle ein perönliches Erbe von den Familien mit",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 1.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[Faith(value: 60.0), Wisdom(value: 60.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Heiratsvorbereitung 3"),
+          AddTask(task: "Heiratsvorbereitung 4")
+        ],
+      ),
+      Task(
+        name: "Heriatsvorbereitung 4",
+        description: "Der Glaube ist das gemeinsame Fundament",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 1.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[Faith(value: 60.0), Wisdom(value: 60.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Heiratsvorbereitung 4"),
+          AddTask(task: "Heiratsvorbereitung 5")
+        ],
+      ),
+      Task(
+        name: "Heriatsvorbereitung 5",
+        description:
+        "Sex ist eine tolle Erfindung Gottes. Es läuft aber in der Ehe nicht immer so wie man es sich vorstellt",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 1.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[Faith(value: 60.0), Wisdom(value: 60.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Heiratsvorbereitung 5"),
+          AddTask(task: "Heiratsvorbereitung 6")
+        ],
+      ),
+      Task(
+        name: "Heriatsvorbereitung 6",
+        description: "Wir sollten über die Zeremonie sprechen",
+        duration: 100000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 1.5),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[Faith(value: 50.0), Wisdom(value: 50.0)],
+        modifier: <Modifier>[
+          RemoveTask(task: "Heiratsvorbereitung 6"),
+          AddTask(task: "Hochzeit")
+        ],
+      ),
+      Task(
+        name: "Hochzeit",
+        description: "Sie dürfen die Braut jetzt küssen",
+        duration: 10000.0,
+        cost: <Ressource>[
+          Faith(value: 50.0),
+          Time(value: 3.0),
+          Wisdom(value: 50.0)
+        ],
+        award: <Ressource>[
+          Member(value: 0.5),
+          Faith(value: 70.0),
+          Wisdom(value: 60.0),
+          Money(value: 200.0)
+        ],
+        modifier: <Modifier>[RemoveTask(task: "Hochzeit")],
+      ),
+      Task(
         name: "Einen Gottesdienstraum zu Mieten suchen",
         description:
-            "wir sind so groß... wir sollten jetzt wirklich anfangen einen kleinen Saal für den Gottesdienst zu miieten.. dafür müssen aber alle schön suchen... aber wenn wir das schaffen schaffen wir alles",
+        "wir sind so groß... wir sollten jetzt wirklich anfangen einen kleinen Saal für den Gottesdienst zu miieten.. dafür müssen aber alle schön suchen... aber wenn wir das schaffen schaffen wir alles",
         duration: 100000.0,
         cost: <Ressource>[
           Member(value: 16.0),
@@ -520,7 +725,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Ein zwischenmenschliches Problem klären",
         description:
-            "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
+        "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
         duration: 6000.0,
         timeToSolve: 6000.0,
         cost: <Ressource>[Time(value: 3.0), Wisdom(value: 100.0)],
@@ -571,7 +776,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Predigt schreiben",
         description:
-            "erst wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
+        "erst wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
         duration: 8000.0,
         cost: <Ressource>[Time(value: 8.0), Faith(value: 120.0)],
         award: <Ressource>[Member(value: 0.02), Faith(value: 60.0)],
@@ -583,7 +788,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Gottesdienst halten",
         description:
-            "schön mit Predigt, Liedern und natürlich Bibellesen - Jeder möchte beteiligt sein",
+        "schön mit Predigt, Liedern und natürlich Bibellesen - Jeder möchte beteiligt sein",
         duration: 4000.0,
         cost: <Ressource>[
           Member(value: 4.0),
@@ -603,7 +808,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Studieren",
         description:
-            "Nimm dir die Zeit, die Bibel und Wachstumsliteratur für deine Gemeinde zu lesen",
+        "Nimm dir die Zeit, die Bibel und Wachstumsliteratur für deine Gemeinde zu lesen",
         cost: <Ressource>[Money(value: 400.0), Time(value: 8.0)],
         award: <Ressource>[Faith(value: 200.00), Wisdom(value: 100.0)],
       ),
@@ -636,7 +841,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Buchen",
         description:
-            "alle Ein und Ausgaben immer schön ins Programm eintragen, damit hier alles stimmt",
+        "alle Ein und Ausgaben immer schön ins Programm eintragen, damit hier alles stimmt",
         duration: 2000.0,
         timeToSolve: 100000.0,
         cost: <Ressource>[Time(value: 0.5)],
@@ -685,7 +890,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Kassendifferenz finden",
         description:
-            "Mist die Kasse stimmt nicht mit der Abrechnung überein... den Fehler muss ich finden..",
+        "Mist die Kasse stimmt nicht mit der Abrechnung überein... den Fehler muss ich finden..",
         duration: 10000.0,
         timeToSolve: 70000.0,
         cost: <Ressource>[Time(value: 2.0)],
@@ -783,7 +988,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "schlafen",
         description:
-            "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
+        "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
         duration: 16000.0,
         cost: <Ressource>[Time(value: 8.0)],
         award: <Ressource>[Time(value: 16.0)],
@@ -791,7 +996,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Die Nacht durcharbeiten",
         description:
-            "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
+        "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
         duration: 8000.0,
         cost: <Ressource>[
           Faith(value: 5.0),
@@ -803,7 +1008,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Einen Basar planen",
         description:
-            "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
+        "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
         duration: 6000.0,
         cost: <Ressource>[
           Time(value: 3.0),
@@ -854,7 +1059,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Freizeit",
         description:
-            "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
+        "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
         duration: 9000.0,
         cost: <Ressource>[Publicity(value: 0.1)],
         award: <Ressource>[Time(value: 0.3)],
@@ -862,7 +1067,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Wirtschaftsmission",
         description:
-            "durch die Kneipen ziehen Infomaterial verteilen, mit Menschen quatschen und Geld sammeln",
+        "durch die Kneipen ziehen Infomaterial verteilen, mit Menschen quatschen und Geld sammeln",
         duration: 4000.0,
         cost: <Ressource>[Money(value: 40.0), Time(value: 4.5)],
         award: <Ressource>[Money(value: 100.00), Publicity(value: 3.0)],
@@ -874,7 +1079,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Hauskreis gründen",
         description:
-            "Hmm... so Gemeinschaft und gemeinsam Bibellernen... ich glaube das wäre gut!",
+        "Hmm... so Gemeinschaft und gemeinsam Bibellernen... ich glaube das wäre gut!",
         duration: 20000.0,
         cost: <Ressource>[
           Member(value: 1.0),
@@ -891,7 +1096,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Erstes Hauskreistreffen",
         description:
-            "lasst uns ersteinmal klären ob wir wirklich nen Hauskreis wollen",
+        "lasst uns ersteinmal klären ob wir wirklich nen Hauskreis wollen",
         duration: 20000.0,
         cost: <Ressource>[
           Member(value: 2.0),
@@ -911,7 +1116,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Hauskreis vorbereiten",
         description:
-            "Ich freu mich lecker Essen, Gemeinschaft, Bibellesen... aber ich sollte noch mal checken ob alle kommen und ein Thema brauchen wir auch noch.",
+        "Ich freu mich lecker Essen, Gemeinschaft, Bibellesen... aber ich sollte noch mal checken ob alle kommen und ein Thema brauchen wir auch noch.",
         duration: 10000.0,
         cost: <Ressource>[
           Time(value: 1.5),
@@ -967,7 +1172,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Aufgaben verteilen",
         description:
-            "Es gibt viele Freiwillige. Setz sie nach ihren Stärken ein",
+        "Es gibt viele Freiwillige. Setz sie nach ihren Stärken ein",
         duration: 6000.0,
         cost: <Ressource>[
           Time(value: 6.0),
@@ -984,7 +1189,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Korps aufräumen",
         description:
-            "immer schön Ordnung schaffen. Wenn nicht gibt ein Problem mit den Mitgliedern :)",
+        "immer schön Ordnung schaffen. Wenn nicht gibt ein Problem mit den Mitgliedern :)",
         duration: 20000.0,
         timeToSolve: 70000.0,
         cost: <Ressource>[Time(value: 1.0)],
@@ -1001,7 +1206,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Korps fegen und putzen",
         description:
-            "Na hier siehts aber aus.. früher hätte ich das ja selber gemacht... aber hier muss mal gewischt werden",
+        "Na hier siehts aber aus.. früher hätte ich das ja selber gemacht... aber hier muss mal gewischt werden",
         duration: 20000.0,
         timeToSolve: 70000.0,
         cost: <Ressource>[Time(value: 1.0)],
@@ -1050,7 +1255,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Mit seinem Mentor treffen",
         description:
-            "Immer gut wenn man Rat und Hilf braucht, auch wenn er in einer anderen Stadt wohnt (und die DB ist leider teuer)",
+        "Immer gut wenn man Rat und Hilf braucht, auch wenn er in einer anderen Stadt wohnt (und die DB ist leider teuer)",
         cost: <Ressource>[Time(value: 2.0), Money(value: 70.0)],
         award: <Ressource>[Wisdom(value: 20.0), Faith(value: 70.0)],
       ),
@@ -1132,7 +1337,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Ein zwischenmenschliches Problem klären",
         description:
-            "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
+        "Ein Gemeindemitglied kommt zu dir: Ich bin soooo sauer!!!!!!",
         duration: 6000.0,
         timeToSolve: 6000.0,
         cost: <Ressource>[Time(value: 3.0), Wisdom(value: 100.0)],
@@ -1149,7 +1354,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Streit in der Gemeinde",
         description:
-            "Es ist eskaliert: Das ist mir echt zu viel, der ist sooooo doof",
+        "Es ist eskaliert: Das ist mir echt zu viel, der ist sooooo doof",
         timeToSolve: 6000.0,
         cost: <Ressource>[
           Time(value: 3.0),
@@ -1183,7 +1388,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Predigt schreiben",
         description:
-            "erst wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
+        "erst wenn du eine Predigt geschrieben hast... kannst du auch eine halten :-D",
         duration: 8000.0,
         cost: <Ressource>[Time(value: 8.0), Faith(value: 120.0)],
         award: <Ressource>[Member(value: 0.02), Faith(value: 60.0)],
@@ -1246,7 +1451,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Buchen",
         description:
-            "alle Ein und Ausgaben immer schön ins Programm eintragen, damit hier alles stimmt",
+        "alle Ein und Ausgaben immer schön ins Programm eintragen, damit hier alles stimmt",
         duration: 2000.0,
         timeToSolve: 100000.0,
         cost: <Ressource>[Time(value: 0.5)],
@@ -1295,7 +1500,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Kassendifferenz finden",
         description:
-            "Mist die Kasse stimmt nicht mit der Abrechnung überein... den Fehler muss ich finden..",
+        "Mist die Kasse stimmt nicht mit der Abrechnung überein... den Fehler muss ich finden..",
         duration: 10000.0,
         timeToSolve: 70000.0,
         cost: <Ressource>[Time(value: 2.0)],
@@ -1393,7 +1598,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "schlafen",
         description:
-            "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
+        "Sollte man auch mal tun... das Gehirn benötig 8 Stunden Schlaf um \"schlauer zu werden\"",
         duration: 16000.0,
         cost: <Ressource>[Time(value: 8.0)],
         award: <Ressource>[Time(value: 16.0)],
@@ -1401,7 +1606,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Die Nacht durcharbeiten",
         description:
-            "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
+        "Ahhhh.... ich muss noch so viel machen... ich brauche mehr Zeit",
         duration: 8000.0,
         cost: <Ressource>[
           Faith(value: 5.0),
@@ -1413,7 +1618,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Einen Basar planen",
         description:
-            "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
+        "hmm ein Basar spült vielleicht ein bisschen Geld in die Kasse",
         duration: 6000.0,
         cost: <Ressource>[
           Time(value: 3.0),
@@ -1464,7 +1669,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Freizeit",
         description:
-            "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
+        "du hast echt zu viel gearbeitet... jetzt musst du ersteinmal warten...",
         duration: 9000.0,
         cost: <Ressource>[Publicity(value: 0.1)],
         award: <Ressource>[Time(value: 0.3)],
@@ -1472,7 +1677,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Wirtschaftsmission",
         description:
-            "durch die Kneipen ziehen Infomaterial verteilen, mit Menschen quatschen und Geld sammeln",
+        "durch die Kneipen ziehen Infomaterial verteilen, mit Menschen quatschen und Geld sammeln",
         duration: 4000.0,
         cost: <Ressource>[Money(value: 20.0), Time(value: 4.5)],
         award: <Ressource>[Money(value: 100.00), Publicity(value: 1.5)],
@@ -1484,7 +1689,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Erstes Hauskreistreffen",
         description:
-            "lasst uns ersteinmal klären ob wir wirklich nen Hauskreis wollen",
+        "lasst uns ersteinmal klären ob wir wirklich nen Hauskreis wollen",
         duration: 20000.0,
         cost: <Ressource>[
           Member(value: 2.0),
@@ -1504,7 +1709,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Hauskreis vorbereiten",
         description:
-            "Ich freu mich lecker Essen, Gemeinschaft, Bibellesen... aber ich sollte noch mal checken ob alle kommen und ein Thema brauchen wir auch noch.",
+        "Ich freu mich lecker Essen, Gemeinschaft, Bibellesen... aber ich sollte noch mal checken ob alle kommen und ein Thema brauchen wir auch noch.",
         duration: 10000.0,
         cost: <Ressource>[
           Time(value: 1.5),
@@ -1557,7 +1762,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Aufgaben verteilen",
         description:
-            "Es gibt viele Freiwillige. Setz sie nach ihren Stärken ein",
+        "Es gibt viele Freiwillige. Setz sie nach ihren Stärken ein",
         duration: 6000.0,
         cost: <Ressource>[Time(value: 6.0), Wisdom(value: 50.0)],
         award: <Ressource>[Faith(value: 10.0)],
@@ -1627,7 +1832,7 @@ final List<Stage> allStages = <Stage>[
       Task(
         name: "Einsatzwagen kaputt",
         description:
-            "Anscheinend was mit dem Vergaser... oder dem Getriebe... oder der Batterie? Reparier es lieber, bevor der Wagen dahin ist",
+        "Anscheinend was mit dem Vergaser... oder dem Getriebe... oder der Batterie? Reparier es lieber, bevor der Wagen dahin ist",
         duration: 10000.0,
         timeToSolve: 30000.0,
         cost: <Ressource>[Money(value: 200.00)],
