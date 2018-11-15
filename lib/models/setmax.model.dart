@@ -3,7 +3,7 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class SetMax extends Modifier {
-  Ressource workOn;
+  String workOn;
   double newMax;
 
   SetMax({String ressource, this.newMax})
@@ -11,7 +11,7 @@ class SetMax extends Modifier {
             name: "SetMax",
             description:
                 "Sets a new max boder for the a given game ressource") {
-    workOn = Game.ressources[ressource];
+    this.workOn = ressource;
   }
 
   factory SetMax.fromJson(Map<String, dynamic> jsn) {
@@ -21,14 +21,16 @@ class SetMax extends Modifier {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'ressource': workOn.name,
+      'ressource': workOn,
       'newMax': newMax
     };
   }
 
   modify() {
     if (workOn != null) {
-      workOn.max = newMax;
+      Ressource tmpRes = Game.ressources[workOn];
+      if (tmpRes != null)
+        tmpRes.max = newMax;
     }
   }
 }

@@ -3,7 +3,7 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class SetMin extends Modifier {
-  Ressource workOn;
+  String workOn;
   double newMin;
 
   SetMin({String ressource, this.newMin})
@@ -11,7 +11,7 @@ class SetMin extends Modifier {
             name: "SetMin",
             description:
                 "Sets a new min boder for the a given game ressource") {
-    workOn = Game.ressources[ressource];
+    workOn = ressource;
   }
 
   factory SetMin.fromJson(Map<String, dynamic> jsn) {
@@ -21,14 +21,16 @@ class SetMin extends Modifier {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'ressource': workOn.name,
+      'ressource': workOn,
       'newMin': newMin
     };
   }
 
   modify() {
     if (workOn != null) {
-      workOn.min = newMin;
+      Ressource tmpRes = Game.ressources[workOn];
+      if (tmpRes != null)
+        tmpRes..min = newMin;
     }
   }
 }
