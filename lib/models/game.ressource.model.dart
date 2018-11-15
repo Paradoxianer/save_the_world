@@ -46,18 +46,21 @@ class Game {
     randDuration = new Duration(seconds: 10);
     randCalled = new Duration(seconds: 0);
     tick.createTicker(updateGame).start();
-    loadStage(stage);
+    initStage(stage);
     initRes();
     ressources[Member().name].addListener(levelListener);
+    loadState();
   }
 
   initRes() {
-    ressources[Faith().name] = Faith(value: 100.0);
-    ressources[Money().name] = Money(value: 10.0);
+    ressources[Faith().name] = Faith(value: 1000.0);
+    ressources[Money().name] = Money(value: 1000.0);
     ressources[Time().name] = Time(value: 24.0);
-    ressources[Member().name] = Member(value: 2.0);
-    ressources[Publicity().name] = Publicity(value: 1.0);
+    ressources[Member().name] = Member(value: 19.0);
+    ressources[Publicity().name] = Publicity(value: 100.0);
     ressources[Wisdom().name] = Wisdom(value: 10.0);
+    ressources[Member().name].max = 20.0;
+    ressources[Member().name].min = 2.0;
   }
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -189,7 +192,7 @@ class Game {
       saveCalled = elapse;
     }
     if (d2 > randDuration) {
-      int rand = Random().nextInt(2);
+      int rand = Random().nextInt(5);
       print(
           "its possible thats something will happen" + rand.toString() + "\n");
       if (rand == 1) {
@@ -213,11 +216,12 @@ class Game {
     List<int> levelList = levels.keys.toList();
     int i;
     for (i = 0; (i < levelLength && found == null); i++) {
-      if (levelList[i].toDouble() > members) {
+      if ((levelList[i] + 1) > members.floor()) {
         found = i;
       }
     }
-    if (found != stage) {
+
+    if (found > stage) {
       stage = found;
       stagenNotifier.notifyListeners();
       //TODO: load the new levelists... and publish it. maybe show a nice Animation
@@ -225,12 +229,15 @@ class Game {
           found.toString() +
           ". Das heißt ich bin eine: " +
           levels[levelList[found]]);
-      loadStage(found);
+      ressources[Member().name].max = levelList[found].toDouble();
+      initStage(found);
     }
   }
 
-  loadStage(int stg) {
+  initStage(int stg) {
+    print("Game:initStage(" + stg.toString() + ");\n");
     allTasks = allStages[stg].allTasks;
+    print(allTasks);
     int lgth = allStages[stg].activeTasks.length - 1;
     for (int i = lgth; i >= 0; i--) {
       if (allTasks != null) {
