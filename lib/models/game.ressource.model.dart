@@ -23,6 +23,7 @@ class Game {
   static ChangeNotifier stagenNotifier;
   static Game mInstance;
   List<Task> allTasks;
+  List<String> randomTasks;
   TickerFuture ticker;
   Duration saveCalled;
   Duration saveDuration;
@@ -129,6 +130,7 @@ class Game {
   }
 
   saveState() {
+    //ToDo: save  and load randomList
     print("saveState");
     List<String> activeTasks = new List<String>();
     int tLength = tasks.length;
