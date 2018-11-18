@@ -54,11 +54,11 @@ class Game {
   }
 
   initRes() {
-    ressources[Faith().name] = Faith(value: 1000.0);
-    ressources[Money().name] = Money(value: 1000.0);
+    ressources[Faith().name] = Faith(value: 100.0);
+    ressources[Money().name] = Money(value: 20.0);
     ressources[Time().name] = Time(value: 24.0);
-    ressources[Member().name] = Member(value: 19.0);
-    ressources[Publicity().name] = Publicity(value: 100.0);
+    ressources[Member().name] = Member(value: 2.0);
+    ressources[Publicity().name] = Publicity(value: 1.0);
     ressources[Wisdom().name] = Wisdom(value: 10.0);
     ressources[Member().name].max = 20.0;
     ressources[Member().name].min = 2.0;
@@ -82,7 +82,6 @@ class Game {
   }
 
   void addTask(Task task, {bool needInit = true}) {
-    //TODO: Maby check if the task is already running? bevore removing?
     if (needInit) tasks.remove(task);
     tasks.insert(0, task);
     if (needInit) task.init();
