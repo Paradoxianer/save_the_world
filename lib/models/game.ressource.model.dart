@@ -139,12 +139,15 @@ class Game {
     dataManager.writeJson("gameRes", json.encode(ressources));
     dataManager.writeJson("activeTasks", json.encode(activeTasks));
     dataManager.writeJson("allTasks", json.encode(allTasks));
+    dataManager.writeJson("Game", stage.toString());
   }
 
   loadState() {
     print("loadState");
     dataManager.readData("gameRes").then(loadRes);
     dataManager.readData("allTasks").then(loadAllTasks);
+    dataManager.readData("activeTasks").then(loadActiveTasks);
+    dataManager.readData("Game").then(loadGame);
   }
 
   loadRes(String jsn) {
@@ -183,6 +186,10 @@ class Game {
         if (found != null) Game.getInstance().addTask(found, needInit: false);
       }
     }
+  }
+
+  loadGame(String jsn) {
+    stage = int.tryParse(jsn);
   }
 
   updateGame(Duration elapse) {
@@ -232,6 +239,7 @@ class Game {
           levels[levelList[found]]);
       ressources[Member().name].max = levelList[found].toDouble();
       initStage(found);
+      saveState();
     }
   }
 
