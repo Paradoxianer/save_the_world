@@ -175,15 +175,15 @@ class Game {
 
   loadActiveTasks(String jsn) {
     if (jsn != null) {
+      Game tmpGame = Game.getInstance();
       List<String> tmpList = new List<String>.from(json.decode(jsn));
       Game.tasks.removeRange(0, Game.tasks.length);
       int tmpListLenght = tmpList.length;
       Task found;
       for (int i = (tmpListLenght - 1); i >= 0; i--) {
-        found = Game.getInstance()
-            .availableTasks()
-            .firstWhere((tsk) => tsk.name == tmpList[i]);
-        if (found != null) Game.getInstance().addTask(found, needInit: false);
+        found = tmpGame.getTask(tmpList[i]);
+        if (found != null)
+          tmpGame.addTask(found, needInit: false);
       }
     }
   }
