@@ -387,7 +387,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: "Heriatsvorbereitung 1",
+        name: "Heiratsvorbereitung 1",
         description:
         "In einer Beziehung muss man richtig streiten und versöhnen lernen",
         duration: 10000.0,
@@ -403,7 +403,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: "Heriatsvorbereitung 2",
+        name: "Heiratsvorbereitung 2",
         description:
         "Ihr müsst verstehen man tickt unterschiedlich in einer Beziehung",
         duration: 10000.0,
@@ -419,7 +419,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: "Heriatsvorbereitung 3",
+        name: "Heiratsvorbereitung 3",
         description:
         "Wir bringen alle ein perönliches Erbe von den Familien mit",
         duration: 10000.0,
@@ -435,7 +435,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: "Heriatsvorbereitung 4",
+        name: "Heiratsvorbereitung 4",
         description: "Der Glaube ist das gemeinsame Fundament",
         duration: 10000.0,
         cost: <Ressource>[
@@ -450,7 +450,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: "Heriatsvorbereitung 5",
+        name: "Heiratsvorbereitung 5",
         description:
         "Sex ist eine tolle Erfindung Gottes. Es läuft aber in der Ehe nicht immer so wie man es sich vorstellt",
         duration: 10000.0,
@@ -466,7 +466,7 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
-        name: "Heriatsvorbereitung 6",
+        name: "Heiratsvorbereitung 6",
         description: "Wir sollten über die Zeremonie sprechen",
         duration: 10000.0,
         cost: <Ressource>[
@@ -531,8 +531,8 @@ final List<Stage> allStages = <Stage>[
           Wisdom(value: 220.0)
         ],
         modifier: <Modifier>[
-          RemoveTask(task: "Einen Gottesdienstraum zum Mieten suchen.."),
-          SetMax(ressource: "Member", newMax: 40.0),
+          RemoveTask(task: "Einen Gottesdienstraum zu Mieten suchen"),
+          SetMax(ressource: "Member", newMax: 40.0)
         ],
       )
     ],
@@ -545,8 +545,6 @@ final List<Stage> allStages = <Stage>[
       "Mails...",
       "Einen Basar planen",
       "Korpsrat einsetzen",
-      "Ehrenamtliche Leiter einsetzen",
-      "Korpsrat einsetzen?",
     ],
     randomTasks: <String>[
       "Rechnung nicht bezahlt",
@@ -1223,6 +1221,24 @@ final List<Stage> allStages = <Stage>[
         ],
       ),
       Task(
+        name: "Seelsorgerat einsetzen",
+        description:
+        "Wir brauchen mehrere geistliche Leuten um zu schauen wie es um die Seele der Mitglieder geht ",
+        cost: <Ressource>[
+          Faith(value: 2500.0),
+          Member(value: 4.0),
+          Time(value: 10.0),
+          Wisdom(value: 1000.0)
+        ],
+        award: <Ressource>[
+          Faith(value: 1500.0),
+          Member(value: 8.0),
+          Wisdom(value: 1000.0)
+        ],
+        modifier: <Modifier>[AddTask(task: "Korpsrat einsetzen")],
+      ),
+      Task(),
+      Task(
         name: "Korpsrat einsetzen",
         description: "Der kann mir sicher viele Hinweise geben, wo es brennt",
         cost: <Ressource>[
@@ -1232,13 +1248,13 @@ final List<Stage> allStages = <Stage>[
           Wisdom(value: 1000.0)
         ],
         award: <Ressource>[
-          Faith(value: 1500.0),
+          Faith(value: 1000.0),
           Member(value: 8.0),
-          Wisdom(value: 1000.0)
+          Wisdom(value: 700.0)
         ],
         modifier: <Modifier>[
           RemoveTask(task: "Korpsrat einsetzen"),
-          SetMax(ressource: "Member", newMax: 40.0),
+          SetMax(ressource: "Member", newMax: 80.0),
         ],
       )
     ],
@@ -1247,12 +1263,17 @@ final List<Stage> allStages = <Stage>[
     level: 2,
     activeTasks: <String>[
       "Geistesgaben entdecken",
-      "Aufgaben verteilen",
+      "Freiwillige anfragen",
+      "Freiwilligengespräch führen",
+      "Wütende Helfer",
       "Kinderprogramm",
       "Mitglieder besuchen",
       "Pressearbeit",
       "Interview geben",
       "Mit seinem Mentoren treffen",
+      "Seelsorgerat einsetzen",
+      "Ehrenamtliche Leiter einsetzen",
+      "Kleingruppenverantwortlichen einsetzen",
     ],
     randomTasks: <String>[],
     allTasks: <Task>[
@@ -1291,7 +1312,7 @@ final List<Stage> allStages = <Stage>[
         ],
         missed: <Modifier>[
           RemoveTask(task: "Streit in der Gemeinde"),
-          SubtractRes(ressources: <Ressource>[Member(value: 2.5)]),
+          SubtractRes(ressources: <Ressource>[Member(value: 10.0)]),
           AddTask(task: "Streit in der Gemeinde")
         ],
         modifier: <Modifier>[RemoveTask(task: "Streit in der Gemeinde")],
@@ -1731,7 +1752,8 @@ final List<Stage> allStages = <Stage>[
         modifier: <Modifier>[
           RemoveTask(task: "Freiwilligengespräch führen"),
           RemoveTask(task: "Korps aufräumen"),
-          RemoveTask(task: "Korps fegen und putzen")
+          RemoveTask(task: "Korps fegen und putzen"),
+          AddTask(task: "Wütende Helfer"),
         ],
       ),
       Task(
@@ -1787,7 +1809,21 @@ final List<Stage> allStages = <Stage>[
         cost: <Ressource>[Time(value: 5.0), Wisdom(value: 5.0)],
         award: <Ressource>[Member(value: 0.3), Publicity(value: 3.0)],
       ),
-      Task(),
+      Task(
+        name: "Wütende Helfer",
+        description:
+        "Die Putzer sind unzufrieden, du solltest sie besser nicht vergraulen",
+        duration: 2000.0,
+        timeToSolve: 70000.0,
+        cost: <Ressource>[Time(value: 2.0), Wisdom(value: 2.0)],
+        award: <Ressource>[Member(value: 0.5)],
+        missed: <Modifier>[
+          RemoveTask(task: "Wütende Helfer"),
+          AddTask(task: "Wütende Helfer"),
+          SubtractRes(ressources: <Ressource>[Member(value: 0.5)])
+        ],
+        modifier: <Modifier>[RemoveTask(task: "Wütende Helfer")],
+      ),
       Task(
         name: "Mit seinem Mentor treffen",
         description:
@@ -1795,47 +1831,85 @@ final List<Stage> allStages = <Stage>[
         cost: <Ressource>[Time(value: 2.0), Money(value: 70.0)],
         award: <Ressource>[Wisdom(value: 20.0), Faith(value: 70.0)],
       ),
+      Task(),
       Task(
-        name: "Seelsorgerat einsetzen",
-        description:
-        "Wir brauchen mehrere geistliche Leuten um zu schauen wie es um die Seele der Mitglieder geht ",
+        name: "Einsatzwagen anschaffen",
+        description: "Ne alte Klapperkiste reicht",
+        duration: 20000.0,
         cost: <Ressource>[
-          Faith(value: 2500.0),
-          Member(value: 4.0),
-          Time(value: 10.0),
-          Wisdom(value: 1000.0)
+          Money(value: 1000.0),
         ],
+        award: <Ressource>[Publicity(value: 2.0), Wisdom(value: 5.0)],
+        modifier: <Modifier>[
+          AddTask(task: "Für den Einsatzwagen einkaufen"),
+          RemoveTask(task: "Einsatzwagen anschaffen")
+        ],
+      ),
+      Task(
+        name: "Für den Einsatzwagen einkaufen",
+        description: "Am besten Eintopf!",
+        duration: 3000.0,
+        cost: <Ressource>[Time(value: 2.0), Money(value: 100.0)],
         award: <Ressource>[
-          Faith(value: 1500.0),
-          Member(value: 8.0),
-          Wisdom(value: 1000.0)
+          Publicity(value: 6.0),
         ],
-        modifier: <Modifier>[AddTask(task: "Korpsrat einsetzen")],
+        modifier: <Modifier>[
+          AddTask(task: "Mit dem Einsatzwagen raus"),
+          RemoveTask(task: "Für den Einsatzwagen einkaufen")
+        ],
+      ),
+      Task(
+        name: "Mit dem Einsatzwagen raus",
+        description: "Ab zum Kotti",
+        duration: 6000.0,
+        cost: <Ressource>[Time(value: 3.0), Money(value: 20.0)],
+        award: <Ressource>[
+          Publicity(value: 6.0),
+        ],
+        modifier: <Modifier>[
+          AddTask(task: "Für den Einsatzwagen einkaufen"),
+          RemoveTask(task: "Mit dem Einsatzwagen raus")
+        ],
+      ),
+      Task(
+        name: "Einsatzwagen kaputt",
+        description:
+        "Anscheinend was mit dem Vergaser... oder dem Getriebe... oder der Batterie? Reparier es lieber, bevor der Wagen dahin ist",
+        duration: 10000.0,
+        timeToSolve: 30000.0,
+        cost: <Ressource>[Money(value: 200.00)],
+        online: <Modifier>[
+          RemoveTask(task: "Für den Einsatzwagen einkaufen"),
+          RemoveTask(task: "Mit dem Einsatzwagen raus")
+        ],
+        missed: <Modifier>[
+          AddTask(task: "Einsatzwagen anschaffen"),
+          RemoveTask(task: "Für den Einsatzwagen einkaufen"),
+          RemoveTask(task: "Einsatzwagen kaputt")
+        ],
+        modifier: <Modifier>[RemoveTask(task: "Einsatzwagen kaputt")],
       ),
       Task(),
       Task(),
       Task(),
-      Task(),
-      Task(),
-      Task(),
-      Task(),
       Task(
-        name: "Korpsrat einsetzen",
-        description: "Der kann mir sicher viele Hinweise geben, wo es brennt",
+        name: "Kleingruppenverantwortlichen einsetzen",
+        description:
+        "Viele Hauskreise, Kinderarbeit, der Einsatzwagen, Seelsorgerat und es sollen noch mehr Gruppen entstehen. Du brauchst jemanden der sich mit dir darum kümmert",
         cost: <Ressource>[
-          Faith(value: 2500.0),
-          Member(value: 8.0),
-          Time(value: 10.0),
-          Wisdom(value: 1000.0)
+          Faith(value: 3000.0),
+          Member(value: 1.0),
+          Time(value: 12.0),
+          Wisdom(value: 1700.0)
         ],
         award: <Ressource>[
           Faith(value: 1500.0),
-          Member(value: 8.0),
+          Member(value: 1.0),
           Wisdom(value: 1000.0)
         ],
         modifier: <Modifier>[
-          RemoveTask(task: "Korpsrat einsetzen"),
-          SetMax(ressource: "Member", newMax: 40.0),
+          RemoveTask(task: "Kleingruppenverantwortlichen einsetzen"),
+          SetMax(ressource: "Member", newMax: 140.0),
         ],
       )
     ],
@@ -1866,7 +1940,6 @@ final List<Stage> allStages = <Stage>[
       "Entscheiden vom Pastor widersetzen",
       "Korpsrat",
       "Seelsorgerat",
-      "Kleingruppenverantwortlichen einsetzen",
     ],
     randomTasks: <String>[],
     allTasks: <Task>[
@@ -2304,8 +2377,7 @@ final List<Stage> allStages = <Stage>[
         award: <Ressource>[Faith(value: 10.0)],
         modifier: <Modifier>[
           RemoveTask(task: "Aufgaben verteilen"),
-          RemoveTask(task: "Korps aufräumen"),
-          RemoveTask(task: "Korps fegen und putzen")
+          AddTask(task: "Putzliste erstellen")
         ],
       ),
       Task(
@@ -2431,6 +2503,20 @@ final List<Stage> allStages = <Stage>[
           AddTask(task: "Pressearbeit"),
           RemoveTask(task: "Anruf von dem Spender")
         ],
+      ),
+      Task(
+        name: "Putzliste erstellen",
+        description:
+        "Geputzt wird, aber es ist manchmal ganz schön chaotisch. Es sollte ein Plan gemacht werden, wer wann putzt",
+        duration: 4000.0,
+        cost: <Ressource>[Time(value: 12.0), Wisdom(value: 100.0)],
+        award: <Ressource>[Faith(value: 20.0)],
+        modifier: <Modifier>[RemoveTask(task: "Putzliste erstellen")],
+      ),
+      Task(
+        name: "Treffen des Korpsrats",
+        description: "Man bespricht geistliches wachstum und neue Ideen",
+        duration: 10000.0,
       )
     ],
   ),
