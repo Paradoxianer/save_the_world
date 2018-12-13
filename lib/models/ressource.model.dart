@@ -26,26 +26,30 @@ class Ressource extends GameElement {
 
   factory Ressource.fromJson(Map<String, dynamic> json) {
     String whatModifier = json['name'];
+    Ressource tmpRessource;
     switch (whatModifier) {
       case "Faith":
-        return Faith(value: json['value']);
+        tmpRessource = Faith(value: json['value']);
         break;
       case "Member":
-        return Member(value: json['value']);
+        tmpRessource = Member(value: json['value']);
         break;
       case "Money":
-        return Money(value: json['value']);
+        tmpRessource = Money(value: json['value']);
         break;
       case "Publicity":
-        return Publicity(value: json['value']);
+        tmpRessource = Publicity(value: json['value']);
         break;
       case "Time":
-        return Time(value: json['value']);
+        tmpRessource = Time(value: json['value']);
         break;
       case "Wisdom":
-        return Wisdom(value: json['value']);
+        tmpRessource = Wisdom(value: json['value']);
         break;
     }
+    tmpRessource.min = json['min'];
+    tmpRessource.max = json['max'];
+    return tmpRessource;
   }
 
   Map<String, dynamic> toJson() {
