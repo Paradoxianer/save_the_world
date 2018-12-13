@@ -152,7 +152,6 @@ class Game {
 
   loadRes(String jsn) {
     if (jsn != null) {
-      print("loadRes" + jsn);
       Map<String, dynamic> resMap = json.decode(jsn);
       List<String> ressourceNames = ressources.keys.toList();
       int rLength = ressourceNames.length;
