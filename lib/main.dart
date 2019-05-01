@@ -39,36 +39,64 @@ class MyApp extends StatelessWidget {
       home: DefaultTabController(
         length: 3,
         child: RepaintBoundary(
-          key: previewContainer,
-          child: Scaffold(
-            appBar: AppBar(
-              bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(50.0),
-                  child: Row(
-                    children: <Widget>[
-                      StageItem(),
-                      Expanded(
-                          child: RessourceTable(
-                            ressourceList: Game.ressources.values.toList(),
-                            size: 25.0,
-                          )),
-                      IconButton(
-                          icon: Icon(Icons.share),
-                          onPressed: () {
-                            shareScreenshot();
-                          })
-                    ],
-                  )),
-              title: Text('Rette die Welt'),
-            ),
-            body: TabBarView(
-              children: [
-                TaskList(),
-                LevelList(),
-              ],
-            ),
-          ),
+            key: previewContainer,
+            child: Home(previewContainer)
         ),
+      ),
+    );
+  }
+
+}
+
+class Home extends StatelessWidget {
+  GlobalKey previewContainer;
+
+  Home(GlobalKey key) {
+    previewContainer = key;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50.0),
+            child: Row(
+              children: <Widget>[
+                StageItem(),
+                Expanded(
+                    child: RessourceTable(
+                      ressourceList: Game.ressources.values.toList(),
+                      size: 25.0,
+                    )),
+              ],
+            )
+        ),
+        title: Text('Rette die Welt'),
+      ),
+      body: TabBarView(
+        children: [
+          TaskList(),
+          LevelList(),
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+          child: Row(
+              children: <Widget>[
+                IconButton(
+                    icon: Icon(Icons.share),
+                    onPressed: () {
+                      shareScreenshot();
+                    }
+                ),
+                IconButton(
+                    icon: Icon(Icons.contacts),
+                    onPressed: () {
+                      _asyncConfirmDSGVO(context);
+                    }
+                )
+              ]
+          )
       ),
     );
   }
@@ -92,5 +120,37 @@ class MyApp extends StatelessWidget {
     } catch (e) {
       print('error: $e');
     }
+  }
+
+  Future<ConfirmAGB> _asyncConfirmDSGVO(BuildContext context) async {
+    return showDialog<ConfirmAGB>(
+      context: context,
+      barrierDismissible: false, // user must tap button for close dialog!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Stimmst du den AGB und DSGVO zu?'),
+          content: const Text("Wir die Appentwickler haben begründetes \n" +
+              "Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App\n" +
+              "zu erheben und innerhalb der App zu speichern. Die App stellt diese dann," +
+              "soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android" +
+              "internes Social Media Plugin benutzt."
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: const Text('Abbrechen'),
+              onPressed: () {
+                Navigator.of(context).pop(ConfirmAGB.CANCEL);
+              },
+            ),
+            FlatButton(
+              child: const Text('Ich stimme zu'),
+              onPressed: () {
+                Navigator.of(context).pop(ConfirmAGB.ACCEPT);
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 }
