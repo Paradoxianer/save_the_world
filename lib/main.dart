@@ -5,14 +5,12 @@ import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:save_the_world_flutter_app/about.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
-
-
-enum ConfirmAGB { CANCEL, ACCEPT }
 
 
 void main() {
@@ -37,7 +35,7 @@ class MyApp extends StatelessWidget {
         // ... other locales the app supports
       ],
       home: DefaultTabController(
-        length: 3,
+        length: 2,
         child: RepaintBoundary(
             key: previewContainer,
             child: Home(previewContainer)
@@ -77,7 +75,7 @@ class Home extends StatelessWidget {
       body: TabBarView(
         children: [
           TaskList(),
-          LevelList(),
+          LevelList()
         ],
       ),
       bottomNavigationBar: BottomAppBar(
@@ -92,11 +90,24 @@ class Home extends StatelessWidget {
                     }
                 ),
                 IconButton(
+                    icon: Icon(Icons.replay),
+                    onPressed: () {
+                      Game.getInstance().initRes();
+                    }
+                ),
+                IconButton(
                     icon: Icon(Icons.contacts),
                     onPressed: () {
-                      _asyncConfirmDSGVO(context);
+                      showDSGVODialog(context);
+                    }
+                ),
+                IconButton(
+                    icon: Icon(Icons.question_answer),
+                    onPressed: () {
+                      showAppAboutDialog(context);
                     }
                 )
+
               ]
           )
       ),
@@ -124,18 +135,27 @@ class Home extends StatelessWidget {
     }
   }
 
-  Future<ConfirmAGB> _asyncConfirmDSGVO(BuildContext context) async {
+/* Future<ConfirmAGB> _asyncConfirmDSGVO(BuildContext context) async {
     return showDialog<ConfirmAGB>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Stimmst du den AGB und DSGVO zu?'),
-          content: const Text("Wir die Appentwickler haben begründetes \n" +
-              "Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App\n" +
-              "zu erheben und innerhalb der App zu speichern. Die App stellt diese dann," +
-              "soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android" +
-              "internes Social Media Plugin benutzt."
+          content: const Text(
+              "Diese App wurde von Paradoxon aka Matthias Lindner geschrieben." +
+                  /*"Kontaktdaten des Anbieters"
+              Für welche Daten des Nutzers benötigt die App welche Zugriffsrechte?
+              Wie lange werden diese Daten gespeichert?
+              Wir das Nutzungsverhalten/ die Daten der Nutzer durch Traking Tools (Apptrace, Apptrace, Adeven, App Annie, Google Analytics für Apps) ausgewertet?
+            Werden die Daten an Dritte übertragen, wenn ja zu welchem Zweck?
+        Welche Rechte hat der Nutzer bezüglich Löschen, Sperren und Berichtigen seiner Daten?
+        Wie kann der Nutzer widersprechen?*/
+                  "Wir die Appentwickler haben begründetes \n" +
+                  "Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App\n" +
+                  "zu erheben und innerhalb der App zu speichern. Die App stellt diese dann," +
+                  "soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android" +
+                  "internes Social Media Plugin benutzt."
           ),
           actions: <Widget>[
             FlatButton(
@@ -154,5 +174,5 @@ class Home extends StatelessWidget {
         );
       },
     );
-  }
+  }*/
 }
