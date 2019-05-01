@@ -82,6 +82,8 @@ class Home extends StatelessWidget {
       ),
       bottomNavigationBar: BottomAppBar(
           child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
                     icon: Icon(Icons.share),
