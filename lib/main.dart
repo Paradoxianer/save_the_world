@@ -4,11 +4,16 @@ import 'dart:ui' as ui;
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
+
+
+enum ConfirmAGB { CANCEL, ACCEPT }
+
 
 void main() {
   runApp(new MyApp());
@@ -21,6 +26,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Game game = Game.getInstance();
     return MaterialApp(
+      localizationsDelegates: [
+        // ... app-specific localization delegate[s] here
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en'), // English
+        const Locale('de'), // Hebrew
+        // ... other locales the app supports
+      ],
       home: DefaultTabController(
         length: 3,
         child: RepaintBoundary(
