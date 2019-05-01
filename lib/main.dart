@@ -89,12 +89,14 @@ class Home extends StatelessWidget {
                       shareScreenshot();
                     }
                 ),
+                Spacer(),
                 IconButton(
                     icon: Icon(Icons.replay),
                     onPressed: () {
                       Game.getInstance().initRes();
                     }
                 ),
+                Spacer(),
                 IconButton(
                     icon: Icon(Icons.contacts),
                     onPressed: () {
