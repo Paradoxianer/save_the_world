@@ -13,7 +13,7 @@ class TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-    print("addListener valueCahnged");
+    print("addListener valueChanged");
     Game.getInstance().addListener(valueChanged);
   }
 
