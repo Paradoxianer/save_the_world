@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:flutter/foundation.dart' show defaultTargetPlatform;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -123,30 +121,32 @@ void showDSGVODialog(BuildContext context) {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Stimmst du den AGB und DSGVO zu?'),
-          content: RichText(
-              text: TextSpan(
-                  children: <TextSpan>[
-                    TextSpan(
-                        style: aboutTextStyle,
-                        text: 'Wir die Appentwickler haben begründetes'
-                            'Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App'
-                            'zu erheben und innerhalb der App zu speichern. Die App stellt diese dann,'
-                            'soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android oder IOS'
-                            'internes Social Media Plugin benutzt.'
-                            'die Screenshots werden innerhalb der App solange gespeicher bis sie an die entsprechenden social Media'
-                            'Kanäle weitergegben wurden. Danach werden Sie automatisch im Spiel gelöscht und stehen dem Spiel nicht mehr zur Verfügung'
-                            'um Spielsptände zu speicher, wird der zugriff für die Appinternen speicher benötigt und benutzt. Sollten Sie dass nicht wollen'
-                            'müssen Sie den Entwickler kontaktieren, wir stellen ihnen dann eine Version zur verfügung die dann ihre spielstände nicht mehr speicher'
-                            'sie können gern jederzeit wiedersprechen, allerdings wird dann diese App nicht mehr nutzbar.\n Dass Sie diesen Text lesen müssen'
-                            'verdanken Sie unfähigen Politiken und paranoiden Datenschützen, die keinen Realitätsbezug haben.\n'
-                    ),
-                    _LinkTextSpan(
-                      style: linkStyle,
-                      url:
-                      'https://bitbucket.org/Paradoxianer/save_the_world_flutter/',
-                      text: 'kontakt zum Entwickler',
-                    ),
-                  ]
+          content: SingleChildScrollView(
+              child: RichText(
+                  text: TextSpan(
+                      children: <TextSpan>[
+                        TextSpan(
+                            style: aboutTextStyle,
+                            text: 'Wir die Appentwickler haben begründetes'
+                                'Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App'
+                                'zu erheben und innerhalb der App zu speichern. Die App stellt diese dann,'
+                                'soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android oder IOS'
+                                'internes Social Media Plugin benutzt.'
+                                'die Screenshots werden innerhalb der App solange gespeicher bis sie an die entsprechenden social Media'
+                                'Kanäle weitergegben wurden. Danach werden Sie automatisch im Spiel gelöscht und stehen dem Spiel nicht mehr zur Verfügung'
+                                'um Spielsptände zu speicher, wird der zugriff für die Appinternen speicher benötigt und benutzt. Sollten Sie dass nicht wollen'
+                                'müssen Sie den Entwickler kontaktieren, wir stellen ihnen dann eine Version zur verfügung die dann ihre spielstände nicht mehr speicher'
+                                'sie können gern jederzeit wiedersprechen, allerdings wird dann diese App nicht mehr nutzbar.\n Dass Sie diesen Text lesen müssen'
+                                'verdanken Sie unfähigen Politiken und paranoiden Datenschützen, die keinen Realitätsbezug haben.\n'
+                        ),
+                        _LinkTextSpan(
+                          style: linkStyle,
+                          url:
+                          'https://bitbucket.org/Paradoxianer/save_the_world_flutter/',
+                          text: 'kontakt zum Entwickler',
+                        ),
+                      ]
+                  )
               )
           ),
           actions: <Widget>[
@@ -154,7 +154,6 @@ void showDSGVODialog(BuildContext context) {
               child: const Text('Abbrechen'),
               onPressed: () {
                 Navigator.of(context).pop(ConfirmAGB.CANCEL);
-                    () => exit(0);
               },
             ),
             FlatButton(
