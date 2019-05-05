@@ -46,7 +46,7 @@ class Game {
     saveCalled = new Duration(seconds: 0);
     randDuration = new Duration(seconds: 10);
     randCalled = new Duration(seconds: 0);
-    tick.createTicker(updateGame).start();
+    ticker = tick.createTicker(updateGame).start();
     initStage(stage);
     initRes();
     ressources[Member().name].addListener(levelListener);
