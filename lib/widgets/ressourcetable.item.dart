@@ -30,6 +30,13 @@ class RessourceTable extends StatelessWidget {
         defaultColumnWidth: FixedColumnWidth(size+5.0),
         children: list
     );
+    /*  return Wrap(
+      spacing: 2.0,
+      runSpacing: 2.0,
+      alignment: WrapAlignment.spaceEvenly,
+      runAlignment: WrapAlignment.start,
+      children: ressourceList.map((r) => new RessourceItem(r,size)).toList(),
+    );*/
   }
 
   TableRow returnRow(row){
