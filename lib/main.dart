@@ -137,44 +137,4 @@ class Home extends StatelessWidget {
     }
   }
 
-/* Future<ConfirmAGB> _asyncConfirmDSGVO(BuildContext context) async {
-    return showDialog<ConfirmAGB>(
-      context: context,
-      barrierDismissible: false, // user must tap button for close dialog!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Stimmst du den AGB und DSGVO zu?'),
-          content: const Text(
-              "Diese App wurde von Paradoxon aka Matthias Lindner geschrieben." +
-                  /*"Kontaktdaten des Anbieters"
-              Für welche Daten des Nutzers benötigt die App welche Zugriffsrechte?
-              Wie lange werden diese Daten gespeichert?
-              Wir das Nutzungsverhalten/ die Daten der Nutzer durch Traking Tools (Apptrace, Apptrace, Adeven, App Annie, Google Analytics für Apps) ausgewertet?
-            Werden die Daten an Dritte übertragen, wenn ja zu welchem Zweck?
-        Welche Rechte hat der Nutzer bezüglich Löschen, Sperren und Berichtigen seiner Daten?
-        Wie kann der Nutzer widersprechen?*/
-                  "Wir die Appentwickler haben begründetes \n" +
-                  "Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App\n" +
-                  "zu erheben und innerhalb der App zu speichern. Die App stellt diese dann," +
-                  "soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android" +
-                  "internes Social Media Plugin benutzt."
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: const Text('Abbrechen'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAGB.CANCEL);
-              },
-            ),
-            FlatButton(
-              child: const Text('Ich stimme zu'),
-              onPressed: () {
-                Navigator.of(context).pop(ConfirmAGB.ACCEPT);
-              },
-            )
-          ],
-        );
-      },
-    );
-  }*/
 }
