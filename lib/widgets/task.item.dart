@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
-import 'package:save_the_world_flutter_app/widgets/task_info.dart';
+import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 
 class TaskProgressIndicator extends StatefulWidget {
   final Task task;
