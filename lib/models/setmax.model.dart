@@ -35,6 +35,6 @@ class SetMax extends Modifier {
   }
 
   String info() {
-    return super.info() + "set max of " + workOn + " to " + newMax;
+    return super.info() + "set max of " + workOn + " to " + newMax.toString();
   }
 }
