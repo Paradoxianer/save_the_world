@@ -33,4 +33,8 @@ class SetMin extends Modifier {
         tmpRes..min = newMin;
     }
   }
+
+  String info() {
+    return super.info() + "set min of " + workOn + " to " + newMax;
+  }
 }

@@ -33,4 +33,8 @@ class SetMax extends Modifier {
         tmpRes.max = newMax;
     }
   }
+
+  String info() {
+    return super.info() + "set max of " + workOn + " to " + newMax;
+  }
 }

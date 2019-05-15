@@ -20,4 +20,8 @@ class AddToRandom extends Modifier {
   modify() {
     Game.getInstance().randomTasks.add(task);
   }
+
+  String info() {
+    return super.info() + "add: " + task;
+  }
 }

@@ -21,4 +21,9 @@ class StopTask extends Modifier {
       found.stop();
     }
   }
+
+  String info() {
+    return super.info() + "stop " + nameOfTask;
+  }
+
 }
