@@ -90,4 +90,8 @@ class Modifier extends GameItem {
       return 0;
     }
   }
+
+  String info() {
+    return "";
+  }
 }
