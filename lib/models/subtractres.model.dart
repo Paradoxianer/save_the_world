@@ -44,4 +44,9 @@ class SubtractRes extends Modifier {
       }
     }
   }
+
+  String info() {
+    return super.info() + "subtract: " + ressources.toString() + " from " +
+        workOnRes.toString();
+  }
 }

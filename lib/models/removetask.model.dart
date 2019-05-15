@@ -40,4 +40,8 @@ class RemoveTask extends Modifier {
       print(e.toString());
     }
   }
+
+  String info() {
+    return super.info() + "removing: " + nameOfTask;
+  }
 }

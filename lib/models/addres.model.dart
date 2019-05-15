@@ -44,4 +44,9 @@ class AddRes extends Modifier {
       }
     }
   }
+
+  String info() {
+    return super.info() + "add: " + ressources.toString() + " from " +
+        workOnRes.toString();
+  }
 }

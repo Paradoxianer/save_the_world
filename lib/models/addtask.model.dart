@@ -40,4 +40,8 @@ class AddTask extends Modifier {
       }
     }
   }
+
+  String info() {
+    return super.info() + "add: " + nameOfTask;
+  }
 }

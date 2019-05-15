@@ -43,4 +43,9 @@ class AddModifer extends Modifier {
       found.myModifier.addAll(mymodifer);
     }
   }
+
+  String info() {
+    return super.info() + "addmodifier: " + mymodifer.toString() + " to " +
+        nameOfTask;
+  }
 }
