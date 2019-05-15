@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:save_the_world_flutter_app/widgets/modifiertable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 
 void showTaskInfo(BuildContext context, Task tsk) {
@@ -35,22 +36,15 @@ void showTaskInfo(BuildContext context, Task tsk) {
                         ]),
                         TableRow(children: <Widget>[
                           Text("Verpasst:"),
-                          Column(
-                              children: tsk.missed
-                                  .map(
-                                      (mm) => new Text(mm.name, softWrap: true))
-                                  .toList())
+                          ModifierTable(
+                              modifierList: tsk.missed
+                          )
                         ]),
                         TableRow(children: <Widget>[
                           Text("erfüllt:"),
-                          Column(
-                              children: tsk.myModifier
-                                  .map((mm) =>
-                              new Text(
-                                mm.name,
-                                softWrap: true,
-                              ))
-                                  .toList())
+                          ModifierTable(
+                            modifierList: tsk.myModifier,
+                          )
                         ])
                       ],
                     ),
