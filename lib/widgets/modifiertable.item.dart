@@ -20,12 +20,11 @@ class ModifierTable extends StatelessWidget {
 
   TableRow returnRow(modifier) {
     if (modifier != null) {
-      return new TableRow(children: <Widget>[
-        Text(modifier.name),
-        Column(
-          children: <Widget>[Text(modifier.description), Text(modifier.info())],
-        )
-      ]);
+      return new TableRow(
+          children: <Widget>[
+            Text(modifier.info())
+          ]
+      );
     } else
       return new TableRow(children: <Widget>[Text("---")]);
   }
