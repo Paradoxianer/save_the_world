@@ -35,6 +35,6 @@ class SetMin extends Modifier {
   }
 
   String info() {
-    return super.info() + "set min of " + workOn + " to " + newMax;
+    return super.info() + "set min of " + workOn + " to " + newMin.toString();
   }
 }
