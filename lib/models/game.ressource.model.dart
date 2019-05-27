@@ -233,7 +233,6 @@ class Game {
     if (found > stage) {
       stage = found;
       stagenNotifier.notifyListeners();
-      //TODO: load the new levelists... and publish it. maybe show a nice Animation
       print("Ich bin stage: " +
           found.toString() +
           ". Das heißt ich bin eine: " +
