@@ -24,6 +24,18 @@ class TaskListState extends State<TaskList> {
   }
 
   valueChanged() {
+    if (Game
+        .getInstance()
+        .snackbarMessage != null) {
+      Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Game
+                .getInstance()
+                .snackbarMessage),
+            backgroundColor: Color.fromRGBO(180, 70, 70, 0.6),
+          )
+      );
+    }
     setState(() {});
   }
 

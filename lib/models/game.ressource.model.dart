@@ -22,6 +22,7 @@ class Game {
   static ChangeNotifier notifier;
   static ChangeNotifier stagenNotifier;
   static Game mInstance;
+  String snackbarMessage;
   List<Task> allTasks;
   List<String> randomTasks;
   TickerFuture ticker;
@@ -91,6 +92,7 @@ class Game {
 
   void removeTask(Task task) {
     tasks.remove(task);
+    snackbarMessage = null;
     notifier.notifyListeners();
   }
 
@@ -207,7 +209,7 @@ class Game {
         Task thisHappens =
         getTask(allStages[stage].randomTasks[Random().nextInt(lgth)]);
         if (thisHappens != null) {
-          print("ohhh no this will happen:" + thisHappens.name + "\n");
+          snackbarMessage = "Achtung neue Aufgabe: " + thisHappens.name;
           addTask(thisHappens);
         }
       }
