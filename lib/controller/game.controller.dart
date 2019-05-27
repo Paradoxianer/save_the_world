@@ -23,7 +23,6 @@ class GameController {
   }
 
   void addTask(Task task, {bool needInit = true}) {
-    //TODO: Maby check if the task is already running? bevore removing?
     if (needInit) Game.tasks.remove(task);
     Game.tasks.insert(0, task);
     if (needInit) task.init();
@@ -70,7 +69,6 @@ class GameController {
     if (found != game.stage) {
       game.stage = found;
       stageNotifier.notifyListeners();
-      //TODO: load the new levelists... and publish it. maybe show a nice Animation
       print("Ich bin stage: " +
           found.toString() +
           ". Das heißt ich bin eine: " +
