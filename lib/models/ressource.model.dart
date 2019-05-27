@@ -12,6 +12,7 @@ class Ressource extends GameElement {
   double min = 0.0;
   double value = 0.0;
   double max = 100.0;
+  bool willAdd = true;
 
   Ressource({String name,
     String description,

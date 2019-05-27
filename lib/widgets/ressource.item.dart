@@ -30,7 +30,7 @@ class RessourceItemState extends State<RessourceItem> {
   Widget build(BuildContext context) {
     Ressource gameRes = Game.ressources[ressource.name];
     TextStyle stl;
-    if (gameRes != ressource) {
+    if ((gameRes != ressource) && (!ressource.willAdd)) {
       if (gameRes.canSubtract(ressource))
         stl = TextStyle(color: Colors.green);
       else

@@ -50,6 +50,10 @@ class Task extends GameElement {
           controller.reset();
       //else if (controllerStatus.compareTo("AnimationStatus.completed") == 0);
     }
+    if (cost != null)
+      for (int i = 0; i < cost.length; i++) {
+        cost[i].willAdd = false;
+      }
   }
 
   factory Task.fromJson(Map<String, dynamic> jsn){
