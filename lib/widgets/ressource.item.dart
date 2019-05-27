@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+
 
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
@@ -26,16 +28,27 @@ class RessourceItemState extends State<RessourceItem> {
 
   @override
   Widget build(BuildContext context) {
+    Ressource gameRes = Game.ressources[ressource.name];
+    TextStyle stl;
+    if (gameRes != ressource) {
+      if (gameRes.canSubtract(ressource))
+        stl = TextStyle(color: Colors.green);
+      else
+        stl = TextStyle(color: Colors.red);
+    }
+    else
+      stl = TextStyle(color: Colors.black);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Icon(
             ressource.icon,
-          size: size
+            size: size
         ),
         Text(
             ressource.value.toStringAsFixed(1),
-            textScaleFactor: (size/30.0)
+            textScaleFactor: (size / 30.0),
+            style: stl
         ),
       ],
     );
