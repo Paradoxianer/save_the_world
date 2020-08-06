@@ -1,4 +1,4 @@
-package de.heilsarmee.savetheworldflutterapp;
+package de.heilsarmee.save_the_world_flutter;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
