@@ -84,7 +84,7 @@ class Game {
 
   void addTask(Task task, {bool needInit = true}) {
     if (needInit) tasks.remove(task);
-    tasks.insert(0, task);
+    tasks.add(task);
     if (needInit) task.init();
     notifier.notifyListeners();
     task.goOnline();
@@ -190,7 +190,13 @@ class Game {
   }
 
   loadGame(String jsn) {
-    stage = int.tryParse(jsn);
+    try {
+      stage = int.tryParse(jsn);
+    }
+    catch(e)
+    {
+      return 0;
+    }
   }
 
   updateGame(Duration elapse) {
