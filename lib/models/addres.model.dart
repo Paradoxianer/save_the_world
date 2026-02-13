@@ -17,8 +17,8 @@ class AddRes extends Modifier {
     this.workOnRes = workOnRes;
   }
 
-  factory AddRes.fromJson(Map<String, dynamic> json){
-    var resList = json['ressources'] as List;
+  factory AddRes.fromJson(Map<String, dynamic> jsn){
+    var resList = json.decode(jsn['ressources']) as List;
     List<Ressource> ressourceList = resList.map((i) => Ressource.fromJson(i))
         .toList();
     return AddRes(ressources: ressourceList);
@@ -43,5 +43,10 @@ class AddRes extends Modifier {
         Game.ressources[ressources[i].name].add(ressources[i]);
       }
     }
+  }
+
+  String info() {
+    return super.info() + "add: " + ressources.toString() + " from " +
+        workOnRes.toString();
   }
 }

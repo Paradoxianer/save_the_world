@@ -26,4 +26,9 @@ class StartTask extends Modifier {
         found.controller.reverse(from: 0.99);
     }
   }
+
+  String info() {
+    return super.info() + "start " + nameOfTask;
+  }
+
 }

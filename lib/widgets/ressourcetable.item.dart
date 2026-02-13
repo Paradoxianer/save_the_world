@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressource.item.dart';
 
+//@Todo migrate RessourceTable to the wrap Widget so that we save space when orientation is changed
 class RessourceTable extends StatelessWidget {
 
   final List<Ressource> ressourceList;
@@ -16,7 +17,7 @@ class RessourceTable extends StatelessWidget {
   Widget build(BuildContext context) {
     List<TableRow> list = new List<TableRow>();
     if (ressourceList != null) {
-      if (ressourceList.length == 1)
+      if (ressourceList.length <= 1)
         column = 1;
       else
         column = ((ressourceList.length / rows) +
@@ -43,5 +44,4 @@ class RessourceTable extends StatelessWidget {
     }
     return new TableRow(children: list);
   }
-
 }

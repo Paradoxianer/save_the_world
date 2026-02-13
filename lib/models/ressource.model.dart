@@ -10,40 +10,48 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 class Ressource extends GameElement {
   double min = 0.0;
-  double value;
+  double value = 0.0;
   double max = 100.0;
+  bool willAdd = true;
 
-  Ressource({String name, String description, IconData icon, this.value, List<
-      Modifier> modifier, this.min, this.max}) :
-    super(name: name,description : description, icon : icon){
-    notifier=new ChangeNotifier();
+  Ressource({String name,
+    String description,
+    IconData icon,
+    this.value,
+    List<Modifier> modifier,
+    this.min,
+    this.max})
+      : super(name: name, description: description, icon: icon) {
+    notifier = new ChangeNotifier();
   }
 
-  factory Ressource.fromJson(Map<String, dynamic> json){
+  factory Ressource.fromJson(Map<String, dynamic> json) {
     String whatModifier = json['name'];
+    Ressource tmpRessource;
     switch (whatModifier) {
       case "Faith":
-        return Faith(value: json['value']);
+        tmpRessource = Faith(value: json['value']);
         break;
       case "Member":
-        return Member
-          (value: json['value']);
+        tmpRessource = Member(value: json['value']);
         break;
       case "Money":
-        return Money(value: json['value']);
+        tmpRessource = Money(value: json['value']);
         break;
       case "Publicity":
-        return Publicity(value: json['value']);
+        tmpRessource = Publicity(value: json['value']);
         break;
       case "Time":
-        return Time(value: json['value']);
+        tmpRessource = Time(value: json['value']);
         break;
       case "Wisdom":
-        return Wisdom(value: json['value']);
+        tmpRessource = Wisdom(value: json['value']);
         break;
     }
+    tmpRessource.min = json['min'];
+    tmpRessource.max = json['max'];
+    return tmpRessource;
   }
-
 
   Map<String, dynamic> toJson() {
     //ToDo: implement json of the modifier list.
@@ -56,42 +64,60 @@ class Ressource extends GameElement {
     };
   }
 
-
-  subtract(Ressource other){
-    this.value-=other.value;
-    if (this.value<min){
-      this.value=min;
+  subtract(Ressource other) {
+    if (other != null) {
+      this.value -= other.value;
+      if (this.value < min) {
+        this.value = min;
+      }
+      notifier.notifyListeners();
     }
+  }
+
+  add(Ressource other) {
+    if (other != null) {
+      this.value += other.value;
+      if (this.value > max) {
+        this.value = max;
+      }
+      notifier.notifyListeners();
+    }
+  }
+
+  setValue(double newVal) {
+    value = newVal;
     notifier.notifyListeners();
   }
 
-  add(Ressource other){
-    this.value+=other.value;
-    if (this.value>max){
-      this.value=max;
-    }
-    notifier.notifyListeners();
-  }
-
-  bool canAdd(Ressource other){
-    if (this.name == other.name){
-      if ((this.value+other.value)<=max)
-        return true;
-      else
+  bool canAdd(Ressource other) {
+    if (other != null) {
+      if (this.name == other.name) {
+        if ((this.value + other.value) <= max)
+          return true;
+        else
+          return false;
+      } else
         return false;
-    }
-    else
+    } else
       return false;
   }
 
-  bool canSubtract(Ressource other){
-    if (this.name == other.name){
-      if ((this.value-other.value)>=min)
-        return true;
-      else
+  bool canSubtract(Ressource other) {
+    if (other != null) {
+      if (this.name == other.name) {
+        if ((this.value - other.value) >= min)
+          return true;
+        else
+          return false;
+      } else
         return false;
-    }
-    else
+    } else
       return false;
   }
+
+  @override
+  String toString() {
+    return 'Ressource{name: $name,min: $min, value: $value, max: $max}';
+  }
+
 }

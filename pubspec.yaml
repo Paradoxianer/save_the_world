@@ -7,9 +7,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.6
   path_provider: ^2.1.2
+  firebase_core: ^2.24.0
+  url_launcher: ^6.2.1
+  share_plus: ^7.2.1
 
 dev_dependencies:
   flutter_test:

@@ -29,8 +29,8 @@ class AddTask extends Modifier {
   }
 
   modify() {
-    Task found = Game.getInstance().availableTasks().firstWhere((tsk) =>
-    tsk.name == nameOfTask);
+    print("modify" + this.name + "\t" + this.nameOfTask);
+    Task found = Game.getInstance().getTask(nameOfTask);
     if (found != null) {
       if (workOnList != null) {
         workOnList.add(found);
@@ -39,5 +39,9 @@ class AddTask extends Modifier {
         Game.getInstance().addTask(found);
       }
     }
+  }
+
+  String info() {
+    return super.info() + "add: " + nameOfTask;
   }
 }

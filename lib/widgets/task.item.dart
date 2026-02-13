@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
-
+import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 
 class TaskProgressIndicator extends StatefulWidget {
   final Task task;
@@ -80,12 +80,16 @@ class TaskItem extends StatelessWidget {
       child: Column(
         children: <Widget>[
           ListTile(
-            contentPadding: EdgeInsets.all(0.0),
+            contentPadding: EdgeInsets.all(1.0),
             leading: RessourceTable(ressourceList: task.cost),
             title: Text(task.name),
             subtitle: Text(task.description),
             trailing: RessourceTable(ressourceList: task.award),
             onTap: _handleTap,
+            onLongPress: () =>
+            {
+              showTaskInfo(context, task)
+            },
           ),
           TaskProgressIndicator(task: task)
         ],

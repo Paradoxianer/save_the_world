@@ -13,7 +13,7 @@ class TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-    print("addListener valueCahnged");
+    print("addListener valueChanged");
     Game.getInstance().addListener(valueChanged);
   }
 
@@ -24,7 +24,18 @@ class TaskListState extends State<TaskList> {
   }
 
   valueChanged() {
-    print("TaksList.valueChanged");
+    if (Game
+        .getInstance()
+        .snackbarMessage != null) {
+      Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(Game
+                .getInstance()
+                .snackbarMessage),
+            backgroundColor: Color.fromRGBO(180, 70, 70, 0.6),
+          )
+      );
+    }
     setState(() {});
   }
 

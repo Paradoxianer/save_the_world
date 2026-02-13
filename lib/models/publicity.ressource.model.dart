@@ -9,7 +9,10 @@ class Publicity extends Ressource {
           icon: Icons.live_tv,
           value: value,
           modifier: null
-      );
+      ) {
+    this.min = 0.0;
+    this.max = double.maxFinite;
+  }
 
   factory Publicity.fromJson(Map<String, dynamic> json){
     return Publicity(value: json['value']);

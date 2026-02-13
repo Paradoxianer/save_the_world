@@ -18,46 +18,50 @@ class Modifier extends GameItem {
     this.addedToElement(workOnItem);
   }
 
-  factory Modifier.fromJson(Map<String, dynamic> json){
-    String whatModifier = json['name'];
-    switch (whatModifier) {
-      case "AddRes":
-        return AddRes();
-        break;
-      case "SubtractRes":
-        return SubtractRes();
-        break;
-      case "AddTask":
-        return AddTask();
-        break;
-      case "RemoveTask":
-        return RemoveTask();
-        break;
-      case "AddModifier":
-        return AddModifer();
-        break;
-      case "RemoveModifier":
-        return RemoveModifer();
-        break;
-      case "AddMissed":
-        return null;
-        break;
-      case "RemoveMissed":
-        return null;
-        break;
-      case "StopTask":
-        return StopTask();
-        break;
-      case "StartTask":
-        return StartTask();
-        break;
-      case "NewDuration":
-        return null;
-        break;
-      case "RemoveMissed":
-        return null;
-        break;
+  factory Modifier.fromJson(Map<String, dynamic> jsn){
+    if (jsn != null) {
+      String whatModifier = jsn['name'];
+      switch (whatModifier) {
+        case "AddRes":
+          return AddRes.fromJson(jsn);
+          break;
+        case "SubtractRes":
+          return SubtractRes.fromJson(jsn);
+          break;
+        case "AddTask":
+          return AddTask.fromJson(jsn);
+          break;
+        case "RemoveTask":
+          return RemoveTask.fromJson(jsn);
+          break;
+        case "AddModifier":
+          return AddModifer.fromJson(jsn);
+          break;
+        case "RemoveModifier":
+          return RemoveModifer();
+          break;
+        case "AddMissed":
+          return null;
+          break;
+        case "RemoveMissed":
+          return null;
+          break;
+        case "StopTask":
+          return StopTask();
+          break;
+        case "StartTask":
+          return StartTask();
+          break;
+        case "NewDuration":
+          return null;
+          break;
+        case "RemoveMissed":
+          return null;
+          break;
+      }
     }
+    else
+      return null;
   }
 
   Map<String, dynamic> toJson() {
@@ -85,5 +89,9 @@ class Modifier extends GameItem {
       workOnItem=null;
       return 0;
     }
+  }
+
+  String info() {
+    return "";
   }
 }
