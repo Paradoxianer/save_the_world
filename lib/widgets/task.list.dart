@@ -19,22 +19,24 @@ class TaskListState extends State<TaskList> {
 
   @override
   void dispose() {
+    // FIX: Pass the function reference, not the result of a call
+    Game.getInstance().removeListener(valueChanged);
     super.dispose();
-    Game.getInstance().removeListener(valueChanged());
   }
 
   valueChanged() {
-    if (Game
-        .getInstance()
-        .snackbarMessage != null) {
-      Scaffold.of(context).showSnackBar(
+    print("TaksList.valueChanged");
+    if (!mounted) return;
+
+    if (Game.getInstance().snackbarMessage != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(Game
-                .getInstance()
-                .snackbarMessage),
-            backgroundColor: Color.fromRGBO(180, 70, 70, 0.6),
+            content: Text(Game.getInstance().snackbarMessage),
+            backgroundColor: const Color.fromRGBO(180, 70, 70, 0.6),
           )
       );
+      // Optional: Clear message after showing to avoid double triggers
+      // Game.getInstance().snackbarMessage = null;
     }
     setState(() {});
   }
