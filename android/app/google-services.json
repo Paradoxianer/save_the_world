@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "786799974317",
+    "firebase_url": "https://save-the-world-4e8ec.firebaseio.com",
+    "project_id": "save-the-world-4e8ec",
+    "storage_bucket": "save-the-world-4e8ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:786799974317:android:8414955c943e6af4",
+        "android_client_info": {
+          "package_name": "de.heilsarmee.save_the_world_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "786799974317-6chblqppcsdrod5k4etkptb39cglapqk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVOZ95vVKvKq8zh7GnBJ42PWmddqzKfV4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "786799974317-6chblqppcsdrod5k4etkptb39cglapqk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
