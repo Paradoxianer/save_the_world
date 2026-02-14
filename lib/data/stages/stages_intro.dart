@@ -16,128 +16,83 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> introStages = [
-  // STAGE 0: Tutorial (Sanfter Einstieg)
+  // STAGE 0: Zen-Tutorial (Der Fokus auf das Wesentliche)
   Stage(
     level: 0,
     member: 20,
-    description: "Hausgemeinde - Hier fängt alles an. Konzentriere dich auf das Wesentliche.",
+    description: "Hausgemeinde - Ruhe finden, Gott suchen.",
     activeTasks: [
-      "Bibellesen", // Nur eine Startaufgabe für den Fokus
+      "Bibellesen", // Der absolute Startpunkt
     ],
-    randomTasks: [
-      "Ein zwischenmenschliches Problem klären",
-    ],
+    randomTasks: [], // Keine negativen Überraschungen im Tutorial!
     allTasks: [
       Task(
         name: "Bibellesen",
-        description: "Zeit mit Gott verbringen. Erhöht deinen Glauben und deine Weisheit.",
-        duration: 2000.0,
+        description: "In der Stille auf Gottes Wort hören.",
+        duration: 3000.0,
         cost: [Time(value: 1.0)],
-        award: [Faith(value: 7.0), Wisdom(value: 3.0)],
+        award: [Faith(value: 10.0), Wisdom(value: 5.0)],
         modifier: [
-          AddTask(task: "Beten für andere"), // Schaltet die nächste Aufgabe frei
+          AddTask(task: "Beten für andere"), // Erster Progress
         ],
       ),
       Task(
         name: "Beten für andere",
-        description: "Für die Nöte anderer einstehen. Zieht neue Mitglieder an.",
+        description: "Die Anliegen deiner Mitmenschen vor Gott bringen.",
+        duration: 4000.0,
         cost: [Time(value: 1.0)],
-        award: [Faith(value: 1.0), Member(value: 0.10)],
+        award: [Faith(value: 5.0), Member(value: 0.2)],
         modifier: [
-          AddTask(task: "Seelsorge"),
+          AddTask(task: "Hausbesuch"), // Erstes soziales Element
         ],
       ),
       Task(
-        name: "Seelsorge",
-        description: "Pastor... ich hab da ein Problem",
-        cost: [Time(value: 1.0), Wisdom(value: 3.0)],
-        award: [Wisdom(value: 3.5), Member(value: 0.25)],
-        modifier: [
-          AddTask(task: "Kasse führen"),
-        ],
-      ),
-      Task(
-        name: "Kasse führen",
-        description: "Die Finanzen im Blick behalten. Ordnung ist das halbe Leben.",
-        duration: 4000.0,
-        cost: [Time(value: 2.0)],
-        award: [Money(value: 0.10)],
-        modifier: [
-          AddTask(task: "Gottesdienst vorbereiten"),
-        ],
-      ),
-      Task(
-        name: "Gottesdienst vorbereiten",
-        description: "Die Predigt schreibt sich nicht von selbst.",
-        duration: 8000.0,
-        cost: [Time(value: 1.0), Faith(value: 100.0)],
-        award: [Faith(value: 101.0)],
-        modifier: [
-          RemoveTask(task: "Gottesdienst vorbereiten"),
-          AddTask(task: "Predigt schreiben")
-        ],
-      ),
-      Task(
-        name: "Predigt schreiben",
-        description: "Worte finden, die Herzen berühren.",
-        duration: 8000.0,
-        cost: [Time(value: 6.0), Faith(value: 100.0)],
-        award: [Member(value: 0.02), Faith(value: 60.0)],
-        modifier: [
-          RemoveTask(task: "Predigt schreiben"),
-          AddTask(task: "Gottesdienst halten")
-        ],
-      ),
-      Task(
-        name: "Gottesdienst halten",
-        description: "Gemeinsam Gott loben und feiern.",
-        duration: 4000.0,
-        cost: [Member(value: 2.0), Time(value: 2.5), Faith(value: 200.0)],
-        award: [Faith(value: 260.0), Member(value: 2.5), Money(value: 20.0)],
-        modifier: [
-          RemoveTask(task: "Gottesdienst halten"),
-          AddTask(task: "Gottesdienst vorbereiten")
-        ],
-      ),
-      Task(
-        name: "Ein zwischenmenschliches Problem klären",
-        description: "Ein Gemeindemitglied ist sauer. Hier ist Fingerspitzengefühl gefragt.",
+        name: "Hausbesuch",
+        description: "Einfach mal vorbeischauen und zuhören.",
         duration: 6000.0,
-        timeToSolve: 7000.0,
-        cost: [Time(value: 3.0), Wisdom(value: 100.0)],
-        award: [Member(value: 0.25), Wisdom(value: 101.0)],
-        missed: [
-          SubtractRes(ressources: [Member(value: 0.5)]),
-          AddTask(task: "Ein zwischenmenschliches Problem klären")
+        cost: [Time(value: 2.0), Faith(value: 10.0)],
+        award: [Member(value: 0.5), Wisdom(value: 2.0)],
+        modifier: [
+          AddTask(task: "Schlafen"),
+          AddTask(task: "Freizeit"),
         ],
       ),
       Task(
-        name: "schlafen",
-        description: "Regeneration ist wichtig für deine geistige Klarheit.",
-        duration: 16000.0,
+        name: "Schlafen",
+        description: "Neue Kraft tanken für den nächsten Tag.",
+        duration: 10000.0,
         cost: [Time(value: 8.0)],
         award: [Time(value: 16.0)],
       ),
       Task(
         name: "Freizeit",
-        description: "Einfach mal die Seele baumeln lassen.",
-        duration: 9000.0,
-        cost: [Publicity(value: 0.1)],
-        award: [Time(value: 0.3)],
+        description: "Durchatmen und die Schöpfung genießen.",
+        duration: 5000.0,
+        cost: [],
+        award: [Time(value: 1.0), Faith(value: 2.0)],
       ),
     ],
   ),
 
-  // STAGE 1: Gemeinschaftsgruppe
+  // STAGE 1: Erste Gehversuche in der Organisation
   Stage(
     level: 1,
     member: 40,
-    description: "Gemeinschaftsgruppe - Die Beziehungen werden tiefer.",
-    activeTasks: ["Bibellesen", "Beten für andere", "Seelsorge", "Kasse führen", "Gottesdienst vorbereiten", "schlafen", "Freizeit"],
-    randomTasks: ["Rechnung nicht bezahlt", "Kassendifferenz finden"],
+    description: "Gemeinschaftsgruppe - Wir werden mehr.",
+    activeTasks: ["Bibellesen", "Beten für andere", "Hausbesuch", "Schlafen", "Freizeit", "Kasse führen"],
+    randomTasks: ["Kassendifferenz finden"],
     allTasks: [
-      // Hier kommen die restlichen Tasks für Stufe 1 aus dem Original...
-    ]
+      Task(
+        name: "Kasse führen",
+        description: "Die ersten Spenden wollen ordentlich verwaltet werden.",
+        duration: 4000.0,
+        cost: [Time(value: 2.0)],
+        award: [Money(value: 1.0)], // Höherer Award für Motivation
+        modifier: [
+          AddTask(task: "Gottesdienst vorbereiten"),
+        ],
+      ),
+      // ... hier folgen die anderen bekannten Tasks für Level 1 ...
+    ],
   ),
-  // STAGE 2 & 3 folgen hier analog...
 ];
