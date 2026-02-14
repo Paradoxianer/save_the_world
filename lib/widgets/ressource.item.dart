@@ -13,15 +13,23 @@ class RessourceItem extends StatefulWidget {
 }
 
 class RessourceItemState extends State<RessourceItem> {
+  Ressource? _globalResCache;
+
   @override
   void initState() {
     super.initState();
+    // Listen to the resource passed to the widget (e.g. the cost definition)
     widget.ressource.addListener(valueChanged);
+    
+    // CRITICAL FIX: Also listen to the global resource state to update colors instantly
+    _globalResCache = Game.ressources[widget.ressource.name];
+    _globalResCache?.addListener(valueChanged);
   }
 
   @override
   void dispose() {
     widget.ressource.removeListener(valueChanged);
+    _globalResCache?.removeListener(valueChanged);
     super.dispose();
   }
 
@@ -38,10 +46,10 @@ class RessourceItemState extends State<RessourceItem> {
     // Logic for negative resources or critical state
     final bool isNegative = (gameRes?.value ?? 0) < 0;
     
-    // Existing logic for task cost preview (Green/Red)
     TextStyle textStyle;
     Color iconColor;
 
+    // Check if this item is a cost preview (not the global resource itself)
     if (gameRes != null && (gameRes != widget.ressource) && (!widget.ressource.willAdd)) {
       if (gameRes.canSubtract(widget.ressource)) {
         textStyle = const TextStyle(color: Colors.green, fontWeight: FontWeight.bold);
@@ -67,7 +75,7 @@ class RessourceItemState extends State<RessourceItem> {
           Icon(
             widget.ressource.icon, 
             size: widget.size,
-            color: iconColor, // Icons now react to the state
+            color: iconColor,
           ),
           const SizedBox(height: 2),
           Text(
