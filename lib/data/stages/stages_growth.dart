@@ -16,48 +16,47 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> growthStages = [
-  // STAGE 4: Kleine Gemeinde (200 Mitglieder) - Die Pastoral-Barriere
+  // STAGE 4: Kleine Gemeinde (200 Mitglieder) - Fokus: Jüngerschaft & Mentoring
   Stage(
     level: 4,
     member: 200,
-    description: "Kleine Gemeinde - Du kannst nicht mehr alles alleine machen. Es braucht Leiter.",
+    description: "Kleine Gemeinde - Wahres Wachstum geschieht durch die Befähigung der Einzelnen.",
     activeTasks: ["Bibellesen", "Beten", "Schlafen", "Gottesdienst halten", "Geistesgaben entdecken"],
-    randomTasks: ["Streit in der Gemeinde", "Kassendifferenz finden", "Rechnung nicht bezahlt"],
+    randomTasks: ["Streit in der Gemeinde", "Mitarbeiter-Burnout"],
     allTasks: [
       Task(
-        name: "Aufgaben verteilen",
-        description: "Setze Menschen nach ihren Stärken ein. Delegation ist der Schlüssel zum Wachstum.",
-        duration: 6000.0,
-        cost: [Time(value: 6.0), Wisdom(value: 50.0)],
-        award: [Faith(value: 10.0), Wisdom(value: 10.0)],
-        modifier: [
-          AddTask(task: "Ehrenamtliche Leiter einsetzen"),
-          MessageModifier(message: "Gute Delegation! Deine Last wird leichter, wenn du Verantwortung teilst."),
-        ],
-      ),
-      Task(
-        name: "Ehrenamtliche Leiter einsetzen",
-        description: "Befähige andere, Verantwortung für Teilbereiche zu übernehmen.",
-        duration: 10000.0,
-        cost: [Member(value: 10.0), Time(value: 12.0), Wisdom(value: 100.0)],
+        name: "1-zu-1 Mentoring",
+        description: "Investiere tief in eine Person. Jüngerschaft ist Beziehungsarbeit.",
+        duration: 12000.0,
+        cost: [Time(value: 6.0), Wisdom(value: 20.0), Faith(value: 10.0)],
         award: [Wisdom(value: 50.0), Faith(value: 20.0)],
         modifier: [
-          AddTask(task: "Kleingruppenverantwortlichen einsetzen"),
-          MessageModifier(message: "Wachstum braucht Struktur. Deine Leiter begleiten nun die ersten Kleingruppen eigenständig."),
+          AddTask(task: "Aufgaben abgeben"),
+          MessageModifier(message: "Tiefe Jüngerschaft! Durch dein Mentoring wächst ein neuer Leiter heran, der bald Lasten mittragen kann."),
         ],
       ),
       Task(
-        name: "FSJler einsetzen",
-        description: "Junge Menschen investieren ein Jahr in den Dienst. Hilfe bei praktischen Aufgaben.",
-        duration: 8000.0,
-        cost: [Money(value: 300.0), Time(value: 4.0)],
-        award: [Member(value: 1.0), Wisdom(value: 5.0)],
+        name: "Aufgaben abgeben",
+        description: "Vertraue deinen Jüngern praktische Aufgaben an. Schafft Freiraum für das Gebet.",
+        duration: 5000.0,
+        cost: [Time(value: 2.0), Wisdom(value: 100.0)],
+        award: [Time(value: 4.0)], // Einzige Aufgabe, die Zeit "generiert" durch Entlastung
         modifier: [
-          MessageModifier(message: "Frischer Wind! Dein FSJler entlastet dich bei der täglichen Korrespondenz."),
+          MessageModifier(message: "Befreiend! Indem du Aufgaben abgibst, handelst du nach biblischem Vorbild und gewinnst Zeit für das Wesentliche."),
         ],
       ),
-      // ... Standard-Tasks aus vorherigen Stages ...
+      Task(
+        name: "Ehrenamtliche Leiter schulen",
+        description: "Befähige deine Leiter, selbst wieder Jünger zu machen (Multiplikation).",
+        duration: 15000.0,
+        cost: [Time(value: 10.0), Wisdom(value: 300.0), Faith(value: 100.0)],
+        award: [Member(value: 5.0), Wisdom(value: 100.0)],
+        modifier: [
+          AddTask(task: "Pionier-Team aussenden"),
+          MessageModifier(message: "Multiplikations-Effekt: Deine Leiter fangen an, eigenständig Jüngerschaftskreise zu leiten."),
+        ],
+      ),
     ],
   ),
-  // Weitere Stages 5-10 folgen hier...
+  // ... weitere Stages ...
 ];

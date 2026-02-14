@@ -1,55 +1,45 @@
 # 📖 Logik der Gemeindewachstums-Schwellen
 
-Diese Datei dient als Gamedesign-Referenz für die Implementierung der 32 Stufen in `stages.dart`. Sie kombiniert soziologische Wachstumsmodelle (nach Samy El-Daour) mit dem Fokus auf die individuelle Jüngerschaft und die Heilsarmee-Identität.
+Diese Datei definiert die spielerische Umsetzung von Jüngerschaft und geistlicher Multiplikation. Wachstum wird hier nicht als "Zahl" verstanden, sondern als "Befähigung".
+
+## 🚀 Das Prinzip der Multiplikation (2. Timotheus 2,2)
+
+Im Spiel unterscheiden wir zwischen **linearem Wachstum** und **geistlicher Multiplikation**:
+
+*   **Lineares Wachstum (+):** Aufgaben wie "Gottesdienst" oder "Essen" bringen direkt neue Mitglieder. Das ist einfach, aber der Zeitaufwand für den Leiter bleibt hoch.
+*   **Geistliche Multiplikation (x):** Aufgaben wie "Mentoring" oder "Leiter-Training". Sie bringen anfangs kaum neue Mitglieder, reduzieren aber dauerhaft die Zeit-Kosten für andere Aufgaben oder schalten "Automatik-Effekte" frei.
+
+---
 
 ## 🏗 Struktur der Schwellen & Fokus-Phasen
 
-Das Hauptaugenmerk liegt nicht auf der reinen Mitgliederzahl, sondern auf der **Qualität der Gemeinschaft** und der **Entwicklung der Einzelnen**.
-
-| Stufe | Typ / Bezeichnung | Schwelle (nach Samy El-Daour) | Jüngerschafts-Fokus | Haupt-Barriere |
-|-------|-------------------|-------------------------------|----------------------|----------------|
-| 0-1   | **Die Familie**   | 0 - 50 Personen               | Persönliches Vorbild | Zeit des Leiters |
-| 2-4   | **Der Clan**      | 50 - 150 Personen             | Mentoring & Kleingruppen | Rollen-Verwirrung |
-| 5-10  | **Die Gemeinde**  | 150 - 400 Personen            | Leiter von Leitern   | Struktur & Deleg. |
-| 11-20 | **Die Bewegung**  | 400 - 2.000 Personen          | Multiplikation       | Kultur-Verlust |
-| 21-32 | **Die Armee**     | > 2.000 Personen              | Strategische Vision  | Komplexität |
+| Stufe | Phase | Jüngerschafts-Mechanik | Multiplikations-Effekt |
+|-------|-------|-------------------------|------------------------|
+| 0-1   | **Familie** | 1-zu-1 Begleitung | Vertrauen bildet das Fundament |
+| 2-4   | **Clan** | Geistesgaben entdecken | Erste Leiter übernehmen Aufgaben |
+| 5-10  | **Gemeinde** | Leiter-Training | Aus Leitern werden Väter/Mütter |
+| 11-20 | **Bewegung** | DNA-Transfer | Neue Standorte entstehen autonom |
+| 21-32 | **Armee** | Visionäre Strategie | Globale Wirkung durch lokale Reife |
 
 ---
 
-## 🔍 Detail-Phasen & Jüngerschafts-Strategie
+## 🔍 Jüngerschafts-Tasks & ihre Wirkung
 
-### Phase 1: Die Beziehungs-Stufe (Stufe 0-1)
-*   **Charakter:** "Jeder kennt jeden". Der Offizier ist die zentrale Bezugsperson.
-*   **Individuelles Wachstum:** Fokus auf **Stille Zeit** und **Gebet**. Der Einzelne lernt, Gott im Alltag zu begegnen.
-*   **Herausforderung:** Der Leiter muss lernen, nicht alles selbst zu tun, sondern Menschen zu befähigen (Empowerment).
-*   **Kern-Tasks:** "Bibellesen", "Hausbesuch", "Gemeinsames Essen".
+### 1. Das Mentoring-Prinzip (Stufe 2+)
+*   **Task:** "1-zu-1 Mentoring"
+*   **Mechanik:** Kostet viel Zeit des Leiters, erhöht aber den "Wisdom"-Wert der Gemeinde massiv.
+*   **Ziel:** Nur durch Mentoring können "Ehrenamtliche Leiter" überhaupt erst eingesetzt werden.
 
-### Phase 2: Die Mentor-Stufe (Stufe 2-4) -> *Die 150er Schwelle*
-*   **Charakter:** Die Gruppe wird zu groß für eine Wohnung. Es entstehen Untergruppen.
-*   **Individuelles Wachstum:** Entdeckung von **Geistesgaben**. Menschen finden ihren Platz im Dienst.
-*   **Herausforderung:** Übergang von "Beziehungs-Leitung" zu "Struktur-Leitung".
-*   **Kern-Tasks:** "Geistesgaben entdecken", "Mentoren-Treffen", "Hauskreis-Leiter schulen".
+### 2. Delegation als Jüngerschaft (Stufe 4+)
+*   **Task:** "Aufgaben abgeben"
+*   **Mechanik:** Reduziert die Time-Kosten für "Standard-Tasks" (wie Kasse oder Mails), da nun "Jünger" diese Aufgaben als ihren Dienst verstehen.
 
-### Phase 3: Die Leitungs-Stufe (Stufe 5-10) -> *Die 400er Schwelle*
-*   **Charakter:** Die Gemeinde benötigt feste Teams und Programme.
-*   **Individuelles Wachstum:** Fokus auf **Verantwortung**. Erfahrene Mitglieder begleiten Neulinge.
-*   **Herausforderung:** Der Leiter darf nicht zum Verwalter werden, sondern muss geistlicher Vater bleiben.
-*   **Kern-Tasks:** "Leitungs-Training", "FSJler begleiten", "Einsatzwagen-Teams koordinieren".
-
-### Phase 4: Die Multiplikations-Stufe (Stufe 11-32)
-*   **Charakter:** Die Wirkung geht weit über die eigenen vier Wände hinaus (Social Media, TV, Weltweite Mission).
-*   **Individuelles Wachstum:** Jeder ist ein **Botschafter**. Die DNA des Dienstes wird exportiert.
-*   **Herausforderung:** Erhalt der Leidenschaft trotz großer Strukturen.
-*   **Kern-Tasks:** "Regionale Konferenzen", "PR-Manager", "Globale Mission".
+### 3. Multiplikation der Standorte (Stufe 10+)
+*   **Task:** "Pionier-Team aussenden"
+*   **Mechanik:** Kostet einen hohen Batzen an "Faith" und "Members", erzeugt aber nach Abschluss einen permanenten Zuwachs an Ressourcen ("Passives Einkommen" an Seelen).
 
 ---
 
-## ⚖️ Balancing-Prinzipien (Jüngerschaft vs. Organisation)
-
-1.  **Glaube (Faith):** Sinkt drastisch, wenn organisatorische Tasks überwiegen.
-2.  **Weisheit (Wisdom):** Steigt durch Jüngerschafts-Gespräche und Mentoring.
-3.  **Zeit (Time):** Ist das knappste Gut. Schlafen und Stille Zeit müssen als "Investition" wahrgenommen werden, nicht als Verlust.
-4.  **Mitglieder (Member):** Wachsen nicht durch Marketing, sondern durch "Mund-zu-Mund"-Propaganda (Award aus Hausbesuchen und Essen).
-
----
-*Referenz: Basierend auf den Wachstumsschwellen von Samy El-Daour (Leiterblog.de)*
+## ⚖️ Balancing: Die Gefahr der "Bürokratisierung"
+Wenn die Gemeinde wächst, ohne dass Jüngerschaft stattfindet, steigt der **Stress-Faktor** (Time-Kosten) exponentiell an, bis das Spiel unspielbar wird. 
+**Die einzige Rettung:** In Menschen investieren (Multiplikation), damit die Last geteilt wird.
