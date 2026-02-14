@@ -1,9 +1,32 @@
+# Flutter/Dart related
 .DS_Store
 .dart_tool/
-
 .packages
 .pub/
-
 build/
-
 .flutter-plugins
+.flutter-plugins-dependencies
+analysis_options.yaml
+
+# Android related
+android/**/generated/
+android/local.properties
+android/**/*.iml
+android/.gradle/
+android/app/build/
+
+# iOS related
+ios/.test_runtime/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+
+# IDE related
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
