@@ -17,12 +17,15 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> introStages = [
-  // STAGE 0: Der Ruf (Absolut simpler Einstieg)
+  // STAGE 0: Der Ruf (Tutorial für angehende Heilsarmeeoffiziere)
   Stage(
     level: 0,
     member: 20,
     description: "Hausgemeinde - Als Offizier fängst du klein an, aber mit großem Auftrag.",
-    activeTasks: ["Bibellesen"],
+    activeTasks: [
+      "Bibellesen",
+      "Schlafen", // Von Anfang an freigeschaltet für die Balance
+    ],
     randomTasks: [],
     allTasks: [
       Task(
@@ -54,7 +57,7 @@ final List<Stage> introStages = [
         cost: [Time(value: 3.0), Faith(value: 5.0)],
         award: [Member(value: 1.5), Wisdom(value: 2.0)],
         modifier: [
-          AddTask(task: "Schlafen"),
+          AddTask(task: "Essen in meiner Wohnung"),
           MessageModifier(message: "Beziehungen zu pflegen ist der Kern deiner Arbeit. Aber achte weise auf deine Zeit!"),
         ],
       ),
@@ -65,7 +68,6 @@ final List<Stage> introStages = [
         cost: [Time(value: 8.0)],
         award: [Time(value: 16.0)],
         modifier: [
-          AddTask(task: "Essen in meiner Wohnung"),
           MessageModifier(message: "Gute Erholung! Deine Zeit ist eine kostbare Gabe Gottes. Nutze sie diszipliniert."),
         ],
       ),
@@ -73,8 +75,12 @@ final List<Stage> introStages = [
         name: "Essen in meiner Wohnung",
         description: "Ein einfacher Hauskreis in deinem Wohnzimmer. Die Keimzelle der Gemeinde.",
         duration: 10000.0,
-        cost: [Time(value: 4.0), Faith(value: 20.0)],
-        award: [Member(value: 18.0), Publicity(value: 2.0)],
+        cost: [
+          Time(value: 4.0), 
+          Faith(value: 20.0),
+          Member(value: 5.0), // Setzt voraus, dass man bereits 5 Leute durch Gebet/Besuche 'gesammelt' hat
+        ],
+        award: [Member(value: 15.0), Publicity(value: 2.0)],
         modifier: [
           MessageModifier(message: "Halleluja! Aus Einladungen werden Jünger. Deine kleine Herde ist bereit für den nächsten Schritt."),
         ],
@@ -100,7 +106,7 @@ final List<Stage> introStages = [
           AddTask(task: "Gottesdienst vorbereiten"),
         ],
       ),
-      // ... restliche Tasks für Stage 1 ...
+      // ... weitere Tasks ...
     ],
   ),
 ];
