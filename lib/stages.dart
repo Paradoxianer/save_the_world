@@ -1,14 +1,14 @@
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/data/stages/stages_intro.dart';
+import 'package:save_the_world_flutter_app/data/stages/stages_growth.dart';
 
-// This file now acts as a central registry for all game stages.
-// The actual data is moved to modular files in lib/data/stages/
-// to keep the project maintainable as we scale to 32 stages.
+// This file acts as a central registry for all game stages.
+// Data is modularized to keep the project maintainable.
 
 final List<Stage> allStages = <Stage>[
-  ...introStages,
-  // Future stages will be added here as we expand:
-  // ...growthStages,
+  ...introStages,   // Stages 0 - 3 (The Family / Clan)
+  ...growthStages,  // Stages 4 - 10 (The Church / Small Community)
+  // Future stages:
   // ...movementStages,
   // ...globalStages,
 ];
