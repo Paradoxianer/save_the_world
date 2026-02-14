@@ -1,18 +1,111 @@
-# 🛠 Offene Issues für den Beta-Release
+﻿# 📋 GitHub Issues Roadmap
 
-Hier sind die kritischen Baustellen, die vor dem Beta-Start behoben werden müssen.
+## #20: Fix: share_plus Migration 🔴 🏷️ 🏷️  [bug, critical, prio: 0-blocker]
+---
+**Status / Description:**
+Das Plugin esys_flutter_share existiert nicht mehr. Es muss vollst├ñndig durch share_plus ersetzt werden (betrifft main.dart).
 
-## 🔴 Kritisch (Beta-Blocker)
-- [ ] **Bug: `updateGame` ist leer.** Der zentrale Game-Loop berechnet aktuell nichts. Ressourcen-Ticks und zeitgesteuerte Events fehlen.
-- [ ] **Validation: Task-Duplikation.** In `addTask` (Game-Model) fehlt die Logik, um zu verhindern, dass der gleiche Task mehrfach gleichzeitig läuft, was die Ressourcen-Logik sprengen könnte.
-- [ ] **Data Safety: JSON-Serialisierung.** Die `fromJson` Fabrik in `Game` ist unvollständig (z.B. `Ressource.fromJson` Mapping). Dies führt zu Abstürzen beim Laden alter Spielstände.
+---
 
-## 🟡 Mittel (Gameplay & UI)
-- [ ] **UI-Feedback: Fehlende Visualisierung bei Kosten.** Wenn Ressourcen für einen Task abgezogen werden, gibt es kein visuelles Feedback.
-- [ ] **Logic: Miss-Mechanik verfeinern.** Die `miss()` Funktion in `Task` gibt aktuell nur einen Print aus. Hier muss ein echtes In-Game-Event (UI-Benachrichtigung) getriggert werden.
-- [ ] **Balancing: Task-Werte.** Die Werte für "studieren" (Kosten 200 Money) stehen in keinem Verhältnis zu "Kasse führen" (Ertrag 0.10 Money). Hier ist ein Rebalancing nötig.
+## #19: Migration: Null Safety & Flutter 3 Fixes 🔴 🏷️ 🏷️  [bug, critical, prio: 0-blocker]
+---
+**Status / Description:**
+Behebung der Compiler-Fehler nach dem Merge und Upgrade auf Flutter 3.
 
-## 🟢 Niedrig (Polishing)
-- [ ] **UX: Tab-Navigation.** Die `TabBarView` in `main.dart` hat 3 Tabs definiert, zeigt aber aktuell nur die `TaskList` an.
-- [ ] **Assets: Icon Credits.** Integration der in `globals.dart` erwähnten Credits in ein "About"-Menü.
-- [ ] **Code Cleanup:** Entfernen der `testTasks` aus der Produktionslogik und Verschiebung in eine dedizierte Mock-Data Klasse.
+Checkliste:
+- [x] about.dart reparieren
+- [x] GameController Null-Safety Fixes
+- [x] Game Model & JSON Refactoring
+- [x] DataManager Future Fixes
+
+---
+
+## #18: Content: Stufen 21-32 (Globales Finale) 🏷️ 🏷️  [content, prio: 3-low]
+---
+**Status / Description:**
+Implementierung der Stufen: Globale Gr├Â├ƒe (2.500.000) bis Weltkirche/Spielende (7,6 Mrd).
+
+---
+
+## #17: Content: Stufen 11-20 (Bewegungsphase) 🏷️ 🏷️  [content, prio: 3-low]
+---
+**Status / Description:**
+Implementierung der Stufen: Beeinflussende Kirche (4.500) bis Globale Bewegung Level 3 (1.500.000).
+
+---
+
+## #16: Content: Stufen 4-10 (Wachstumsphase) 🏷️ 🏷️  [content, prio: 3-low]
+---
+**Status / Description:**
+Implementierung der Stufen: Mittelgro├ƒe Gemeinde (200) bis MegaChurch Level 4 (2.800).
+
+---
+
+## #15: Master: Alle 33 Spielstufen implementieren 🏷️ 🏷️ 🏷️  [balancing, content, prio: 2-medium]
+---
+**Status / Description:**
+Zentrales Issue f├╝r den Ausbau der Spielstufen (0-32).
+
+### Meilensteine:
+- [ ] Stufen 4-10: Wachstumsphase
+- [ ] Stufen 11-20: Bewegungsphase
+- [ ] Stufen 21-32: Globales Finale
+
+---
+
+## #9: Code Cleanup: Mock-Data verschieben 🏷️ 🏷️  [refactor, prio: 3-low]
+---
+**Status / Description:**
+testTasks aus der Produktionslogik in eine dedizierte Mock-Klasse verschieben.
+
+---
+
+## #8: UX: Tab-Navigation vervollst├ñndigen 🏷️ 🏷️  [ui, prio: 2-medium]
+---
+**Status / Description:**
+Die TabBarView zeigt aktuell nur die TaskList an. Die anderen Tabs m├╝ssen implementiert werden.
+
+---
+
+## #7: Balancing: Task-Werte 🏷️ 🏷️  [balancing, prio: 3-low]
+---
+**Status / Description:**
+Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse f├╝hren).
+
+---
+
+## #6: UI-Feedback: Fehlende Visualisierung bei Kosten ✨ 🏷️ 🏷️  [enhancement, ui, prio: 2-medium]
+---
+**Status / Description:**
+Wenn Ressourcen f├╝r einen Task abgezogen werden, gibt es kein visuelles Feedback f├╝r den Spieler.
+
+---
+
+## #5: Refactor: Robuste JSON-Persistenz 🔴 🏷️ 🏷️  [bug, critical, prio: 1-high]
+---
+**Status / Description:**
+Die aktuelle loadState/saveState Logik nutzt manuelle String-Keys. Dies sollte auf eine robustere Serialisierung (z.B. Task.fromJson Verfeinerung) umgestellt werden, um Type-Crashes zu vermeiden.
+
+---
+
+## #4: Validation: Task-Duplikation 🔴 🏷️ 🏷️  [bug, critical, prio: 1-high]
+---
+**Status / Description:**
+In addTask (Game-Model) fehlt die Logik, um zu verhindern, dass der gleiche Task mehrfach gleichzeitig l├ñuft.
+
+---
+
+## #2: Assets: Icon Credits integrieren 🏷️ 🏷️  [documentation, prio: 3-low]
+---
+**Status / Description:**
+Credits aus globals.dart in ein About-Men├╝ ├╝berf├╝hren.
+
+---
+
+## #1: Logic: Miss-Mechanik verfeinern ✨ 🏷️  [enhancement, prio: 2-medium]
+---
+**Status / Description:**
+Die miss() Funktion braucht ein echtes In-Game-Event (UI-Benachrichtigung) statt nur einen Print.
+
+---
+

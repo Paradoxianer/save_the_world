@@ -1,29 +1,30 @@
 import 'dart:convert';
 
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class AddRes extends Modifier {
-  GameElement workOnItem;
-  List<Ressource> ressources;
-  Map<String, Ressource> workOnRes;
+  final List<Ressource> ressources;
+  final Map<String, Ressource>? workOnRes;
 
-  AddRes({List<Ressource> ressources, Map<String, Ressource> workOnRes})
-      :
-        super(name: "AddRes", description: "Adds a list of Ressource") {
-    this.ressources = ressources;
-    this.workOnRes = workOnRes;
-  }
+  AddRes({required this.ressources, this.workOnRes})
+      : super(name: "AddRes", description: "Adds a list of Ressource");
 
-  factory AddRes.fromJson(Map<String, dynamic> jsn){
-    var resList = json.decode(jsn['ressources']) as List;
-    List<Ressource> ressourceList = resList.map((i) => Ressource.fromJson(i))
-        .toList();
+  factory AddRes.fromJson(Map<String, dynamic> jsn) {
+    final dynamic decodedRessources = jsn['ressources'];
+    List<dynamic> resList;
+    if (decodedRessources is String) {
+      resList = json.decode(decodedRessources) as List;
+    } else {
+      resList = decodedRessources as List;
+    }
+    
+    List<Ressource> ressourceList = resList.map((i) => Ressource.fromJson(i as Map<String, dynamic>)).toList();
     return AddRes(ressources: ressourceList);
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
@@ -31,22 +32,21 @@ class AddRes extends Modifier {
     };
   }
 
-  modify() {
-    int listSize = ressources.length;
+  @override
+  void modify() {
     if (workOnRes != null) {
-      for (int i = 0; i < listSize; i++) {
-        workOnRes[ressources[i].name].add(ressources[i]);
+      for (var res in ressources) {
+        workOnRes![res.name]?.add(res);
       }
-    }
-    else {
-      for (int i = 0; i < listSize; i++) {
-        Game.ressources[ressources[i].name].add(ressources[i]);
+    } else {
+      for (var res in ressources) {
+        Game.ressources[res.name]?.add(res);
       }
     }
   }
 
+  @override
   String info() {
-    return super.info() + "add: " + ressources.toString() + " from " +
-        workOnRes.toString();
+    return "${super.info()}add: $ressources from $workOnRes";
   }
 }

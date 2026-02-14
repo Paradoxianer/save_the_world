@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,47 +10,46 @@ import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
-
+import 'package:share_plus/share_plus.dart';
 
 void main() {
-  runApp(new MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  GlobalKey previewContainer = new GlobalKey();
+  const MyApp({super.key});
+
+  static final GlobalKey previewContainer = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     Game game = Game.getInstance();
     return MaterialApp(
-      localizationsDelegates: [
-        // ... app-specific localization delegate[s] here
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [
-        const Locale('en'), // English
-        const Locale('de'), // Hebrew
-        // ... other locales the app supports
+      supportedLocales: const [
+        Locale('en'),
+        Locale('de'),
       ],
       home: DefaultTabController(
         length: 2,
         child: RepaintBoundary(
             key: previewContainer,
-            child: Home(previewContainer)
+            child: Home(previewContainer: previewContainer)
         ),
       ),
     );
   }
-
 }
 
 class Home extends StatelessWidget {
-  GlobalKey previewContainer;
+  final GlobalKey previewContainer;
 
-  Home(GlobalKey key) {
-    previewContainer = key;
-  }
+  const Home({super.key, required this.previewContainer});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +59,7 @@ class Home extends StatelessWidget {
             preferredSize: const Size.fromHeight(50.0),
             child: Row(
               children: <Widget>[
-                StageItem(),
+                const StageItem(),
                 Expanded(
                     child: RessourceTable(
                       ressourceList: Game.ressources.values.toList(),
@@ -70,9 +68,9 @@ class Home extends StatelessWidget {
               ],
             )
         ),
-        title: Text('Rette die Welt'),
+        title: const Text('Rette die Welt'),
       ),
-      body: TabBarView(
+      body: const TabBarView(
         children: [
           TaskList(),
           LevelList()
@@ -84,57 +82,63 @@ class Home extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
-                    icon: Icon(Icons.share),
+                    icon: const Icon(Icons.share),
                     onPressed: () {
-                      shareScreenshot();
+                      shareScreenshot(context);
                     }
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
-                    icon: Icon(Icons.replay),
+                    icon: const Icon(Icons.replay),
                     onPressed: () {
                       Game.getInstance().initRes();
                     }
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
-                    icon: Icon(Icons.contacts),
+                    icon: const Icon(Icons.contacts),
                     onPressed: () {
                       showDSGVODialog(context);
                     }
                 ),
                 IconButton(
-                    icon: Icon(Icons.question_answer),
+                    icon: const Icon(Icons.question_answer),
                     onPressed: () {
                       showAppAboutDialog(context);
                     }
                 )
-
               ]
           )
       ),
     );
   }
 
-  takeScreenShot() async {
+  Future<ByteData?> takeScreenShot() async {
     debugPrint("taking a screenshot");
-    RenderRepaintBoundary boundary = previewContainer.currentContext
-        .findRenderObject();
+    final RenderRepaintBoundary? boundary = previewContainer.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    if (boundary == null) return null;
+    
     ui.Image image = await boundary.toImage();
-    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    debugPrint("screenhot is" + byteData.toString());
+    ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     return byteData;
   }
 
-  Future shareScreenshot() async {
+  Future<void> shareScreenshot(BuildContext context) async {
     try {
-      final ByteData bytes = await takeScreenShot();
-      debugPrint("now we can share the screenshot");
-      await EsysFlutterShare.shareImage(
-          'Game.png', bytes, 'Save The World');
+      final ByteData? bytes = await takeScreenShot();
+      if (bytes == null) return;
+      
+      final Uint8List uint8list = bytes.buffer.asUint8List();
+      
+      final box = context.findRenderObject() as RenderBox?;
+      
+      await Share.shareXFiles(
+        [XFile.fromData(uint8list, name: 'Game.png', mimeType: 'image/png')],
+        subject: 'Save The World',
+        sharePositionOrigin: box != null ? box.localToGlobal(Offset.zero) & box.size : null,
+      );
     } catch (e) {
-      print('error: $e');
+      debugPrint('error sharing screenshot: $e');
     }
   }
-
 }

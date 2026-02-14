@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class DataManager {
-
   Future<String> getPath() async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
@@ -12,24 +11,24 @@ class DataManager {
 
   Future<File> workingFileFor(String fileName) async {
     final path = await getPath();
-    return File('$path/' + fileName + '.json');
+    return File('$path/$fileName.json');
   }
 
-  Future<String> readData(String fileName) async {
+  Future<String?> readData(String fileName) async {
     try {
       final file = await workingFileFor(fileName);
-      // Read the file
-      String content = await file.readAsString();
-      return content;
+      if (await file.exists()) {
+        return await file.readAsString();
+      }
+      return null;
     } catch (e) {
-      // If we encounter an error, return 0
+      // If we encounter an error, return null
       return null;
     }
   }
 
   Future<File> writeJson(String fileName, String jsonString) async {
-    File file = await workingFileFor(fileName);
-    file = await workingFileFor(fileName);
+    final file = await workingFileFor(fileName);
     // Write the file
     return file.writeAsString(jsonString, mode: FileMode.write);
   }

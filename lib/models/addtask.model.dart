@@ -1,47 +1,43 @@
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:flutter/foundation.dart';
 
 class AddTask extends Modifier {
-  GameElement workOnItem;
-  String nameOfTask;
-  List<Task> workOnList;
+  final String nameOfTask;
+  final List<Task>? workOnList;
 
-  AddTask({String task, List<Task> workOnList})
-      : super(
+  AddTask({required String task, this.workOnList})
+      : nameOfTask = task,
+        super(
             name: "AddTask",
             description:
-                "Adds the given List of Task to the Game or the given TaskList") {
-    this.nameOfTask = task;
-    this.workOnList = workOnList;
+                "Adds the given List of Task to the Game or the given TaskList");
+
+  factory AddTask.fromJson(Map<String, dynamic> json) {
+    return AddTask(task: json['task'] as String);
   }
 
-  factory AddTask.fromJson(Map<String, dynamic> json){
-    return AddTask(task: json['task']);
-  }
-
+  @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'name': name,
-      'task': nameOfTask
-    };
+    return <String, dynamic>{'name': name, 'task': nameOfTask};
   }
 
-  modify() {
-    print("modify" + this.name + "\t" + this.nameOfTask);
-    Task found = Game.getInstance().getTask(nameOfTask);
+  @override
+  void modify() {
+    debugPrint("modify $name \t $nameOfTask");
+    Task? found = Game.getInstance().getTask(nameOfTask);
     if (found != null) {
       if (workOnList != null) {
-        workOnList.add(found);
-      }
-      else {
+        workOnList!.add(found);
+      } else {
         Game.getInstance().addTask(found);
       }
     }
   }
 
+  @override
   String info() {
-    return super.info() + "add: " + nameOfTask;
+    return "${super.info()}add: $nameOfTask";
   }
 }

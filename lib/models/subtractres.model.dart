@@ -1,52 +1,51 @@
 import 'dart:convert';
 
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class SubtractRes extends Modifier {
-  GameElement workOnItem;
-  List<Ressource> ressources;
-  Map<String, Ressource> workOnRes;
+  final List<Ressource> ressources;
+  final Map<String, Ressource>? workOnRes;
 
-  SubtractRes({this.ressources, this.workOnRes}) :
-        super(name: "SubtractRes", description: "Removes a list of Ressource") {
-    if (ressources == null) {
-      ressources = new List<Ressource>();
+  SubtractRes({List<Ressource>? ressources, this.workOnRes})
+      : ressources = ressources ?? [],
+        super(name: "SubtractRes", description: "Removes a list of Ressource");
+
+  factory SubtractRes.fromJson(Map<String, dynamic> jsn) {
+    final dynamic decodedRessources = jsn['ressources'];
+    List<dynamic> resList;
+    if (decodedRessources is String) {
+      resList = json.decode(decodedRessources) as List;
+    } else {
+      resList = decodedRessources as List;
     }
-  }
 
-  factory SubtractRes.fromJson(Map<String, dynamic> jsn){
-    var resList = json.decode(jsn['ressources']) as List;
-    List<Ressource> ressourceList = resList.map((i) => Ressource.fromJson(i))
-        .toList();
+    List<Ressource> ressourceList =
+        resList.map((i) => Ressource.fromJson(i as Map<String, dynamic>)).toList();
     return SubtractRes(ressources: ressourceList);
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'name': name,
-      'ressources': json.encode(ressources)
-    };
+    return <String, dynamic>{'name': name, 'ressources': json.encode(ressources)};
   }
 
-  modify() {
-    int listSize = ressources.length;
+  @override
+  void modify() {
     if (workOnRes != null) {
-      for (int i = 0; i < listSize; i++) {
-        workOnRes[ressources[i].name].subtract(ressources[i]);
+      for (var res in ressources) {
+        workOnRes![res.name]?.subtract(res);
       }
-    }
-    else {
-      for (int i = 0; i < listSize; i++) {
-        Game.ressources[ressources[i].name].subtract(ressources[i]);
+    } else {
+      for (var res in ressources) {
+        Game.ressources[res.name]?.subtract(res);
       }
     }
   }
 
+  @override
   String info() {
-    return super.info() + "subtract: " + ressources.toString() + " from " +
-        workOnRes.toString();
+    return "${super.info()}subtract: $ressources from $workOnRes";
   }
 }

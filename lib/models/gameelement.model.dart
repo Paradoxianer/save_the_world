@@ -3,40 +3,43 @@ import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 
 class GameElement extends GameItem {
-  ChangeNotifier notifier;
+  late ChangeNotifier notifier;
   List<Modifier> myModifier;
 
-  GameElement({String name, String description, IconData icon,this.myModifier}):
-        super(name : name, description : description , icon : icon);
+  GameElement({
+    super.name,
+    super.description,
+    super.icon,
+    List<Modifier>? myModifier,
+  }) : myModifier = myModifier ?? [] {
+    notifier = ChangeNotifier();
+  }
 
-  addModifyer(Modifier modifyThisElement){
+  void addModifyer(Modifier modifyThisElement) {
     myModifier.add(modifyThisElement);
     modifyThisElement.addedToElement(this);
   }
 
-  removeModifyer(Modifier modifierToRemove){
+  void removeModifyer(Modifier modifierToRemove) {
     myModifier.remove(modifierToRemove);
     modifierToRemove.removedFromElement(this);
   }
 
-  int hasModifyer(Modifier mod){
+  int hasModifyer(Modifier mod) {
     return myModifier.indexOf(mod);
   }
 
-  void modify(){
-    int listSize = myModifier.length;
-    for (int i = 0; i < listSize; i++) {
-      myModifier[i].modify();
+  void modify() {
+    for (var modifier in myModifier) {
+      modifier.modify();
     }
   }
 
-  addListener(VoidCallback listener) {
+  void addListener(VoidCallback listener) {
     notifier.addListener(listener);
   }
 
-  removeListener(VoidCallback listener) {
+  void removeListener(VoidCallback listener) {
     notifier.removeListener(listener);
   }
-
-
 }

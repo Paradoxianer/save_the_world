@@ -14,110 +14,98 @@ class Ressource extends GameElement {
   double max = 100.0;
   bool willAdd = true;
 
-  Ressource({String name,
-    String description,
-    IconData icon,
-    this.value,
-    List<Modifier> modifier,
-    this.min,
-    this.max})
-      : super(name: name, description: description, icon: icon) {
-    notifier = new ChangeNotifier();
+  Ressource({
+    super.name,
+    super.description,
+    super.icon,
+    double? value,
+    List<Modifier>? modifier,
+    this.min = 0.0,
+    this.max = 100.0,
+  }) : super(myModifier: modifier) {
+    if (value != null) this.value = value;
   }
 
   factory Ressource.fromJson(Map<String, dynamic> json) {
-    String whatModifier = json['name'];
-    Ressource tmpRessource;
-    switch (whatModifier) {
+    String name = json['name'];
+    double val = (json['value'] as num?)?.toDouble() ?? 0.0;
+    
+    Ressource res;
+    switch (name) {
       case "Faith":
-        tmpRessource = Faith(value: json['value']);
+        res = Faith(value: val);
         break;
       case "Member":
-        tmpRessource = Member(value: json['value']);
+        res = Member(value: val);
         break;
       case "Money":
-        tmpRessource = Money(value: json['value']);
+        res = Money(value: val);
         break;
       case "Publicity":
-        tmpRessource = Publicity(value: json['value']);
+        res = Publicity(value: val);
         break;
       case "Time":
-        tmpRessource = Time(value: json['value']);
+        res = Time(value: val);
         break;
       case "Wisdom":
-        tmpRessource = Wisdom(value: json['value']);
+        res = Wisdom(value: val);
         break;
+      default:
+        res = Ressource(name: name, value: val);
     }
-    tmpRessource.min = json['min'];
-    tmpRessource.max = json['max'];
-    return tmpRessource;
+    
+    res.min = (json['min'] as num?)?.toDouble() ?? res.min;
+    res.max = (json['max'] as num?)?.toDouble() ?? res.max;
+    return res;
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    //ToDo: implement json of the modifier list.
     return <String, dynamic>{
       'name': name,
-      'icon': icon,
       'min': min,
       'value': value,
       'max': max,
     };
   }
 
-  subtract(Ressource other) {
-    if (other != null) {
-      this.value -= other.value;
-      if (this.value < min) {
-        this.value = min;
-      }
-      notifier.notifyListeners();
+  void subtract(Ressource other) {
+    value -= other.value;
+    if (value < min) {
+      value = min;
     }
+    notifier.notifyListeners();
   }
 
-  add(Ressource other) {
-    if (other != null) {
-      this.value += other.value;
-      if (this.value > max) {
-        this.value = max;
-      }
-      notifier.notifyListeners();
+  void add(Ressource other) {
+    value += other.value;
+    if (value > max) {
+      value = max;
     }
+    notifier.notifyListeners();
   }
 
-  setValue(double newVal) {
+  void setValue(double newVal) {
     value = newVal;
     notifier.notifyListeners();
   }
 
   bool canAdd(Ressource other) {
-    if (other != null) {
-      if (this.name == other.name) {
-        if ((this.value + other.value) <= max)
-          return true;
-        else
-          return false;
-      } else
-        return false;
-    } else
-      return false;
+    if (name == other.name) {
+      return (value + other.value) <= max;
+    }
+    return false;
   }
 
   bool canSubtract(Ressource other) {
-    if (other != null) {
-      if (this.name == other.name) {
-        if ((this.value - other.value) >= min)
-          return true;
-        else
-          return false;
-      } else
-        return false;
-    } else
-      return false;
+    if (name == other.name) {
+      return (value - other.value) >= min;
+    }
+    return false;
   }
 
   @override
   String toString() {
-    return 'Ressource{name: $name,min: $min, value: $value, max: $max}';
+    return 'Ressource{name: $name, min: $min, value: $value, max: $max}';
   }
-
 }

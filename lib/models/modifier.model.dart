@@ -10,58 +10,38 @@ import 'package:save_the_world_flutter_app/models/stoptaks.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 
 class Modifier extends GameItem {
-  GameElement workOnItem;
+  GameElement? workOnItem;
 
-  Modifier({String name, String description, GameElement workOnItem}) :
-        super(icon: null, name: name, description: description) {
-    this.workOnItem = workOnItem;
-    this.addedToElement(workOnItem);
+  Modifier({super.name, super.description, this.workOnItem}) : super(icon: null) {
+    if (workOnItem != null) {
+      addedToElement(workOnItem!);
+    }
   }
 
-  factory Modifier.fromJson(Map<String, dynamic> jsn){
-    if (jsn != null) {
-      String whatModifier = jsn['name'];
-      switch (whatModifier) {
-        case "AddRes":
-          return AddRes.fromJson(jsn);
-          break;
-        case "SubtractRes":
-          return SubtractRes.fromJson(jsn);
-          break;
-        case "AddTask":
-          return AddTask.fromJson(jsn);
-          break;
-        case "RemoveTask":
-          return RemoveTask.fromJson(jsn);
-          break;
-        case "AddModifier":
-          return AddModifer.fromJson(jsn);
-          break;
-        case "RemoveModifier":
-          return RemoveModifer();
-          break;
-        case "AddMissed":
-          return null;
-          break;
-        case "RemoveMissed":
-          return null;
-          break;
-        case "StopTask":
-          return StopTask();
-          break;
-        case "StartTask":
-          return StartTask();
-          break;
-        case "NewDuration":
-          return null;
-          break;
-        case "RemoveMissed":
-          return null;
-          break;
-      }
+  factory Modifier.fromJson(Map<String, dynamic>? jsn) {
+    if (jsn == null) return Modifier(name: "Unknown", description: "Null data");
+    
+    String? type = jsn['name'];
+    switch (type) {
+      case "AddRes":
+        return AddRes.fromJson(jsn);
+      case "SubtractRes":
+        return SubtractRes.fromJson(jsn);
+      case "AddTask":
+        return AddTask.fromJson(jsn);
+      case "RemoveTask":
+        return RemoveTask.fromJson(jsn);
+      case "AddModifier":
+        return AddModifer.fromJson(jsn);
+      case "RemoveModifier":
+        return RemoveModifer.fromJson(jsn);
+      case "StopTask":
+        return StopTask.fromJson(jsn);
+      case "StartTask":
+        return StartTask.fromJson(jsn);
+      default:
+        return Modifier(name: type ?? "Unknown", description: "Generic Modifier");
     }
-    else
-      return null;
   }
 
   Map<String, dynamic> toJson() {
@@ -70,23 +50,23 @@ class Modifier extends GameItem {
     };
   }
 
-  modify() {}
+  void modify() {}
 
-  addedToElement(GameElement workOn){
-    if (workOnItem != null) {
-      removedFromElement(workOnItem);
+  void addedToElement(GameElement workOn) {
+    if (workOnItem != null && workOnItem != workOn) {
+      removedFromElement(workOnItem!);
     }
-    workOnItem=workOn;
+    workOnItem = workOn;
   }
 
-  int removedFromElement(GameElement workedOn){
-    if (workedOn!=workOnItem)
+  int removedFromElement(GameElement workedOn) {
+    if (workedOn != workOnItem) {
       return -1;
-    else{
-      //make shure it is removed from the gameElement
-      if (workedOn.hasModifyer(this)>=0)
+    } else {
+      if (workedOn.hasModifyer(this) >= 0) {
         workedOn.removeModifyer(this);
-      workOnItem=null;
+      }
+      workOnItem = null;
       return 0;
     }
   }
