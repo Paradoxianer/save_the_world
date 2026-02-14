@@ -179,7 +179,6 @@ final List<Stage> introStages = [
           MessageModifier(message: "Ein starkes Team! Dein Korpsrat hilft dir, die Gemeinde stabil in die nächste Phase zu führen."),
         ],
       ),
-      // Zufallsaufgaben (Random Tasks)
       Task(
         name: "Kassendifferenz finden",
         description: "Wo ist das Geld geblieben? Kostet Nerven und Zeit.",
@@ -198,6 +197,80 @@ final List<Stage> introStages = [
         award: [Wisdom(value: 0.5)],
         missed: [SubtractRes(ressources: [Money(value: 5.0)]), AddTask(task: "Rechnung nicht bezahlt")],
       ),
+    ],
+  ),
+
+  // STAGE 2: Der Clan (Geistesgaben & Erste Mitarbeiter)
+  Stage(
+    level: 2,
+    member: 80,
+    description: "Der Clan - Menschen entdecken ihren Platz im Reich Gottes.",
+    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen", "studieren", "Gottesdienst vorbereiten"],
+    randomTasks: ["Rechnung nicht bezahlt", "Kassendifferenz finden", "Streit in der Gemeinde"],
+    allTasks: [
+      Task(
+        name: "Geistesgaben entdecken",
+        description: "Hilf deinen Mitgliedern, ihre von Gott gegebenen Talente zu finden.",
+        duration: 8000.0,
+        cost: [Time(value: 4.0), Wisdom(value: 50.0), Faith(value: 20.0)],
+        award: [Wisdom(value: 20.0), Faith(value: 30.0)],
+        modifier: [
+          AddTask(task: "Freiwillige anfragen"),
+          MessageModifier(message: "Begabungen werden sichtbar! Nun kannst du gezielt Freiwillige für Aufgaben anfragen."),
+        ],
+      ),
+      Task(
+        name: "Freiwillige anfragen",
+        description: "Suche engagierte Menschen für die praktische Arbeit.",
+        duration: 6000.0,
+        cost: [Time(value: 2.0), Faith(value: 50.0)],
+        award: [Member(value: 0.5)],
+        modifier: [
+          AddTask(task: "Freiwilligengespräch führen"),
+        ],
+      ),
+      Task(
+        name: "Freiwilligengespräch führen",
+        description: "Persönliche Begleitung der Mitarbeiter.",
+        duration: 5000.0,
+        cost: [Time(value: 3.0), Wisdom(value: 20.0)],
+        award: [Faith(value: 10.0), Member(value: 1.0)],
+        modifier: [
+          AddTask(task: "Einsatzwagen anschaffen"),
+          MessageModifier(message: "Deine Mitarbeiter sind motiviert. Zeit, die Mission auf die Straße zu bringen!"),
+        ],
+      ),
+      Task(
+        name: "Einsatzwagen anschaffen",
+        description: "Ein mobiler Stützpunkt für den Dienst an den Armen.",
+        duration: 15000.0,
+        cost: [Money(value: 1000.0), Publicity(value: 10.0)],
+        award: [Publicity(value: 20.0), Wisdom(value: 10.0)],
+        modifier: [
+          AddTask(task: "Mit dem Einsatzwagen raus"),
+          MessageModifier(message: "Der Einsatzwagen ist bereit! Nun kannst du direkt dort helfen, wo die Not am größten ist."),
+        ],
+      ),
+      Task(
+        name: "Mit dem Einsatzwagen raus",
+        description: "Suppe, Seife, Seelen - Dienst an den Menschen auf der Straße.",
+        duration: 8000.0,
+        cost: [Time(value: 5.0), Money(value: 50.0), Faith(value: 100.0)],
+        award: [Publicity(value: 15.0), Member(value: 2.5), Faith(value: 50.0)],
+        modifier: [
+          AddTask(task: "Pressearbeit"),
+        ],
+      ),
+      Task(
+        name: "Streit in der Gemeinde",
+        description: "Wo viele Menschen sind, gibt es Reibung. Schlichtung ist nötig.",
+        duration: 7000.0,
+        timeToSolve: 15000.0,
+        cost: [Time(value: 4.0), Wisdom(value: 100.0), Faith(value: 50.0)],
+        award: [Wisdom(value: 50.0)],
+        missed: [SubtractRes(ressources: [Member(value: 5.0)]), AddTask(task: "Streit in der Gemeinde")],
+      ),
+      // ... weitere Tasks analog zu Stage 1 ...
     ],
   ),
 ];
