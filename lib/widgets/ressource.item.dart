@@ -2,53 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
-
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
-  double size;
+  final double size;
 
-  RessourceItem(this.ressource,[this.size=30.0]);
+  const RessourceItem(this.ressource, {super.key, this.size = 30.0});
+
   @override
-  RessourceItemState createState() => RessourceItemState(ressource, size);
-
+  RessourceItemState createState() => RessourceItemState();
 }
 
 class RessourceItemState extends State<RessourceItem> {
-  Ressource ressource;
-  double size;
-
-  RessourceItemState(this.ressource,[this.size=30.0]){
-      ressource.addListener(valueChanged);
+  @override
+  void initState() {
+    super.initState();
+    widget.ressource.addListener(valueChanged);
   }
 
-  valueChanged(){
-    setState(() {
-    });
+  @override
+  void dispose() {
+    widget.ressource.removeListener(valueChanged);
+    super.dispose();
+  }
+
+  void valueChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    Ressource gameRes = Game.ressources[ressource.name];
+    final Ressource? gameRes = Game.ressources[widget.ressource.name];
     TextStyle stl;
-    if ((gameRes != ressource) && (!ressource.willAdd)) {
-      if (gameRes.canSubtract(ressource))
-        stl = TextStyle(color: Colors.green);
-      else
-        stl = TextStyle(color: Colors.red);
+
+    if (gameRes != null && (gameRes != widget.ressource) && (!widget.ressource.willAdd)) {
+      if (gameRes.canSubtract(widget.ressource)) {
+        stl = const TextStyle(color: Colors.green);
+      } else {
+        stl = const TextStyle(color: Colors.red);
+      }
+    } else {
+      stl = const TextStyle(color: Colors.black);
     }
-    else
-      stl = TextStyle(color: Colors.black);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Icon(
-            ressource.icon,
-            size: size
-        ),
+        Icon(widget.ressource.icon, size: widget.size),
         Text(
-            ressource.value.toStringAsFixed(1),
-            textScaleFactor: (size / 30.0),
-            style: stl
+          widget.ressource.value.toStringAsFixed(1),
+          textScaler: TextScaler.linear(widget.size / 30.0),
+          style: stl,
         ),
       ],
     );

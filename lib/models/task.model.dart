@@ -8,124 +8,85 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class Task extends GameElement {
   double duration;
-  double timeToSolve = double.infinity;
+  double timeToSolve;
 
   List<Ressource> cost;
   List<Ressource> award;
   List<Modifier> missed;
   List<Modifier> online;
 
+  late AnimationController controller;
 
-  AnimationController controller;
+  Task({
+    super.name,
+    super.description,
+    this.cost = const [],
+    this.award = const [],
+    this.duration = 5000.0,
+    this.timeToSolve = double.infinity,
+    List<Modifier>? modifier,
+    this.missed = const [],
+    this.online = const [],
+    double? controllerValue,
+    String? controllerStatus,
+  }) : super(myModifier: modifier) {
+    controller = AnimationController(
+      duration: Duration(milliseconds: duration.toInt()),
+      vsync: Game.tick,
+    );
 
-  Task({String name, String description, this.cost, this.award, this.duration = 5000.0, this.timeToSolve = double
-      .infinity, List<Modifier> modifier,
-    List<
-        Modifier> missed, this.online, double controllerValue, String controllerStatus})
-      :
-        super(name: name, description: description, myModifier: modifier) {
-    if (myModifier == null) {
-      myModifier = new List<Modifier>();
+    if (controllerValue != null) {
+      controller.value = controllerValue;
     }
-    this.missed = missed;
-    if (controller == null) {
-      controller = new AnimationController(
-          duration: Duration(milliseconds: duration.toInt()),
-          vsync: Game.tick
-      );
-    }
+
     if (controllerStatus != null) {
-      if (controllerStatus.compareTo("AnimationStatus.forward") == 0) {
-        if (controllerValue != null)
-          controller.forward(from: controllerValue).whenComplete(finished);
-        else
-          controller.forward().whenComplete(finished);
+      if (controllerStatus == "AnimationStatus.forward") {
+        controller.forward().whenComplete(finished);
+      } else if (controllerStatus == "AnimationStatus.reverse") {
+        controller.reverse().whenComplete(miss);
+      } else if (controllerStatus == "AnimationStatus.dismissed") {
+        controller.reset();
       }
-      else if (controllerStatus.compareTo("AnimationStatus.reverse") == 0)
-        if (controllerValue != null)
-          controller.reverse(from: controllerValue).whenComplete(miss);
-        else
-          controller.reverse().whenComplete(miss);
-      else if (controllerStatus.compareTo("AnimationStatus.dismissed") == 0)
-          controller.reset();
-      //else if (controllerStatus.compareTo("AnimationStatus.completed") == 0);
     }
-    if (cost != null)
-      for (int i = 0; i < cost.length; i++) {
-        cost[i].willAdd = false;
-      }
+
+    for (var c in cost) {
+      c.willAdd = false;
+    }
   }
 
-  factory Task.fromJson(Map<String, dynamic> jsn){
-    print("Task.fromJson " + jsn.toString());
-    String nName = jsn['name'];
-    String dDescription = jsn['description'];
-    double dDuration = jsn['duration'];
-    double timeToSolve = double.tryParse(jsn['timeToSolve']);
-    List<Ressource> costList;
-    List<Ressource> awardList;
-    List<Modifier> missedList;
-    List<Modifier> modifierList;
-    List<Modifier> onlineList;
-    if (jsn['cost'] != null) {
-      var cList = json.decode(jsn['cost']) as List;
-      if (cList != null)
-        costList = cList.map((i) => Ressource.fromJson(i)).toList();
-      else
-        costList = new List<Ressource>();
+  factory Task.fromJson(Map<String, dynamic> jsn) {
+    debugPrint("Task.fromJson $jsn");
+    
+    List<Ressource> deserializeResources(dynamic data) {
+      if (data == null) return [];
+      final List<dynamic> list = (data is String) ? json.decode(data) : data;
+      return list.map((i) => Ressource.fromJson(i as Map<String, dynamic>)).toList();
     }
-    if (jsn['award'] != null) {
-      var aList = json.decode(jsn['award']) as List;
-      if (aList != null)
-        awardList = aList.map((i) => Ressource.fromJson(i)).toList();
-      else
-        awardList = new List<Ressource>();
+
+    List<Modifier> deserializeModifiers(dynamic data) {
+      if (data == null) return [];
+      final List<dynamic> list = (data is String) ? json.decode(data) : data;
+      return list.map((i) => Modifier.fromJson(i as Map<String, dynamic>)).toList();
     }
-    if (jsn['missed'] != null) {
-      var miList = json.decode(jsn['missed']) as List;
-      if (miList != null)
-        missedList = miList.map((i) => Modifier.fromJson(i)).toList();
-      else
-        missedList = new List<Modifier>();
-    }
-    if (jsn['modifier'] != null) {
-      var moList = json.decode(jsn['modifier']) as List;
-      if (moList != null)
-        modifierList = moList.map((i) => Modifier.fromJson(i)).toList();
-      else
-        modifierList = new List<Modifier>();
-    }
-    if (jsn['online'] != null) {
-      var oList = json.decode(jsn['online']) as List;
-      if (oList != null)
-        onlineList = oList.map((i) => Modifier.fromJson(i)).toList();
-      else
-        onlineList = new List<Modifier>();
-    }
+
     return Task(
-        name: nName,
-        description: dDescription,
-        cost: costList,
-        award: awardList,
-        duration: dDuration,
-        timeToSolve: timeToSolve,
-        modifier: modifierList,
-        missed: missedList,
-        online: onlineList,
-        controllerStatus: json.decode(jsn['controllerStatus']),
-        controllerValue: json.decode(jsn['controllerValue'])
+      name: jsn['name'] as String? ?? "Unknown",
+      description: jsn['description'] as String? ?? "",
+      duration: (jsn['duration'] as num?)?.toDouble() ?? 5000.0,
+      timeToSolve: jsn['timeToSolve'] != null ? (double.tryParse(jsn['timeToSolve'].toString()) ?? double.infinity) : double.infinity,
+      cost: deserializeResources(jsn['cost']),
+      award: deserializeResources(jsn['award']),
+      modifier: deserializeModifiers(jsn['modifier']),
+      missed: deserializeModifiers(jsn['missed']),
+      online: deserializeModifiers(jsn['online']),
+      controllerStatus: jsn['controllerStatus'] != null ? json.decode(jsn['controllerStatus'].toString()) as String? : null,
+      controllerValue: jsn['controllerValue'] != null ? (json.decode(jsn['controllerValue'].toString()) as num?)?.toDouble() : null,
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    String cStatus;
-    double cValue;
-    if (controller != null) {
-      cStatus = controller.status.toString();
-      cValue = controller.value;
-    }
-
-    return <String, dynamic>{
+    return {
       'name': name,
       'description': description,
       'duration': duration,
@@ -135,17 +96,13 @@ class Task extends GameElement {
       'missed': json.encode(missed),
       'modifier': json.encode(myModifier),
       'online': json.encode(online),
-      'controllerStatus': json.encode(cStatus),
-      'controllerValue': json.encode(cValue)
+      'controllerStatus': json.encode(controller.status.toString()),
+      'controllerValue': json.encode(controller.value),
     };
   }
 
   void init() {
-    int timeDuration;
-    if (timeToSolve != double.infinity)
-      timeDuration = timeToSolve.toInt();
-    else
-      timeDuration = duration.toInt();
+    int timeDuration = (timeToSolve != double.infinity) ? timeToSolve.toInt() : duration.toInt();
     controller.duration = Duration(milliseconds: timeDuration);
     controller.reset();
     if (timeToSolve != double.infinity) {
@@ -155,54 +112,43 @@ class Task extends GameElement {
   }
 
   void miss() {
-    print(this.name + "\ttask.miss()");
-    if (missed != null) {
-      int listSize = missed.length;
-      for (int i = 0; i < listSize; i++) {
-        missed[i].modify();
-      }
+    debugPrint("$name \t task.miss()");
+    for (var m in missed) {
+      m.modify();
     }
   }
 
-  start() {
-    print(this.name + "\ttask.start()");
+  void start() {
+    debugPrint("$name \t task.start()");
     if (controller.status != AnimationStatus.forward) {
-      controller.stop(canceled: true);
-      //we need to set the new duration
+      controller.stop();
       controller.reset();
-      controller.duration = new Duration(milliseconds: duration.toInt());
-      if (cost != null) {
-        int listSize = cost.length;
-        for (int i = 0; i < listSize; i++) {
-          Game.ressources[cost[i].name].subtract(cost[i]);
-        }
+      controller.duration = Duration(milliseconds: duration.toInt());
+      
+      for (var c in cost) {
+        Game.ressources[c.name]?.subtract(c);
       }
+      
       controller.forward().whenComplete(finished);
     }
   }
 
-  stop() {
-    print(this.name + "\ttask.stop()");
-    controller.stop(canceled: true);
+  void stop() {
+    debugPrint("$name \t task.stop()");
+    controller.stop();
   }
 
-  finished() {
-    if (award != null) {
-      int listSize = award.length;
-      for (int i = 0; i < listSize; i++) {
-        Game.ressources[award[i].name].add(award[i]);
-      }
+  void finished() {
+    for (var a in award) {
+      Game.ressources[a.name]?.add(a);
     }
     modify();
     controller.reset();
   }
 
-  goOnline() {
-    if (online != null) {
-      int listSize = online.length;
-      for (int i = 0; i < listSize; i++) {
-        online[i].modify();
-      }
+  void goOnline() {
+    for (var o in online) {
+      o.modify();
     }
   }
 
@@ -210,5 +156,4 @@ class Task extends GameElement {
   String toString() {
     return 'Task{name: $name, description: $description, duration: $duration, timeToSolve: $timeToSolve}';
   }
-
 }

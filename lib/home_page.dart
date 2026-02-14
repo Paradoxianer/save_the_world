@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
-  _HomePageState createState() => new _HomePageState();
-
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
-  bool _loadingInProgress;
+  bool _loadingInProgress = true;
 
   @override
   void initState() {
@@ -20,10 +18,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Rette die Welt"),
-        bottom: TabBar(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Rette die Welt"),
+        bottom: const TabBar(
           tabs: [
             Tab(icon: Icon(Icons.attach_money)),
             Tab(icon: Icon(Icons.directions_transit)),
@@ -37,14 +35,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody() {
     if (_loadingInProgress) {
-      return new Center(
-        child: new CircularProgressIndicator(),
+      return const Center(
+        child: CircularProgressIndicator(),
       );
     } else {
-      return new Center (
-        child: new Text('Data loaded'),
+      return const Center(
+        child: Text('Data loaded'),
       );
     }
   }
-
 }

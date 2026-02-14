@@ -3,38 +3,41 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class SetMin extends Modifier {
-  String workOn;
-  double newMin;
+  final String workOn;
+  final double newMin;
 
-  SetMin({String ressource, this.newMin})
-      : super(
+  SetMin({required String ressource, required this.newMin})
+      : workOn = ressource,
+        super(
             name: "SetMin",
-            description:
-                "Sets a new min boder for the a given game ressource") {
-    workOn = ressource;
-  }
+            description: "Sets a new min border for a given game resource");
 
   factory SetMin.fromJson(Map<String, dynamic> jsn) {
-    return SetMin(ressource: jsn['ressource'], newMin: jsn['newMin']);
+    return SetMin(
+      ressource: jsn['ressource'] as String,
+      newMin: (jsn['newMin'] as num).toDouble(),
+    );
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
+    return {
       'name': name,
       'ressource': workOn,
-      'newMin': newMin
+      'newMin': newMin,
     };
   }
 
-  modify() {
-    if (workOn != null) {
-      Ressource tmpRes = Game.ressources[workOn];
-      if (tmpRes != null)
-        tmpRes..min = newMin;
+  @override
+  void modify() {
+    Ressource? tmpRes = Game.ressources[workOn];
+    if (tmpRes != null) {
+      tmpRes.min = newMin;
     }
   }
 
+  @override
   String info() {
-    return super.info() + "set min of " + workOn + " to " + newMin.toString();
+    return "${super.info()}set min of $workOn to $newMin";
   }
 }

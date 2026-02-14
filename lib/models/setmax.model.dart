@@ -3,38 +3,41 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class SetMax extends Modifier {
-  String workOn;
-  double newMax;
+  final String workOn;
+  final double newMax;
 
-  SetMax({String ressource, this.newMax})
-      : super(
+  SetMax({required String ressource, required this.newMax})
+      : workOn = ressource,
+        super(
             name: "SetMax",
-            description:
-                "Sets a new max boder for the a given game ressource") {
-    this.workOn = ressource;
-  }
+            description: "Sets a new max border for a given game resource");
 
   factory SetMax.fromJson(Map<String, dynamic> jsn) {
-    return SetMax(ressource: jsn['ressource'], newMax: jsn['newMax']);
+    return SetMax(
+      ressource: jsn['ressource'] as String,
+      newMax: (jsn['newMax'] as num).toDouble(),
+    );
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
+    return {
       'name': name,
       'ressource': workOn,
-      'newMax': newMax
+      'newMax': newMax,
     };
   }
 
-  modify() {
-    if (workOn != null) {
-      Ressource tmpRes = Game.ressources[workOn];
-      if (tmpRes != null)
-        tmpRes.max = newMax;
+  @override
+  void modify() {
+    Ressource? tmpRes = Game.ressources[workOn];
+    if (tmpRes != null) {
+      tmpRes.max = newMax;
     }
   }
 
+  @override
   String info() {
-    return super.info() + "set max of " + workOn + " to " + newMax.toString();
+    return "${super.info()}set max of $workOn to $newMax";
   }
 }

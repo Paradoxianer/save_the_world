@@ -2,46 +2,46 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressource.item.dart';
 
-//@Todo migrate RessourceTable to the wrap Widget so that we save space when orientation is changed
 class RessourceTable extends StatelessWidget {
-
   final List<Ressource> ressourceList;
   final int rows = 2;
-  double size;
-  int column = 0;
+  final double size;
 
-
-  RessourceTable({this.ressourceList,this.size=20.0});
+  const RessourceTable({
+    super.key,
+    required this.ressourceList,
+    this.size = 20.0,
+  });
 
   @override
   Widget build(BuildContext context) {
-    List<TableRow> list = new List<TableRow>();
-    if (ressourceList != null) {
-      if (ressourceList.length <= 1)
-        column = 1;
-      else
-        column = ((ressourceList.length / rows) +
-            (ressourceList.length % rows / ressourceList.length % rows)).ceil();
-      for (var i = 0; i < rows; i++) {
-        list.add(returnRow(i));
-      }
+    if (ressourceList.isEmpty) return const SizedBox.shrink();
+
+    final int columnCount = (ressourceList.length / rows).ceil();
+    final List<TableRow> tableRows = [];
+
+    for (var i = 0; i < rows; i++) {
+      tableRows.add(_buildRow(i, columnCount));
     }
+
     return Table(
-        defaultColumnWidth: FixedColumnWidth(size+5.0),
-        children: list
+      defaultColumnWidth: FixedColumnWidth(size + 5.0),
+      children: tableRows,
     );
   }
 
-  TableRow returnRow(row){
-    List<Widget> list = new List<Widget>();
-    int start = row*column;
-    int end = start + column;
-    for(var i =  start; i < end; i++){
-      if (i<ressourceList.length)
-        list.add(new RessourceItem(ressourceList[i],size));
-      else
-        list.add(new Text(""));
+  TableRow _buildRow(int row, int columnCount) {
+    final List<Widget> cells = [];
+    final int start = row * columnCount;
+    final int end = start + columnCount;
+
+    for (var i = start; i < end; i++) {
+      if (i < ressourceList.length) {
+        cells.add(RessourceItem(ressourceList[i], size: size));
+      } else {
+        cells.add(const SizedBox.shrink());
+      }
     }
-    return new TableRow(children: list);
+    return TableRow(children: cells);
   }
 }

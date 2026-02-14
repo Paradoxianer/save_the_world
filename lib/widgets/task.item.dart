@@ -7,88 +7,70 @@ import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 class TaskProgressIndicator extends StatefulWidget {
   final Task task;
 
-  TaskProgressIndicator({this.task});
+  const TaskProgressIndicator({super.key, required this.task});
 
   @override
-  TaskProgressIndicatorState createState() =>
-      new TaskProgressIndicatorState(task);
+  TaskProgressIndicatorState createState() => TaskProgressIndicatorState();
 }
 
-class TaskProgressIndicatorState extends State<TaskProgressIndicator>
-    with SingleTickerProviderStateMixin {
-  Task task;
-
-  TaskProgressIndicatorState(Task task) {
-    this.task = task;
-    //task.init();
-  }
-
+class TaskProgressIndicatorState extends State<TaskProgressIndicator> {
   @override
   void initState() {
     super.initState();
-    task.controller.addListener(listen);
+    widget.task.controller.addListener(_onAnimationTick);
   }
 
   @override
   void dispose() {
+    widget.task.controller.removeListener(_onAnimationTick);
     super.dispose();
-    task.controller.removeListener(listen);
+  }
+
+  void _onAnimationTick() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    LinearProgressIndicator progressIndicator;
-    //TODO: optimzie this and set the color when the direction of the Animation
-    // is changed so we save the if else statement everytime on build :)
-    if (task.controller.status == AnimationStatus.dismissed) {
-      progressIndicator = new LinearProgressIndicator(
-          value: task.controller.value,
-          backgroundColor: Colors.white
-      );
-    }
-    else {
-      if (task.controller.status == AnimationStatus.reverse) {
-        progressIndicator = new LinearProgressIndicator(
-          value: task.controller.value,
-          backgroundColor: Colors.redAccent,
-        );
-      }
-      else
-        progressIndicator =
-        new LinearProgressIndicator(value: task.controller.value);
-    }
-    return progressIndicator;
-  }
+    Color? backgroundColor;
+    Color? valueColor;
 
-  listen() {
-    setState(() {});
-  }
+    if (widget.task.controller.status == AnimationStatus.dismissed) {
+      backgroundColor = Colors.white;
+    } else if (widget.task.controller.status == AnimationStatus.reverse) {
+      valueColor = Colors.redAccent;
+    }
 
+    return LinearProgressIndicator(
+      value: widget.task.controller.value,
+      backgroundColor: backgroundColor,
+      valueColor: valueColor != null ? AlwaysStoppedAnimation<Color>(valueColor) : null,
+    );
+  }
 }
-
-
 
 class TaskItem extends StatelessWidget {
   final Task task;
 
-  TaskItem({this.task}) :super(key: ObjectKey(task));
+  TaskItem({required this.task}) : super(key: ObjectKey(task));
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(6.0),
+      margin: const EdgeInsets.all(6.0),
       child: Column(
         children: <Widget>[
           ListTile(
-            contentPadding: EdgeInsets.all(1.0),
+            contentPadding: const EdgeInsets.all(1.0),
             leading: RessourceTable(ressourceList: task.cost),
             title: Text(task.name),
             subtitle: Text(task.description),
             trailing: RessourceTable(ressourceList: task.award),
             onTap: _handleTap,
-            onLongPress: () =>
-            {
-              showTaskInfo(context, task)
+            onLongPress: () {
+              showTaskInfo(context, task);
             },
           ),
           TaskProgressIndicator(task: task)
@@ -98,22 +80,19 @@ class TaskItem extends StatelessWidget {
   }
 
   void _handleTap() {
-    if (task.cost != null) {
-      int listSize = task.cost.length;
-      bool canDo = true;
-      for (int i = 0; i < listSize; i++) {
-        canDo =
-            canDo &&
-                Game.ressources[task.cost[i].name].canSubtract(task.cost[i]);
-      }
-      if (canDo == true) {
-        task.start();
-      }
-      else {
-        print("to less ressources");
+    bool canDo = true;
+    for (var costRes in task.cost) {
+      final gameRes = Game.ressources[costRes.name];
+      if (gameRes == null || !gameRes.canSubtract(costRes)) {
+        canDo = false;
+        break;
       }
     }
-    else
+
+    if (canDo) {
       task.start();
+    } else {
+      debugPrint("Not enough resources to start task: ${task.name}");
+    }
   }
 }
