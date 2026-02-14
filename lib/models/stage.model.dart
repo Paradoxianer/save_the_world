@@ -1,12 +1,19 @@
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 
 class Stage {
-  int level;
-  int member;
-  String description;
-  List<String> activeTasks;
-  List<String> randomTasks;
-  List<Task> allTasks;
+  final int level;
+  final int member;
+  final String description;
+  final List<String> activeTasks;
+  final List<String> randomTasks;
+  final List<Task> allTasks;
 
-  Stage({this.level, this.activeTasks, this.randomTasks, this.allTasks});
+  Stage({
+    required this.level,
+    this.member = 0,
+    this.description = "",
+    this.activeTasks = const [],
+    this.randomTasks = const [],
+    this.allTasks = const [],
+  });
 }

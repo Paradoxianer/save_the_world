@@ -1,25 +1,5 @@
 ﻿# 📋 GitHub Issues Roadmap
 
-## #20: Fix: share_plus Migration 🔴 🏷️ 🏷️  [bug, critical, prio: 0-blocker]
----
-**Status / Description:**
-Das Plugin esys_flutter_share existiert nicht mehr. Es muss vollst├ñndig durch share_plus ersetzt werden (betrifft main.dart).
-
----
-
-## #19: Migration: Null Safety & Flutter 3 Fixes 🔴 🏷️ 🏷️  [bug, critical, prio: 0-blocker]
----
-**Status / Description:**
-Behebung der Compiler-Fehler nach dem Merge und Upgrade auf Flutter 3.
-
-Checkliste:
-- [x] about.dart reparieren
-- [x] GameController Null-Safety Fixes
-- [x] Game Model & JSON Refactoring
-- [x] DataManager Future Fixes
-
----
-
 ## #18: Content: Stufen 21-32 (Globales Finale) 🏷️ 🏷️  [content, prio: 3-low]
 ---
 **Status / Description:**
@@ -105,7 +85,7 @@ Credits aus globals.dart in ein About-Men├╝ ├╝berf├╝hren.
 ## #1: Logic: Miss-Mechanik verfeinern ✨ 🏷️  [enhancement, prio: 2-medium]
 ---
 **Status / Description:**
-Die miss() Funktion braucht ein echtes In-Game-Event (UI-Benachrichtigung) statt nur einen Print.
+Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
 
 ---
 

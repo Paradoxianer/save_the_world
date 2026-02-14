@@ -3,28 +3,36 @@ import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 
 class StageItem extends StatefulWidget {
-  double size;
+  final double size;
 
-  StageItem([this.size = 30.0]);
+  const StageItem({super.key, this.size = 30.0});
 
   @override
-  StageItemState createState() => StageItemState(size);
+  State<StageItem> createState() => StageItemState();
 }
 
 class StageItemState extends State<StageItem> {
-  Game game;
-  double size;
+  late Game game;
 
-
-  StageItemState([this.size = 30.0]) {
+  @override
+  void initState() {
+    super.initState();
     game = Game.getInstance();
     game.addStageListener(valueChanged);
   }
 
-  valueChanged() {
-    print("show the dialog");
-    showNewStage(context);
-    setState(() {});
+  @override
+  void dispose() {
+    game.removeListener(valueChanged);
+    super.dispose();
+  }
+
+  void valueChanged() {
+    if (mounted) {
+      debugPrint("show the dialog");
+      showNewStage(context);
+      setState(() {});
+    }
   }
 
   @override
@@ -32,9 +40,11 @@ class StageItemState extends State<StageItem> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Icon(Icons.home, size: size),
-        Text(Game.getInstance().stage.toString(),
-            textScaleFactor: (size / 30.0)),
+        Icon(Icons.home, size: widget.size),
+        Text(
+          game.stage.toString(),
+          textScaler: TextScaler.linear(widget.size / 30.0),
+        ),
       ],
     );
   }
@@ -43,41 +53,32 @@ class StageItemState extends State<StageItem> {
 void showNewStage(BuildContext context) {
   showDialog(
       context: context,
-      barrierDismissible: true, // user must tap button for close dialog!
+      barrierDismissible: true,
       builder: (BuildContext context) {
         List<int> stageList = levels.keys.toList();
-        return SimpleDialog(
-            title: Text('Gratulation'),
-            children: <Widget>[
-              Stack(
-                  children: <Widget>[
-                    Align(
-                        alignment: Alignment.center,
-                        child: Image.asset('assets/icons/award.png')
-                    ),
-                    Positioned(
-                        left: 124.0,
-                        top: 36.0,
-                        child: Text(Game
-                            .getInstance()
-                            .stage
-                            .toString(),
-                            textScaleFactor: (4)
-                        )
-                    )
-                  ]
-              ),
-              Text("\n du bist jetzt eine", textAlign: TextAlign.center),
-              Text("" + levels[stageList[Game
-                  .getInstance()
-                  .stage]] + "\n", textAlign: TextAlign.center),
-              Text("du kannst jetzt bis " + stageList[Game
-                  .getInstance()
-                  .stage].toString() + " Mitglieder erreichen",
-                  textAlign: TextAlign.center),
+        final currentStage = Game.getInstance().stage;
+        final stageTitle = levels[stageList[currentStage]] ?? "Unbekannt";
+        final maxMembers = stageList[currentStage].toString();
 
-            ]
-        );
-      }
-  );
+        return SimpleDialog(
+            title: const Text('Gratulation'),
+            children: <Widget>[
+              Stack(children: <Widget>[
+                Align(
+                    alignment: Alignment.center,
+                    child: Image.asset('assets/icons/award.png')),
+                Positioned(
+                    left: 124.0,
+                    top: 36.0,
+                    child: Text(
+                      currentStage.toString(),
+                      textScaler: const TextScaler.linear(4),
+                    ))
+              ]),
+              const Text("\n du bist jetzt eine", textAlign: TextAlign.center),
+              Text("$stageTitle\n", textAlign: TextAlign.center),
+              Text("du kannst jetzt bis $maxMembers Mitglieder erreichen",
+                  textAlign: TextAlign.center),
+            ]);
+      });
 }

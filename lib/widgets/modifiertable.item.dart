@@ -4,28 +4,26 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 class ModifierTable extends StatelessWidget {
   final List<Modifier> modifierList;
 
-  ModifierTable({this.modifierList});
+  const ModifierTable({super.key, this.modifierList = const []});
 
   @override
   Widget build(BuildContext context) {
-    if ((modifierList != null) && (modifierList.length > 0)) {
-      List<TableRow> list = new List<TableRow>();
-      for (var i = 0; i < modifierList.length; i++) {
-        list.add(returnRow(modifierList[i]));
+    if (modifierList.isNotEmpty) {
+      final List<TableRow> rows = [];
+      for (var modifier in modifierList) {
+        rows.add(_buildRow(modifier));
       }
-      return Table(children: list);
-    } else
-      return Text("--");
+      return Table(children: rows);
+    } else {
+      return const Text("--");
+    }
   }
 
-  TableRow returnRow(modifier) {
-    if (modifier != null) {
-      return new TableRow(
-          children: <Widget>[
-            Text(modifier.info())
-          ]
-      );
-    } else
-      return new TableRow(children: <Widget>[Text("---")]);
+  TableRow _buildRow(Modifier? modifier) {
+    return TableRow(
+      children: <Widget>[
+        Text(modifier?.info() ?? "---"),
+      ],
+    );
   }
 }
