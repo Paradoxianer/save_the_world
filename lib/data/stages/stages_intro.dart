@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:save_the_world_flutter_app/models/addres.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -9,7 +8,6 @@ import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
@@ -23,7 +21,6 @@ final List<Stage> introStages = [
     member: 20,
     description: "Hausgemeinde - Als Offizier fängst du klein an, aber mit großem Auftrag.",
     activeTasks: ["Bibellesen", "Schlafen"],
-    randomTasks: [],
     allTasks: [
       Task(
         name: "Bibellesen",
@@ -65,18 +62,14 @@ final List<Stage> introStages = [
         cost: [Time(value: 8.0)],
         award: [Time(value: 16.0)],
         modifier: [
-          MessageModifier(message: "Erholt! Deine Zeit ist wieder aufgeladen. WICHTIG: Achte IMMER darauf, dass dir die Zeit nicht ausgeht, sonst landest du in einer Sackgasse!"),
+          MessageModifier(message: "Erholt! Deine Zeit ist wieder aufgeladen. WICHTIG: Achte IMMER darauf, dass dir die Zeit nicht ausgeht!"),
         ],
       ),
       Task(
         name: "Essen in meiner Wohnung",
         description: "Ein einfacher Hauskreis in deinem Wohnzimmer. Die Keimzelle der Gemeinde.",
         duration: 10000.0,
-        cost: [
-          Time(value: 4.0), 
-          Faith(value: 20.0),
-          Member(value: 5.0),
-        ],
+        cost: [Time(value: 4.0), Faith(value: 20.0), Member(value: 5.0)],
         award: [Member(value: 15.0), Publicity(value: 2.0)],
         modifier: [
           MessageModifier(message: "Fantastisch! Deine kleine Herde ist gewachsen. Du bist bereit für die nächste Stufe: Gemeinschaftsgruppe!"),
@@ -85,13 +78,13 @@ final List<Stage> introStages = [
     ],
   ),
 
-  // STAGE 1: Gemeinschaftsgruppe
+  // STAGE 1: Gemeinschaftsgruppe (40)
   Stage(
     level: 1,
     member: 40,
     description: "Gemeinschaftsgruppe - Die Verantwortung wächst.",
-    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen", "Kasse führen", "studieren"],
-    randomTasks: ["Kassendifferenz finden", "Rechnung nicht bezahlt"],
+    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen", "Kasse führen"],
+    randomTasks: ["Kassendifferenz finden"],
     allTasks: [
       Task(
         name: "Kasse führen",
@@ -102,26 +95,6 @@ final List<Stage> introStages = [
         modifier: [
           AddTask(task: "Gottesdienst vorbereiten"),
           MessageModifier(message: "Wachstum bedeutet Verantwortung. Mit der 'Kasse' verwaltest du nun die Finanzen der Gemeinde."),
-        ],
-      ),
-      Task(
-        name: "studieren",
-        description: "Sich theologisch und organisatorisch fortbilden.",
-        duration: 8000.0,
-        cost: [Money(value: 50.0), Time(value: 8.0)],
-        award: [Faith(value: 20.0), Wisdom(value: 30.0)],
-        modifier: [
-          AddTask(task: "Mails..."),
-        ],
-      ),
-      Task(
-        name: "Mails...",
-        description: "Korrespondenz mit dem Hauptquartier und Interessierten.",
-        duration: 3000.0,
-        cost: [Time(value: 1.0)],
-        award: [Publicity(value: 0.5)],
-        missed: [
-          AddTask(task: "Rechnung nicht bezahlt"),
         ],
       ),
       Task(
@@ -158,119 +131,57 @@ final List<Stage> introStages = [
           AddTask(task: "Einen Basar planen")
         ],
       ),
+    ],
+  ),
+
+  // STAGE 2: Kleine Gemeinde (80)
+  Stage(
+    level: 2,
+    member: 80,
+    description: "Kleine Gemeinde - Wir fangen an, über unsere Grenzen hinaus zu blicken.",
+    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Gottesdienst halten", "Einen Basar planen"],
+    randomTasks: ["Streit in der Gemeinde"],
+    allTasks: [
       Task(
         name: "Einen Basar planen",
         description: "Geld für den guten Zweck sammeln und sichtbar werden.",
         duration: 6000.0,
-        cost: [Time(value: 4.0), Faith(value: 20.0), Wisdom(value: 10.0)],
-        award: [Publicity(value: 5.0)],
+        cost: [Time(value: 4.0), Faith(value: 20.0)],
+        award: [Publicity(value: 10.0), Money(value: 50.0)],
         modifier: [
-          AddTask(task: "Korpsrat einsetzen"),
-          MessageModifier(message: "Gute Planung ist alles! Du kannst nun einen Korpsrat einsetzen, um die Leitung zu teilen."),
+          AddTask(task: "Geistesgaben entdecken"),
+          MessageModifier(message: "Sichtbarkeit! Die Stadt nimmt euch wahr. Zeit, die Gaben der Mitglieder zu fördern."),
         ],
       ),
       Task(
-        name: "Korpsrat einsetzen",
-        description: "Verantwortung auf mehrere Schultern verteilen.",
-        duration: 12000.0,
-        cost: [Member(value: 10.0), Time(value: 10.0), Faith(value: 500.0), Wisdom(value: 300.0)],
-        award: [Wisdom(value: 100.0)],
-        modifier: [
-          MessageModifier(message: "Ein starkes Team! Dein Korpsrat hilft dir, die Gemeinde stabil in die nächste Phase zu führen."),
-        ],
-      ),
-      Task(
-        name: "Kassendifferenz finden",
-        description: "Wo ist das Geld geblieben? Kostet Nerven und Zeit.",
-        duration: 5000.0,
-        timeToSolve: 20000.0,
-        cost: [Time(value: 2.0)],
-        award: [Wisdom(value: 1.0)],
-        missed: [SubtractRes(ressources: [Money(value: 10.0)])],
-      ),
-      Task(
-        name: "Rechnung nicht bezahlt",
-        description: "Mahngebühren vermeiden!",
-        duration: 4000.0,
-        timeToSolve: 15000.0,
-        cost: [Money(value: 20.0)],
-        award: [Wisdom(value: 0.5)],
-        missed: [SubtractRes(ressources: [Money(value: 5.0)]), AddTask(task: "Rechnung nicht bezahlt")],
+        name: "Geistesgaben entdecken",
+        description: "Hilf Mitgliedern, ihre Talente zu finden.",
+        duration: 8000.0,
+        cost: [Time(value: 4.0), Wisdom(value: 50.0)],
+        award: [Wisdom(value: 20.0)],
+        modifier: [AddTask(task: "Korpsrat einsetzen")],
       ),
     ],
   ),
 
-  // STAGE 2: Der Clan (Geistesgaben & Erste Mitarbeiter)
+  // STAGE 3: Mittlere Gemeinde (140)
   Stage(
-    level: 2,
-    member: 80,
-    description: "Der Clan - Menschen entdecken ihren Platz im Reich Gottes.",
-    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen", "studieren", "Gottesdienst vorbereiten"],
-    randomTasks: ["Rechnung nicht bezahlt", "Kassendifferenz finden", "Streit in der Gemeinde"],
+    level: 3,
+    member: 140,
+    description: "Mittlere Gemeinde - Struktur wird zum Träger der Mission.",
+    activeTasks: ["Bibellesen", "Schlafen", "Gottesdienst halten", "Geistesgaben entdecken"],
+    randomTasks: ["Rechnung nicht bezahlt"],
     allTasks: [
       Task(
-        name: "Geistesgaben entdecken",
-        description: "Hilf deinen Mitgliedern, ihre von Gott gegebenen Talente zu finden.",
-        duration: 8000.0,
-        cost: [Time(value: 4.0), Wisdom(value: 50.0), Faith(value: 20.0)],
-        award: [Wisdom(value: 20.0), Faith(value: 30.0)],
+        name: "Korpsrat einsetzen",
+        description: "Leitung auf mehrere Schultern verteilen.",
+        duration: 12000.0,
+        cost: [Member(value: 10.0), Time(value: 10.0), Faith(value: 200.0)],
+        award: [Wisdom(value: 100.0)],
         modifier: [
-          AddTask(task: "Freiwillige anfragen"),
-          MessageModifier(message: "Begabungen werden sichtbar! Nun kannst du gezielt Freiwillige für Aufgaben anfragen."),
+          MessageModifier(message: "Echte Multiplikation beginnt! Dein Korpsrat entlastet dich in der Leitung."),
         ],
       ),
-      Task(
-        name: "Freiwillige anfragen",
-        description: "Suche engagierte Menschen für die praktische Arbeit.",
-        duration: 6000.0,
-        cost: [Time(value: 2.0), Faith(value: 50.0)],
-        award: [Member(value: 0.5)],
-        modifier: [
-          AddTask(task: "Freiwilligengespräch führen"),
-        ],
-      ),
-      Task(
-        name: "Freiwilligengespräch führen",
-        description: "Persönliche Begleitung der Mitarbeiter.",
-        duration: 5000.0,
-        cost: [Time(value: 3.0), Wisdom(value: 20.0)],
-        award: [Faith(value: 10.0), Member(value: 1.0)],
-        modifier: [
-          AddTask(task: "Einsatzwagen anschaffen"),
-          MessageModifier(message: "Deine Mitarbeiter sind motiviert. Zeit, die Mission auf die Straße zu bringen!"),
-        ],
-      ),
-      Task(
-        name: "Einsatzwagen anschaffen",
-        description: "Ein mobiler Stützpunkt für den Dienst an den Armen.",
-        duration: 15000.0,
-        cost: [Money(value: 1000.0), Publicity(value: 10.0)],
-        award: [Publicity(value: 20.0), Wisdom(value: 10.0)],
-        modifier: [
-          AddTask(task: "Mit dem Einsatzwagen raus"),
-          MessageModifier(message: "Der Einsatzwagen ist bereit! Nun kannst du direkt dort helfen, wo die Not am größten ist."),
-        ],
-      ),
-      Task(
-        name: "Mit dem Einsatzwagen raus",
-        description: "Suppe, Seife, Seelen - Dienst an den Menschen auf der Straße.",
-        duration: 8000.0,
-        cost: [Time(value: 5.0), Money(value: 50.0), Faith(value: 100.0)],
-        award: [Publicity(value: 15.0), Member(value: 2.5), Faith(value: 50.0)],
-        modifier: [
-          AddTask(task: "Pressearbeit"),
-        ],
-      ),
-      Task(
-        name: "Streit in der Gemeinde",
-        description: "Wo viele Menschen sind, gibt es Reibung. Schlichtung ist nötig.",
-        duration: 7000.0,
-        timeToSolve: 15000.0,
-        cost: [Time(value: 4.0), Wisdom(value: 100.0), Faith(value: 50.0)],
-        award: [Wisdom(value: 50.0)],
-        missed: [SubtractRes(ressources: [Member(value: 5.0)]), AddTask(task: "Streit in der Gemeinde")],
-      ),
-      // ... weitere Tasks analog zu Stage 1 ...
     ],
   ),
 ];
