@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:save_the_world_flutter_app/data_manager.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
@@ -14,12 +15,18 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
+class GameTickerProvider implements TickerProvider {
+  @override
+  Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
+}
+
 class Game {
   static Map<String, Ressource> ressources = {};
   static List<Task> tasks = [];
   static late ChangeNotifier notifier;
   static late ChangeNotifier stagenNotifier;
   static Game? mInstance;
+  static final TickerProvider tick = GameTickerProvider();
   
   String? snackbarMessage;
   late List<Task> allTasks;
@@ -35,6 +42,9 @@ class Game {
     dataManager = DataManager();
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
+    
+    // The game loop ticker
+    tick.createTicker(updateGame).start();
     
     if (tasksList != null) tasks = tasksList;
     

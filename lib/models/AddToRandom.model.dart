@@ -2,26 +2,29 @@ import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 
 class AddToRandom extends Modifier {
-  String task;
+  final String task;
 
-  AddToRandom({this.task})
+  AddToRandom({required this.task})
       : super(
             name: "AddToRandom",
-            description: "Adds the given String to the Random List") {}
+            description: "Adds the given String to the Random List");
 
   factory AddToRandom.fromJson(Map<String, dynamic> jsn) {
-    return AddToRandom(task: jsn['task']);
+    return AddToRandom(task: jsn['task'] as String);
   }
 
+  @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'name': name, 'task': task};
+    return {'name': name, 'task': task};
   }
 
-  modify() {
+  @override
+  void modify() {
     Game.getInstance().randomTasks.add(task);
   }
 
+  @override
   String info() {
-    return super.info() + "add: " + task;
+    return "${super.info()}add: $task";
   }
 }
