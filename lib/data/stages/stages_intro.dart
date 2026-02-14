@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> introStages = [
-  // STAGE 0: Der Ruf (Tutorial für Heilsarmee-Offiziere)
+  // STAGE 0: Der Ruf (Tutorial)
   Stage(
     level: 0,
     member: 20,
@@ -90,12 +90,12 @@ final List<Stage> introStages = [
     level: 1,
     member: 40,
     description: "Gemeinschaftsgruppe - Die Verantwortung wächst.",
-    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen"],
-    randomTasks: ["Kassendifferenz finden"],
+    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen", "Kasse führen", "studieren"],
+    randomTasks: ["Kassendifferenz finden", "Rechnung nicht bezahlt"],
     allTasks: [
       Task(
         name: "Kasse führen",
-        description: "Spenden müssen treu verwaltet werden. Auch das gehört zum geistlichen Dienst.",
+        description: "Spenden treu verwalten. Ordnung ist ein geistlicher Dienst.",
         duration: 4000.0,
         cost: [Time(value: 2.0)],
         award: [Money(value: 5.0)],
@@ -104,7 +104,100 @@ final List<Stage> introStages = [
           MessageModifier(message: "Wachstum bedeutet Verantwortung. Mit der 'Kasse' verwaltest du nun die Finanzen der Gemeinde."),
         ],
       ),
-      // ... weitere Tasks ...
+      Task(
+        name: "studieren",
+        description: "Sich theologisch und organisatorisch fortbilden.",
+        duration: 8000.0,
+        cost: [Money(value: 50.0), Time(value: 8.0)],
+        award: [Faith(value: 20.0), Wisdom(value: 30.0)],
+        modifier: [
+          AddTask(task: "Mails..."),
+        ],
+      ),
+      Task(
+        name: "Mails...",
+        description: "Korrespondenz mit dem Hauptquartier und Interessierten.",
+        duration: 3000.0,
+        cost: [Time(value: 1.0)],
+        award: [Publicity(value: 0.5)],
+        missed: [
+          AddTask(task: "Rechnung nicht bezahlt"),
+        ],
+      ),
+      Task(
+        name: "Gottesdienst vorbereiten",
+        description: "Thema festlegen und Lieder auswählen.",
+        duration: 8000.0,
+        cost: [Time(value: 2.0), Faith(value: 50.0)],
+        award: [Faith(value: 60.0)],
+        modifier: [
+          RemoveTask(task: "Gottesdienst vorbereiten"),
+          AddTask(task: "Predigt schreiben")
+        ],
+      ),
+      Task(
+        name: "Predigt schreiben",
+        description: "Das Wort Gottes für die Menschen heute aufbereiten.",
+        duration: 8000.0,
+        cost: [Time(value: 6.0), Faith(value: 80.0)],
+        award: [Member(value: 0.05), Faith(value: 40.0)],
+        modifier: [
+          RemoveTask(task: "Predigt schreiben"),
+          AddTask(task: "Gottesdienst halten")
+        ],
+      ),
+      Task(
+        name: "Gottesdienst halten",
+        description: "Zusammenkommen, um Gott zu begegnen.",
+        duration: 4000.0,
+        cost: [Member(value: 5.0), Time(value: 3.0), Faith(value: 150.0)],
+        award: [Faith(value: 200.0), Member(value: 2.0), Money(value: 20.0)],
+        modifier: [
+          RemoveTask(task: "Gottesdienst halten"),
+          AddTask(task: "Gottesdienst vorbereiten"),
+          AddTask(task: "Einen Basar planen")
+        ],
+      ),
+      Task(
+        name: "Einen Basar planen",
+        description: "Geld für den guten Zweck sammeln und sichtbar werden.",
+        duration: 6000.0,
+        cost: [Time(value: 4.0), Faith(value: 20.0), Wisdom(value: 10.0)],
+        award: [Publicity(value: 5.0)],
+        modifier: [
+          AddTask(task: "Korpsrat einsetzen"),
+          MessageModifier(message: "Gute Planung ist alles! Du kannst nun einen Korpsrat einsetzen, um die Leitung zu teilen."),
+        ],
+      ),
+      Task(
+        name: "Korpsrat einsetzen",
+        description: "Verantwortung auf mehrere Schultern verteilen.",
+        duration: 12000.0,
+        cost: [Member(value: 10.0), Time(value: 10.0), Faith(value: 500.0), Wisdom(value: 300.0)],
+        award: [Wisdom(value: 100.0)],
+        modifier: [
+          MessageModifier(message: "Ein starkes Team! Dein Korpsrat hilft dir, die Gemeinde stabil in die nächste Phase zu führen."),
+        ],
+      ),
+      // Zufallsaufgaben (Random Tasks)
+      Task(
+        name: "Kassendifferenz finden",
+        description: "Wo ist das Geld geblieben? Kostet Nerven und Zeit.",
+        duration: 5000.0,
+        timeToSolve: 20000.0,
+        cost: [Time(value: 2.0)],
+        award: [Wisdom(value: 1.0)],
+        missed: [SubtractRes(ressources: [Money(value: 10.0)])],
+      ),
+      Task(
+        name: "Rechnung nicht bezahlt",
+        description: "Mahngebühren vermeiden!",
+        duration: 4000.0,
+        timeToSolve: 15000.0,
+        cost: [Money(value: 20.0)],
+        award: [Wisdom(value: 0.5)],
+        missed: [SubtractRes(ressources: [Money(value: 5.0)]), AddTask(task: "Rechnung nicht bezahlt")],
+      ),
     ],
   ),
 ];
