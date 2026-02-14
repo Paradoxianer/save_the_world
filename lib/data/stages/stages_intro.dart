@@ -3,6 +3,7 @@ import 'package:save_the_world_flutter_app/models/addres.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
@@ -16,7 +17,7 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> introStages = [
-  // STAGE 0: Einstieg (Fokus auf das Wesentliche)
+  // STAGE 0: Einstieg (Tutorial mit Snackbar-Begleitung)
   Stage(
     level: 0,
     member: 20,
@@ -30,7 +31,10 @@ final List<Stage> introStages = [
         duration: 3000.0,
         cost: [Time(value: 1.0)],
         award: [Faith(value: 10.0), Wisdom(value: 5.0)],
-        modifier: [AddTask(task: "Beten für andere")],
+        modifier: [
+          AddTask(task: "Beten für andere"),
+          MessageModifier(message: "Wunderbar! Durch Gottes Wort wächst dein Glaube. Jetzt kannst du für andere beten."),
+        ],
       ),
       Task(
         name: "Beten für andere",
@@ -38,7 +42,10 @@ final List<Stage> introStages = [
         duration: 4000.0,
         cost: [Time(value: 1.0)],
         award: [Faith(value: 5.0), Member(value: 0.2)],
-        modifier: [AddTask(task: "Hausbesuch")],
+        modifier: [
+          AddTask(task: "Hausbesuch"),
+          MessageModifier(message: "Dein Gebet zeigt Wirkung! Die ersten Menschen interessieren sich für deine kleine Gemeinde."),
+        ],
       ),
       Task(
         name: "Hausbesuch",
@@ -46,7 +53,11 @@ final List<Stage> introStages = [
         duration: 6000.0,
         cost: [Time(value: 2.0), Faith(value: 10.0)],
         award: [Member(value: 0.5), Wisdom(value: 2.0)],
-        modifier: [AddTask(task: "Schlafen"), AddTask(task: "Freizeit")],
+        modifier: [
+          AddTask(task: "Schlafen"),
+          AddTask(task: "Freizeit"),
+          MessageModifier(message: "Persönliche Beziehungen sind das Fundament. Vergiss aber nicht, dich auch auszuruhen!"),
+        ],
       ),
       Task(
         name: "Schlafen",
@@ -79,7 +90,10 @@ final List<Stage> introStages = [
         duration: 4000.0,
         cost: [Time(value: 2.0)],
         award: [Money(value: 1.0)],
-        modifier: [AddTask(task: "Gottesdienst vorbereiten")],
+        modifier: [
+          AddTask(task: "Gottesdienst vorbereiten"),
+          MessageModifier(message: "Deine Gemeinde wächst! Zeit, den ersten Gottesdienst zu planen."),
+        ],
       ),
       Task(
         name: "Gottesdienst vorbereiten",
@@ -111,7 +125,6 @@ final List<Stage> introStages = [
         cost: [Money(value: 200.0), Time(value: 8.0)],
         award: [Faith(value: 50.0), Wisdom(value: 50.0)],
       ),
-      // ... (weitere Tasks aus Stufe 1 hier einfügen)
     ],
   ),
 ];

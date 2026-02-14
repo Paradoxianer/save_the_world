@@ -3,6 +3,7 @@ import 'package:save_the_world_flutter_app/models/addres.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
+import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/starttaks.model.dart';
@@ -39,6 +40,8 @@ class Modifier extends GameItem {
         return StopTask.fromJson(jsn);
       case "StartTask":
         return StartTask.fromJson(jsn);
+      case "MessageModifier":
+        return MessageModifier.fromJson(jsn);
       default:
         return Modifier(name: type ?? "Unknown", description: "Generic Modifier");
     }
