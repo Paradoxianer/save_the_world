@@ -38,15 +38,18 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator> {
     Color? valueColor;
 
     if (widget.task.controller.status == AnimationStatus.dismissed) {
-      backgroundColor = Colors.white;
+      backgroundColor = Colors.transparent;
     } else if (widget.task.controller.status == AnimationStatus.reverse) {
       valueColor = Colors.redAccent;
+    } else {
+      valueColor = Theme.of(context).primaryColor;
     }
 
     return LinearProgressIndicator(
       value: widget.task.controller.value,
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? Colors.grey[200],
       valueColor: valueColor != null ? AlwaysStoppedAnimation<Color>(valueColor) : null,
+      minHeight: 4,
     );
   }
 }
@@ -58,23 +61,63 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(6.0),
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            contentPadding: const EdgeInsets.all(1.0),
-            leading: RessourceTable(ressourceList: task.cost),
-            title: Text(task.name),
-            subtitle: Text(task.description),
-            trailing: RessourceTable(ressourceList: task.award),
-            onTap: _handleTap,
-            onLongPress: () {
-              showTaskInfo(context, task);
-            },
-          ),
-          TaskProgressIndicator(task: task)
-        ],
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      clipBehavior: Clip.antiAlias, // Ensures progress bar doesn't bleed out of rounded corners
+      child: InkWell(
+        onTap: _handleTap,
+        onLongPress: () => showTaskInfo(context, task),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  // Left side: Costs
+                  SizedBox(
+                    width: 75,
+                    child: RessourceTable(ressourceList: task.cost, size: 24.0),
+                  ),
+                  
+                  const SizedBox(width: 8),
+                  
+                  // Center: Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          task.description,
+                          style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(width: 8),
+                  
+                  // Right side: Awards
+                  SizedBox(
+                    width: 75,
+                    child: RessourceTable(ressourceList: task.award, size: 24.0),
+                  ),
+                ],
+              ),
+            ),
+            // Progress Bar at the very bottom, stretching full width
+            TaskProgressIndicator(task: task),
+          ],
+        ),
       ),
     );
   }
