@@ -17,15 +17,12 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> introStages = [
-  // STAGE 0: Der Ruf (Tutorial für angehende Heilsarmeeoffiziere)
+  // STAGE 0: Der Ruf (Tutorial für Heilsarmee-Offiziere)
   Stage(
     level: 0,
     member: 20,
     description: "Hausgemeinde - Als Offizier fängst du klein an, aber mit großem Auftrag.",
-    activeTasks: [
-      "Bibellesen",
-      "Schlafen", // Von Anfang an freigeschaltet für die Balance
-    ],
+    activeTasks: ["Bibellesen", "Schlafen"],
     randomTasks: [],
     allTasks: [
       Task(
@@ -47,7 +44,7 @@ final List<Stage> introStages = [
         award: [Faith(value: 10.0), Member(value: 0.1)],
         modifier: [
           AddTask(task: "Hausbesuch"),
-          MessageModifier(message: "Das Gebet öffnet Türen. Du spürst, wie sich die ersten Menschen für den Glauben interessieren."),
+          MessageModifier(message: "Das Gebet ist der Motor. Gott wendet dir die Herzen der Menschen zu und schenkt dir erste Weggefährten."),
         ],
       ),
       Task(
@@ -58,7 +55,7 @@ final List<Stage> introStages = [
         award: [Member(value: 1.5), Wisdom(value: 2.0)],
         modifier: [
           AddTask(task: "Essen in meiner Wohnung"),
-          MessageModifier(message: "Beziehungen zu pflegen ist der Kern deiner Arbeit. Aber achte weise auf deine Zeit!"),
+          MessageModifier(message: "Hausbesuche vertiefen die Gemeinschaft. Sie sind der Schlüssel, um die nächste Stufe freizuschalten."),
         ],
       ),
       Task(
@@ -68,7 +65,7 @@ final List<Stage> introStages = [
         cost: [Time(value: 8.0)],
         award: [Time(value: 16.0)],
         modifier: [
-          MessageModifier(message: "Gute Erholung! Deine Zeit ist eine kostbare Gabe Gottes. Nutze sie diszipliniert."),
+          MessageModifier(message: "Erholt! Deine Zeit ist wieder aufgeladen. WICHTIG: Achte IMMER darauf, dass dir die Zeit nicht ausgeht, sonst landest du in einer Sackgasse!"),
         ],
       ),
       Task(
@@ -78,11 +75,11 @@ final List<Stage> introStages = [
         cost: [
           Time(value: 4.0), 
           Faith(value: 20.0),
-          Member(value: 5.0), // Setzt voraus, dass man bereits 5 Leute durch Gebet/Besuche 'gesammelt' hat
+          Member(value: 5.0),
         ],
         award: [Member(value: 15.0), Publicity(value: 2.0)],
         modifier: [
-          MessageModifier(message: "Halleluja! Aus Einladungen werden Jünger. Deine kleine Herde ist bereit für den nächsten Schritt."),
+          MessageModifier(message: "Fantastisch! Deine kleine Herde ist gewachsen. Du bist bereit für die nächste Stufe: Gemeinschaftsgruppe!"),
         ],
       ),
     ],
@@ -104,6 +101,7 @@ final List<Stage> introStages = [
         award: [Money(value: 5.0)],
         modifier: [
           AddTask(task: "Gottesdienst vorbereiten"),
+          MessageModifier(message: "Wachstum bedeutet Verantwortung. Mit der 'Kasse' verwaltest du nun die Finanzen der Gemeinde."),
         ],
       ),
       // ... weitere Tasks ...
