@@ -1,30 +1,35 @@
-# 🗺 Save the World - Roadmap zur Beta-Phase
+# 🗺 Save the World - Strategische Roadmap
 
-Diese Roadmap skizziert den Weg von der aktuellen Prototyp-Phase bis hin zu einer stabilen, spaßigen Beta-Version.
+Diese Roadmap beschreibt den Weg vom aktuellen Prototyp zur globalen Version (R2). Sie basiert auf den Wachstums-Schwellen der `CHURCH_GROWTH_LOGIC.md`.
 
-## Phase 1: Fundament & Stabilität (Alpha)
-*Ziel: Ein fehlerfreies Grundgerüst.*
+## 🛠 Phase 1: Der Weg zur Beta (Fokus: Fundament & Onboarding)
+*Ziel: Ein stabiles, spielbares Tutorial und funktionierende Kern-Mechaniken.*
 
-- [ ] **Task-Management Fixes:** Implementierung der Prüfung, ob ein Task bereits läuft, bevor er manipuliert wird (Ref: `game.ressource.model.dart`).
-- [ ] **Game Loop Aktivierung:** Die `updateGame` Methode im `Game`-Model mit Leben füllen (periodische Ressourcen-Berechnung, Event-Trigger).
-- [ ] **Persistenz-Check:** Validierung des Save/Load-Systems für komplexe Task-Ketten und Modifikatoren.
+- [x] **Migration & Stabilität:** Umstellung auf Flutter 3 & Null Safety (Erledigt).
+- [x] **Modularisierung (#23):** Auslagerung der 32 Stages in eigene Daten-Module (Erledigt).
+- [ ] **Apostolisches Onboarding (#22):** Überarbeitung von Stage 0 (Stille Zeit -> Gebet -> Jüngerschaft).
+- [ ] **Gatekeeper-System (#33, #30):** Implementierung aktiver Stufenaufstiege via SetMax-Modifier und Gold-Markierung im UI.
+- [ ] **UI-Synchronisation (#26):** Echtzeit-Updates der Ressourcen-Kosten im Task-UI.
+- [ ] **Web-Enablement (#37):** Sicherstellung der vollen Funktionalität und Layout-Stabilität im Browser.
 
-## Phase 2: Gameplay-Tiefe & Progression (Pre-Beta)
-*Ziel: Langzeitmotivation durch funktionierende Spielstufen.*
+## 🚀 Phase 2: Beta-Release (Fokus: Content & Balancing)
+*Ziel: Alle 33 Stufen spielbar und motivierend.*
 
-- [ ] **Stage-System Integration:** Dynamische Freischaltung von Tasks basierend auf der aktuellen Stufe (von "Hausgemeinde" bis "Weltkirche").
-- [ ] **Ressourcen-Balancing:** Feinabstimmung der Kosten/Nutzen-Rechnung (z.B. "studieren" vs. "Wirtschaftsmission").
-- [ ] **Event-Chains:** Ausbau der Modifikatoren für komplexere Story-Verläufe (z.B. Konsequenzen bei unbezahlten Rechnungen).
+- [ ] **Content-Komplettierung (#15):** Alle 33 Stufen basierend auf der El-Daour-Logik finalisieren und balancieren.
+- [ ] **Celebration UI (#27):** Einführung des Glückwunsch-Dialogs bei Stufenaufstieg.
+- [ ] **Adaptive UI (#28):** Automatische Zahlen-Formatierung (1K, 1.5M) für das Mid- und Endgame.
+- [ ] **Persistenz-Check (#5):** Validierung der Speicherlogik für komplexe Task-Ketten.
 
-## Phase 3: Visuals & "Juice" (Beta-Release)
-*Ziel: Den "Spaßfaktor" gemäß rules.md erhöhen.*
+## 🏁 Phase 3: Release 1 (R1 - Polish & Sound)
+*Ziel: Ein fertiges Produkt für App-Stores.*
 
-- [ ] **Animations-Update:** Visuelle Rückmeldung bei Task-Abschluss oder Verfehlen (Partikeleffekte, Farbumschläge).
-- [ ] **UI-Overhaul:** Überarbeitung der `RessourceTable` und `TaskList` für ein immersiveres Spielerlebnis.
-- [ ] **Sound-Support:** Implementierung von Audio-Feedback für wichtige Spielereignisse.
+- [ ] **Audio-Feedback:** Implementierung von Soundeffekten für Erfolg und Krise.
+- [ ] **Visual "Juice" (#6):** Erweiterte Animationen beim Ressourcenabzug.
+- [ ] **About & Credits (#2):** Integration der Helfer-Credits und rechtlichen Hinweise.
 
-## Phase 4: Content-Expansion
-*Ziel: Vielfalt und Wiederspielwert.*
+## 🌎 Phase 4: Release 2 (R2 - Ecosystem)
+*Ziel: Globale Vernetzung.*
 
-- [ ] **Zusätzliche Tasks:** Implementierung weiterer Missionen für höhere Stages.
-- [ ] **Achievements:** Belohnungssystem für besondere Meilensteine in der Weltrettung.
+- [ ] **Firebase Integration (#36):** Cloud-Saves und Synchronisation.
+- [ ] **Global Scoreboard (#35):** Internationales Ranking basierend auf Zeit und Effizienz.
+- [ ] **Stage-Analytics:** Auswertung der Spielerwege zur Gamedesign-Optimierung.

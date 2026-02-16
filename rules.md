@@ -16,6 +16,7 @@
 * **Kommentierung:** Kommentiere das "Warum", nicht das "Was". Erkläre komplexe Logik kurz und präzise. Selbsterklärender Code benötigt keine Kommentare.
 * **Naming:** Nutze sprechende Variablen- und Methodennamen. Ein Name wie `calculateUserTotal()` ist besser als `calc()`.
 * **Immutability:** Bevorzuge `final` und nutze `const` Konstruktoren, wo immer möglich, um die Performance zu optimieren.
+* **Issues.md** Wird vom Nutzer automatisch aus github aktualisiert und sollte nicht von dir verändert werden
 
 ## 4. Sicherheit & Fehlerbehandlung
 * **Null Safety:** Nutze Darts Type-System konsequent. Vermeide den Force-Unwrap Operator `!`, außer es ist absolut sicher.

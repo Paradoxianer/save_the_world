@@ -1,45 +1,37 @@
 # 📖 Logik der Gemeindewachstums-Schwellen
 
-Diese Datei definiert die spielerische Umsetzung von Jüngerschaft und geistlicher Multiplikation. Wachstum wird hier nicht als "Zahl" verstanden, sondern als "Befähigung".
+Diese Datei definiert die spielerische Umsetzung von Jüngerschaft und geistlicher Multiplikation. Wachstum wird hier nicht als "Zahl" verstanden, sondern als "Befähigung" durch das Überwinden von Schwellen.
 
-## 🚀 Das Prinzip der Multiplikation (2. Timotheus 2,2)
+## 🚀 Das Prinzip der Multiplikation & Schwellen
 
-Im Spiel unterscheiden wir zwischen **linearem Wachstum** und **geistlicher Multiplikation**:
+Im Spiel arbeiten wir mit **Wachstumsschwellen**. Um eine Schwelle zu überschreiten, reicht es nicht, nur Ressourcen zu sammeln – es muss eine qualitative Änderung stattfinden (Befähigung).
 
-*   **Lineares Wachstum (+):** Aufgaben wie "Gottesdienst" oder "Essen" bringen direkt neue Mitglieder. Das ist einfach, aber der Zeitaufwand für den Leiter bleibt hoch.
-*   **Geistliche Multiplikation (x):** Aufgaben wie "Mentoring" oder "Leiter-Training". Sie bringen anfangs kaum neue Mitglieder, reduzieren aber dauerhaft die Zeit-Kosten für andere Aufgaben oder schalten "Automatik-Effekte" frei.
+### 1. Die "Enable Next Stage" Mechanik (Stage-Gates)
+*   Jede Stufe hat ein **Maximum** an Mitgliedern (das aktuelle "Glasdach").
+*   Um dieses Dach anzuheben, muss ein spezifischer **Schlüsseltask (Blocker-Task)** erfolgreich abgeschlossen werden (z.B. "Essen in meiner Wohnung" in Stage 0 oder "Saal mieten" in Stage 3).
+*   Erst nach Abschluss dieses Tasks wird die *nächste Stufe ermöglicht* (Enabled). Das Ressourcen-Maximum steigt.
+*   Der tatsächliche **Stufenaufstieg** (mit Glückwunsch-Dialog) findet erst statt, wenn die Mitgliederzahl die neue Schwelle real erreicht.
+
+### 2. Visuelle Markierung von Blocker-Tasks
+*   Tasks, die für den Stufenaufstieg zwingend sind, werden im UI besonders hervorgehoben (z.B. rote Umrandung oder spezielles Icon), damit der Spieler weiß: "Das ist meine aktuelle Priorität".
+
+### 3. Stage-Fallback (Low Priority)
+*   Sinkt die Mitgliederzahl (z.B. durch Streit) unter die Schwelle der *vorherigen* Stufe, kann ein Downgrade erfolgen.
+*   **Konsequenz:** Spezifische Aufgaben der höheren Stufe gehen wieder verloren, bis die Schwelle erneut stabil überschritten wird.
 
 ---
 
 ## 🏗 Struktur der Schwellen & Fokus-Phasen
 
-| Stufe | Phase | Jüngerschafts-Mechanik | Multiplikations-Effekt |
-|-------|-------|-------------------------|------------------------|
-| 0-1   | **Familie** | 1-zu-1 Begleitung | Vertrauen bildet das Fundament |
-| 2-4   | **Clan** | Geistesgaben entdecken | Erste Leiter übernehmen Aufgaben |
-| 5-10  | **Gemeinde** | Leiter-Training | Aus Leitern werden Väter/Mütter |
-| 11-20 | **Bewegung** | DNA-Transfer | Neue Standorte entstehen autonom |
-| 21-32 | **Armee** | Visionäre Strategie | Globale Wirkung durch lokale Reife |
+| Stufe | Phase | Blocker-Task (Beispiel) | Jüngerschafts-Fokus |
+|-------|-------|-------------------------|----------------------|
+| 0     | **Einstieg** | Essen in meiner Wohnung | Vertrauen & Einladung |
+| 1-3   | **Clan** | Saal mieten / Korpsrat | Delegation & Struktur |
+| 4-10  | **Gemeinde** | Leiter-Training | Leiter von Leitern |
+| 11-20 | **Bewegung** | Pionier-Team aussenden | DNA-Multiplikation |
 
 ---
 
-## 🔍 Jüngerschafts-Tasks & ihre Wirkung
-
-### 1. Das Mentoring-Prinzip (Stufe 2+)
-*   **Task:** "1-zu-1 Mentoring"
-*   **Mechanik:** Kostet viel Zeit des Leiters, erhöht aber den "Wisdom"-Wert der Gemeinde massiv.
-*   **Ziel:** Nur durch Mentoring können "Ehrenamtliche Leiter" überhaupt erst eingesetzt werden.
-
-### 2. Delegation als Jüngerschaft (Stufe 4+)
-*   **Task:** "Aufgaben abgeben"
-*   **Mechanik:** Reduziert die Time-Kosten für "Standard-Tasks" (wie Kasse oder Mails), da nun "Jünger" diese Aufgaben als ihren Dienst verstehen.
-
-### 3. Multiplikation der Standorte (Stufe 10+)
-*   **Task:** "Pionier-Team aussenden"
-*   **Mechanik:** Kostet einen hohen Batzen an "Faith" und "Members", erzeugt aber nach Abschluss einen permanenten Zuwachs an Ressourcen ("Passives Einkommen" an Seelen).
-
----
-
-## ⚖️ Balancing: Die Gefahr der "Bürokratisierung"
-Wenn die Gemeinde wächst, ohne dass Jüngerschaft stattfindet, steigt der **Stress-Faktor** (Time-Kosten) exponentiell an, bis das Spiel unspielbar wird. 
-**Die einzige Rettung:** In Menschen investieren (Multiplikation), damit die Last geteilt wird.
+## ⚖️ Balancing-Regeln für Schwellen
+*   **Blocker-Tasks** sollten höhere Anforderungen an "Faith" und "Wisdom" haben als Standard-Tasks.
+*   Sie symbolisieren den "Glaubensschritt", der für die nächste Ebene nötig ist.
