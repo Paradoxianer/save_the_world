@@ -28,7 +28,17 @@ class Game {
   static Game? mInstance;
   static final TickerProvider tick = GameTickerProvider();
   
-  String? snackbarMessage;
+  String? _snackbarMessage;
+  
+  String? get snackbarMessage => _snackbarMessage;
+  
+  set snackbarMessage(String? value) {
+    _snackbarMessage = value;
+    if (value != null) {
+      notifier.notifyListeners();
+    }
+  }
+
   late List<Task> allTasks;
   late List<String> randomTasks;
   late Duration saveCalled;
@@ -71,7 +81,7 @@ class Game {
     ressources[Publicity().name] = Publicity(value: 1.0);
     ressources[Wisdom().name] = Wisdom(value: 10.0);
     ressources[Member().name]?.max = 20.0;
-    ressources[Member().name]?.min = 0.0; // Start with 0 members allowed
+    ressources[Member().name]?.min = 0.0;
   }
 
   void resetGame() {
@@ -117,7 +127,7 @@ class Game {
 
   void removeTask(Task task) {
     tasks.remove(task);
-    snackbarMessage = null;
+    _snackbarMessage = null;
     notifier.notifyListeners();
   }
 
