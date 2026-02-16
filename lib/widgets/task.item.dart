@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 
@@ -61,62 +63,109 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Check if this task is a gatekeeper (contains SetMax or SetMin)
+    final bool isGatekeeper = task.myModifier.any((m) => m is SetMax || m is SetMin);
+    
     return Card(
-      elevation: 2,
+      elevation: isGatekeeper ? 4 : 2,
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      clipBehavior: Clip.antiAlias, // Ensures progress bar doesn't bleed out of rounded corners
-      child: InkWell(
-        onTap: _handleTap,
-        onLongPress: () => showTaskInfo(context, task),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  // Left side: Costs
-                  SizedBox(
-                    width: 75,
-                    child: RessourceTable(ressourceList: task.cost, size: 24.0),
-                  ),
-                  
-                  const SizedBox(width: 8),
-                  
-                  // Center: Info
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          task.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          task.description,
-                          style: TextStyle(color: Colors.grey[700], fontSize: 12),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+      clipBehavior: Clip.antiAlias,
+      // Gold border for gatekeeper tasks
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8.0),
+        side: isGatekeeper 
+          ? const BorderSide(color: Colors.amber, width: 2.0) 
+          : BorderSide.none,
+      ),
+      child: Container(
+        // Subtle gold shimmer for gatekeeper tasks
+        decoration: isGatekeeper ? BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.amber.withOpacity(0.05), Colors.white],
+          ),
+        ) : null,
+        child: InkWell(
+          onTap: _handleTap,
+          onLongPress: () => showTaskInfo(context, task),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    // Left side: Costs
+                    SizedBox(
+                      width: 75,
+                      child: RessourceTable(ressourceList: task.cost, size: 24.0),
                     ),
-                  ),
-                  
-                  const SizedBox(width: 8),
-                  
-                  // Right side: Awards
-                  SizedBox(
-                    width: 75,
-                    child: RessourceTable(ressourceList: task.award, size: 24.0),
-                  ),
-                ],
+                    
+                    const SizedBox(width: 8),
+                    
+                    // Center: Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              if (isGatekeeper) 
+                                const Padding(
+                                  padding: EdgeInsets.only(right: 4.0),
+                                  child: Icon(Icons.star, color: Colors.amber, size: 16),
+                                ),
+                              Expanded(
+                                child: Text(
+                                  task.name,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold, 
+                                    fontSize: 15,
+                                    color: isGatekeeper ? Colors.orange[900] : Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            task.description,
+                            style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (isGatekeeper)
+                            const Padding(
+                              padding: EdgeInsets.only(top: 4.0),
+                              child: Text(
+                                "MEILENSTEIN: Erhöht Kapazität",
+                                style: TextStyle(
+                                  color: Colors.amber, 
+                                  fontWeight: FontWeight.bold, 
+                                  fontSize: 10
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    
+                    const SizedBox(width: 8),
+                    
+                    // Right side: Awards
+                    SizedBox(
+                      width: 75,
+                      child: RessourceTable(ressourceList: task.award, size: 24.0),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            // Progress Bar at the very bottom, stretching full width
-            TaskProgressIndicator(task: task),
-          ],
+              // Progress Bar at the very bottom, stretching full width
+              TaskProgressIndicator(task: task),
+            ],
+          ),
         ),
       ),
     );
