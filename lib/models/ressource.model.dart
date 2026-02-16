@@ -9,9 +9,9 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 class Ressource extends GameElement {
-  double min = 0.0;
-  double value = 0.0;
-  double max = 100.0;
+  double _min = 0.0;
+  double _value = 0.0;
+  double _max = 100.0;
   bool willAdd = true;
 
   Ressource({
@@ -20,10 +20,33 @@ class Ressource extends GameElement {
     super.icon,
     double? value,
     List<Modifier>? modifier,
-    this.min = 0.0,
-    this.max = 100.0,
+    double min = 0.0,
+    double max = 100.0,
   }) : super(myModifier: modifier) {
-    if (value != null) this.value = value;
+    _min = min;
+    _max = max;
+    if (value != null) _value = value;
+  }
+
+  // Getters
+  double get value => _value;
+  double get min => _min;
+  double get max => _max;
+
+  // Setters with notification for UI Sync (#26)
+  set value(double val) {
+    _value = val;
+    notifier.notifyListeners();
+  }
+
+  set min(double val) {
+    _min = val;
+    notifier.notifyListeners();
+  }
+
+  set max(double val) {
+    _max = val;
+    notifier.notifyListeners();
   }
 
   factory Ressource.fromJson(Map<String, dynamic> json) {
@@ -70,36 +93,36 @@ class Ressource extends GameElement {
   }
 
   void subtract(Ressource other) {
-    value -= other.value;
-    if (value < min) {
-      value = min;
+    _value -= other.value;
+    if (_value < _min) {
+      _value = _min;
     }
     notifier.notifyListeners();
   }
 
   void add(Ressource other) {
-    value += other.value;
-    if (value > max) {
-      value = max;
+    _value += other.value;
+    if (_value > _max) {
+      _value = _max;
     }
     notifier.notifyListeners();
   }
 
   void setValue(double newVal) {
-    value = newVal;
+    _value = newVal;
     notifier.notifyListeners();
   }
 
   bool canAdd(Ressource other) {
     if (name == other.name) {
-      return (value + other.value) <= max;
+      return (_value + other.value) <= _max;
     }
     return false;
   }
 
   bool canSubtract(Ressource other) {
     if (name == other.name) {
-      return (value - other.value) >= min;
+      return (_value - other.value) >= _min;
     }
     return false;
   }
