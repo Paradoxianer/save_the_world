@@ -31,7 +31,6 @@ final List<Stage> introStages = [
         cost: [Time(value: 1.0)],
         award: [Faith(value: 15.0)],
         modifier: [
-          SetMin(ressource: "Member", newMin: 0.0), // FIX: Minimum auf 0 setzen für Tutorial-Flow
           AddTask(task: "Beten"),
           MessageModifier(message: "ANLEITUNG: Klicke auf 'Bibellesen', um Zeit gegen 'Glauben' zu tauschen. Du brauchst Glauben für weitere Aktionen."),
         ],

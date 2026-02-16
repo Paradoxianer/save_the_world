@@ -1,6 +1,6 @@
 {
-    "name": "save_the_world_flutter_app",
-    "short_name": "save_the_world_flutter_app",
+    "name": "save_the_world",
+    "short_name": "save_the_world",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
