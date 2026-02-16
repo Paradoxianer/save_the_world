@@ -61,24 +61,51 @@ void showNewStage(BuildContext context) {
         final maxMembers = stageList[currentStage].toString();
 
         return SimpleDialog(
-            title: const Text('Gratulation'),
+            title: const Text('Gratulation', textAlign: TextAlign.center),
             children: <Widget>[
-              Stack(children: <Widget>[
-                Align(
-                    alignment: Alignment.center,
-                    child: Image.asset('assets/icons/award.png')),
-                Positioned(
-                    left: 124.0,
-                    top: 36.0,
-                    child: Text(
-                      currentStage.toString(),
-                      textScaler: const TextScaler.linear(4),
-                    ))
-              ]),
-              const Text("\n du bist jetzt eine", textAlign: TextAlign.center),
-              Text("$stageTitle\n", textAlign: TextAlign.center),
-              Text("du kannst jetzt bis $maxMembers Mitglieder erreichen",
-                  textAlign: TextAlign.center),
+              const SizedBox(height: 10),
+              SizedBox(
+                height: 160,
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/icons/award.png',
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                    Positioned(
+                      top: 18, // Perfekte optische Mitte des goldenen Siegels
+                      child: Text(
+                        currentStage.toString(),
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: Text("du bist jetzt eine", textAlign: TextAlign.center),
+              ),
+              Text(
+                "$stageTitle\n",
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Text(
+                  "Dein Limit wurde auf $maxMembers Mitglieder erhöht!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+              ),
+              const SizedBox(height: 20),
             ]);
       });
 }
