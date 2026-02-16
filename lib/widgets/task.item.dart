@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/setmin.model.dart';
@@ -65,115 +66,158 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator> {
   }
 }
 
-class TaskItem extends StatelessWidget {
+class TaskItem extends StatefulWidget {
   final Task task;
 
   TaskItem({required this.task}) : super(key: ObjectKey(task));
 
   @override
+  TaskItemState createState() => TaskItemState();
+}
+
+class TaskItemState extends State<TaskItem> {
+  final List<Ressource> _listenedResources = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _updateListeners();
+  }
+
+  @override
+  void didUpdateWidget(TaskItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.task != widget.task) {
+      _removeListeners();
+      _updateListeners();
+    }
+  }
+
+  @override
+  void dispose() {
+    _removeListeners();
+    super.dispose();
+  }
+
+  void _updateListeners() {
+    for (var costRes in widget.task.cost) {
+      final globalRes = Game.ressources[costRes.name];
+      if (globalRes != null) {
+        globalRes.addListener(_onResourceChanged);
+        _listenedResources.add(globalRes);
+      }
+    }
+  }
+
+  void _removeListeners() {
+    for (var res in _listenedResources) {
+      res.removeListener(_onResourceChanged);
+    }
+    _listenedResources.clear();
+  }
+
+  void _onResourceChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  bool get _canAfford {
+    for (var costRes in widget.task.cost) {
+      final gameRes = Game.ressources[costRes.name];
+      if (gameRes == null || !gameRes.canSubtract(costRes)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Check if this task is a gatekeeper (contains SetMax or SetMin)
-    final bool isGatekeeper = task.myModifier.any((m) => m is SetMax || m is SetMin);
-    
-    return Card(
-      elevation: isGatekeeper ? 4 : 2,
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      clipBehavior: Clip.antiAlias,
-      // Gold border for gatekeeper tasks
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-        side: isGatekeeper 
-          ? const BorderSide(color: Colors.amber, width: 2.0) 
-          : BorderSide.none,
-      ),
-      child: Container(
-        // Subtle gold shimmer for gatekeeper tasks
-        decoration: isGatekeeper ? BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.amber.withOpacity(0.05), Colors.white],
-          ),
-        ) : null,
-        child: InkWell(
-          onTap: _handleTap,
-          onLongPress: () => showTaskInfo(context, task),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    // Left side: Costs
-                    SizedBox(
-                      width: 75,
-                      child: RessourceTable(ressourceList: task.cost, size: 24.0),
-                    ),
-                    
-                    const SizedBox(width: 8),
-                    
-                    // Center: Info
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              if (isGatekeeper) 
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 4.0),
-                                  child: Icon(Icons.star, color: Colors.amber, size: 16),
-                                ),
-                              Expanded(
-                                child: Text(
-                                  task.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold, 
-                                    fontSize: 15,
-                                    color: isGatekeeper ? Colors.orange[900] : Colors.black,
+    final bool isGatekeeper = widget.task.myModifier.any((m) => m is SetMax || m is SetMin);
+    final bool canAfford = _canAfford;
+    final bool isRunning = widget.task.controller.isAnimating;
+
+    return Opacity(
+      opacity: (canAfford || isRunning) ? 1.0 : 0.6,
+      child: Card(
+        elevation: isGatekeeper ? 4 : 2,
+        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: isGatekeeper 
+            ? const BorderSide(color: Colors.amber, width: 2.0) 
+            : (canAfford ? BorderSide.none : BorderSide(color: Colors.red.withOpacity(0.3))),
+        ),
+        child: Container(
+          decoration: isGatekeeper ? BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.amber.withOpacity(0.05), Colors.white],
+            ),
+          ) : null,
+          child: InkWell(
+            onTap: canAfford ? _handleTap : null,
+            onLongPress: () => showTaskInfo(context, widget.task),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8.0, 12.0, 8.0, 12.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 75,
+                        child: RessourceTable(ressourceList: widget.task.cost, size: 24.0),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                if (isGatekeeper) 
+                                  const Padding(
+                                    padding: EdgeInsets.only(right: 4.0),
+                                    child: Icon(Icons.star, color: Colors.amber, size: 16),
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    widget.task.name,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold, 
+                                      fontSize: 15,
+                                      color: isGatekeeper ? Colors.orange[900] : Colors.black,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            task.description,
-                            style: TextStyle(color: Colors.grey[700], fontSize: 12),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (isGatekeeper)
-                            const Padding(
-                              padding: EdgeInsets.only(top: 4.0),
-                              child: Text(
-                                "MEILENSTEIN: Erhöht Kapazität",
-                                style: TextStyle(
-                                  color: Colors.amber, 
-                                  fontWeight: FontWeight.bold, 
-                                  fontSize: 10
-                                ),
-                              ),
+                              ],
                             ),
-                        ],
+                            const SizedBox(height: 2),
+                            Text(
+                              widget.task.description,
+                              style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    
-                    const SizedBox(width: 8),
-                    
-                    // Right side: Awards
-                    SizedBox(
-                      width: 75,
-                      child: RessourceTable(ressourceList: task.award, size: 24.0),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      SizedBox(
+                        width: 75,
+                        child: RessourceTable(ressourceList: widget.task.award, size: 24.0),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              // Progress Bar at the very bottom, stretching full width
-              TaskProgressIndicator(task: task),
-            ],
+                TaskProgressIndicator(task: widget.task),
+              ],
+            ),
           ),
         ),
       ),
@@ -181,19 +225,8 @@ class TaskItem extends StatelessWidget {
   }
 
   void _handleTap() {
-    bool canDo = true;
-    for (var costRes in task.cost) {
-      final gameRes = Game.ressources[costRes.name];
-      if (gameRes == null || !gameRes.canSubtract(costRes)) {
-        canDo = false;
-        break;
-      }
-    }
-
-    if (canDo) {
-      task.start();
-    } else {
-      debugPrint("Not enough resources to start task: ${task.name}");
+    if (_canAfford) {
+      widget.task.start();
     }
   }
 }
