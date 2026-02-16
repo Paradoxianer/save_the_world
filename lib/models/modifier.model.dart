@@ -1,6 +1,7 @@
 import 'package:save_the_world_flutter_app/models/addmodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/addres.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
@@ -45,6 +46,8 @@ class Modifier extends GameItem {
         return MessageModifier.fromJson(jsn);
       case "MultiplyRes":
         return MultiplyRes.fromJson(jsn);
+      case "AutoExecuteModifier":
+        return AutoExecuteModifier.fromJson(jsn);
       default:
         return Modifier(name: type ?? "Unknown", description: "Generic Modifier");
     }
