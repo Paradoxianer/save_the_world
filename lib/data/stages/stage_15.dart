@@ -1,12 +1,15 @@
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage15 = Stage(
@@ -14,12 +17,16 @@ final Stage stage15 = Stage(
   member: 100000,
   description: "Eine Bewegung Level 2 - Ausbildung und globale Verwaltung.",
   activeTasks: ["Bibellesen", "Kollekte", "Globale Leiter-Akademie", "Internationale Verwaltung"],
-  randomTasks: ["Beerdigung eines Generals", "Der Heilige Geist möchte wirken"],
+  randomTasks: ["Beerdigung eines Generals", "Der Heilige Geist möchte wirken", "Jemand möchte heiraten"],
   allTasks: [
     baseBible,
     baseSleep,
     collectMoney,
     holySpiritWorking,
+    someoneWantsToMarry,
+    weddingPhase1,
+    weddingPhase2,
+    actualWedding,
     funeralGeneral,
     Task(
       name: "Globale Leiter-Akademie",

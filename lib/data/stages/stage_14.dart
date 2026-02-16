@@ -1,3 +1,4 @@
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -22,6 +23,10 @@ final Stage stage14 = Stage(
     baseSleep,
     collectMoney,
     holySpiritWorking,
+    someoneWantsToMarry,
+    weddingPhase1,
+    weddingPhase2,
+    actualWedding,
     funeralGeneral,
     Task(
       name: "Soziale Brennpunkt-Offensive",
