@@ -139,10 +139,16 @@ class Task extends GameElement {
   }
 
   void finished() {
+    debugPrint("$name \t task.finished()");
+    
+    // CRITICAL FIX: Lift the limits FIRST (e.g. SetMax), then add awards.
+    // Otherwise, the award would be capped by the OLD (lower) maximum.
+    modify();
+    
     for (var a in award) {
       Game.ressources[a.name]?.add(a);
     }
-    modify();
+
     controller.reset();
   }
 
