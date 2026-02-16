@@ -13,20 +13,20 @@ class TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-    debugPrint("addListener valueChanged");
-    Game.getInstance().addListener(valueChanged);
+    // We only listen to Game.notifier which triggers when tasks are added/removed
+    Game.notifier.addListener(_tasksChanged);
   }
 
   @override
   void dispose() {
-    Game.getInstance().removeListener(valueChanged);
+    Game.notifier.removeListener(_tasksChanged);
     super.dispose();
   }
 
-  void valueChanged() {
-    debugPrint("TaksList.valueChanged");
+  void _tasksChanged() {
     if (!mounted) return;
-
+    
+    // Handle snackbar messages if any (kept logic from previous version)
     final snackbarMessage = Game.getInstance().snackbarMessage;
     if (snackbarMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,6 +37,8 @@ class TaskListState extends State<TaskList> {
       );
       Game.getInstance().snackbarMessage = null;
     }
+    
+    // Rebuild only when the task list itself changes
     setState(() {});
   }
 

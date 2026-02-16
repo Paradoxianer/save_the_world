@@ -23,6 +23,15 @@ class TaskProgressIndicatorState extends State<TaskProgressIndicator> {
   }
 
   @override
+  void didUpdateWidget(TaskProgressIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.task != widget.task) {
+      oldWidget.task.controller.removeListener(_onAnimationTick);
+      widget.task.controller.addListener(_onAnimationTick);
+    }
+  }
+
+  @override
   void dispose() {
     widget.task.controller.removeListener(_onAnimationTick);
     super.dispose();
