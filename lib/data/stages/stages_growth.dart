@@ -1,140 +1,153 @@
-import 'package:save_the_world_flutter_app/models/addres.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
-import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
+import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
+// REUSABLE BASE TASKS FOR GROWTH PHASE
+final _growthSleep = Task(
+  name: "Schlafen",
+  description: "Erholung ist wichtig für einen Leiter.",
+  duration: 8000.0,
+  cost: [Time(value: 8.0)],
+  award: [Time(value: 16.0)],
+);
+
+final _growthBible = Task(
+  name: "Bibellesen",
+  description: "Tiefe spirituelle Nahrung für die Gemeindeleitung.",
+  duration: 3000.0,
+  cost: [Time(value: 1.0)],
+  award: [Faith(value: 20.0), Wisdom(value: 5.0)],
+);
+
 final List<Stage> growthStages = [
-  // STAGE 4: Kleine Gemeinde (200 Mitglieder) - Fokus: Jüngerschaft & Mentoring
+  // STAGE 4: Mittelgroße Gemeinde (Max 200) - Fokus: Jüngerschaft & Mentoring
   Stage(
     level: 4,
     member: 200,
-    description: "Kleine Gemeinde - Wahres Wachstum geschieht durch die Befähigung der Einzelnen.",
-    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Gottesdienst halten", "Geistesgaben entdecken"],
-    randomTasks: ["Streit in der Gemeinde", "Mitarbeiter-Burnout"],
+    description: "Mittelgroße Gemeinde - Wahres Wachstum geschieht durch Befähigung.",
+    activeTasks: ["Bibellesen", "Schlafen", "Kollekte", "Mentoring"],
+    randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde"],
     allTasks: [
+      _growthBible,
+      _growthSleep,
       Task(
-        name: "1-zu-1 Mentoring",
-        description: "Investiere tief in eine Person. Jüngerschaft ist Beziehungsarbeit.",
-        duration: 12000.0,
-        cost: [Time(value: 6.0), Wisdom(value: 20.0), Faith(value: 10.0)],
-        award: [Wisdom(value: 50.0), Faith(value: 20.0)],
-        modifier: [
-          AddTask(task: "Aufgaben abgeben"),
-          MessageModifier(message: "Tiefe Jüngerschaft! Durch dein Mentoring wächst ein neuer Leiter heran, der bald Lasten mittragen kann."),
-        ],
+        name: "Kollekte",
+        duration: 3000.0,
+        cost: [Time(value: 1.0)],
+        modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 1.0)],
       ),
       Task(
-        name: "Aufgaben abgeben",
-        description: "Vertraue deinen Jüngern praktische Aufgaben an. Schafft Freiraum für das Gebet.",
-        duration: 5000.0,
-        cost: [Time(value: 2.0), Wisdom(value: 100.0)],
-        award: [Time(value: 4.0)],
-        modifier: [
-          MessageModifier(message: "Befreiend! Indem du Aufgaben abgibst, handelst du nach biblischem Vorbild und gewinnst Zeit für das Wesentliche."),
-        ],
+        name: "Mentoring",
+        description: "Investiere in potenzielle Leiter.",
+        duration: 8000.0,
+        cost: [Time(value: 4.0), Wisdom(value: 20.0)],
+        award: [Wisdom(value: 30.0), Faith(value: 10.0)],
+        modifier: [AddTask(task: "Leiter-Training")],
       ),
       Task(
-        name: "Ehrenamtliche Leiter schulen",
-        description: "Befähige deine Leiter, selbst wieder Jünger zu machen (Multiplikation).",
+        name: "Ein zwischenmenschliches Problem klären",
+        description: "Konflikte kosten Zeit, bringen aber Reife.",
+        duration: 6000.0,
+        cost: [Time(value: 3.0), Wisdom(value: 10.0)],
+        award: [Wisdom(value: 15.0), Member(value: 0.5)],
+      ),
+      Task(
+        name: "Leiter-Training",
+        description: "MEILENSTEIN: Schult Leiter, die selbst führen (Limit 400).",
         duration: 15000.0,
-        cost: [Time(value: 10.0), Wisdom(value: 300.0), Faith(value: 100.0)],
-        award: [Member(value: 5.0), Wisdom(value: 100.0)],
+        cost: [Time(value: 8.0), Wisdom(value: 100.0), Member(value: 50.0)],
+        award: [Wisdom(value: 50.0)],
         modifier: [
-          AddTask(task: "Pionier-Team aussenden"),
-          MessageModifier(message: "Multiplikations-Effekt: Deine Leiter fangen an, eigenständig Jüngerschaftskreise zu leiten."),
+          MessageModifier(message: "Befähigung: Deine Leiter übernehmen Verantwortung. Limit steigt auf 400!"),
+          SetMax(ressource: "Member", newMax: 400.0),
         ],
       ),
     ],
   ),
 
-  // STAGE 5: Mittelgroße Gemeinde (400)
+  // STAGE 5: Große Gemeinde (Max 400) - Fokus: Spezialisierung
   Stage(
     level: 5,
     member: 400,
-    description: "Mittelgroße Gemeinde - Die Struktur muss sich festigen. Multiplikation beginnt.",
-    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Ehrenamtliche Leiter schulen"],
+    description: "Große Gemeinde - Die Struktur wird professioneller.",
+    activeTasks: ["Bibellesen", "Schlafen", "Kollekte", "Seelsorge"],
     allTasks: [
+      _growthBible,
+      _growthSleep,
       Task(
-        name: "Kleingruppen-Mentoring",
-        description: "Begleite deine Leiter in ihrer Arbeit mit den Gruppen.",
-        duration: 15000.0,
-        cost: [Time(value: 10.0), Wisdom(value: 200.0), Faith(value: 100.0)],
-        award: [Wisdom(value: 150.0), Faith(value: 50.0)],
+        name: "Kollekte",
+        duration: 3000.0,
+        cost: [Time(value: 1.0)],
+        modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 1.2)],
+      ),
+      Task(
+        name: "Seelsorge",
+        description: "Begleitung in schweren Zeiten (aus oldstages).",
+        duration: 5000.0,
+        cost: [Time(value: 2.0), Wisdom(value: 10.0)],
+        award: [Wisdom(value: 20.0), Member(value: 1.0)],
+      ),
+      Task(
+        name: "Gottesdienst-Teams bilden",
+        description: "MEILENSTEIN: Qualität durch Spezialisierung (Limit 600).",
+        duration: 18000.0,
+        cost: [Time(value: 10.0), Money(value: 500.0), Member(value: 100.0)],
+        award: [Publicity(value: 20.0)],
+        modifier: [
+          MessageModifier(message: "Struktur: Musik, Technik und Empfang sind nun Teams. Limit steigt auf 600!"),
+          SetMax(ressource: "Member", newMax: 600.0),
+        ],
       ),
     ],
   ),
 
-  // STAGE 6: Große Gemeinde (600)
+  // STAGE 6: Sehr große Gemeinde (Max 600) - Fokus: Außenwirkung
   Stage(
     level: 6,
     member: 600,
-    description: "Große Gemeinde - Professionalität wird wichtig.",
-    activeTasks: ["Bibellesen", "Schlafen", "Gottesdienst halten", "Einsatzwagen raus"],
+    description: "Sehr große Gemeinde - Relevanz in der Stadt.",
+    activeTasks: ["Bibellesen", "Kollekte", "Stadtmission"],
     allTasks: [
+      _growthBible,
+      _growthSleep,
       Task(
-        name: "PR-Manager einstellen",
-        description: "Ein Profi kümmert sich um die Außendarstellung.",
-        duration: 20000.0,
-        cost: [Money(value: 1500.0), Wisdom(value: 100.0)],
-        award: [Publicity(value: 100.0)],
+        name: "Kollekte",
+        duration: 3000.0,
+        cost: [Time(value: 1.0)],
+        modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 1.5)],
       ),
-    ],
-  ),
-
-  // STAGE 7: Sehr große Gemeinde (800)
-  Stage(
-    level: 7,
-    member: 800,
-    description: "Sehr große Gemeinde - Die Stadt nimmt dich wahr.",
-    activeTasks: ["Bibellesen", "Schlafen", "PR-Manager einstellen"],
-    allTasks: [],
-  ),
-
-  // STAGE 8: Fast eine MegaChurch (1100)
-  Stage(
-    level: 8,
-    member: 1100,
-    description: "Fast eine MegaChurch - Die Dynamik ändert sich.",
-    activeTasks: ["Bibellesen", "Schlafen", "Kleingruppen-Mentoring"],
-    allTasks: [],
-  ),
-
-  // STAGE 9: MegaChurch Level 1 (1800)
-  Stage(
-    level: 9,
-    member: 1800,
-    description: "MegaChurch Level 1 - Eine neue Dimension der Verantwortung.",
-    activeTasks: ["Vision-Casting", "Bibellesen", "Schlafen"],
-    allTasks: [],
-  ),
-
-  // STAGE 10: MegaChurch Level 2 (2800)
-  Stage(
-    level: 10,
-    member: 2800,
-    description: "MegaChurch Level 2 - Multiplikation als Lebensstil.",
-    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Pionier-Team aussenden"],
-    randomTasks: ["Struktur-Krise"],
-    allTasks: [
       Task(
-        name: "Vision-Casting",
-        description: "Wo soll die Reise hingehen? Begeistere deine Leiter.",
+        name: "Stadtmission",
+        description: "Präsenz zeigen und Gutes tun (oldstages: Wirtschaftsmission).",
+        duration: 8000.0,
+        cost: [Time(value: 5.0), Money(value: 200.0)],
+        award: [Publicity(value: 30.0), Member(value: 10.0)],
+      ),
+      Task(
+        name: "Hauptamtliche einstellen",
+        description: "MEILENSTEIN: Erste Vollzeitkräfte für die Arbeit (Limit 800).",
         duration: 25000.0,
-        cost: [Time(value: 20.0), Faith(value: 500.0)],
-        award: [Faith(value: 300.0), Publicity(value: 50.0)],
+        cost: [Money(value: 2000.0), Wisdom(value: 200.0), Member(value: 150.0)],
+        award: [Wisdom(value: 100.0)],
+        modifier: [
+          MessageModifier(message: "Professionalität: Die ersten Pastoren/Mitarbeiter sind angestellt. Limit steigt auf 800!"),
+          SetMax(ressource: "Member", newMax: 800.0),
+        ],
       ),
     ],
   ),
+
+  // STAGE 7-10 folgen im nächsten Schritt...
 ];
