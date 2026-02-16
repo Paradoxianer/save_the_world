@@ -134,7 +134,7 @@ class TaskItemState extends State<TaskItem> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isGatekeeper = widget.task.myModifier.any((m) => m is SetMax || m is SetMin);
+    final bool isGatekeeper = widget.task.myModifier.any((m) => m is SetMax);
     final bool canAfford = _canAfford;
     final bool isRunning = widget.task.controller.isAnimating;
 
