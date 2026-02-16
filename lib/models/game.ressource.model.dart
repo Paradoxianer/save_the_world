@@ -10,6 +10,7 @@ import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/stage.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -29,9 +30,7 @@ class Game {
   static final TickerProvider tick = GameTickerProvider();
   
   String? _snackbarMessage;
-  
   String? get snackbarMessage => _snackbarMessage;
-  
   set snackbarMessage(String? value) {
     _snackbarMessage = value;
     if (value != null) {
@@ -80,6 +79,8 @@ class Game {
     ressources[Member().name] = Member(value: 2.0);
     ressources[Publicity().name] = Publicity(value: 1.0);
     ressources[Wisdom().name] = Wisdom(value: 10.0);
+    ressources["Stage"] = StageRes(value: stage.toDouble());
+    
     ressources[Member().name]?.max = 20.0;
     ressources[Member().name]?.min = 0.0;
   }
@@ -213,6 +214,7 @@ class Game {
   void loadGame(String? jsn) {
     if (jsn != null) {
       stage = int.tryParse(jsn) ?? 0;
+      ressources["Stage"]?.setValue(stage.toDouble());
     }
   }
 
@@ -261,6 +263,7 @@ class Game {
 
     if (found != null && found > stage) {
       stage = found;
+      ressources["Stage"]?.setValue(stage.toDouble());
       stagenNotifier.notifyListeners();
       debugPrint("Ich bin stage: $found. Das heißt ich bin eine: ${levels[levelList[found]]}");
       
