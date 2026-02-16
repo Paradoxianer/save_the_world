@@ -75,9 +75,9 @@ final List<Stage> introStages = [
         cost: [Time(value: 4.0), Member(value: 5.0)],
         award: [Member(value: 15.0)],
         modifier: [
-          SetMax(ressource: "Member", newMax: 40.0),
-          SetMin(ressource: "Member", newMin: 1.0), // Ab jetzt gilt wieder ein Minimum (Kern-Gemeinde)
           MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein Glasdach liegt nun bei 40 Mitgliedern. Du steigst in Stufe 1 auf."),
+          SetMin(ressource: "Member", newMin: 1.0), // Ab jetzt gilt wieder ein Minimum (Kern-Gemeinde)
+          SetMax(ressource: "Member", newMax: 40.0),
         ],
       ),
     ],

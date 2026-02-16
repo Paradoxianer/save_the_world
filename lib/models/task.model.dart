@@ -119,7 +119,7 @@ class Task extends GameElement {
 
   void start() {
     if (controller.status != AnimationStatus.forward) {
-      debugPrint("[GAME_LOG] Task '$name' STARTED (Duration: ${duration}ms).");
+      debugPrint("[GAME_LOG] Task '$name' STARTED.");
       controller.stop();
       controller.reset();
       controller.duration = Duration(milliseconds: duration.toInt());
@@ -139,17 +139,21 @@ class Task extends GameElement {
   }
 
   void finished() {
-    debugPrint("[GAME_LOG] Task '$name' FINISHED successfully.");
+    debugPrint("[GAME_LOG] Task '$name' processing finished() logic...");
     
-    // Lift limits first
+    // 1. Lift limits FIRST (e.g. SetMax)
     modify();
+    debugPrint("[GAME_LOG] Task '$name' modifiers executed.");
     
+    // 2. Add awards
     for (var a in award) {
       debugPrint("[GAME_LOG] Task '$name' awarding: ${a.name} (+${a.value}).");
       Game.ressources[a.name]?.add(a);
     }
-
+    
+    // 3. Reset controller only AFTER logic is done
     controller.reset();
+    debugPrint("[GAME_LOG] Task '$name' FINISHED successfully.");
   }
 
   void goOnline() {
