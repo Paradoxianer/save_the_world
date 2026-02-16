@@ -5,6 +5,8 @@ import 'package:save_the_world_flutter_app/data/stages/stage_2.dart';
 import 'package:save_the_world_flutter_app/data/stages/stage_3.dart';
 import 'package:save_the_world_flutter_app/data/stages/stage_4.dart';
 import 'package:save_the_world_flutter_app/data/stages/stage_5.dart';
+import 'package:save_the_world_flutter_app/data/stages/stage_6.dart';
+import 'package:save_the_world_flutter_app/data/stages/stage_7.dart';
 import 'package:save_the_world_flutter_app/data/stages/stages_growth.dart';
 import 'package:save_the_world_flutter_app/data/stages/stages_movement.dart';
 import 'package:save_the_world_flutter_app/data/stages/stages_global.dart';
@@ -19,7 +21,9 @@ final List<Stage> allStages = <Stage>[
   stage3,            // Stage 3: Mittlere Gemeinde
   stage4,            // Stage 4: Mittelgroße Gemeinde
   stage5,            // Stage 5: Große Gemeinde
-  ...growthStages,   // Stages 6 - 10 (To be modularized next)
+  stage6,            // Stage 6: Sehr große Gemeinde
+  stage7,            // Stage 7: Fast eine MegaChurch
+  ...growthStages,   // Stages 8 - 10 (To be modularized next)
   ...movementStages, // Stages 11 - 20
   ...globalStages,   // Stages 21 - 32
 ];
