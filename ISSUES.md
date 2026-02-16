@@ -1,32 +1,10 @@
 ﻿# 📋 GitHub Issues Roadmap
 _Sortiert nach Priorität (High > Medium > Low)_
 
-## 🔥 #31: UI: Visuelle Kennzeichnung von Blocker-Tasks [ui, prio: 1-high]
----
-**Status / Description:**
-Spieler müssen sofort erkennen, welche Aufgabe den Stufenaufstieg ermöglicht.
-
-**Vorschlag:**
-- Rote Umrandung oder spezielles Icon für Blocker-Tasks in der TaskList.
-- Erklärungstext im Subtitle ergänzen.
-
----
-
 ## 🔥 #16: Content: Stufen 4-10 (Wachstumsphase) [content, prio: 1-high, prio: 2-medium, prio: 3-low]
 ---
 **Status / Description:**
 Implementierung der Wachstumsphase begonnen. Neue Datei `stages_growth.dart` erstellt und Stage 4 (Die Pastoral-Barriere) integriert.
-
----
-
-## 🔥 ✨ #27: Feature: Implement 'Congratulations' Dialog on Stage-Up [enhancement, ui, prio: 1-high]
----
-**Status / Description:**
-Wenn ein Spieler eine neue Stufe erreicht, gibt es aktuell kein klares visuelles Feedback. 
-
-**Lösung:**
-- In Game.levelListener eine neue Benachrichtigung auslösen.
-- Einen SimpleDialog oder eine animierte Einblendung erstellen, die den neuen Stufen-Namen und die Belohnung anzeigt.
 
 ---
 
@@ -46,10 +24,14 @@ Das Onboarding muss den geistlichen Dienst widerspiegeln.
 
 ---
 
-## 🔥 🔴 #5: Refactor: Finale JSON-Persistenz-Prüfung [bug, critical, prio: 1-high]
+## 🔥 ✨ #27: Feature: Implement 'Congratulations' Dialog on Stage-Up [enhancement, ui, prio: 1-high]
 ---
 **Status / Description:**
-Die Basis-Serialisierung wurde auf Null Safety umgestellt. Es muss nun im Langzeittest geprüft werden, ob alle Task-Zustände (Animationen) nach App-Restart perfekt erhalten bleiben.
+Wenn ein Spieler eine neue Stufe erreicht, gibt es aktuell kein klares visuelles Feedback. 
+
+**Lösung:**
+- In Game.levelListener eine neue Benachrichtigung auslösen.
+- Einen SimpleDialog oder eine animierte Einblendung erstellen, die den neuen Stufen-Namen und die Belohnung anzeigt.
 
 ---
 
@@ -61,6 +43,13 @@ Fortschritt bei der Implementierung der Spielstufen:
 - [x] Stufe 1 (Gemeinschaftsgruppe)
 - [x] Stufe 2 (Der Clan/Geistesgaben)
 - [x] Stufe 3 (Die Gemeinde/Delegation)
+
+---
+
+## 🔥 🔴 #5: Refactor: Finale JSON-Persistenz-Prüfung [bug, critical, prio: 1-high]
+---
+**Status / Description:**
+Die Basis-Serialisierung wurde auf Null Safety umgestellt. Es muss nun im Langzeittest geprüft werden, ob alle Task-Zustände (Animationen) nach App-Restart perfekt erhalten bleiben.
 
 ---
 

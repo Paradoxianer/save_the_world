@@ -32,7 +32,7 @@ final List<Stage> introStages = [
         award: [Faith(value: 15.0)],
         modifier: [
           AddTask(task: "Beten"),
-          MessageModifier(message: "ANLEITUNG: Klicke auf 'Bibellesen', um Zeit gegen 'Glauben' zu tauschen. Du brauchst Glauben für weitere Aktionen."),
+          MessageModifier(message: "BASICS: Aufgaben kosten links angezeigte Ressourcen (hier 1x Zeit) und bringen rechts Belohnungen (hier Glauben)."),
         ],
       ),
       Task(
@@ -43,7 +43,7 @@ final List<Stage> introStages = [
         award: [Member(value: 1.0)], 
         modifier: [
           AddTask(task: "Hausbesuch"),
-          MessageModifier(message: "ANLEITUNG: 'Beten' verbraucht deine gesammelten Glaubenspunkte, um neue Mitglieder zu gewinnen."),
+          MessageModifier(message: "ACHTUNG: 'Beten' benötigt Zeit UND Glauben. Hast du von einer Ressource zu wenig, wird die Karte blass und lässt sich nicht starten!"),
         ],
       ),
       Task(
@@ -54,7 +54,7 @@ final List<Stage> introStages = [
         award: [Member(value: 2.0)], 
         modifier: [
           AddTask(task: "Essen in meiner Wohnung"),
-          MessageModifier(message: "ANLEITUNG: Nutze Hausbesuche, um schnell auf 5 Mitglieder zu kommen. Das ist die Bedingung für das nächste Event."),
+          MessageModifier(message: "STRATEGIE: Manche Aufgaben brauchen viel Zeit. Behalte den blauen Zeit-Balken oben im Auge!"),
         ],
       ),
       Task(
@@ -64,7 +64,7 @@ final List<Stage> introStages = [
         cost: [Time(value: 8.0)],
         award: [Time(value: 16.0)],
         modifier: [
-          MessageModifier(message: "ANLEITUNG: Deine Zeit ist begrenzt (Balken oben). Wenn sie leer ist, musst du 'Schlafen'."),
+          MessageModifier(message: "REGENERATION: Wenn dir die Zeit ausgeht, ist 'Schlafen' deine wichtigste Aufgabe."),
         ],
       ),
       Task(
@@ -75,14 +75,13 @@ final List<Stage> introStages = [
         award: [Member(value: 15.0)],
         modifier: [
           MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein Glasdach liegt nun bei 40 Mitgliedern. Du steigst in Stufe 1 auf."),
-          SetMin(ressource: "Member", newMin: 1.0), // Ab jetzt gilt wieder ein Minimum (Kern-Gemeinde)
+          SetMin(ressource: "Member", newMin: 1.0), 
           SetMax(ressource: "Member", newMax: 40.0),
         ],
       ),
     ],
   ),
   
-  // STAGE 1... (bleibt vorerst gleich)
   Stage(
     level: 1,
     member: 40,
@@ -100,7 +99,6 @@ final List<Stage> introStages = [
           MessageModifier(message: "MECHANIK: In dieser Stufe musst du anfangen, Geld für die Miete eines Saals zu sparen."),
         ],
       ),
-      // ... restliche Tasks ...
     ],
   ),
 ];

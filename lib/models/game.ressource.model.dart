@@ -74,6 +74,17 @@ class Game {
     ressources[Member().name]?.min = 2.0;
   }
 
+  void resetGame() {
+    debugPrint("[GAME] Resetting game state...");
+    stage = 0;
+    tasks.clear();
+    initRes();
+    initStage(0);
+    saveState();
+    notifier.notifyListeners();
+    stagenNotifier.notifyListeners();
+  }
+
   factory Game.fromJson(Map<String, dynamic> json) {
     var tList = json['tasks'] != null ? jsonDecode(json['tasks']) as List : [];
     var atList = json['alltasks'] != null ? jsonDecode(json['alltasks']) as List : [];

@@ -91,7 +91,7 @@ class Home extends StatelessWidget {
                 IconButton(
                     icon: const Icon(Icons.replay),
                     onPressed: () {
-                      Game.getInstance().initRes();
+                      Game.getInstance().resetGame();
                     }
                 ),
                 const Spacer(),
