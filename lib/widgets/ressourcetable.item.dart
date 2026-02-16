@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressource.item.dart';
 
-class RessourceTable extends StatelessWidget {
+class RessourceTable extends StatefulWidget {
   final List<Ressource> ressourceList;
   final int rows = 2;
   final double size;
@@ -14,18 +15,43 @@ class RessourceTable extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (ressourceList.isEmpty) return const SizedBox.shrink();
+  State<RessourceTable> createState() => _RessourceTableState();
+}
 
-    final int columnCount = (ressourceList.length / rows).ceil();
+class _RessourceTableState extends State<RessourceTable> {
+  @override
+  void initState() {
+    super.initState();
+    Game.notifier.addListener(_refresh);
+  }
+
+  @override
+  void dispose() {
+    Game.notifier.removeListener(_refresh);
+    super.dispose();
+  }
+
+  void _refresh() {
+    if (mounted) setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // We always use the passed list, but for the AppBar we might want to ensure 
+    // we have the latest objects from Game.ressources if this is a global display.
+    // However, the caller (main.dart) already passes Game.ressources.values.toList().
+    
+    if (widget.ressourceList.isEmpty) return const SizedBox.shrink();
+
+    final int columnCount = (widget.ressourceList.length / widget.rows).ceil();
     final List<TableRow> tableRows = [];
 
-    for (var i = 0; i < rows; i++) {
+    for (var i = 0; i < widget.rows; i++) {
       tableRows.add(_buildRow(i, columnCount));
     }
 
     return Table(
-      defaultColumnWidth: FixedColumnWidth(size + 5.0),
+      defaultColumnWidth: FixedColumnWidth(widget.size + 5.0),
       children: tableRows,
     );
   }
@@ -36,8 +62,8 @@ class RessourceTable extends StatelessWidget {
     final int end = start + columnCount;
 
     for (var i = start; i < end; i++) {
-      if (i < ressourceList.length) {
-        cells.add(RessourceItem(ressourceList[i], size: size));
+      if (i < widget.ressourceList.length) {
+        cells.add(RessourceItem(widget.ressourceList[i], size: widget.size));
       } else {
         cells.add(const SizedBox.shrink());
       }
