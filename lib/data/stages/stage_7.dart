@@ -1,0 +1,60 @@
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/stage.model.dart';
+import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
+import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
+
+final Stage stage7 = Stage(
+  level: 7,
+  member: 800,
+  description: "Sehr große Gemeinde - Fokus auf Außenwirkung und Gaben.",
+  activeTasks: ["Bibellesen", "Schlafen", "Geistesgaben entdecken", "Pressearbeit"],
+  randomTasks: ["Jemand möchte heiraten", "Der Heilige Geist möchte wirken", "Rechnung nicht bezahlt"],
+  allTasks: [
+    baseBible,
+    baseSleep,
+    collectMoney,
+    someoneWantsToMarry,
+    holySpiritWorking,
+    weddingPhase1,
+    weddingPhase2,
+    actualWedding,
+    Task(
+      name: "Geistesgaben entdecken",
+      description: "Findet heraus, wie man sich am besten einbringen kann (Inspiration: Tabelle).",
+      duration: 5000.0,
+      cost: [Time(value: 5.0), Faith(value: 20.0)],
+      award: [Faith(value: 40.0), Wisdom(value: 10.0)],
+    ),
+    Task(
+      name: "Pressearbeit",
+      description: "Du willst dich in Film und Fernsehen zeigen.",
+      duration: 10000.0,
+      cost: [Publicity(value: 15.0), Time(value: 1.0)],
+      modifier: [AddTask(task: "Interview geben")],
+    ),
+    Task(
+      name: "Interview geben",
+      description: "Vielleicht hören es ja die richtigen Leute!",
+      duration: 5000.0,
+      award: [Publicity(value: 50.0), Faith(value: 10.0)],
+    ),
+    Task(
+      name: "Campus-Modell planen",
+      description: "MEILENSTEIN: Vorbereitung auf mehrere Standorte (Limit 1100).",
+      duration: 30000.0,
+      cost: [Time(value: 15.0), Wisdom(value: 500.0), Faith(value: 200.0)],
+      award: [Wisdom(value: 100.0)],
+      modifier: [
+        MessageModifier(message: "SYSTEM: Das Campus-Modell steht. Ihr seid bereit für den Sprung zur MegaChurch!"),
+        SetMax(ressource: "Member", newMax: 1100.0),
+      ],
+    ),
+  ],
+);
