@@ -7,7 +7,6 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
@@ -45,10 +44,10 @@ final List<Stage> growthStages = [
       _growthSleep,
       Task(
         name: "Mentoring",
-        description: "DELEGATION (START): Kostet viel Zeit, bringt am Anfang wenig zurück.",
+        description: "DELEGATION (START): Kostet viel Weisheit, bringt noch keine Zeit.",
         duration: 12000.0,
-        cost: [Time(value: 6.0), Wisdom(value: 20.0)],
-        award: [Wisdom(value: 40.0)], // Nur Weisheit, noch keine Zeitersparnis
+        cost: [Time(value: 6.0), Wisdom(value: 50.0)],
+        award: [Wisdom(value: 60.0)], 
         modifier: [AddTask(task: "Leiter-Mentoring")],
       ),
       Task(
@@ -62,8 +61,8 @@ final List<Stage> growthStages = [
         name: "Leiter-Mentoring",
         description: "MEILENSTEIN: Schult Leiter von Leitern (Limit 400).",
         duration: 20000.0,
-        cost: [Time(value: 10.0), Wisdom(value: 150.0), Faith(value: 50.0)],
-        award: [Wisdom(value: 80.0)],
+        cost: [Time(value: 10.0), Wisdom(value: 200.0), Faith(value: 50.0)],
+        award: [Wisdom(value: 100.0)],
         modifier: [
           MessageModifier(message: "WACHSTUMSSCHWELLE: Du hast die erste Jüngerschafts-Ebene etabliert. Limit 400!"),
           SetMax(ressource: "Member", newMax: 400.0),
@@ -72,29 +71,30 @@ final List<Stage> growthStages = [
     ],
   ),
 
-  // STAGE 5: Mittelgroße Gemeinde (Max 400) - SAMY: Spezialisierung (Teams)
+  // STAGE 5: Große Gemeinde (Max 400) - SAMY: Spezialisierung (Teams)
   Stage(
     level: 5,
     member: 400,
-    description: "Mittelgroße Gemeinde - Struktur wird lebensnotwendig.",
-    activeTasks: ["Bibellesen", "Schlafen", "Gottesdienst-Teams", "Vision-Casting"],
+    description: "Große Gemeinde - Struktur wird lebensnotwendig.",
+    activeTasks: ["Bibellesen", "Schlafen", "Gottesdienst-Teams", "Jemand möchte heiraten"],
     allTasks: [
       _growthBible,
       _growthSleep,
+      Task(
+        name: "Jemand möchte heiraten",
+        description: "Zwei Mitglieder möchten heiraten (aus oldstages).",
+        duration: 10000.0,
+        cost: [Time(value: 1.0), Wisdom(value: 50.0)],
+        award: [Publicity(value: 5.0), Faith(value: 20.0)],
+        modifier: [AddTask(task: "Heiratsvorbereitung")],
+      ),
       Task(
         name: "Gottesdienst-Teams",
         description: "DELEGATION (EFFEKT): Du gibst erste Aufgaben ab.",
         duration: 10000.0,
         cost: [Time(value: 4.0), Wisdom(value: 50.0)],
-        award: [Time(value: 1.0)], // Erster kleiner Zeit-Gewinn!
+        award: [Time(value: 1.0)], 
         modifier: [AddTask(task: "Bereichsleiter einsetzen")],
-      ),
-      Task(
-        name: "Vision-Casting",
-        description: "Wo soll die Reise hingehen? (aus oldstages/growth).",
-        duration: 15000.0,
-        cost: [Time(value: 5.0), Faith(value: 100.0)],
-        award: [Faith(value: 150.0), Publicity(value: 10.0)],
       ),
       Task(
         name: "Bereichsleiter einsetzen",
@@ -110,11 +110,11 @@ final List<Stage> growthStages = [
     ],
   ),
 
-  // STAGE 6: Große Gemeinde (Max 600) - SAMY: Professionalität
+  // STAGE 6: Sehr große Gemeinde (Max 600) - SAMY: Professionalität
   Stage(
     level: 6,
     member: 600,
-    description: "Große Gemeinde - Professionalität & erste Hauptamtliche.",
+    description: "Sehr große Gemeinde - Professionalität & erste Hauptamtliche.",
     activeTasks: ["Bibellesen", "Schlafen", "Hauptamtliche einstellen", "Kollekte"],
     allTasks: [
       _growthBible,
@@ -129,86 +129,179 @@ final List<Stage> growthStages = [
         name: "Hauptamtliche einstellen",
         description: "DELEGATION (AUTOMATION): Erster bezahlter Mitarbeiter.",
         duration: 30000.0,
-        cost: [Money(value: 1000.0), Wisdom(value: 100.0)],
+        cost: [Money(value: 2000.0), Wisdom(value: 100.0)],
         award: [Wisdom(value: 50.0)],
         modifier: [
-          // AUTOMATION: Der erste Mitarbeiter generiert nun passiv Glauben/Weisheit
           AutoExecuteModifier(
-            intervalMs: 20000,
+            intervalMs: 30000,
             modifiers: [
-              MultiplyRes(targetResName: "Faith", factorResName: "Member", multiplier: 0.05),
-              MessageModifier(message: "AUTOMATION: Deine Mitarbeiter vertiefen die Jüngerschaft."),
+              MultiplyRes(targetResName: "Faith", factorResName: "Member", multiplier: 0.1),
             ]
           ),
-          AddTask(task: "Verwaltung professionalisieren"),
+          AddTask(task: "PR-Manager einsetzen"),
         ],
       ),
       Task(
-        name: "Verwaltung professionalisieren",
-        description: "MEILENSTEIN: Ordnung schafft Platz für 800.",
-        duration: 20000.0,
-        cost: [Money(value: 500.0), Wisdom(value: 200.0)],
+        name: "PR-Manager einsetzen",
+        description: "MEILENSTEIN: Professionelle Kommunikation (Limit 800).",
+        duration: 25000.0,
+        cost: [Money(value: 1000.0), Wisdom(value: 150.0)],
+        award: [Publicity(value: 100.0)],
         modifier: [
-          MessageModifier(message: "SYSTEM: Die Verwaltung trägt nun die Masse. Limit 800!"),
+          MessageModifier(message: "RELEVANZ: Die Stadt nimmt euch wahr. Limit 800!"),
           SetMax(ressource: "Member", newMax: 800.0),
         ],
       ),
     ],
   ),
 
-  // STAGE 7: Sehr große Gemeinde (Max 800) - SAMY: Außenwirkung & Relevanz
+  // STAGE 7: Fast eine MegaChurch (Max 800)
   Stage(
     level: 7,
     member: 800,
-    description: "Sehr große Gemeinde - Fokus auf Stadtrelevanz.",
-    activeTasks: ["Schlafen", "Stadtmission", "PR-Manager einsetzen"],
+    description: "Fast eine MegaChurch - Fokus auf Stadtmission.",
+    activeTasks: ["Bibellesen", "Schlafen", "Stadtmission"],
     allTasks: [
+      _growthBible,
       _growthSleep,
       Task(
         name: "Stadtmission",
-        description: "Gutes tun für die ganze Stadt (aus oldstages).",
+        description: "Präsenz in der Stadt zeigen (Wirtschaftsmission aus oldstages).",
         duration: 12000.0,
-        cost: [Time(value: 6.0), Money(value: 300.0)],
-        award: [Publicity(value: 50.0), Member(value: 20.0)],
+        cost: [Time(value: 5.0), Money(value: 500.0)],
+        award: [Publicity(value: 150.0), Member(value: 20.0)],
       ),
       Task(
-        name: "PR-Manager einsetzen",
-        description: "MEILENSTEIN: Professionelle Kommunikation (Limit 1100).",
-        duration: 25000.0,
-        cost: [Money(value: 2000.0), Wisdom(value: 100.0)],
-        award: [Publicity(value: 100.0)],
+        name: "Campus-Modell planen",
+        description: "MEILENSTEIN: Vorbereitung auf mehrere Standorte (Limit 1100).",
+        duration: 30000.0,
+        cost: [Time(value: 15.0), Wisdom(value: 500.0), Faith(value: 200.0)],
+        award: [Wisdom(value: 100.0)],
         modifier: [
-          MessageModifier(message: "RELEVANZ: Die Stadt nimmt euch wahr. Limit 1100!"),
+          MessageModifier(message: "SYSTEM: Das Campus-Modell steht. Limit 1100!"),
           SetMax(ressource: "Member", newMax: 1100.0),
         ],
       ),
     ],
   ),
 
-  // STAGE 8-10 (MegaChurch Phasen)
+  // STAGE 8: MegaChurch Level 1 (Max 1100)
   Stage(
     level: 8,
     member: 1100,
-    description: "MegaChurch Level 1 - Eine neue Dimension der Verantwortung.",
-    activeTasks: ["Vision-Casting", "Filialgemeinde gründen"],
+    description: "MegaChurch Level 1 - Eine neue Dimension der Leitung.",
+    activeTasks: ["Bibellesen", "Schlafen", "Filialgemeinde gründen", "Vision-Casting"],
     allTasks: [
+      _growthBible,
+      _growthSleep,
+      Task(
+        name: "Vision-Casting",
+        description: "Begeistere die Massen für die Zukunft.",
+        duration: 15000.0,
+        cost: [Time(value: 4.0), Faith(value: 300.0)],
+        award: [Faith(value: 500.0), Publicity(value: 50.0)],
+      ),
       Task(
         name: "Filialgemeinde gründen",
-        description: "DELEGATION (EXPONENTIELL): Multiplikation durch neue Orte.",
-        duration: 40000.0,
-        cost: [Money(value: 5000.0), Faith(value: 500.0), Member(value: 100.0)],
-        award: [Publicity(value: 80.0), Time(value: 10.0)], // Massiver Zeitgewinn durch neue Autonomie!
+        description: "MEILENSTEIN: Erster Ableger in einer Nachbarstadt (Limit 1800).",
+        duration: 35000.0,
+        cost: [Money(value: 5000.0), Faith(value: 500.0), Member(value: 200.0)],
+        award: [Publicity(value: 200.0), Time(value: 10.0)],
         modifier: [
-          AutoExecuteModifier(
-            intervalMs: 10000,
-            modifiers: [
-              MultiplyRes(targetResName: "Member", factorResName: "Member", multiplier: 0.02),
-            ]
-          ),
+          MessageModifier(message: "MULTIPLIKATION: Der erste Campus ist eröffnet! Limit 1800!"),
           SetMax(ressource: "Member", newMax: 1800.0),
         ],
       ),
     ],
   ),
-  // ... Stages 9 & 10 folgen dieser Skalierungs-Logik ...
+
+  // STAGE 9: MegaChurch Level 2 (Max 1800) - SAMY: System-Management
+  Stage(
+    level: 9,
+    member: 1800,
+    description: "MegaChurch Level 2 - Management von Systemen statt Menschen.",
+    activeTasks: ["Bibellesen", "Schlafen", "Kollekte", "Campus-Pastoren einsetzen"],
+    allTasks: [
+      _growthBible,
+      _growthSleep,
+      Task(
+        name: "Kollekte",
+        duration: 3000.0,
+        cost: [Time(value: 1.0)],
+        modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 2.0)],
+      ),
+      Task(
+        name: "Campus-Pastoren einsetzen",
+        description: "DELEGATION (EXPONENTIELL): Regionale Leiter übernehmen die Front.",
+        duration: 25000.0,
+        cost: [Wisdom(value: 400.0), Money(value: 3000.0)],
+        award: [Time(value: 15.0)], // Signifikanter Zeitgewinn
+        modifier: [
+          AutoExecuteModifier(
+            intervalMs: 20000,
+            modifiers: [
+              MultiplyRes(targetResName: "Member", factorResName: "Member", multiplier: 0.01),
+              MessageModifier(message: "CAMPUS: Deine Campus-Pastoren gewinnen neue Mitglieder."),
+            ]
+          ),
+          AddTask(task: "Leadership Summit"),
+        ],
+      ),
+      Task(
+        name: "Leadership Summit",
+        description: "MEILENSTEIN: Vernetzung aller Leiter (Limit 2800).",
+        duration: 30000.0,
+        cost: [Money(value: 10000.0), Wisdom(value: 500.0), Member(value: 500.0)],
+        award: [Wisdom(value: 300.0)],
+        modifier: [
+          MessageModifier(message: "NETWORK: Ein globaler Standard ist etabliert. Limit 2800!"),
+          SetMax(ressource: "Member", newMax: 2800.0),
+        ],
+      ),
+    ],
+  ),
+
+  // STAGE 10: Globale Bewegung (Max 2800) - SAMY: Multiplikation als Lebensstil
+  Stage(
+    level: 10,
+    member: 2800,
+    description: "Globale Bewegung - Multiplikation in die ganze Welt.",
+    activeTasks: ["Bibellesen", "Kollekte", "Eigene App entwickeln"],
+    allTasks: [
+      _growthBible,
+      _growthSleep,
+      Task(
+        name: "Kollekte",
+        duration: 3000.0,
+        cost: [Time(value: 1.0)],
+        modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 3.0)],
+      ),
+      Task(
+        name: "Eigene App entwickeln",
+        description: "Digitale Begleitung für tausende Menschen.",
+        duration: 40000.0,
+        cost: [Money(value: 25000.0), Wisdom(value: 1000.0)],
+        award: [Publicity(value: 500.0), Faith(value: 200.0)],
+        modifier: [
+          AutoExecuteModifier(
+            intervalMs: 15000,
+            modifiers: [
+              MultiplyRes(targetResName: "Faith", factorResName: "Member", multiplier: 0.15),
+            ]
+          ),
+        ],
+      ),
+      Task(
+        name: "Internationale Vision",
+        description: "MEILENSTEIN: Ausbruch aus den Landesgrenzen (Limit 4500).",
+        duration: 50000.0,
+        cost: [Money(value: 50000.0), Faith(value: 2000.0), Member(value: 1000.0)],
+        award: [Publicity(value: 1000.0)],
+        modifier: [
+          MessageModifier(message: "GLOBAL: Die Welt wird euer Missionsfeld. Limit 4500!"),
+          SetMax(ressource: "Member", newMax: 4500.0),
+        ],
+      ),
+    ],
+  ),
 ];
