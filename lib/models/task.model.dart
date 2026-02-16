@@ -55,8 +55,6 @@ class Task extends GameElement {
   }
 
   factory Task.fromJson(Map<String, dynamic> jsn) {
-    debugPrint("Task.fromJson $jsn");
-    
     List<Ressource> deserializeResources(dynamic data) {
       if (data == null) return [];
       final List<dynamic> list = (data is String) ? json.decode(data) : data;
@@ -102,6 +100,7 @@ class Task extends GameElement {
   }
 
   void init() {
+    debugPrint("[GAME_LOG] Task '$name' initialized.");
     int timeDuration = (timeToSolve != double.infinity) ? timeToSolve.toInt() : duration.toInt();
     controller.duration = Duration(milliseconds: timeDuration);
     controller.reset();
@@ -112,20 +111,21 @@ class Task extends GameElement {
   }
 
   void miss() {
-    debugPrint("$name \t task.miss()");
+    debugPrint("[GAME_LOG] Task '$name' MISSED (Failure).");
     for (var m in missed) {
       m.modify();
     }
   }
 
   void start() {
-    debugPrint("$name \t task.start()");
     if (controller.status != AnimationStatus.forward) {
+      debugPrint("[GAME_LOG] Task '$name' STARTED (Duration: ${duration}ms).");
       controller.stop();
       controller.reset();
       controller.duration = Duration(milliseconds: duration.toInt());
       
       for (var c in cost) {
+        debugPrint("[GAME_LOG] Task '$name' consuming cost: ${c.name} (${c.value}).");
         Game.ressources[c.name]?.subtract(c);
       }
       
@@ -134,18 +134,18 @@ class Task extends GameElement {
   }
 
   void stop() {
-    debugPrint("$name \t task.stop()");
+    debugPrint("[GAME_LOG] Task '$name' STOPPED manually.");
     controller.stop();
   }
 
   void finished() {
-    debugPrint("$name \t task.finished()");
+    debugPrint("[GAME_LOG] Task '$name' FINISHED successfully.");
     
-    // CRITICAL FIX: Lift the limits FIRST (e.g. SetMax), then add awards.
-    // Otherwise, the award would be capped by the OLD (lower) maximum.
+    // Lift limits first
     modify();
     
     for (var a in award) {
+      debugPrint("[GAME_LOG] Task '$name' awarding: ${a.name} (+${a.value}).");
       Game.ressources[a.name]?.add(a);
     }
 
