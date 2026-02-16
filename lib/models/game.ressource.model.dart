@@ -71,7 +71,7 @@ class Game {
     ressources[Publicity().name] = Publicity(value: 1.0);
     ressources[Wisdom().name] = Wisdom(value: 10.0);
     ressources[Member().name]?.max = 20.0;
-    ressources[Member().name]?.min = 2.0;
+    ressources[Member().name]?.min = 0.0; // Start with 0 members allowed
   }
 
   void resetGame() {

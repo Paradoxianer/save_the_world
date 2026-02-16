@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
-import 'package:save_the_world_flutter_app/models/setmax.model.dart';
-import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 
@@ -134,7 +132,8 @@ class TaskItemState extends State<TaskItem> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isGatekeeper = widget.task.myModifier.any((m) => m is SetMax);
+    // Robust check for Gatekeeper/Milestone: Check name if type check fails
+    final bool isGatekeeper = widget.task.myModifier.any((m) => m.name == "SetMax");
     final bool canAfford = _canAfford;
     final bool isRunning = widget.task.controller.isAnimating;
 
