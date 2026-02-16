@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/addres.model.dart';
-import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
@@ -20,7 +19,7 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final List<Stage> introStages = [
-  // STAGE 0: Der Ruf (Tutorial)
+  // STAGE 0: Der Ruf (Tutorial) - Bleibt unverändert für Stabilität
   Stage(
     level: 0,
     member: 20,
@@ -90,48 +89,64 @@ final List<Stage> introStages = [
     level: 1,
     member: 40,
     description: "Gemeinschaftsgruppe - Die Verantwortung wächst.",
-    activeTasks: ["Bibellesen", "Beten", "Hausbesuch", "Schlafen", "Kasse führen"],
+    activeTasks: ["Bibellesen", "Beten", "Schlafen", "FSJler einstellen"],
+    randomTasks: ["Rechnung nicht bezahlt"],
     allTasks: [
       Task(
-        name: "Kasse führen",
-        description: "Bringe Ordnung in die Finanzen. Schaltet passives Einkommen frei.",
-        duration: 4000.0,
-        cost: [Time(value: 2.0)],
-        award: [Wisdom(value: 1.0)],
-        modifier: [
-          // AUTOMATION: Jede 15 Sek generiert der Schatzmeister nun automatisch Geld
-          AutoExecuteModifier(
-            intervalMs: 15000,
-            modifiers: [
-              MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 0.1),
-              MessageModifier(message: "AUTOMATION: Dein Schatzmeister hat die Kollekte verbucht."),
-            ]
-          ),
-          MessageModifier(message: "DELEGATION: Du hast einen Schatzmeister ernannt! Er sammelt nun alle 15 Sek. automatisch Geld basierend auf deiner Mitgliederzahl."),
-        ],
-      ),
-      Task(
-        name: "Kollekte",
-        description: "Manuelle Spendensammlung.",
+        name: "Bibellesen",
         duration: 3000.0,
         cost: [Time(value: 1.0)],
+        award: [Faith(value: 15.0)],
+      ),
+      Task(
+        name: "Schlafen",
+        duration: 8000.0,
+        cost: [Time(value: 8.0)],
+        award: [Time(value: 16.0)],
+      ),
+      Task(
+        name: "FSJler einstellen",
+        description: "Hilfe im Alltag. Schaltet 32-Stunden-Tag frei!",
+        duration: 4000.0,
+        cost: [Money(value: 50.0), Time(value: 5.0)],
+        award: [Time(value: 1.0)],
         modifier: [
-          MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 0.5),
+          MessageModifier(message: "UPGRADE: Der FSJler ist da! Dein Zeit-Maximum wurde auf 32h erhöht. Aber er will regelmäßig bezahlt werden!"),
+          SetMax(ressource: "Time", newMax: 32.0),
+          AddTask(task: "FSJler bezahlen"),
         ],
       ),
       Task(
-        name: "Hauskreis-Leiter schulen",
-        description: "MEILENSTEIN: Delegation ermöglicht Wachstum auf 80 Personen.",
-        duration: 12000.0,
-        cost: [Time(value: 6.0), Faith(value: 50.0), Wisdom(value: 10.0)],
-        award: [Wisdom(value: 5.0)],
-        modifier: [
-          MessageModifier(message: "DELEGATION: Du leitest nicht mehr alles allein. Das Glasdach steigt auf 80!"),
-          SetMax(ressource: "Member", newMax: 80.0),
+        name: "FSJler bezahlen",
+        description: "KRITISCH: Bezahle den FSJler, bevor er kündigt!",
+        duration: 10000.0,
+        timeToSolve: 60000.0, // Zeitlimit: 1 Minute
+        cost: [Money(value: 36.0)],
+        award: [Time(value: 8.0)],
+        online: [
+          MessageModifier(message: "WARNUNG: Ein zeitkritischer Task! Der rote Balken zeigt, wie lange du Zeit hast, ihn zu starten."),
+        ],
+        missed: [
+          SetMax(ressource: "Time", newMax: 24.0),
+          AddTask(task: "FSJler einstellen"),
+          MessageModifier(message: "OH NEIN: Der FSJler hat gekündigt! Dein Zeit-Limit sinkt wieder auf 24h."),
+        ],
+      ),
+      Task(
+        name: "Rechnung nicht bezahlt",
+        description: "KRITISCH: Bezahle sofort, um Mahngebühren zu vermeiden.",
+        duration: 5000.0,
+        timeToSolve: 45000.0,
+        cost: [Money(value: 30.0)],
+        online: [
+          MessageModifier(message: "ALARM: Eine unbezahlte Rechnung! Erledige sie schnell."),
+        ],
+        missed: [
+          SubtractRes(ressources: [Money(value: 50.0)]),
+          AddTask(task: "Rechnung nicht bezahlt"),
+          MessageModifier(message: "MAHNUNG: Du hast zu lange gewartet. 50 Geld wurden als Strafe abgezogen!"),
         ],
       ),
     ],
   ),
-  
-  // STAGE 2 & 3 bleiben logisch gleich, können aber nun auch automatisiert werden...
 ];
