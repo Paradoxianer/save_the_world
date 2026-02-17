@@ -90,7 +90,7 @@ class _RessourceTableState extends State<RessourceTable> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0),
             // PASS THE GLOBAL FLAG DOWN
-            child: RessourceItem(widget.ressourceList[i], size: widget.size, isGlobal: widget.isGlobal),
+            child: RessourceItem(widget.ressourceList[i], size: widget.size),
           )
         );
       } else {

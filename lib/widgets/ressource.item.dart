@@ -7,9 +7,8 @@ import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart'
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
   final double size;
-  final bool isGlobal; 
 
-  const RessourceItem(this.ressource, {super.key, this.size = 30.0, this.isGlobal = false});
+  const RessourceItem(this.ressource, {super.key, this.size = 30.0});
 
   @override
   RessourceItemState createState() => RessourceItemState();
@@ -46,14 +45,12 @@ class RessourceItemState extends State<RessourceItem> {
 
     final double newValue = widget.ressource.value;
     
-    // Only trigger feedback if this is a global display (AppBar)
-    // and the value has actually changed.
-    if (widget.isGlobal && _lastValue != null && newValue != _lastValue) {
+    // Check if value changed and we have a previous value
+    if (_lastValue != null && newValue != _lastValue) {
       final double diff = newValue - _lastValue!;
       
-      // We only show feedback for significant enough changes 
-      // (or all changes if you prefer)
-      if (diff.abs() > 0.001) {
+      // Trigger feedback for any non-trivial change
+      if (diff.abs() > 0.0001) {
         _triggerFeedback(diff);
       }
     }
@@ -63,9 +60,11 @@ class RessourceItemState extends State<RessourceItem> {
   }
 
   void _triggerFeedback(double diff) {
+    // Determine the global position of this specific widget on screen
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
+    // Use localToGlobal to find exactly where we are
     final position = renderBox.localToGlobal(Offset.zero);
     final centerPosition = Offset(
       position.dx + renderBox.size.width / 2,
@@ -75,14 +74,17 @@ class RessourceItemState extends State<RessourceItem> {
     final bool isPositive = diff > 0;
     final String sign = isPositive ? "+" : "";
     
-    // Format the number nicely
+    // Format the difference nicely
     String displayValue;
     if (diff.abs() >= 1) {
       displayValue = diff.toInt().toString();
-    } else {
+    } else if (diff.abs() >= 0.1) {
       displayValue = diff.toStringAsFixed(1);
+    } else {
+      displayValue = diff.toStringAsFixed(2);
     }
 
+    // Spawn the floating animation through the service
     FloatingFeedbackService().show(
       context,
       position: centerPosition,
@@ -102,6 +104,7 @@ class RessourceItemState extends State<RessourceItem> {
     TextStyle textStyle;
     Color iconColor;
 
+    // UI logic for red/green preview in Task lists vs normal display
     if (globalRes != null && (res != globalRes) && (!res.willAdd)) {
       if (globalRes.canSubtract(res)) {
         textStyle = const TextStyle(color: Colors.green, fontWeight: FontWeight.bold);

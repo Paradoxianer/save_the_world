@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
-import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 import 'package:save_the_world_flutter_app/widgets/wavy_task_painter.dart';
@@ -18,13 +17,11 @@ class TaskItem extends StatefulWidget {
 
 class TaskItemState extends State<TaskItem> {
   final List<Ressource> _listenedResources = [];
-  AnimationStatus? _lastStatus;
 
   @override
   void initState() {
     super.initState();
     _updateListeners();
-    _lastStatus = widget.task.controller.status;
     widget.task.controller.addListener(_onAnimationTick);
   }
 
@@ -48,34 +45,6 @@ class TaskItemState extends State<TaskItem> {
 
   void _onAnimationTick() {
     if (mounted) {
-      final currentStatus = widget.task.controller.status;
-      
-      // DEBUG: Log animation state changes
-      if (_lastStatus != currentStatus) {
-        debugPrint("[TaskItem:${widget.task.name}] Status Change: $_lastStatus -> $currentStatus");
-      }
-
-      // Check for successful completion
-      if ((_lastStatus == AnimationStatus.forward || _lastStatus == AnimationStatus.completed) 
-          && currentStatus == AnimationStatus.dismissed) {
-        
-        debugPrint("[TaskItem:${widget.task.name}] AWARD TRIGGERED! Firing feedback...");
-
-        for (var award in widget.task.award) {
-          final IconData icon = Game.ressources[award.name]?.icon ?? award.icon;
-          final String displayValue = award.value >= 1 ? award.value.toInt().toString() : award.value.toString();
-
-          FloatingFeedbackService().showAtResource(
-            context, 
-            award.name, 
-            icon, 
-            displayValue, 
-            true
-          );
-        }
-      }
-      
-      _lastStatus = currentStatus;
       setState(() {});
     }
   }
@@ -115,16 +84,8 @@ class TaskItemState extends State<TaskItem> {
 
   void _handleTap() {
     if (_canAfford) {
-      for (var cost in widget.task.cost) {
-        final IconData icon = Game.ressources[cost.name]?.icon ?? cost.icon;
-        FloatingFeedbackService().showAtResource(
-          context, 
-          cost.name, 
-          icon,
-          "-${cost.value.toInt()}", 
-          false
-        );
-      }
+      // NOTE: No more manual feedback calls here! 
+      // The RessourceItem itself will detect the change and trigger the animation.
       widget.task.start();
     }
   }
@@ -178,7 +139,7 @@ class TaskItemState extends State<TaskItem> {
                   children: <Widget>[
                     SizedBox(
                       width: 70,
-                      child: RessourceTable(ressourceList: widget.task.cost, size: 22.0, isGlobal: false),
+                      child: RessourceTable(ressourceList: widget.task.cost, size: 22.0),
                     ),
                     const SizedBox(width: 12),
                     
@@ -224,7 +185,7 @@ class TaskItemState extends State<TaskItem> {
                     
                     SizedBox(
                       width: 70,
-                      child: RessourceTable(ressourceList: widget.task.award, size: 22.0, isGlobal: false),
+                      child: RessourceTable(ressourceList: widget.task.award, size: 22.0),
                     ),
                   ],
                 ),
