@@ -18,11 +18,13 @@ class TaskItem extends StatefulWidget {
 
 class TaskItemState extends State<TaskItem> {
   final List<Ressource> _listenedResources = [];
+  AnimationStatus? _lastStatus;
 
   @override
   void initState() {
     super.initState();
     _updateListeners();
+    _lastStatus = widget.task.controller.status;
     widget.task.controller.addListener(_onAnimationTick);
   }
 
@@ -46,6 +48,30 @@ class TaskItemState extends State<TaskItem> {
 
   void _onAnimationTick() {
     if (mounted) {
+      final currentStatus = widget.task.controller.status;
+      
+      // IMPROVED DETECTION: Task finished successfully
+      // We check if it comes from forward/completed and is now dismissed (after reset)
+      if ((_lastStatus == AnimationStatus.forward || _lastStatus == AnimationStatus.completed) 
+          && currentStatus == AnimationStatus.dismissed) {
+        
+        // Trigger Award Feedback in AppBar
+        for (var award in widget.task.award) {
+          // Get the actual icon from global resources if not set in award
+          final IconData icon = Game.ressources[award.name]?.icon ?? award.icon;
+          final String displayValue = award.value >= 1 ? award.value.toInt().toString() : award.value.toString();
+
+          FloatingFeedbackService().showAtResource(
+            context, 
+            award.name, 
+            icon, 
+            displayValue, 
+            true
+          );
+        }
+      }
+      
+      _lastStatus = currentStatus;
       setState(() {});
     }
   }
@@ -85,18 +111,17 @@ class TaskItemState extends State<TaskItem> {
 
   void _handleTap() {
     if (_canAfford) {
-      // Trigger floating numbers ONLY for the Global AppBar icons
-      // This keeps the UI clean and avoids the "double cost" visual confusion
+      // Trigger Cost Feedback in AppBar
       for (var cost in widget.task.cost) {
+        final IconData icon = Game.ressources[cost.name]?.icon ?? cost.icon;
         FloatingFeedbackService().showAtResource(
           context, 
           cost.name, 
-          cost.icon, 
+          icon,
           "-${cost.value.toInt()}", 
           false
         );
       }
-      
       widget.task.start();
     }
   }
@@ -141,7 +166,7 @@ class TaskItemState extends State<TaskItem> {
             ),
             
             InkWell(
-              onTap: _handleTap,
+              onTap: canAfford ? _handleTap : null,
               onLongPress: () => showTaskInfo(context, widget.task),
               child: Container(
                 padding: const EdgeInsets.all(12.0),
