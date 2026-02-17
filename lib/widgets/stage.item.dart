@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
+import 'package:save_the_world_flutter_app/widgets/celebration_dialog.dart';
 
 class StageItem extends StatefulWidget {
   final double size;
@@ -29,8 +30,8 @@ class StageItemState extends State<StageItem> {
 
   void valueChanged() {
     if (mounted) {
-      debugPrint("show the dialog");
-      showNewStage(context);
+      debugPrint("Celebrating new stage: ${game.stage}");
+      showCelebration(context, game.stage);
       setState(() {});
     }
   }
@@ -43,69 +44,12 @@ class StageItemState extends State<StageItem> {
         Icon(Icons.home, size: widget.size),
         Text(
           game.stage.toString(),
-          textScaler: TextScaler.linear(widget.size / 30.0),
+          style: TextStyle(
+            fontSize: widget.size * 0.5,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
   }
-}
-
-void showNewStage(BuildContext context) {
-  showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        List<int> stageList = levels.keys.toList();
-        final currentStage = Game.getInstance().stage;
-        final stageTitle = levels[stageList[currentStage]] ?? "Unbekannt";
-        final maxMembers = stageList[currentStage].toString();
-
-        return SimpleDialog(
-            title: const Text('Gratulation', textAlign: TextAlign.center),
-            children: <Widget>[
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 160,
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/icons/award.png',
-                      height: 150,
-                      fit: BoxFit.contain,
-                    ),
-                    Positioned(
-                      top: 18, // Perfekte optische Mitte des goldenen Siegels
-                      child: Text(
-                        currentStage.toString(),
-                        style: const TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(top: 10.0),
-                child: Text("du bist jetzt eine", textAlign: TextAlign.center),
-              ),
-              Text(
-                "$stageTitle\n",
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Text(
-                  "Dein Limit wurde auf $maxMembers Mitglieder erhöht!",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ]);
-      });
 }
