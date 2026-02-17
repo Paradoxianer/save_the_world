@@ -50,14 +50,18 @@ class TaskItemState extends State<TaskItem> {
     if (mounted) {
       final currentStatus = widget.task.controller.status;
       
-      // IMPROVED DETECTION: Task finished successfully
-      // We check if it comes from forward/completed and is now dismissed (after reset)
+      // DEBUG: Log animation state changes
+      if (_lastStatus != currentStatus) {
+        debugPrint("[TaskItem:${widget.task.name}] Status Change: $_lastStatus -> $currentStatus");
+      }
+
+      // Check for successful completion
       if ((_lastStatus == AnimationStatus.forward || _lastStatus == AnimationStatus.completed) 
           && currentStatus == AnimationStatus.dismissed) {
         
-        // Trigger Award Feedback in AppBar
+        debugPrint("[TaskItem:${widget.task.name}] AWARD TRIGGERED! Firing feedback...");
+
         for (var award in widget.task.award) {
-          // Get the actual icon from global resources if not set in award
           final IconData icon = Game.ressources[award.name]?.icon ?? award.icon;
           final String displayValue = award.value >= 1 ? award.value.toInt().toString() : award.value.toString();
 
@@ -111,7 +115,6 @@ class TaskItemState extends State<TaskItem> {
 
   void _handleTap() {
     if (_canAfford) {
-      // Trigger Cost Feedback in AppBar
       for (var cost in widget.task.cost) {
         final IconData icon = Game.ressources[cost.name]?.icon ?? cost.icon;
         FloatingFeedbackService().showAtResource(

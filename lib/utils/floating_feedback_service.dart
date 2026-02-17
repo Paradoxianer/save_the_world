@@ -5,12 +5,6 @@ class FloatingFeedbackService {
   factory FloatingFeedbackService() => _instance;
   FloatingFeedbackService._internal();
 
-  final Map<String, GlobalKey> _resourceKeys = {};
-
-  void registerResourceKey(String name, GlobalKey key) {
-    _resourceKeys[name] = key;
-  }
-
   void show(BuildContext context, {
     required Offset position,
     required String text,
@@ -33,28 +27,6 @@ class FloatingFeedbackService {
     );
 
     overlayState.insert(overlayEntry);
-  }
-
-  void showAtResource(BuildContext context, String resourceName, IconData? icon, String value, bool isPositive) {
-    final key = _resourceKeys[resourceName];
-    if (key == null || key.currentContext == null) return;
-
-    final RenderBox? renderBox = key.currentContext!.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-    
-    final position = renderBox.localToGlobal(Offset.zero);
-    final centerPosition = Offset(
-      position.dx + renderBox.size.width / 2,
-      position.dy + renderBox.size.height / 2,
-    );
-
-    show(
-      context,
-      position: centerPosition,
-      text: "${isPositive ? '+' : ''}$value",
-      color: isPositive ? Colors.green : Colors.red,
-      icon: icon, // Now passing the icon!
-    );
   }
 }
 

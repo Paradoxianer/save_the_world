@@ -41,7 +41,6 @@ class Task extends GameElement {
       controller.value = controllerValue;
     }
 
-    // Restore animation state on load
     if (controllerStatus != null) {
       if (controllerStatus == "AnimationStatus.forward") {
         controller.forward().whenComplete(finished);
@@ -79,7 +78,6 @@ class Task extends GameElement {
       modifier: deserializeModifiers(jsn['modifier']),
       missed: deserializeModifiers(jsn['missed']),
       online: deserializeModifiers(jsn['online']),
-      // Deserialize animation state
       controllerStatus: jsn['controllerStatus'] != null ? json.decode(jsn['controllerStatus'].toString()) as String? : null,
       controllerValue: jsn['controllerValue'] != null ? (json.decode(jsn['controllerValue'].toString()) as num?)?.toDouble() : null,
     );
@@ -98,14 +96,12 @@ class Task extends GameElement {
       'missed': json.encode(missed),
       'modifier': json.encode(myModifier),
       'online': json.encode(online),
-      // Serialize animation state
       'controllerStatus': json.encode(controller.status.toString()),
       'controllerValue': json.encode(controller.value),
     };
   }
 
   void init() {
-    debugPrint("[GAME_LOG] Task '$name' initialized.");
     int timeDuration = (timeToSolve != double.infinity) ? timeToSolve.toInt() : duration.toInt();
     controller.duration = Duration(milliseconds: timeDuration);
     controller.reset();
@@ -116,7 +112,7 @@ class Task extends GameElement {
   }
 
   void miss() {
-    debugPrint("[GAME_LOG] Task '$name' MISSED (Failure).");
+    debugPrint("[MODEL:Task:$name] MISSED!");
     for (var m in missed) {
       m.modify();
     }
@@ -124,13 +120,12 @@ class Task extends GameElement {
 
   void start() {
     if (controller.status != AnimationStatus.forward) {
-      debugPrint("[GAME_LOG] Task '$name' STARTED.");
+      debugPrint("[MODEL:Task:$name] STARTING...");
       controller.stop();
       controller.reset();
       controller.duration = Duration(milliseconds: duration.toInt());
       
       for (var c in cost) {
-        debugPrint("[GAME_LOG] Task '$name' consuming cost: ${c.name} (${c.value}).");
         Game.ressources[c.name]?.subtract(c);
       }
       
@@ -139,33 +134,26 @@ class Task extends GameElement {
   }
 
   void stop() {
-    debugPrint("[GAME_LOG] Task '$name' STOPPED manually.");
     controller.stop();
   }
 
   void finished() {
-    debugPrint("[GAME_LOG] Task '$name' processing finished() logic...");
+    debugPrint("[MODEL:Task:$name] COMPLETED! Distributing awards...");
     
     modify();
-    debugPrint("[GAME_LOG] Task '$name' modifiers executed.");
     
     for (var a in award) {
-      debugPrint("[GAME_LOG] Task '$name' awarding: ${a.name} (+${a.value}).");
       Game.ressources[a.name]?.add(a);
     }
     
+    // The controller is reset here. This changes status to dismissed.
+    debugPrint("[MODEL:Task:$name] Resetting controller now.");
     controller.reset();
-    debugPrint("[GAME_LOG] Task '$name' FINISHED successfully.");
   }
 
   void goOnline() {
     for (var o in online) {
       o.modify();
     }
-  }
-
-  @override
-  String toString() {
-    return 'Task{name: $name, description: $description, duration: $duration, timeToSolve: $timeToSolve}';
   }
 }

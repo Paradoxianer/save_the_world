@@ -7,7 +7,7 @@ import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart'
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
   final double size;
-  final bool isGlobal; // NEW: Flag to distinguish AppBar from Task resources
+  final bool isGlobal; 
 
   const RessourceItem(this.ressource, {super.key, this.size = 30.0, this.isGlobal = false});
 
@@ -16,24 +16,13 @@ class RessourceItem extends StatefulWidget {
 }
 
 class RessourceItemState extends State<RessourceItem> {
-  final GlobalKey _iconKey = GlobalKey();
+  double? _lastValue;
 
   @override
   void initState() {
     super.initState();
+    _lastValue = widget.ressource.value;
     widget.ressource.addListener(_handleUpdate);
-    
-    _registerKey();
-  }
-
-  void _registerKey() {
-    if (widget.isGlobal) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          FloatingFeedbackService().registerResourceKey(widget.ressource.name, _iconKey);
-        }
-      });
-    }
   }
 
   @override
@@ -42,8 +31,8 @@ class RessourceItemState extends State<RessourceItem> {
     if (oldWidget.ressource != widget.ressource) {
       oldWidget.ressource.removeListener(_handleUpdate);
       widget.ressource.addListener(_handleUpdate);
+      _lastValue = widget.ressource.value;
     }
-    _registerKey();
   }
 
   @override
@@ -53,9 +42,54 @@ class RessourceItemState extends State<RessourceItem> {
   }
 
   void _handleUpdate() {
-    if (mounted) {
-      setState(() {});
+    if (!mounted) return;
+
+    final double newValue = widget.ressource.value;
+    
+    // Only trigger feedback if this is a global display (AppBar)
+    // and the value has actually changed.
+    if (widget.isGlobal && _lastValue != null && newValue != _lastValue) {
+      final double diff = newValue - _lastValue!;
+      
+      // We only show feedback for significant enough changes 
+      // (or all changes if you prefer)
+      if (diff.abs() > 0.001) {
+        _triggerFeedback(diff);
+      }
     }
+    
+    _lastValue = newValue;
+    setState(() {});
+  }
+
+  void _triggerFeedback(double diff) {
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final centerPosition = Offset(
+      position.dx + renderBox.size.width / 2,
+      position.dy + renderBox.size.height / 2,
+    );
+
+    final bool isPositive = diff > 0;
+    final String sign = isPositive ? "+" : "";
+    
+    // Format the number nicely
+    String displayValue;
+    if (diff.abs() >= 1) {
+      displayValue = diff.toInt().toString();
+    } else {
+      displayValue = diff.toStringAsFixed(1);
+    }
+
+    FloatingFeedbackService().show(
+      context,
+      position: centerPosition,
+      text: "$sign$displayValue",
+      color: isPositive ? Colors.green : Colors.red,
+      icon: widget.ressource.icon,
+    );
   }
 
   @override
@@ -85,7 +119,6 @@ class RessourceItemState extends State<RessourceItem> {
     }
 
     return Padding(
-      key: widget.isGlobal ? _iconKey : null, // Only global items get the key
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
