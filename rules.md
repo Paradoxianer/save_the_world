@@ -28,6 +28,6 @@
 * **Struktur:** Nutze idealerweise das "Conventional Commits" Format (z.B. `feat: ...`, `fix: ...`, `refactor: ...`), um die Art der Änderung sofort erkennbar zu machen.
 
 ## 6. Content-Integrität & Texte
-* **Inhaltsschutz:** Formulierungen von Selbstprüfungsfragen, Zitaten oder historischen Texten (z.B. William Booth) sind strikt geschützt.
 * **Keine Umformulierung:** Ändere niemals den Textinhalt dieser Fragen, es sei denn, es wird explizit verlangt. Verkürzungen oder "Optimierungen" sind untersagt, um die Tiefe und Bedeutung zu bewahren.
 * **Fokus auf Technik:** Optimierungen durch die KI dürfen sich nur auf den Code (Logik, Struktur, UI-Darstellung) beziehen, niemals auf die darin enthaltenen Daten/Texte.
+* **Selbstoptimierung** Achte auf Inhalte die für den Context wichtig sein könnten und schlage änderunge an den Contextfiles vor.
