@@ -10,21 +10,23 @@ Diese Roadmap beschreibt den Weg vom aktuellen Prototyp zur globalen Version (R2
 - [x] **Apostolisches Onboarding (#22):** Überarbeitung von Stage 0 (Stille Zeit -> Gebet -> Jüngerschaft) (Erledigt).
 - [x] **Gatekeeper-System (#33, #30):** Implementierung aktiver Stufenaufstiege via SetMax-Modifier und Gold-Markierung im UI (Erledigt).
 - [x] **UI-Synchronisation (#26):** Echtzeit-Updates der Ressourcen-Kosten im Task-UI (Erledigt).
-- [ ] **Web-Enablement (#37):** Sicherstellung der vollen Funktionalität und Layout-Stabilität im Browser.
+- [x] **Web-Enablement (#37):** Abstrahierter DataManager mit SharedPreferences-Support für plattformunabhängige Speicherung (Erledigt).
 
 ## 🚀 Phase 2: Beta-Release (Fokus: Content & Balancing)
 *Ziel: Alle 33 Stufen spielbar und motivierend.*
 
-- [x] **Celebration UI (#27):** Überarbeitung des Glückwunsch-Dialogs mit zentrierter Stufen-Medaille (Erledigt).
-- [ ] **Adaptive UI (#28):** Automatische Zahlen-Formatierung (1K, 1.5M) für das Mid- und Endgame.
-- [ ] **Content-Komplettierung (#15):** Alle 33 Stufen basierend auf der El-Daour-Logik finalisieren und balancieren.
-- [ ] **Persistenz-Check (#5):** Validierung der Speicherlogik für komplexe Task-Ketten.
+- [x] **Celebration UI (#27):** Überarbeitung des Glückwunsch-Dialogs mit animierter elastischer Anzeige (Erledigt).
+- [x] **Adaptive UI (#28):** Automatische Zahlen-Formatierung (1K, 1.5M) via zentralem NumberFormatter (Erledigt).
+- [x] **Content-Komplettierung (#15):** Alle 33 Stufen basierend auf der CHURCH_GROWTH_LOGIC finalisiert (Milestone-Ersatz, Krisen-Kaskaden, Pacing) (Erledigt).
+- [x] **Persistenz-Check (#5):** Vollständige Serialisierung laufender Tasks inkl. Animationsfortschritt (Erledigt).
+- [ ] **Balancing-Feinschliff:** Langzeittest der Ressourcen-Kurven im Mid-Game.
 
 ## 🏁 Phase 3: Release 1 (R1 - Polish & Sound)
 *Ziel: Ein fertiges Produkt für App-Stores.*
 
 - [ ] **Audio-Feedback:** Implementierung von Soundeffekten für Erfolg und Krise.
-- [ ] **Visual "Juice" (#6):** Erweiterte Animationen beim Ressourcenabzug.
+- [ ] **Visual "Juice" (#6):** Erweiterte Animationen beim Ressourcenabzug direkt am Icon.
+- [ ] **Internationalisierung (#38):** Umstellung auf ARB-Dateien und lokalisierte Zahlenformate.
 - [ ] **About & Credits (#2):** Integration der Helfer-Credits und rechtlichen Hinweise.
 
 ## 🌎 Phase 4: Release 2 (R2 - Ecosystem)
