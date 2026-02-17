@@ -20,38 +20,38 @@ class RessourceTable extends StatefulWidget {
 }
 
 class _RessourceTableState extends State<RessourceTable> {
+  
   @override
   void initState() {
     super.initState();
-    _subscribeToResources();
-    // Also listen to global changes like adding/removing tasks/resources
+    _subscribeToResources(widget.ressourceList);
+    // Listen to global changes (like reset or major state changes)
     Game.notifier.addListener(_refresh);
   }
 
   @override
   void didUpdateWidget(RessourceTable oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.ressourceList != widget.ressourceList) {
-      _unsubscribeFromResources();
-      _subscribeToResources();
-    }
+    // Always resubscribe if the list content might have changed
+    _unsubscribeFromResources(oldWidget.ressourceList);
+    _subscribeToResources(widget.ressourceList);
   }
 
   @override
   void dispose() {
-    _unsubscribeFromResources();
+    _unsubscribeFromResources(widget.ressourceList);
     Game.notifier.removeListener(_refresh);
     super.dispose();
   }
 
-  void _subscribeToResources() {
-    for (var res in widget.ressourceList) {
+  void _subscribeToResources(List<Ressource> list) {
+    for (var res in list) {
       res.addListener(_refresh);
     }
   }
 
-  void _unsubscribeFromResources() {
-    for (var res in widget.ressourceList) {
+  void _unsubscribeFromResources(List<Ressource> list) {
+    for (var res in list) {
       res.removeListener(_refresh);
     }
   }
@@ -66,6 +66,7 @@ class _RessourceTableState extends State<RessourceTable> {
   Widget build(BuildContext context) {
     if (widget.ressourceList.isEmpty) return const SizedBox.shrink();
 
+    // Use a fixed layout logic or dynamic based on available width
     final int columnCount = (widget.ressourceList.length / widget.rows).ceil();
     final List<TableRow> tableRows = [];
 
@@ -74,7 +75,8 @@ class _RessourceTableState extends State<RessourceTable> {
     }
 
     return Table(
-      defaultColumnWidth: FixedColumnWidth(widget.size + 5.0),
+      // Ensure the table doesn't overflow
+      defaultColumnWidth: FixedColumnWidth(widget.size + 15.0),
       children: tableRows,
     );
   }
@@ -86,9 +88,12 @@ class _RessourceTableState extends State<RessourceTable> {
 
     for (var i = start; i < end; i++) {
       if (i < widget.ressourceList.length) {
-        // Note: Using a key might be necessary if list order changes dynamically,
-        // but for now, this is stable.
-        cells.add(RessourceItem(widget.ressourceList[i], size: widget.size));
+        cells.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2.0),
+            child: RessourceItem(widget.ressourceList[i], size: widget.size),
+          )
+        );
       } else {
         cells.add(const SizedBox.shrink());
       }

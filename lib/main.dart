@@ -63,13 +63,27 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    // Listen for stage changes to show the celebration dialog
+    // Listen for stage changes for celebration
     Game.getInstance().addStageListener(_onStageChanged);
+    // LISTEN TO GAME CHANGES (Resources, Tasks, etc.)
+    Game.notifier.addListener(_rebuild);
+  }
+
+  @override
+  void dispose() {
+    Game.notifier.removeListener(_rebuild);
+    // Note: addStageListener currently doesn't have a remove equivalent in the model
+    super.dispose();
+  }
+
+  void _rebuild() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _onStageChanged() {
     final game = Game.getInstance();
-    // Only show if we have stats from a just-completed stage
     if (game.lastStageDuration != null) {
       showCelebration(
         context, 
@@ -91,6 +105,7 @@ class _HomeState extends State<Home> {
                 const StageItem(),
                 Expanded(
                     child: RessourceTable(
+                      // Dynamically fetch resources to ensure we have the latest references
                       ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
                       size: 25.0,
                     )),
