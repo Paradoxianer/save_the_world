@@ -1,37 +1,43 @@
 # 📖 Logik der Gemeindewachstums-Schwellen
 
-Diese Datei definiert die spielerische Umsetzung von Jüngerschaft und geistlicher Multiplikation. Wachstum wird hier nicht als "Zahl" verstanden, sondern als "Befähigung" durch das Überwinden von Schwellen.
+Diese Datei definiert die strategische und geistliche Logik des Wachstums. Sie dient als Leitfaden für das Game-Balancing und die Task-Strukturierung.
 
-## 🚀 Das Prinzip der Multiplikation & Schwellen
+## 🚀 Kern-Prinzip: Qualitative Transformation
 
-Im Spiel arbeiten wir mit **Wachstumsschwellen**. Um eine Schwelle zu überschreiten, reicht es nicht, nur Ressourcen zu sammeln – es muss eine qualitative Änderung stattfinden (Befähigung).
+Wachstum in "Save the World" ist kein linearer Prozess, sondern ein Wechsel der Betriebssysteme. Jede Phase erfordert eine neue Art der Leitung.
 
-### 1. Die "Enable Next Stage" Mechanik (Stage-Gates)
-*   Jede Stufe hat ein **Maximum** an Mitgliedern (das aktuelle "Glasdach").
-*   Um dieses Dach anzuheben, muss ein spezifischer **Schlüsseltask (Blocker-Task)** erfolgreich abgeschlossen werden (z.B. "Essen in meiner Wohnung" in Stage 0 oder "Saal mieten" in Stage 3).
-*   Erst nach Abschluss dieses Tasks wird die *nächste Stufe ermöglicht* (Enabled). Das Ressourcen-Maximum steigt.
-*   Der tatsächliche **Stufenaufstieg** (mit Glückwunsch-Dialog) findet erst statt, wenn die Mitgliederzahl die neue Schwelle real erreicht.
+### 1. Zunehmende Komplexität & Geistliche Dimension (Task-Chaining)
+Mit steigender Stage werden Aufgaben nicht nur teurer, sondern auch "fragmentierter".
+*   **Anfang (Stage 0-3):** Aufgaben sind monolithisch. Ein Klick erledigt alles (z.B. "Gottesdienst feiern").
+*   **Wachstum (Stage 4-10):** Aufgaben erfordern Vorbereitung. Ein Gottesdienst braucht vorher "Gebet" und "Predigtvorbereitung".
+*   **Reife (Stage 11+):** Komplexe Abläufe spiegeln die Realität großer Organisationen wider. Leitung bedeutet hier, Systeme zu führen, ohne die Basis zu verlieren.
 
-### 2. Visuelle Markierung von Blocker-Tasks
-*   Tasks, die für den Stufenaufstieg zwingend sind, werden im UI besonders hervorgehoben (z.B. rote Umrandung oder spezielles Icon), damit der Spieler weiß: "Das ist meine aktuelle Priorität".
+### 2. Die Management-Falle: Solo-Weg vs. Delegation
+*   **Der Solo-Pfad:** Der Spieler kann versuchen, alles selbst zu machen. Das führt ab Stage 4-5 zu massivem Stress und zeitlichen Engpässen (`Time` Flaschenhals). Es ist der Weg des "Ausbrennens".
+*   **Delegation & Multiplikation:** Ab der "Gemeinde-Phase" ist Delegation der einzige Weg. Der Einsatz von `AutoExecuteModifier` (Automatisierung) und `MultiplyRes` (Multiplikation) ist essenziell. Erfolg bedeutet, dass Dinge ohne direktes Zutun des Spielers passieren.
 
-### 3. Stage-Fallback (Low Priority)
-*   Sinkt die Mitgliederzahl (z.B. durch Streit) unter die Schwelle der *vorherigen* Stufe, kann ein Downgrade erfolgen.
-*   **Konsequenz:** Spezifische Aufgaben der höheren Stufe gehen wieder verloren, bis die Schwelle erneut stabil überschritten wird.
+### 3. Krisen-Management (Rote Tasks)
+Krisen-Tasks dienen als Stress-Test für die Organisation.
+*   **Selbstreinigungs-Regel:** Krisentasks müssen sich nach Abschluss (Erfolg ODER Misserfolg) immer selbst aus der Taskliste entfernen (`RemoveTask`). Eine gelöste Krise darf die Liste nicht weiter blockieren.
+*   **Dynamik:** Während sie am Anfang langsam sind, werden sie im Endgame schneller und erfordern entweder schnelle Reaktion oder automatisierte Abwehrsysteme.
+*   **Nicht geklöste Kriesen** ziehen meist weiter Kriesen nach sich
+
+### 4. Ressourcen-Hürden
+Meilenstein-Tasks (`isMilestone: true`) fordern signifikante Kosten in den Ressourcen, die für die aktuelle Phase kritisch sind (Einstieg: Time/Faith; Aufbau: Money/Wisdom; Global: Publicity/Influence).
 
 ---
 
 ## 🏗 Struktur der Schwellen & Fokus-Phasen
 
-| Stufe | Phase | Blocker-Task (Beispiel) | Jüngerschafts-Fokus |
-|-------|-------|-------------------------|----------------------|
-| 0     | **Einstieg** | Essen in meiner Wohnung | Vertrauen & Einladung |
-| 1-3   | **Clan** | Saal mieten / Korpsrat | Delegation & Struktur |
-| 4-10  | **Gemeinde** | Leiter-Training | Leiter von Leitern |
-| 11-20 | **Bewegung** | Pionier-Team aussenden | DNA-Multiplikation |
+| Phase | Stufe | Leitungs-Modus | Mechanik-Fokus |
+|-------|-------|----------------|----------------|
+| **Clan** | 0-3 | **Macher** | Monolithische Tasks |
+| **Gemeinde** | 4-10 | **Leiter** | Task-Chaining & Delegation |
+| **Bewegung**| 11-20 | **Stratege** | Auto-Execution & Netzwerke |
+| **Global** | 21-32 | **Visionär** | Globale Multiplikation |
 
 ---
 
-## ⚖️ Balancing-Regeln für Schwellen
-*   **Blocker-Tasks** sollten höhere Anforderungen an "Faith" und "Wisdom" haben als Standard-Tasks.
-*   Sie symbolisieren den "Glaubensschritt", der für die nächste Ebene nötig ist.
+## ⚖️ Gameplay-Regel: Der "Meilenstein-Abschluss"
+1.  Sobald ein `isMilestone` Task das Limit erhöht hat, muss er sich selbst entfernen (`RemoveTask`).
+2.  Er wird durch eine "Standard-Version" ersetzt (Wartung des Status Quo), die keine Gold-Markierung mehr hat und weniger Ressourcen-Impact erzeugt. Dies lenkt den Fokus visuell auf die nächste Wachstumsschwelle.
