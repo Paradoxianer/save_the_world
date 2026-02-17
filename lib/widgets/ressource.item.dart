@@ -7,8 +7,9 @@ import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart'
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
   final double size;
+  final bool isGlobal; 
 
-  const RessourceItem(this.ressource, {super.key, this.size = 30.0});
+  const RessourceItem(this.ressource, {super.key, this.size = 30.0, this.isGlobal = false});
 
   @override
   RessourceItemState createState() => RessourceItemState();
@@ -44,12 +45,16 @@ class RessourceItemState extends State<RessourceItem> {
     if (!mounted) return;
 
     final double newValue = widget.ressource.value;
+    
+    // Safety check for feedback trigger
     if (_lastValue != null && newValue != _lastValue) {
       final double diff = newValue - _lastValue!;
-      if (diff.abs() > 0.0001) {
+      // Trigger feedback for any non-trivial and valid change
+      if (!diff.isNaN && !diff.isInfinite && diff.abs() > 0.0001) {
         _triggerFeedback(diff);
       }
     }
+    
     _lastValue = newValue;
     setState(() {});
   }
@@ -67,14 +72,7 @@ class RessourceItemState extends State<RessourceItem> {
     final bool isPositive = diff > 0;
     final String sign = isPositive ? "+" : "";
     
-    String displayValue;
-    if (diff.abs() >= 1) {
-      displayValue = diff.toInt().toString();
-    } else if (diff.abs() >= 0.1) {
-      displayValue = diff.toStringAsFixed(1);
-    } else {
-      displayValue = diff.toStringAsFixed(2);
-    }
+    String displayValue = NumberFormatter.format(diff.abs());
 
     FloatingFeedbackService().show(
       context,
@@ -88,46 +86,91 @@ class RessourceItemState extends State<RessourceItem> {
   void _showResourceDetails() {
     final res = widget.ressource;
     
+    // Safety handling for detail display
+    final String valStr = NumberFormatter.format(res.value);
+    final String minStr = NumberFormatter.format(res.min);
+    final String maxStr = (res.max.isInfinite || res.max > 1e15) ? "∞" : NumberFormatter.format(res.max);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: Colors.black, width: 3), // Cartoon border
+          borderRadius: BorderRadius.circular(24),
+          side: const BorderSide(color: Colors.black, width: 3),
         ),
         title: Row(
           children: [
-            Icon(res.icon, size: 32, color: Colors.orange[800]),
+            Icon(res.icon, size: 36, color: Colors.orange[800]),
             const SizedBox(width: 12),
-            Text(res.name.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900)),
+            Expanded(
+              child: Text(
+                res.name.toUpperCase(), 
+                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(res.description, style: const TextStyle(fontStyle: FontStyle.italic)),
-            const Divider(height: 30, thickness: 2, color: Colors.black12),
-            _detailRow("AKTUELL:", NumberFormatter.format(res.value)),
-            _detailRow("MINIMUM:", NumberFormatter.format(res.min)),
-            _detailRow("MAXIMUM:", NumberFormatter.format(res.max)),
-            const SizedBox(height: 20),
-            // Capacity Bar
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: LinearProgressIndicator(
-                value: (res.value - res.min) / (res.max - res.min).clamp(0.001, double.infinity),
-                minHeight: 12,
-                backgroundColor: Colors.grey[200],
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[700]!),
-              ),
+            Text(
+              res.description, 
+              style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black54),
             ),
+            const Divider(height: 32, thickness: 2, color: Colors.black12),
+            
+            _detailRow("AKTUELL:", valStr),
+            _detailRow("MINIMUM:", minStr),
+            _detailRow("MAXIMUM:", maxStr),
+            
+            const SizedBox(height: 24),
+            
+            // Robust Capacity Bar
+            if (!res.max.isInfinite && !res.max.isNaN && res.max > 0 && res.max < 1e15)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.grey)),
+                  const SizedBox(height: 6),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: LinearProgressIndicator(
+                      value: ((res.value - res.min) / (res.max - res.min)).clamp(0.0, 1.0),
+                      minHeight: 14,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[700]!),
+                    ),
+                  ),
+                ],
+              )
+            else
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Center(
+                  child: Text("UNBEGRENZTE KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.orange)),
+                ),
+              ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text("VERSTANDEN", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black87,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text("ALLES KLAR!", style: TextStyle(fontWeight: FontWeight.w900)),
+            ),
           ),
         ],
       ),
@@ -136,12 +179,12 @@ class RessourceItemState extends State<RessourceItem> {
 
   Widget _detailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.grey, letterSpacing: 0.5)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.black)),
         ],
       ),
     );
@@ -167,7 +210,7 @@ class RessourceItemState extends State<RessourceItem> {
     } else {
       textStyle = TextStyle(
         color: isNegative ? Colors.red : Colors.black87,
-        fontWeight: isNegative ? FontWeight.bold : FontWeight.normal,
+        fontWeight: isNegative ? FontWeight.bold : FontWeight.w900,
       );
       iconColor = isNegative ? Colors.red : Colors.black87;
     }
