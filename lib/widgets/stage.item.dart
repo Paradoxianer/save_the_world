@@ -20,11 +20,6 @@ class StageItemState extends State<StageItem> {
     game.addStageListener(_refresh);
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   void _refresh() {
     if (mounted) {
       setState(() {});
@@ -33,22 +28,44 @@ class StageItemState extends State<StageItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: Colors.black, width: 2),
+        boxShadow: const [
+          // Inner shadow effect to make it look "inset" (eingelassen)
+          BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 0, spreadRadius: 0),
+        ],
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(
-            Icons.account_balance, 
-            size: widget.size, 
-            color: Colors.blueAccent[700], // Changed from orange to blue to avoid "negative" red confusion
+          Stack(
+            children: [
+              // Shadow for the Icon
+              Positioned(
+                top: 2,
+                left: 2,
+                child: Icon(Icons.account_balance, size: widget.size, color: Colors.black26),
+              ),
+              Icon(
+                Icons.account_balance, 
+                size: widget.size, 
+                color: Colors.blueAccent[700],
+              ),
+            ],
           ),
           Text(
             "LVL ${game.stage}",
             style: TextStyle(
-              fontSize: widget.size * 0.4,
+              fontSize: widget.size * 0.45,
               fontWeight: FontWeight.w900,
-              color: Colors.black87,
+              color: Colors.black,
+              shadows: const [
+                Shadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 1),
+              ],
             ),
           ),
         ],

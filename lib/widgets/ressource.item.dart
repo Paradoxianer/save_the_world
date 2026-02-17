@@ -45,16 +45,12 @@ class RessourceItemState extends State<RessourceItem> {
     if (!mounted) return;
 
     final double newValue = widget.ressource.value;
-    
-    // Safety check for feedback trigger
     if (_lastValue != null && newValue != _lastValue) {
       final double diff = newValue - _lastValue!;
-      // Trigger feedback for any non-trivial and valid change
       if (!diff.isNaN && !diff.isInfinite && diff.abs() > 0.0001) {
         _triggerFeedback(diff);
       }
     }
-    
     _lastValue = newValue;
     setState(() {});
   }
@@ -71,7 +67,6 @@ class RessourceItemState extends State<RessourceItem> {
 
     final bool isPositive = diff > 0;
     final String sign = isPositive ? "+" : "";
-    
     String displayValue = NumberFormatter.format(diff.abs());
 
     FloatingFeedbackService().show(
@@ -85,8 +80,6 @@ class RessourceItemState extends State<RessourceItem> {
 
   void _showResourceDetails() {
     final res = widget.ressource;
-    
-    // Safety handling for detail display
     final String valStr = NumberFormatter.format(res.value);
     final String minStr = NumberFormatter.format(res.min);
     final String maxStr = (res.max.isInfinite || res.max > 1e15) ? "∞" : NumberFormatter.format(res.max);
@@ -115,19 +108,12 @@ class RessourceItemState extends State<RessourceItem> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              res.description, 
-              style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black54),
-            ),
+            Text(res.description, style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black54)),
             const Divider(height: 32, thickness: 2, color: Colors.black12),
-            
             _detailRow("AKTUELL:", valStr),
             _detailRow("MINIMUM:", minStr),
             _detailRow("MAXIMUM:", maxStr),
-            
             const SizedBox(height: 24),
-            
-            // Robust Capacity Bar
             if (!res.max.isInfinite && !res.max.isNaN && res.max > 0 && res.max < 1e15)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,13 +135,8 @@ class RessourceItemState extends State<RessourceItem> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Center(
-                  child: Text("UNBEGRENZTE KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.orange)),
-                ),
+                decoration: BoxDecoration(color: Colors.orange.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+                child: const Center(child: Text("UNBEGRENZTE KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.orange))),
               ),
           ],
         ),
@@ -210,7 +191,9 @@ class RessourceItemState extends State<RessourceItem> {
     } else {
       textStyle = TextStyle(
         color: isNegative ? Colors.red : Colors.black87,
-        fontWeight: isNegative ? FontWeight.bold : FontWeight.w900,
+        fontWeight: FontWeight.w900,
+        // Comic text shadow
+        shadows: const [Shadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 1)],
       );
       iconColor = isNegative ? Colors.red : Colors.black87;
     }
@@ -218,15 +201,36 @@ class RessourceItemState extends State<RessourceItem> {
     return GestureDetector(
       onTap: _showResourceDetails,
       behavior: HitTestBehavior.opaque,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.black.withOpacity(0.1), width: 1),
+          boxShadow: const [
+            // Soft inset bevel effect
+            BoxShadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 0, spreadRadius: 0),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(
-              res.icon, 
-              size: widget.size,
-              color: iconColor,
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // Icon Shadow for depth
+                Positioned(
+                  top: 1,
+                  left: 1,
+                  child: Icon(res.icon, size: widget.size, color: Colors.black12),
+                ),
+                Icon(
+                  res.icon, 
+                  size: widget.size,
+                  color: iconColor,
+                ),
+              ],
             ),
             const SizedBox(height: 2),
             Text(

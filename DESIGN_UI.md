@@ -1,32 +1,34 @@
 # 🎨 Design & UI/UX Guide - Save the World
 
 ## 🌟 Vision: "The Living Cartoon World"
-Ein haptisches, farbenfrohes Comic-Erlebnis, das klare visuelle Sprache für Fortschritt und Kosten nutzt.
+Ein haptisches, farbenfrohes Comic-Erlebnis. Jedes UI-Element atmet, reagiert und fühlt sich wie ein Teil einer interaktiven Welt an.
 
 ## 🛠 Visuelle Prinzipien
-* **Cartoon Aesthetics:** Dicke Konturen, Wellen-Elemente statt gerader Linien.
-* **Directional Progress:** Fortschrittsrichtung kommuniziert die Art des Tasks.
-* **Dual-Point Feedback:** Synchronisierte Animationen an Aktion (Task) und Status (AppBar).
+* **Cartoon Aesthetics:** Dicke schwarze Konturen (Border), kräftige Farben, "Bouncy" Animationen.
+* **Liquid Progress:** Fortschritt fühlt sich organisch an (Wellen-Füllung).
+* **Information Hierarchy:** Wichtige Dinge (Milestones) sind Gold und glänzen.
 
-## 🚀 Geplante "Juice" Features
+## 🚀 "Juice" Features & Roadmap
 
-### 1. Wavy Liquid Progress (High Priority)
-* **Konzept:** Der Task-Hintergrund füllt sich wie ein Tank.
-* **Richtung:** 
-    * **Positiv:** Füllt sich von LINKS nach RECHTS (Grün/Blau).
-    * **Negativ/Krise:** Füllt sich von RECHTS nach LINKS (Rot).
-* **Visual:** Die Trennkante ist eine statische Cartoon-Welle (Bezier-Kurve).
+### 1. Wavy Liquid Progress (Enhanced)
+* **Standard:** Blau/Grün von Links nach Rechts.
+* **Krise:** Rot von Rechts nach Links.
+* **Milestones (Gold):** Goldene Welle für "Meilenstein"-Aufgaben.
+* **Visual:** Trennkante ist eine Bezier-Welle.
 
-### 2. Twin-Floating-Numbers (Feedback)
-* **Trigger:** Bei Ressourcen-Kosten oder Erträgen.
-* **Aktion am Task:** Eine kleine rote Zahl (z.B. "-5 💰") schwebt vom Task nach oben und verblasst.
-* **Aktion in AppBar:** Zeitgleich schwebt am entsprechenden Ressourcen-Icon eine rote Zahl ("-5") nach oben.
-* **Ertrag (Award):** Grüne Zahlen ("+100 👥") an beiden Stellen.
+### 2. Reactive Floating Feedback
+* Jede Änderung an Ressourcen triggert eine schwebende Zahl direkt am AppBar-Icon.
+* Synchronisierte Icons und farbliche Kodierung (Rot/Grün).
 
-### 3. Stage-Atmosphäre
+### 3. Cartoon Interface Components
+* **AppBar:** Fette Outlines, Schatten-Effekte, weg vom flachen Material-Look.
+* **Dialoge/Info-Boxen:** Task-Details werden in "Comic-Panels" angezeigt (starke Ränder, handgezeichneter Touch).
+* **Resource Tooltips:** Klick auf Ressourcen in der AppBar zeigt Details (Min/Max, Info) in einem Cartoon-Popup.
+
+### 4. Stage-Atmosphäre
 * Jede Stage nutzt ein spezifisches Cartoon-Hintergrundbild (Cross-Fade beim Wechsel).
 
 ## 📐 Technische Roadmap
-1. **WavyTaskPainter:** Custom Painter für bi-direktionale Wellen-Füllung.
-2. **FeedbackEmitter Service:** Ein einfacher Service, um Overlay-Animationen an Widget-Positionen zu triggern.
-3. **Stage-Background System:** Controller-Logik für den Hintergrund-Wechsel.
+1. **Milestone Styling:** Update `TaskItem` für goldene Wellen.
+2. **Resource Detail Dialog:** Implementierung der Klick-Logik für AppBar-Ressourcen.
+3. **AppBar & Info Polishing:** Styling-Update für alle statischen UI-Container.
