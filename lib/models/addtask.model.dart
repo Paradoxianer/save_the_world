@@ -26,13 +26,22 @@ class AddTask extends Modifier {
   @override
   void modify() {
     debugPrint("modify $name \t $nameOfTask");
-    Task? found = Game.getInstance().getTask(nameOfTask);
-    if (found != null) {
-      if (workOnList != null) {
-        workOnList!.add(found);
-      } else {
-        Game.getInstance().addTask(found);
+
+    // BLOCKER #36/#37 Fix: Check if task is already active to prevent reset of running animations
+    final List<Task> targetList = workOnList ?? Game.tasks;
+    bool taskAlreadyActive = targetList.any((t) => t.name == nameOfTask);
+
+    if (!taskAlreadyActive) {
+      Task? found = Game.getInstance().getTask(nameOfTask);
+      if (found != null) {
+        if (workOnList != null) {
+          workOnList!.add(found);
+        } else {
+          Game.getInstance().addTask(found);
+        }
       }
+    } else {
+      debugPrint("AddTask: Task '$nameOfTask' is already active. Skipping to avoid UI reset.");
     }
   }
 
