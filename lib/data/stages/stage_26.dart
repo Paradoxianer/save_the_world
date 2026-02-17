@@ -7,6 +7,7 @@ import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -63,7 +64,7 @@ final Stage stage26 = Stage(
     ),
     Task(
       name: "Infrastruktur-Ausfall (Krise)",
-      description: "KRITISCH: Ein Hackerangriff legt das globale Kommunikationsnetz der Denomination lahm!",
+      description: "KRITISCH: Ein hackerangriff legt das globale Kommunikationsnetz der Denomination lahm!",
       duration: 60000.0,
       timeToSolve: 150000.0,
       cost: [Wisdom(value: 40000.0), Money(value: 100000000.0)],
