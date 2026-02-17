@@ -13,26 +13,28 @@ class RessourceItem extends StatefulWidget {
 }
 
 class RessourceItemState extends State<RessourceItem> {
-  Ressource? _globalResCache;
-
   @override
   void initState() {
     super.initState();
-    widget.ressource.addListener(valueChanged);
-    
-    // Sync-Fix: Listen to global resource for instant UI updates
-    _globalResCache = Game.ressources[widget.ressource.name];
-    _globalResCache?.addListener(valueChanged);
+    widget.ressource.addListener(_valueChanged);
+  }
+
+  @override
+  void didUpdateWidget(RessourceItem oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.ressource != widget.ressource) {
+      oldWidget.ressource.removeListener(_valueChanged);
+      widget.ressource.addListener(_valueChanged);
+    }
   }
 
   @override
   void dispose() {
-    widget.ressource.removeListener(valueChanged);
-    _globalResCache?.removeListener(valueChanged);
+    widget.ressource.removeListener(_valueChanged);
     super.dispose();
   }
 
-  void valueChanged() {
+  void _valueChanged() {
     if (mounted) {
       setState(() {});
     }
@@ -40,14 +42,20 @@ class RessourceItemState extends State<RessourceItem> {
 
   @override
   Widget build(BuildContext context) {
-    final Ressource? gameRes = Game.ressources[widget.ressource.name];
-    final bool isNegative = (gameRes?.value ?? 0) < 0;
+    // We use the passed resource directly.
+    // If it's from Game.ressources, we'll see the global value.
+    // If it's a cost/award from a Task, we see that local value.
+    final Ressource res = widget.ressource;
+    final bool isNegative = res.value < 0;
+    
+    // Logic for previewing costs (the red/green highlight in task items)
+    final Ressource? globalRes = Game.ressources[res.name];
     
     TextStyle textStyle;
     Color iconColor;
 
-    if (gameRes != null && (gameRes != widget.ressource) && (!widget.ressource.willAdd)) {
-      if (gameRes.canSubtract(widget.ressource)) {
+    if (globalRes != null && (res != globalRes) && (!res.willAdd)) {
+      if (globalRes.canSubtract(res)) {
         textStyle = const TextStyle(color: Colors.green, fontWeight: FontWeight.bold);
         iconColor = Colors.green;
       } else {
@@ -68,13 +76,13 @@ class RessourceItemState extends State<RessourceItem> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(
-            widget.ressource.icon, 
+            res.icon, 
             size: widget.size,
             color: iconColor,
           ),
           const SizedBox(height: 2),
           Text(
-            widget.ressource.value.toStringAsFixed(1),
+            res.value.toStringAsFixed(1),
             textScaler: TextScaler.linear(widget.size / 30.0),
             style: textStyle,
           ),
