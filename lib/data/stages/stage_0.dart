@@ -2,6 +2,7 @@ import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/setmin.model.dart';
@@ -68,7 +69,16 @@ final Stage stage0 = Stage(
         MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein neues Maximum liegt nun bei 40 Mitgliedern. Wenn du über 20 kommst steigst in die Stufe 1 auf."),
         SetMin(ressource: "Member", newMin: 1.0), 
         SetMax(ressource: "Member", newMax: 40.0),
+        RemoveTask(task: "Essen in meiner Wohnung"),
+        AddTask(task: "Gastfreundschaft leben"),
       ],
+    ),
+    Task(
+      name: "Gastfreundschaft leben",
+      description: "Gemeinschaft stärken und neue Leute einladen.",
+      duration: 10000.0,
+      cost: [Time(value: 4.0), Faith(value: 5.0)],
+      award: [Member(value: 2.0)],
     ),
   ],
 );

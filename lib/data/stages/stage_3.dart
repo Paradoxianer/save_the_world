@@ -5,6 +5,7 @@ import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
@@ -30,9 +31,10 @@ final Stage stage3 = Stage(
       description: "Jeden Sonntag für die ganze Stadt.",
       duration: 6000.0,
       cost: [Time(value: 5.0), Money(value: 30.0)],
-      award: [Member(value: 1.0), Publicity(value: 8.0)], // Pacing: 5.0 -> 1.0
+      award: [Member(value: 1.0), Publicity(value: 8.0)], 
       modifier: [
         MultiplyRes(targetResName: "Faith", factorResName: "Member", multiplier: 0.2),
+        AddTask(task: "Korpsrat gründen"),
       ],
     ),
     Task(
@@ -45,7 +47,16 @@ final Stage stage3 = Stage(
       modifier: [
         MessageModifier(message: "ORGANISATION: Gemeinsam seid ihr stärker. Willkommen in Stufe 4 (Limit 200)."),
         SetMax(ressource: "Member", newMax: 200.0),
+        RemoveTask(task: "Korpsrat gründen"),
+        AddTask(task: "Ratssitzungen koordinieren"),
       ],
+    ),
+    Task(
+      name: "Ratssitzungen koordinieren",
+      description: "WARTUNG: Sorge für Einheit und Vision im Leitungsteam.",
+      duration: 15000.0,
+      cost: [Time(value: 4.0), Wisdom(value: 10.0)],
+      award: [Wisdom(value: 20.0), Faith(value: 10.0)],
     ),
   ],
 );

@@ -1,7 +1,9 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -28,12 +30,11 @@ final Stage stage4 = Stage(
     ),
     Task(
       name: "Korps aufräumen",
-      description: "Immer schön Ordnung schaffen (Inspiration: oldstages).",
+      description: "Immer schön Ordnung schaffen.",
       duration: 20000.0,
       timeToSolve: 70000.0,
       cost: [Time(value: 1.0)],
       award: [Wisdom(value: 5.0)],
-      missed: [AddTask(task: "Ein zwischenmenschliches Problem klären")],
       modifier: [AddTask(task: "Korps fegen und putzen")],
     ),
     Task(
@@ -42,10 +43,52 @@ final Stage stage4 = Stage(
       duration: 20000.0,
       isMilestone: true,
       cost: [Time(value: 10.0), Wisdom(value: 200.0), Faith(value: 50.0)],
-      award: [Wisdom(value: 100.0)],
+      award: [Wisdom(value: 100.0), Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "WACHSTUMSSCHWELLE: Du hast die erste Jüngerschafts-Ebene etabliert. Limit 400!"),
         SetMax(ressource: "Member", newMax: 400.0),
+        RemoveTask(task: "Leiter-Mentoring"),
+        AddTask(task: "Mentoring-Programm leiten"),
+      ],
+    ),
+    Task(
+      name: "Mentoring-Programm leiten",
+      description: "WARTUNG: Sorge für die Qualität der geistlichen Begleitung.",
+      duration: 15000.0,
+      cost: [Time(value: 4.0), Wisdom(value: 50.0)],
+      award: [Wisdom(value: 80.0), Faith(value: 20.0)],
+    ),
+    Task(
+      name: "Ein zwischenmenschliches Problem klären",
+      description: "KRISE: Ein Gemeindemitglied ist sauer. Schlichtung ist nötig.",
+      duration: 6000.0,
+      timeToSolve: 60000.0,
+      cost: [Time(value: 3.0), Wisdom(value: 10.0)],
+      modifier: [
+        MessageModifier(message: "GELÖST: Das Problem wurde aus der Welt geschafft."),
+        RemoveTask(task: "Ein zwischenmenschliches Problem klären"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Member(value: 5.0)]),
+        MessageModifier(message: "ESKALIERT: Der Streit hat Mitglieder gekostet."),
+        RemoveTask(task: "Ein zwischenmenschliches Problem klären"),
+        AddTask(task: "Ein zwischenmenschliches Problem klären"),
+      ],
+    ),
+    Task(
+      name: "Streit in der Gemeinde",
+      description: "KRISE: Eine Meinungsverschiedenheit droht die Einheit zu spalten.",
+      duration: 10000.0,
+      timeToSolve: 80000.0,
+      cost: [Wisdom(value: 50.0), Faith(value: 20.0)],
+      modifier: [
+        MessageModifier(message: "VERSÖHNT: Die Einheit wurde bewahrt."),
+        RemoveTask(task: "Streit in der Gemeinde"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Member(value: 10.0), Faith(value: 50.0)]),
+        RemoveTask(task: "Streit in der Gemeinde"),
+        AddTask(task: "Streit in der Gemeinde"),
       ],
     ),
   ],

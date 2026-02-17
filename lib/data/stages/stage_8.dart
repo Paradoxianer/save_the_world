@@ -1,8 +1,10 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -16,22 +18,18 @@ final Stage stage8 = Stage(
   member: 1100,
   description: "MegaChurch Level 1 - Die Leitung durch Vision wird zentral.",
   activeTasks: ["Bibellesen", "Schlafen", "Budget erstellen", "Vision-Casting"],
-  randomTasks: ["Jemand möchte heiraten", "Der Heilige Geist möchte wirken", "Kassendifferenz finden"],
+  randomTasks: ["Kassendifferenz finden", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     baseSleep,
     collectMoney,
-    someoneWantsToMarry,
     holySpiritWorking,
-    weddingPhase1,
-    weddingPhase2,
-    actualWedding,
     Task(
       name: "Vision-Casting",
       description: "Begeistere die Massen für die Zukunft der Gemeinde.",
       duration: 15000.0,
       cost: [Time(value: 4.0), Faith(value: 300.0)],
-      award: [Faith(value: 500.0), Publicity(value: 50.0), Member(value: 0.5)],
+      award: [Faith(value: 500.0), Publicity(value: 50.0), Member(value: 0.2)], 
     ),
     Task(
       name: "Budget erstellen",
@@ -47,6 +45,7 @@ final Stage stage8 = Stage(
       duration: 10000.0,
       cost: [Time(value: 2.0), Faith(value: 50.0)],
       award: [Wisdom(value: 30.0), Money(value: 1000.0)],
+      modifier: [AddTask(task: "Filialgemeinde gründen")],
     ),
     Task(
       name: "Filialgemeinde gründen",
@@ -58,6 +57,32 @@ final Stage stage8 = Stage(
       modifier: [
         MessageModifier(message: "MULTIPLIKATION: Der erste Campus ist eröffnet! Limit 1800!"),
         SetMax(ressource: "Member", newMax: 1800.0),
+        RemoveTask(task: "Filialgemeinde gründen"),
+        AddTask(task: "Filialnetzwerk betreuen"),
+      ],
+    ),
+    Task(
+      name: "Filialnetzwerk betreuen",
+      description: "WARTUNG: Sorge für geistliche Einheit zwischen den Standorten.",
+      duration: 25000.0,
+      cost: [Time(value: 4.0), Wisdom(value: 50.0)],
+      award: [Faith(value: 100.0), Publicity(value: 100.0)],
+    ),
+    Task(
+      name: "Kassendifferenz finden",
+      description: "KRISE: Ein Fehler in der Buchhaltung gefährdet das Vertrauen.",
+      duration: 10000.0,
+      timeToSolve: 60000.0,
+      cost: [Time(value: 2.0), Wisdom(value: 50.0)],
+      modifier: [
+        MessageModifier(message: "GELÖST: Der Fehler wurde gefunden. Die Transparenz ist gewahrt."),
+        RemoveTask(task: "Kassendifferenz finden"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Publicity(value: 100.0), Money(value: 500.0)]),
+        MessageModifier(message: "SCHADEN: Ungeklärte Finanzen kosten Ruf und Geld."),
+        RemoveTask(task: "Kassendifferenz finden"),
+        AddTask(task: "Kassendifferenz finden"),
       ],
     ),
   ],

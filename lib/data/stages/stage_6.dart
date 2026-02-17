@@ -5,6 +5,7 @@ import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -32,7 +33,7 @@ final Stage stage6 = Stage(
       description: "Wie ein Hauskreis, nur viel anstrengender.",
       duration: 8000.0,
       cost: [Money(value: 4.0), Time(value: 4.0), Faith(value: 10.0)],
-      award: [Faith(value: 30.0), Member(value: 0.5)], // Pacing: 2.0 -> 0.5
+      award: [Faith(value: 30.0), Member(value: 0.5)], 
     ),
     Task(
       name: "Einsatzwagen anschaffen",
@@ -60,7 +61,7 @@ final Stage stage6 = Stage(
       name: "Mit dem Einsatzwagen raus",
       description: "Ab zum Kotti!",
       duration: 6000.0,
-      award: [Publicity(value: 15.0), Member(value: 0.1)], // Pacing: 1.0 -> 0.1
+      award: [Publicity(value: 15.0), Member(value: 0.1)], 
       modifier: [
         AddTask(task: "Für den Einsatzwagen einkaufen"),
         RemoveTask(task: "Mit dem Einsatzwagen raus"),
@@ -72,18 +73,15 @@ final Stage stage6 = Stage(
       duration: 10000.0,
       timeToSolve: 60000.0,
       cost: [Money(value: 200.0), Time(value: 4.0)],
-      online: [
-        MessageModifier(message: "ALARM: Der Einsatzwagen ist kaputt! Die Mission am Kotti steht still."),
-        RemoveTask(task: "Für den Einsatzwagen einkaufen"),
-        RemoveTask(task: "Mit dem Einsatzwagen raus"),
-      ],
       modifier: [
         AddTask(task: "Für den Einsatzwagen einkaufen"),
         MessageModifier(message: "REPARIERT: Der Wagen läuft wieder. Weiter geht's!"),
+        RemoveTask(task: "Einsatzwagen kaputt"),
       ],
       missed: [
         MessageModifier(message: "VERLUST: Der Wagen wurde verschrottet. Du musst einen neuen anschaffen."),
         AddTask(task: "Einsatzwagen anschaffen"),
+        RemoveTask(task: "Einsatzwagen kaputt"),
       ],
     ),
     Task(
@@ -92,11 +90,20 @@ final Stage stage6 = Stage(
       duration: 30000.0,
       isMilestone: true,
       cost: [Money(value: 3000.0), Wisdom(value: 200.0), Member(value: 100.0)],
-      award: [Time(value: 5.0), Member(value: 1.0)],
+      award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "PROFIS: Die ersten Pastoren sind angestellt. Limit 800!"),
         SetMax(ressource: "Member", newMax: 800.0),
+        RemoveTask(task: "Hauptamtliche einstellen"),
+        AddTask(task: "Team leiten & koordinieren"),
       ],
+    ),
+    Task(
+      name: "Team leiten & koordinieren",
+      description: "WARTUNG: Unterstützung der Hauptamtlichen im Dienst.",
+      duration: 20000.0,
+      cost: [Time(value: 4.0), Wisdom(value: 50.0)],
+      award: [Wisdom(value: 20.0), Faith(value: 20.0)],
     ),
   ],
 );
