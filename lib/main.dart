@@ -56,13 +56,14 @@ class Home extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(50.0),
+            preferredSize: const Size.fromHeight(55.0),
             child: Row(
               children: <Widget>[
                 const StageItem(),
                 Expanded(
                     child: RessourceTable(
-                      ressourceList: Game.ressources.values.toList(),
+                      // Filter stage resource to maintain 3x2 layout (6 icons total)
+                      ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
                       size: 25.0,
                     )),
               ],
