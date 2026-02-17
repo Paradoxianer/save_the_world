@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/utils/number_formatter.dart';
+import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart';
 
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
@@ -14,20 +15,30 @@ class RessourceItem extends StatefulWidget {
 }
 
 class RessourceItemState extends State<RessourceItem> {
+  final GlobalKey _iconKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    // Der wichtigste Teil: Das Widget registriert sich direkt bei der Ressource
     widget.ressource.addListener(_handleUpdate);
+    
+    // Register the key for floating feedback (only if it's a global resource)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FloatingFeedbackService().registerResourceKey(widget.ressource.name, _iconKey);
+      }
+    });
   }
 
   @override
   void didUpdateWidget(RessourceItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Falls das Widget mit einer neuen Ressourcen-Instanz aktualisiert wird
     if (oldWidget.ressource != widget.ressource) {
       oldWidget.ressource.removeListener(_handleUpdate);
       widget.ressource.addListener(_handleUpdate);
+      
+      // Re-register if resource object changes
+      FloatingFeedbackService().registerResourceKey(widget.ressource.name, _iconKey);
     }
   }
 
@@ -48,7 +59,6 @@ class RessourceItemState extends State<RessourceItem> {
     final Ressource res = widget.ressource;
     final bool isNegative = res.value < 0;
     
-    // Logik für die rot/grün Vorschau in TaskItems
     final Ressource? globalRes = Game.ressources[res.name];
     
     TextStyle textStyle;
@@ -64,13 +74,14 @@ class RessourceItemState extends State<RessourceItem> {
       }
     } else {
       textStyle = TextStyle(
-        color: isNegative ? Colors.red : Colors.black,
+        color: iconColor = isNegative ? Colors.red : Colors.black87,
         fontWeight: isNegative ? FontWeight.bold : FontWeight.normal,
       );
-      iconColor = isNegative ? Colors.red : Colors.black;
+      iconColor = isNegative ? Colors.red : Colors.black87;
     }
 
     return Padding(
+      key: _iconKey, // ATTACH THE KEY HERE
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,

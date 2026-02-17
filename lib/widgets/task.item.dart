@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 import 'package:save_the_world_flutter_app/widgets/wavy_task_painter.dart';
@@ -17,6 +18,7 @@ class TaskItem extends StatefulWidget {
 
 class TaskItemState extends State<TaskItem> {
   final List<Ressource> _listenedResources = [];
+  final GlobalKey _taskKey = GlobalKey(); // Key to locate the task for feedback
 
   @override
   void initState() {
@@ -82,19 +84,37 @@ class TaskItemState extends State<TaskItem> {
     return true;
   }
 
+  void _handleTap() {
+    if (_canAfford) {
+      final feedbackService = FloatingFeedbackService();
+      
+      // Trigger floating numbers for COSTS
+      for (var cost in widget.task.cost) {
+        feedbackService.showAtResource(context, cost.name, "-${cost.value.toInt()}", false);
+        
+        final RenderBox? taskBox = _taskKey.currentContext?.findRenderObject() as RenderBox?;
+        if (taskBox != null) {
+          final position = taskBox.localToGlobal(taskBox.size.center(Offset.zero));
+          feedbackService.show(context, position: position, text: "-${cost.value.toInt()}", color: Colors.red);
+        }
+      }
+      
+      // TODO: Trigger floating numbers for AWARDS in the Task's onComplete callback
+      
+      widget.task.start();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final bool isMilestone = widget.task.isMilestone;
     final bool canAfford = _canAfford;
     final bool isRunning = widget.task.controller.isAnimating || widget.task.controller.value > 0;
     
-    // Determine color and direction for the wavy progress
     final bool isReverse = widget.task.controller.status == AnimationStatus.reverse;
     final Color progressColor = isReverse ? Colors.redAccent : Theme.of(context).primaryColor;
     final FillDirection direction = isReverse ? FillDirection.rightToLeft : FillDirection.leftToRight;
 
-    // IMPORTANT: Invert progress for reverse animations (crisis) 
-    // so it fills up from 0 to 1 as the countdown proceeds.
     final double displayProgress = isReverse 
         ? (1.0 - widget.task.controller.value) 
         : widget.task.controller.value;
@@ -102,6 +122,7 @@ class TaskItemState extends State<TaskItem> {
     return Opacity(
       opacity: (canAfford || isRunning) ? 1.0 : 0.6,
       child: Card(
+        key: _taskKey,
         elevation: isMilestone ? 6 : 3,
         margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
         clipBehavior: Clip.antiAlias,
@@ -114,7 +135,6 @@ class TaskItemState extends State<TaskItem> {
         ),
         child: Stack(
           children: [
-            // BACKGROUND: Wavy Progress Fill
             Positioned.fill(
               child: CustomPaint(
                 painter: WavyTaskPainter(
@@ -125,23 +145,20 @@ class TaskItemState extends State<TaskItem> {
               ),
             ),
             
-            // CONTENT
             InkWell(
-              onTap: canAfford ? _handleTap : null,
+              onTap: _handleTap,
               onLongPress: () => showTaskInfo(context, widget.task),
               child: Container(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    // COSTS (Left)
                     SizedBox(
                       width: 70,
                       child: RessourceTable(ressourceList: widget.task.cost, size: 22.0),
                     ),
                     const SizedBox(width: 12),
                     
-                    // TITLE & DESC (Middle)
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +199,6 @@ class TaskItemState extends State<TaskItem> {
                     ),
                     const SizedBox(width: 12),
                     
-                    // AWARDS (Right)
                     SizedBox(
                       width: 70,
                       child: RessourceTable(ressourceList: widget.task.award, size: 22.0),
@@ -195,11 +211,5 @@ class TaskItemState extends State<TaskItem> {
         ),
       ),
     );
-  }
-
-  void _handleTap() {
-    if (_canAfford) {
-      widget.task.start();
-    }
   }
 }
