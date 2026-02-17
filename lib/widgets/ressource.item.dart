@@ -17,25 +17,27 @@ class RessourceItemState extends State<RessourceItem> {
   @override
   void initState() {
     super.initState();
-    widget.ressource.addListener(_valueChanged);
+    // Der wichtigste Teil: Das Widget registriert sich direkt bei der Ressource
+    widget.ressource.addListener(_handleUpdate);
   }
 
   @override
   void didUpdateWidget(RessourceItem oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Falls das Widget mit einer neuen Ressourcen-Instanz aktualisiert wird
     if (oldWidget.ressource != widget.ressource) {
-      oldWidget.ressource.removeListener(_valueChanged);
-      widget.ressource.addListener(_valueChanged);
+      oldWidget.ressource.removeListener(_handleUpdate);
+      widget.ressource.addListener(_handleUpdate);
     }
   }
 
   @override
   void dispose() {
-    widget.ressource.removeListener(_valueChanged);
+    widget.ressource.removeListener(_handleUpdate);
     super.dispose();
   }
 
-  void _valueChanged() {
+  void _handleUpdate() {
     if (mounted) {
       setState(() {});
     }
@@ -46,6 +48,7 @@ class RessourceItemState extends State<RessourceItem> {
     final Ressource res = widget.ressource;
     final bool isNegative = res.value < 0;
     
+    // Logik für die rot/grün Vorschau in TaskItems
     final Ressource? globalRes = Game.ressources[res.name];
     
     TextStyle textStyle;
@@ -79,7 +82,7 @@ class RessourceItemState extends State<RessourceItem> {
           ),
           const SizedBox(height: 2),
           Text(
-            NumberFormatter.format(res.value), // Use the new formatter
+            NumberFormatter.format(res.value),
             textScaler: TextScaler.linear(widget.size / 30.0),
             style: textStyle,
           ),
