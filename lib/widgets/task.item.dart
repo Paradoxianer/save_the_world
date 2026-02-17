@@ -93,6 +93,12 @@ class TaskItemState extends State<TaskItem> {
     final Color progressColor = isReverse ? Colors.redAccent : Theme.of(context).primaryColor;
     final FillDirection direction = isReverse ? FillDirection.rightToLeft : FillDirection.leftToRight;
 
+    // IMPORTANT: Invert progress for reverse animations (crisis) 
+    // so it fills up from 0 to 1 as the countdown proceeds.
+    final double displayProgress = isReverse 
+        ? (1.0 - widget.task.controller.value) 
+        : widget.task.controller.value;
+
     return Opacity(
       opacity: (canAfford || isRunning) ? 1.0 : 0.6,
       child: Card(
@@ -101,7 +107,6 @@ class TaskItemState extends State<TaskItem> {
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
-          // Cartoon-Style: Thick borders
           side: BorderSide(
             color: isMilestone ? Colors.amber : Colors.black87, 
             width: isMilestone ? 2.5 : 1.5
@@ -113,7 +118,7 @@ class TaskItemState extends State<TaskItem> {
             Positioned.fill(
               child: CustomPaint(
                 painter: WavyTaskPainter(
-                  progress: widget.task.controller.value,
+                  progress: displayProgress,
                   color: progressColor,
                   direction: direction,
                 ),
@@ -150,7 +155,7 @@ class TaskItemState extends State<TaskItem> {
                                 ),
                               Expanded(
                                 child: Text(
-                                  widget.task.name.toUpperCase(), // All caps for cartoon punch
+                                  widget.task.name.toUpperCase(),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900, 
                                     fontSize: 14,
