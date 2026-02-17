@@ -16,7 +16,7 @@ final Stage stage0 = Stage(
   allTasks: [
     Task(
       name: "Bibellesen",
-      description: "Zeit investieren, um 'Glauben' (Ressource) zu generieren.",
+      description: "Zeit investieren, um 'Glauben' zu stärken - Deine Ressource Glauben zu erhöhen.",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
       award: [Faith(value: 15.0)],
