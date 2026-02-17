@@ -38,6 +38,14 @@ class Game {
     }
   }
 
+  // Statistics for current stage (now with persistent backing)
+  DateTime _stageStartTime = DateTime.now();
+  int _stageClicks = 0;
+  
+  // Storage for last completed stage stats to show in dialog
+  Duration? lastStageDuration;
+  int? lastStageClicks;
+
   late List<Task> allTasks;
   late List<String> randomTasks;
   late Duration saveCalled;
@@ -52,7 +60,6 @@ class Game {
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
     
-    // The game loop ticker
     tick.createTicker(updateGame).start();
     
     if (tasksList != null) tasks = tasksList;
@@ -70,6 +77,10 @@ class Game {
     initStage(this.stage);
     ressources[Member().name]?.addListener(levelListener);
     loadState();
+  }
+
+  void recordClick() {
+    _stageClicks++;
   }
 
   void initRes() {
@@ -91,6 +102,8 @@ class Game {
     tasks.clear();
     initRes();
     initStage(0);
+    _stageStartTime = DateTime.now();
+    _stageClicks = 0;
     saveState();
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
@@ -114,7 +127,9 @@ class Game {
     return <String, dynamic>{
       'tasks': json.encode(tasks),
       'alltasks': json.encode(allTasks),
-      'stage': stage
+      'stage': stage,
+      'stageStartTime': _stageStartTime.toIso8601String(),
+      'stageClicks': _stageClicks,
     };
   }
 
@@ -164,11 +179,14 @@ class Game {
 
   void saveState() {
     debugPrint("saveState");
-    // CRITICAL Persistenz-Fix: Vollständige Task-Objekte speichern, nicht nur Namen!
     dataManager.writeJson("gameRes", json.encode(ressources));
-    dataManager.writeJson("activeTasks", json.encode(tasks)); // Vorher: nur Namen
+    dataManager.writeJson("activeTasks", json.encode(tasks)); 
     dataManager.writeJson("allTasks", json.encode(allTasks));
-    dataManager.writeJson("Game", stage.toString());
+    dataManager.writeJson("Game", json.encode({
+      'stage': stage,
+      'stageStartTime': _stageStartTime.toIso8601String(),
+      'stageClicks': _stageClicks,
+    }));
   }
 
   void loadState() {
@@ -184,7 +202,6 @@ class Game {
       for (var name in ressources.keys) {
         if (resMap.containsKey(name)) {
           ressources[name]?.setValue(resMap[name]['value']?.toDouble() ?? 0.0);
-          // Auch min/max wiederherstellen, falls diese in der Stage geändert wurden
           ressources[name]?.min = resMap[name]['min']?.toDouble() ?? ressources[name]!.min;
           ressources[name]?.max = resMap[name]['max']?.toDouble() ?? ressources[name]!.max;
         }
@@ -196,7 +213,6 @@ class Game {
     if (jsn != null) {
       final List<dynamic> parsed = json.decode(jsn);
       allTasks = parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
-      // Erst nachdem allTasks geladen sind, können wir die aktiven Tasks laden
       dataManager.readData("activeTasks").then((val) => loadActiveTasks(val));
     }
   }
@@ -206,7 +222,6 @@ class Game {
       List<dynamic> tmpList = json.decode(jsn);
       tasks.clear();
       for (var taskData in tmpList) {
-        // Task direkt aus den gespeicherten Daten (inkl. AnimationState) laden
         Task restoredTask = Task.fromJson(taskData as Map<String, dynamic>);
         addTask(restoredTask, needInit: false);
       }
@@ -215,7 +230,17 @@ class Game {
 
   void loadGame(String? jsn) {
     if (jsn != null) {
-      stage = int.tryParse(jsn) ?? 0;
+      try {
+        final Map<String, dynamic> gameData = json.decode(jsn);
+        stage = gameData['stage'] as int? ?? 0;
+        _stageClicks = gameData['stageClicks'] as int? ?? 0;
+        if (gameData['stageStartTime'] != null) {
+          _stageStartTime = DateTime.parse(gameData['stageStartTime']);
+        }
+      } catch (e) {
+        // Fallback for old save format (where Game was just a string of the stage int)
+        stage = int.tryParse(jsn) ?? 0;
+      }
       ressources["Stage"]?.setValue(stage.toDouble());
     }
   }
@@ -231,7 +256,6 @@ class Game {
     
     if (d2 > randDuration) {
       int rand = Random().nextInt(5);
-      debugPrint("its possible thats something will happen $rand\n");
       if (rand == 1) {
         List<String> currentRandomTasks = allStages[stage].randomTasks;
         if (currentRandomTasks.isNotEmpty) {
@@ -264,10 +288,15 @@ class Game {
     }
 
     if (found != null && found > stage) {
+      lastStageDuration = DateTime.now().difference(_stageStartTime);
+      lastStageClicks = _stageClicks;
+      
+      _stageStartTime = DateTime.now();
+      _stageClicks = 0;
+
       stage = found;
       ressources["Stage"]?.setValue(stage.toDouble());
       stagenNotifier.notifyListeners();
-      debugPrint("Ich bin stage: $found. Das heißt ich bin eine: ${levels[levelList[found]]}");
       
       ressources[Member().name]?.max = levelList[found].toDouble();
       initStage(found);
@@ -276,13 +305,11 @@ class Game {
   }
 
   void initStage(int stg) {
-    debugPrint("Game:initStage($stg);\n");
     allTasks = allStages[stg].allTasks;
     
     for (var taskName in allStages[stg].activeTasks) {
       Task? found = getTask(taskName);
       if (found != null) {
-        // Nur hinzufügen, wenn der Task nicht bereits aktiv ist (z.B. durch Laden eines Spielstands)
         if (!tasks.any((t) => t.name == found.name)) {
           addTask(found);
         }
