@@ -44,27 +44,20 @@ class RessourceItemState extends State<RessourceItem> {
     if (!mounted) return;
 
     final double newValue = widget.ressource.value;
-    
-    // Check if value changed and we have a previous value
     if (_lastValue != null && newValue != _lastValue) {
       final double diff = newValue - _lastValue!;
-      
-      // Trigger feedback for any non-trivial change
       if (diff.abs() > 0.0001) {
         _triggerFeedback(diff);
       }
     }
-    
     _lastValue = newValue;
     setState(() {});
   }
 
   void _triggerFeedback(double diff) {
-    // Determine the global position of this specific widget on screen
     final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
     if (renderBox == null) return;
 
-    // Use localToGlobal to find exactly where we are
     final position = renderBox.localToGlobal(Offset.zero);
     final centerPosition = Offset(
       position.dx + renderBox.size.width / 2,
@@ -74,7 +67,6 @@ class RessourceItemState extends State<RessourceItem> {
     final bool isPositive = diff > 0;
     final String sign = isPositive ? "+" : "";
     
-    // Format the difference nicely
     String displayValue;
     if (diff.abs() >= 1) {
       displayValue = diff.toInt().toString();
@@ -84,7 +76,6 @@ class RessourceItemState extends State<RessourceItem> {
       displayValue = diff.toStringAsFixed(2);
     }
 
-    // Spawn the floating animation through the service
     FloatingFeedbackService().show(
       context,
       position: centerPosition,
@@ -94,17 +85,77 @@ class RessourceItemState extends State<RessourceItem> {
     );
   }
 
+  void _showResourceDetails() {
+    final res = widget.ressource;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: Colors.black, width: 3), // Cartoon border
+        ),
+        title: Row(
+          children: [
+            Icon(res.icon, size: 32, color: Colors.orange[800]),
+            const SizedBox(width: 12),
+            Text(res.name.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(res.description, style: const TextStyle(fontStyle: FontStyle.italic)),
+            const Divider(height: 30, thickness: 2, color: Colors.black12),
+            _detailRow("AKTUELL:", NumberFormatter.format(res.value)),
+            _detailRow("MINIMUM:", NumberFormatter.format(res.min)),
+            _detailRow("MAXIMUM:", NumberFormatter.format(res.max)),
+            const SizedBox(height: 20),
+            // Capacity Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: LinearProgressIndicator(
+                value: (res.value - res.min) / (res.max - res.min).clamp(0.001, double.infinity),
+                minHeight: 12,
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[700]!),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("VERSTANDEN", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Ressource res = widget.ressource;
     final bool isNegative = res.value < 0;
-    
     final Ressource? globalRes = Game.ressources[res.name];
     
     TextStyle textStyle;
     Color iconColor;
 
-    // UI logic for red/green preview in Task lists vs normal display
     if (globalRes != null && (res != globalRes) && (!res.willAdd)) {
       if (globalRes.canSubtract(res)) {
         textStyle = const TextStyle(color: Colors.green, fontWeight: FontWeight.bold);
@@ -121,23 +172,27 @@ class RessourceItemState extends State<RessourceItem> {
       iconColor = isNegative ? Colors.red : Colors.black87;
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(
-            res.icon, 
-            size: widget.size,
-            color: iconColor,
-          ),
-          const SizedBox(height: 2),
-          Text(
-            NumberFormatter.format(res.value),
-            textScaler: TextScaler.linear(widget.size / 30.0),
-            style: textStyle,
-          ),
-        ],
+    return GestureDetector(
+      onTap: _showResourceDetails,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              res.icon, 
+              size: widget.size,
+              color: iconColor,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              NumberFormatter.format(res.value),
+              textScaler: TextScaler.linear(widget.size / 30.0),
+              style: textStyle,
+            ),
+          ],
+        ),
       ),
     );
   }
