@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
@@ -30,9 +31,13 @@ class SetMax extends Modifier {
 
   @override
   void modify() {
+    debugPrint("SetMax.modify() triggered for resource: $workOn");
     Ressource? tmpRes = Game.ressources[workOn];
     if (tmpRes != null) {
+      debugPrint("SetMax: Updating max of $workOn from ${tmpRes.max} to $newMax");
       tmpRes.max = newMax;
+    } else {
+      debugPrint("SetMax ERROR: Ressource '$workOn' not found in Game.ressources");
     }
   }
 
