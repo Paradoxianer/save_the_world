@@ -7,8 +7,9 @@ import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart'
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
   final double size;
+  final bool isGlobal; // NEW: Flag to distinguish AppBar from Task resources
 
-  const RessourceItem(this.ressource, {super.key, this.size = 30.0});
+  const RessourceItem(this.ressource, {super.key, this.size = 30.0, this.isGlobal = false});
 
   @override
   RessourceItemState createState() => RessourceItemState();
@@ -22,12 +23,17 @@ class RessourceItemState extends State<RessourceItem> {
     super.initState();
     widget.ressource.addListener(_handleUpdate);
     
-    // Register the key for floating feedback (only if it's a global resource)
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        FloatingFeedbackService().registerResourceKey(widget.ressource.name, _iconKey);
-      }
-    });
+    _registerKey();
+  }
+
+  void _registerKey() {
+    if (widget.isGlobal) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          FloatingFeedbackService().registerResourceKey(widget.ressource.name, _iconKey);
+        }
+      });
+    }
   }
 
   @override
@@ -36,10 +42,8 @@ class RessourceItemState extends State<RessourceItem> {
     if (oldWidget.ressource != widget.ressource) {
       oldWidget.ressource.removeListener(_handleUpdate);
       widget.ressource.addListener(_handleUpdate);
-      
-      // Re-register if resource object changes
-      FloatingFeedbackService().registerResourceKey(widget.ressource.name, _iconKey);
     }
+    _registerKey();
   }
 
   @override
@@ -74,14 +78,14 @@ class RessourceItemState extends State<RessourceItem> {
       }
     } else {
       textStyle = TextStyle(
-        color: iconColor = isNegative ? Colors.red : Colors.black87,
+        color: isNegative ? Colors.red : Colors.black87,
         fontWeight: isNegative ? FontWeight.bold : FontWeight.normal,
       );
       iconColor = isNegative ? Colors.red : Colors.black87;
     }
 
     return Padding(
-      key: _iconKey, // ATTACH THE KEY HERE
+      key: widget.isGlobal ? _iconKey : null, // Only global items get the key
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -18,7 +18,7 @@ class TaskItem extends StatefulWidget {
 
 class TaskItemState extends State<TaskItem> {
   final List<Ressource> _listenedResources = [];
-  final GlobalKey _taskKey = GlobalKey(); // Key to locate the task for feedback
+  final GlobalKey _taskKey = GlobalKey(); 
 
   @override
   void initState() {
@@ -90,16 +90,22 @@ class TaskItemState extends State<TaskItem> {
       
       // Trigger floating numbers for COSTS
       for (var cost in widget.task.cost) {
-        feedbackService.showAtResource(context, cost.name, "-${cost.value.toInt()}", false);
+        // 1. Feedback at AppBar (passing the icon now!)
+        feedbackService.showAtResource(context, cost.name, cost.icon, "-${cost.value.toInt()}", false);
         
+        // 2. Feedback at Task itself
         final RenderBox? taskBox = _taskKey.currentContext?.findRenderObject() as RenderBox?;
         if (taskBox != null) {
           final position = taskBox.localToGlobal(taskBox.size.center(Offset.zero));
-          feedbackService.show(context, position: position, text: "-${cost.value.toInt()}", color: Colors.red);
+          feedbackService.show(
+            context, 
+            position: position, 
+            text: "-${cost.value.toInt()}", 
+            color: Colors.red,
+            icon: cost.icon // Also here
+          );
         }
       }
-      
-      // TODO: Trigger floating numbers for AWARDS in the Task's onComplete callback
       
       widget.task.start();
     }
@@ -153,9 +159,10 @@ class TaskItemState extends State<TaskItem> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
+                    // Note: This RessourceTable is NOT global, so no keys registered here
                     SizedBox(
                       width: 70,
-                      child: RessourceTable(ressourceList: widget.task.cost, size: 22.0),
+                      child: RessourceTable(ressourceList: widget.task.cost, size: 22.0, isGlobal: false),
                     ),
                     const SizedBox(width: 12),
                     
@@ -201,7 +208,7 @@ class TaskItemState extends State<TaskItem> {
                     
                     SizedBox(
                       width: 70,
-                      child: RessourceTable(ressourceList: widget.task.award, size: 22.0),
+                      child: RessourceTable(ressourceList: widget.task.award, size: 22.0, isGlobal: false),
                     ),
                   ],
                 ),

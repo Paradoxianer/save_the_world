@@ -59,20 +59,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  int? _lastCelebratedStage;
   
   @override
   void initState() {
     super.initState();
-    // Listen for stage changes for celebration
-    Game.getInstance().addStageListener(_onStageChanged);
-    // LISTEN TO GAME CHANGES (Resources, Tasks, etc.)
+    final game = Game.getInstance();
+    _lastCelebratedStage = game.stage;
+    game.addStageListener(_onStageChanged);
     Game.notifier.addListener(_rebuild);
   }
 
   @override
   void dispose() {
     Game.notifier.removeListener(_rebuild);
-    // Note: addStageListener currently doesn't have a remove equivalent in the model
     super.dispose();
   }
 
@@ -84,13 +84,18 @@ class _HomeState extends State<Home> {
 
   void _onStageChanged() {
     final game = Game.getInstance();
-    if (game.lastStageDuration != null) {
-      showCelebration(
-        context, 
-        game.stage, 
-        duration: game.lastStageDuration, 
-        clicks: game.lastStageClicks
-      );
+    if (_lastCelebratedStage != game.stage && game.lastStageDuration != null) {
+      _lastCelebratedStage = game.stage;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showCelebration(
+            context, 
+            game.stage, 
+            duration: game.lastStageDuration, 
+            clicks: game.lastStageClicks
+          );
+        }
+      });
     }
   }
 
@@ -105,9 +110,9 @@ class _HomeState extends State<Home> {
                 const StageItem(),
                 Expanded(
                     child: RessourceTable(
-                      // Dynamically fetch resources to ensure we have the latest references
                       ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
                       size: 25.0,
+                      isGlobal: true, // IMPORTANT: Mark this as global for feedback keys!
                     )),
               ],
             )
@@ -135,6 +140,7 @@ class _HomeState extends State<Home> {
                 IconButton(
                     icon: const Icon(Icons.replay),
                     onPressed: () {
+                      _lastCelebratedStage = 0;
                       Game.getInstance().resetGame();
                     }
                 ),
