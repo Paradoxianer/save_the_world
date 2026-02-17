@@ -1,33 +1,32 @@
 # 🎨 Design & UI/UX Guide - Save the World
 
-## 🌟 Vision
-Das Spiel soll sich "lebendig" und "reaktiv" anfühlen. Jede Aktion des Spielers (Klick, Task-Start, Level-Up) muss ein sofortiges, befriedigendes visuelles Feedback erzeugen ("Juice").
+## 🌟 Vision: "The Living Cartoon World"
+Ein haptisches, farbenfrohes Comic-Erlebnis, das klare visuelle Sprache für Fortschritt und Kosten nutzt.
 
 ## 🛠 Visuelle Prinzipien
-* **Reaktivität:** Keine Aktion ohne Reaktion.
-* **Konsistenz:** Gleiche Aktionen (z.B. Ressourcenabzug) nutzen immer das gleiche Animationsmuster.
-* **Leichtigkeit:** Animationen dürfen den Spielfluss nicht blockieren (non-blocking).
+* **Cartoon Aesthetics:** Dicke Konturen, Wellen-Elemente statt gerader Linien.
+* **Directional Progress:** Fortschrittsrichtung kommuniziert die Art des Tasks.
+* **Dual-Point Feedback:** Synchronisierte Animationen an Aktion (Task) und Status (AppBar).
 
-## 🚀 Geplante "Juice" Features (Issue #6)
+## 🚀 Geplante "Juice" Features
 
-### 1. Ressourcen-Feedback (Floating Indicators)
-* **Trigger:** Wenn ein Task gestartet wird und Ressourcen abgezogen werden.
-* **Effekt:** Kleine, halbtransparente Texte (z.B. "-10 💰") schweben vom Ressourcen-Icon nach oben und verblassen.
-* **Farben:** Rot für Abzug, Grün für Gewinn.
+### 1. Wavy Liquid Progress (High Priority)
+* **Konzept:** Der Task-Hintergrund füllt sich wie ein Tank.
+* **Richtung:** 
+    * **Positiv:** Füllt sich von LINKS nach RECHTS (Grün/Blau).
+    * **Negativ/Krise:** Füllt sich von RECHTS nach LINKS (Rot).
+* **Visual:** Die Trennkante ist eine statische Cartoon-Welle (Bezier-Kurve).
 
-### 2. Task-Interaktion
-* **Haptik:** Kurzes "Skalieren" (Bounce-Effekt) beim Antippen eines Tasks.
-* **Progress:** Sanftere Übergänge der Fortschrittsbalken (Curved Animations).
+### 2. Twin-Floating-Numbers (Feedback)
+* **Trigger:** Bei Ressourcen-Kosten oder Erträgen.
+* **Aktion am Task:** Eine kleine rote Zahl (z.B. "-5 💰") schwebt vom Task nach oben und verblasst.
+* **Aktion in AppBar:** Zeitgleich schwebt am entsprechenden Ressourcen-Icon eine rote Zahl ("-5") nach oben.
+* **Ertrag (Award):** Grüne Zahlen ("+100 👥") an beiden Stellen.
 
-### 3. Stage-Celebration (Erweitert)
-* **Partikel:** Konfetti-Effekt oder Lichtstrahlen hinter dem Award-Icon im `CelebrationDialog`.
-* **Sound-Visualisierung:** Visuelle Wellenformen, wenn später Sound implementiert wird.
+### 3. Stage-Atmosphäre
+* Jede Stage nutzt ein spezifisches Cartoon-Hintergrundbild (Cross-Fade beim Wechsel).
 
-### 4. Click-Feedback
-* **Ripple-Effekt:** Optimierung der Material-Ripples bei Buttons.
-* **Micro-Animations:** Das Ressourcen-Icon in der AppBar wackelt kurz ("Shake"), wenn es angeklickt wird.
-
-## 📐 Technische Umsetzung (Flutter)
-* **Animations-Engine:** Primär `ImplicitlyAnimatedWidgets` für einfache Übergänge.
-* **Custom Painter:** Für Partikel-Effekte oder komplexe Floating-Texte, um die Performance hochzuhalten.
-* **Overlay:** Floating Indicators werden über ein `OverlayEntry` oder einen lokalen `Stack` in der `AppBar` realisiert.
+## 📐 Technische Roadmap
+1. **WavyTaskPainter:** Custom Painter für bi-direktionale Wellen-Füllung.
+2. **FeedbackEmitter Service:** Ein einfacher Service, um Overlay-Animationen an Widget-Positionen zu triggern.
+3. **Stage-Background System:** Controller-Logik für den Hintergrund-Wechsel.
