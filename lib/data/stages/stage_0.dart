@@ -17,13 +17,12 @@ final Stage stage0 = Stage(
   allTasks: [
     Task(
       name: "Bibellesen",
-      description: "Zeit investieren, um 'Glauben' zu stärken - Deine Ressource Glauben zu erhöhen.",
+      description: "Zeit investieren, um 'Glauben' zu stärken.",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
       award: [Faith(value: 15.0)],
       modifier: [
         AddTask(task: "Beten"),
-        MessageModifier(message: "BASICS: Aufgaben kosten links angezeigte Ressourcen (hier 1x Zeit) und bringen rechts Belohnungen (hier Glauben)."),
       ],
     ),
     Task(
@@ -34,9 +33,9 @@ final Stage stage0 = Stage(
       award: [Member(value: 0.5)], 
       modifier: [
         AddTask(task: "Hausbesuch"),
-        MessageModifier(message: "ACHTUNG: 'Beten' benötigt Zeit UND Glauben. Hast du von einer Ressource zu wenig, wird die Karte blass und lässt sich nicht starten!"),
       ],
     ),
+    // TUTORIAL VERSION of House Visit
     Task(
       name: "Hausbesuch",
       description: "Zeitaufwendig, aber bringt viele neue Mitglieder.",
@@ -45,18 +44,23 @@ final Stage stage0 = Stage(
       award: [Member(value: 1.0)], 
       modifier: [
         AddTask(task: "Essen in meiner Wohnung"),
-        MessageModifier(message: "STRATEGIE: Manche Aufgaben brauchen viel Zeit. Behalte den blauen Zeit-Balken oben im Auge!"),
+        MessageModifier(message: "TUTORIAL: Durch deine Besuche sind Leute bereit, zu dir nach Hause zu kommen!"),
       ],
+    ),
+    // STANDARD VERSION of House Visit (added after Tutorial)
+    Task(
+      name: "Hausbesuch (Routine)",
+      description: "Regelmäßige Besuche bei Gemeindegliedern zur Seelsorge.",
+      duration: 6000.0,
+      cost: [Time(value: 3.0)],
+      award: [Member(value: 1.5)], // Etwas effizienter, da Routine
     ),
     Task(
       name: "Schlafen",
-      description: "Regeneriert 'Zeit'. WICHTIG: Ohne Zeit-Punkte kannst du keine Aufgaben starten!",
+      description: "Regeneriert 'Zeit'.",
       duration: 8000.0,
       cost: [Time(value: 8.0)],
       award: [Time(value: 16.0)],
-      modifier: [
-        MessageModifier(message: "REGENERATION: Wenn dir die Zeit ausgeht, ist 'Schlafen' deine wichtigste Aufgabe."),
-      ],
     ),
     Task(
       name: "Essen in meiner Wohnung",
@@ -66,10 +70,12 @@ final Stage stage0 = Stage(
       cost: [Time(value: 4.0), Member(value: 5.0)],
       award: [Member(value: 10.0)],
       modifier: [
-        MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein neues Maximum liegt nun bei 40 Mitgliedern. Wenn du über 20 kommst steigst in die Stufe 1 auf."),
+        MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein neues Maximum liegt nun bei 40 Mitgliedern."),
         SetMin(ressource: "Member", newMin: 1.0), 
         SetMax(ressource: "Member", newMax: 40.0),
         RemoveTask(task: "Essen in meiner Wohnung"),
+        RemoveTask(task: "Hausbesuch"), // Remove the Tutorial-Trigger version
+        AddTask(task: "Hausbesuch (Routine)"), // Add the clean version
         AddTask(task: "Gastfreundschaft leben"),
       ],
     ),
