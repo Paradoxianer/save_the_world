@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/utils/number_formatter.dart';
 
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
@@ -42,13 +43,9 @@ class RessourceItemState extends State<RessourceItem> {
 
   @override
   Widget build(BuildContext context) {
-    // We use the passed resource directly.
-    // If it's from Game.ressources, we'll see the global value.
-    // If it's a cost/award from a Task, we see that local value.
     final Ressource res = widget.ressource;
     final bool isNegative = res.value < 0;
     
-    // Logic for previewing costs (the red/green highlight in task items)
     final Ressource? globalRes = Game.ressources[res.name];
     
     TextStyle textStyle;
@@ -82,7 +79,7 @@ class RessourceItemState extends State<RessourceItem> {
           ),
           const SizedBox(height: 2),
           Text(
-            res.value.toStringAsFixed(1),
+            NumberFormatter.format(res.value), // Use the new formatter
             textScaler: TextScaler.linear(widget.size / 30.0),
             style: textStyle,
           ),
