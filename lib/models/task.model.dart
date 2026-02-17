@@ -9,7 +9,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Task extends GameElement {
   double duration;
   double timeToSolve;
-  bool isMilestone; // New flag for prominent UI (Golden Task)
+  bool isMilestone;
 
   List<Ressource> cost;
   List<Ressource> award;
@@ -33,21 +33,20 @@ class Task extends GameElement {
     String? controllerStatus,
   }) : super(myModifier: modifier) {
     controller = AnimationController(
-      duration: Duration(milliseconds: duration.toInt()),
       vsync: Game.tick,
+      duration: Duration(milliseconds: duration.toInt()),
     );
 
     if (controllerValue != null) {
       controller.value = controllerValue;
     }
 
+    // Restore animation state on load
     if (controllerStatus != null) {
       if (controllerStatus == "AnimationStatus.forward") {
         controller.forward().whenComplete(finished);
       } else if (controllerStatus == "AnimationStatus.reverse") {
         controller.reverse().whenComplete(miss);
-      } else if (controllerStatus == "AnimationStatus.dismissed") {
-        controller.reset();
       }
     }
 
@@ -80,6 +79,7 @@ class Task extends GameElement {
       modifier: deserializeModifiers(jsn['modifier']),
       missed: deserializeModifiers(jsn['missed']),
       online: deserializeModifiers(jsn['online']),
+      // Deserialize animation state
       controllerStatus: jsn['controllerStatus'] != null ? json.decode(jsn['controllerStatus'].toString()) as String? : null,
       controllerValue: jsn['controllerValue'] != null ? (json.decode(jsn['controllerValue'].toString()) as num?)?.toDouble() : null,
     );
@@ -98,6 +98,7 @@ class Task extends GameElement {
       'missed': json.encode(missed),
       'modifier': json.encode(myModifier),
       'online': json.encode(online),
+      // Serialize animation state
       'controllerStatus': json.encode(controller.status.toString()),
       'controllerValue': json.encode(controller.value),
     };
@@ -145,17 +146,14 @@ class Task extends GameElement {
   void finished() {
     debugPrint("[GAME_LOG] Task '$name' processing finished() logic...");
     
-    // 1. Lift limits FIRST (e.g. SetMax)
     modify();
     debugPrint("[GAME_LOG] Task '$name' modifiers executed.");
     
-    // 2. Add awards
     for (var a in award) {
       debugPrint("[GAME_LOG] Task '$name' awarding: ${a.name} (+${a.value}).");
       Game.ressources[a.name]?.add(a);
     }
     
-    // 3. Reset controller only AFTER logic is done
     controller.reset();
     debugPrint("[GAME_LOG] Task '$name' FINISHED successfully.");
   }
