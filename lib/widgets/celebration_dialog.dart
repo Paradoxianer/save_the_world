@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
-import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 
 class CelebrationDialog extends StatefulWidget {
   final int stage;
-  final Duration? duration; // Prepared for future stats
-  final int? clicks;       // Prepared for future stats
+  final Duration? duration; 
+  final int? clicks;       
 
   const CelebrationDialog({
     super.key, 
@@ -50,6 +49,13 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
     super.dispose();
   }
 
+  String _formatDuration(Duration duration) {
+    if (duration.inMinutes > 0) {
+      return "${duration.inMinutes}m ${duration.inSeconds % 60}s";
+    }
+    return "${duration.inSeconds}s";
+  }
+
   @override
   Widget build(BuildContext context) {
     List<int> stageList = levels.keys.toList();
@@ -92,7 +98,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
                   const Text("Du hast eine neue Stufe erreicht:"),
                   const SizedBox(height: 20),
                   
-                  // The animated Badge
                   SizedBox(
                     height: 180,
                     child: Stack(
@@ -142,7 +147,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
                     ),
                   ),
                   
-                  // Future Stats Area
                   if (widget.duration != null || widget.clicks != null)
                     _buildStatsArea(),
 
@@ -186,7 +190,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               if (widget.duration != null)
-                _statItem(Icons.timer, "${widget.duration!.inMinutes}m"),
+                _statItem(Icons.timer, _formatDuration(widget.duration!)),
               if (widget.clicks != null)
                 _statItem(Icons.touch_app, "${widget.clicks}"),
             ],
@@ -207,8 +211,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
   }
 }
 
-/// Helper function to show the celebration
-void showCelebration(BuildContext context, int stage) {
+void showCelebration(BuildContext context, int stage, {Duration? duration, int? clicks}) {
   showGeneralDialog(
     context: context,
     pageBuilder: (context, anim1, anim2) => Container(),
@@ -216,7 +219,11 @@ void showCelebration(BuildContext context, int stage) {
     barrierLabel: '',
     transitionDuration: const Duration(milliseconds: 200),
     transitionBuilder: (context, anim1, anim2, child) {
-      return CelebrationDialog(stage: stage);
+      return CelebrationDialog(
+        stage: stage,
+        duration: duration,
+        clicks: clicks,
+      );
     },
   );
 }

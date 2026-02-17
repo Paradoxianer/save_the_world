@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:save_the_world_flutter_app/about.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
+import 'package:save_the_world_flutter_app/widgets/celebration_dialog.dart';
 import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
@@ -23,9 +24,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
-    Game game = Game.getInstance();
+    // Initializing game instance
+    Game.getInstance();
+    
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -46,10 +49,36 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   final GlobalKey previewContainer;
 
   const Home({super.key, required this.previewContainer});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  
+  @override
+  void initState() {
+    super.initState();
+    // Listen for stage changes to show the celebration dialog
+    Game.getInstance().addStageListener(_onStageChanged);
+  }
+
+  void _onStageChanged() {
+    final game = Game.getInstance();
+    // Only show if we have stats from a just-completed stage
+    if (game.lastStageDuration != null) {
+      showCelebration(
+        context, 
+        game.stage, 
+        duration: game.lastStageDuration, 
+        clicks: game.lastStageClicks
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +91,6 @@ class Home extends StatelessWidget {
                 const StageItem(),
                 Expanded(
                     child: RessourceTable(
-                      // Filter stage resource to maintain 3x2 layout (6 icons total)
                       ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
                       size: 25.0,
                     )),
@@ -115,8 +143,7 @@ class Home extends StatelessWidget {
   }
 
   Future<ByteData?> takeScreenShot() async {
-    debugPrint("taking a screenshot");
-    final RenderRepaintBoundary? boundary = previewContainer.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+    final RenderRepaintBoundary? boundary = widget.previewContainer.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) return null;
     
     ui.Image image = await boundary.toImage();
@@ -130,7 +157,6 @@ class Home extends StatelessWidget {
       if (bytes == null) return;
       
       final Uint8List uint8list = bytes.buffer.asUint8List();
-      
       final box = context.findRenderObject() as RenderBox?;
       
       await Share.shareXFiles(
