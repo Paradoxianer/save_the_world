@@ -30,7 +30,7 @@ final Stage stage0 = Stage(
       description: "Wandelt 'Glauben' in erste 'Mitglieder' um.",
       duration: 4000.0,
       cost: [Time(value: 1.0), Faith(value: 5.0)],
-      award: [Member(value: 0.5)], // Reduziert von 1.0
+      award: [Member(value: 0.5)], 
       modifier: [
         AddTask(task: "Hausbesuch"),
         MessageModifier(message: "ACHTUNG: 'Beten' benötigt Zeit UND Glauben. Hast du von einer Ressource zu wenig, wird die Karte blass und lässt sich nicht starten!"),
@@ -41,7 +41,7 @@ final Stage stage0 = Stage(
       description: "Zeitaufwendig, aber bringt viele neue Mitglieder.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
-      award: [Member(value: 1.0)], // Reduziert von 2.0
+      award: [Member(value: 1.0)], 
       modifier: [
         AddTask(task: "Essen in meiner Wohnung"),
         MessageModifier(message: "STRATEGIE: Manche Aufgaben brauchen viel Zeit. Behalte den blauen Zeit-Balken oben im Auge!"),
@@ -61,8 +61,9 @@ final Stage stage0 = Stage(
       name: "Essen in meiner Wohnung",
       description: "MEILENSTEIN: Erhöht deine maximale Mitglieder-Kapazität auf 40.",
       duration: 10000.0,
+      isMilestone: true,
       cost: [Time(value: 4.0), Member(value: 5.0)],
-      award: [Member(value: 10.0)], // Reduziert von 15.0
+      award: [Member(value: 10.0)],
       modifier: [
         MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein neues Maximum liegt nun bei 40 Mitgliedern. Wenn du über 20 kommst steigst in die Stufe 1 auf."),
         SetMin(ressource: "Member", newMin: 1.0), 

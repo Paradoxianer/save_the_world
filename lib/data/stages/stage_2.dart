@@ -46,6 +46,7 @@ final Stage stage2 = Stage(
       name: "Saal mieten",
       description: "MEILENSTEIN: Der erste eigene Raum! Erhöht Limit auf 140.",
       duration: 15000.0,
+      isMilestone: true,
       cost: [Time(value: 2.0), Money(value: 200.0), Member(value: 30.0)],
       award: [Publicity(value: 15.0)],
       modifier: [

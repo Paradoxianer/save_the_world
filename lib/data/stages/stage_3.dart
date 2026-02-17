@@ -30,7 +30,7 @@ final Stage stage3 = Stage(
       description: "Jeden Sonntag für die ganze Stadt.",
       duration: 6000.0,
       cost: [Time(value: 5.0), Money(value: 30.0)],
-      award: [Member(value: 5.0), Publicity(value: 8.0)],
+      award: [Member(value: 1.0), Publicity(value: 8.0)], // Pacing: 5.0 -> 1.0
       modifier: [
         MultiplyRes(targetResName: "Faith", factorResName: "Member", multiplier: 0.2),
       ],
@@ -39,8 +39,9 @@ final Stage stage3 = Stage(
       name: "Korpsrat gründen",
       description: "MEILENSTEIN: Ein Leitungsteam für die Zukunft (Limit 200).",
       duration: 20000.0,
+      isMilestone: true,
       cost: [Time(value: 8.0), Wisdom(value: 50.0), Member(value: 60.0)],
-      award: [Wisdom(value: 30.0)],
+      award: [Wisdom(value: 30.0), Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "ORGANISATION: Gemeinsam seid ihr stärker. Willkommen in Stufe 4 (Limit 200)."),
         SetMax(ressource: "Member", newMax: 200.0),

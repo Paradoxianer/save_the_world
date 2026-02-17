@@ -40,6 +40,7 @@ final Stage stage4 = Stage(
       name: "Leiter-Mentoring",
       description: "MEILENSTEIN: Schult Leiter von Leitern (Limit 400).",
       duration: 20000.0,
+      isMilestone: true,
       cost: [Time(value: 10.0), Wisdom(value: 200.0), Faith(value: 50.0)],
       award: [Wisdom(value: 100.0)],
       modifier: [

@@ -1,6 +1,5 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
-import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
@@ -30,10 +29,10 @@ final Stage stage6 = Stage(
     actualWedding,
     Task(
       name: "Kinderprogramm",
-      description: "Wie ein Hauskreis, nur viel anstrengender (Inspiration: Tabelle).",
+      description: "Wie ein Hauskreis, nur viel anstrengender.",
       duration: 8000.0,
       cost: [Money(value: 4.0), Time(value: 4.0), Faith(value: 10.0)],
-      award: [Faith(value: 30.0), Member(value: 2.0)],
+      award: [Faith(value: 30.0), Member(value: 0.5)], // Pacing: 2.0 -> 0.5
     ),
     Task(
       name: "Einsatzwagen anschaffen",
@@ -61,7 +60,7 @@ final Stage stage6 = Stage(
       name: "Mit dem Einsatzwagen raus",
       description: "Ab zum Kotti!",
       duration: 6000.0,
-      award: [Publicity(value: 15.0), Member(value: 1.0)],
+      award: [Publicity(value: 15.0), Member(value: 0.1)], // Pacing: 1.0 -> 0.1
       modifier: [
         AddTask(task: "Für den Einsatzwagen einkaufen"),
         RemoveTask(task: "Mit dem Einsatzwagen raus"),
@@ -91,8 +90,9 @@ final Stage stage6 = Stage(
       name: "Hauptamtliche einstellen",
       description: "MEILENSTEIN: Vollzeitkräfte für die Front (Limit 800).",
       duration: 30000.0,
+      isMilestone: true,
       cost: [Money(value: 3000.0), Wisdom(value: 200.0), Member(value: 100.0)],
-      award: [Time(value: 5.0)],
+      award: [Time(value: 5.0), Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "PROFIS: Die ersten Pastoren sind angestellt. Limit 800!"),
         SetMax(ressource: "Member", newMax: 800.0),
