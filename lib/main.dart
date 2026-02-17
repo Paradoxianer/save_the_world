@@ -24,11 +24,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initializing game instance
     Game.getInstance();
     
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+      ),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -103,62 +107,106 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        // CARTOON APPBAR: Bold bottom border
+        shape: const Border(
+          bottom: BorderSide(color: Colors.black, width: 3),
+        ),
+        toolbarHeight: 70,
+        centerTitle: true,
+        title: const Text(
+          'RETTE DIE WELT', 
+          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 22)
+        ),
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(55.0),
-            child: Row(
-              children: <Widget>[
-                const StageItem(),
-                Expanded(
-                    child: RessourceTable(
-                      ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
-                      size: 25.0,
-                      isGlobal: true, // IMPORTANT: Mark this as global for feedback keys!
-                    )),
-              ],
+            preferredSize: const Size.fromHeight(70.0),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              child: Row(
+                children: <Widget>[
+                  const StageItem(),
+                  const VerticalDivider(width: 20, thickness: 2, color: Colors.black12, indent: 10, endIndent: 10),
+                  Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.black12, width: 1),
+                        ),
+                        child: RessourceTable(
+                          ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
+                          size: 24.0,
+                          isGlobal: true,
+                        ),
+                      )),
+                ],
+              ),
             )
         ),
-        title: const Text('Rette die Welt'),
       ),
-      body: const TabBarView(
-        children: [
-          TaskList(),
-          LevelList()
-        ],
+      body: Container(
+        color: const Color(0xFFEEEEEE),
+        child: const Column(
+          children: [
+            // TAB SELECTOR
+            TabBar(
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.orange,
+              indicatorWeight: 4,
+              tabs: [
+                Tab(child: Text("AUFGABEN", style: TextStyle(fontWeight: FontWeight.w900))),
+                Tab(child: Text("STUFEN", style: TextStyle(fontWeight: FontWeight.w900))),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  TaskList(),
+                  LevelList()
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      bottomNavigationBar: BottomAppBar(
-          child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                IconButton(
-                    icon: const Icon(Icons.share),
-                    onPressed: () {
-                      shareScreenshot(context);
-                    }
-                ),
-                const Spacer(),
-                IconButton(
-                    icon: const Icon(Icons.replay),
-                    onPressed: () {
-                      _lastCelebratedStage = 0;
-                      Game.getInstance().resetGame();
-                    }
-                ),
-                const Spacer(),
-                IconButton(
-                    icon: const Icon(Icons.contacts),
-                    onPressed: () {
-                      showDSGVODialog(context);
-                    }
-                ),
-                IconButton(
-                    icon: const Icon(Icons.question_answer),
-                    onPressed: () {
-                      showAppAboutDialog(context);
-                    }
-                )
-              ]
-          )
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: Colors.black, width: 2)),
+        ),
+        child: BottomAppBar(
+            elevation: 0,
+            color: Colors.white,
+            child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
+                      icon: const Icon(Icons.share, color: Colors.black),
+                      onPressed: () => shareScreenshot(context)
+                  ),
+                  const Spacer(),
+                  IconButton(
+                      icon: const Icon(Icons.replay, color: Colors.red),
+                      onPressed: () {
+                        _lastCelebratedStage = 0;
+                        Game.getInstance().resetGame();
+                      }
+                  ),
+                  const Spacer(),
+                  IconButton(
+                      icon: const Icon(Icons.shield_outlined, color: Colors.black),
+                      onPressed: () => showDSGVODialog(context)
+                  ),
+                  IconButton(
+                      icon: const Icon(Icons.info_outline, color: Colors.black),
+                      onPressed: () => showAppAboutDialog(context)
+                  )
+                ]
+            )
+        ),
       ),
     );
   }
@@ -166,7 +214,6 @@ class _HomeState extends State<Home> {
   Future<ByteData?> takeScreenShot() async {
     final RenderRepaintBoundary? boundary = widget.previewContainer.currentContext?.findRenderObject() as RenderRepaintBoundary?;
     if (boundary == null) return null;
-    
     ui.Image image = await boundary.toImage();
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     return byteData;
@@ -176,10 +223,8 @@ class _HomeState extends State<Home> {
     try {
       final ByteData? bytes = await takeScreenShot();
       if (bytes == null) return;
-      
       final Uint8List uint8list = bytes.buffer.asUint8List();
       final box = context.findRenderObject() as RenderBox?;
-      
       await Share.shareXFiles(
         [XFile.fromData(uint8list, name: 'Game.png', mimeType: 'image/png')],
         subject: 'Save The World',

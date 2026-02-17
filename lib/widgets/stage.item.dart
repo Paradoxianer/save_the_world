@@ -22,9 +22,6 @@ class StageItemState extends State<StageItem> {
 
   @override
   void dispose() {
-    // Note: ensure we don't cause issues if removeStageListener is missing
-    // Based on current model, we only have addStageListener. 
-    // If you add removeStageListener to Game later, call it here.
     super.dispose();
   }
 
@@ -42,9 +39,9 @@ class StageItemState extends State<StageItem> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(
-            Icons.account_balance, // Etwas "cartoonigeres" Icon für die Stufe
+            Icons.account_balance, 
             size: widget.size, 
-            color: Colors.orange[800]
+            color: Colors.blueAccent[700], // Changed from orange to blue to avoid "negative" red confusion
           ),
           Text(
             "LVL ${game.stage}",

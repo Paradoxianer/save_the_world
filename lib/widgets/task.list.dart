@@ -13,7 +13,6 @@ class TaskListState extends State<TaskList> {
   @override
   void initState() {
     super.initState();
-    // We only listen to Game.notifier which triggers when tasks are added/removed
     Game.notifier.addListener(_tasksChanged);
   }
 
@@ -26,25 +25,27 @@ class TaskListState extends State<TaskList> {
   void _tasksChanged() {
     if (!mounted) return;
     
-    // Handle snackbar messages if any (kept logic from previous version)
     final snackbarMessage = Game.getInstance().snackbarMessage;
     if (snackbarMessage != null) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(snackbarMessage),
-            backgroundColor: const Color.fromRGBO(180, 70, 70, 0.6),
+            content: Text(snackbarMessage, style: const TextStyle(fontWeight: FontWeight.bold)),
+            backgroundColor: const Color.fromRGBO(180, 70, 70, 0.9),
+            behavior: SnackBarBehavior.floating, // Fits the cartoon look better
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           )
       );
       Game.getInstance().snackbarMessage = null;
     }
     
-    // Rebuild only when the task list itself changes
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      // ADDED: Bottom padding to ensure the last task is not covered by snackbars or UI elements
+      padding: const EdgeInsets.fromLTRB(0, 8, 0, 100),
       itemBuilder: (BuildContext context, int index) =>
           TaskItem(task: Game.tasks[index]),
       itemCount: Game.tasks.length,
