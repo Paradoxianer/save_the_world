@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
-import 'package:save_the_world_flutter_app/widgets/celebration_dialog.dart';
 
 class StageItem extends StatefulWidget {
   final double size;
@@ -19,37 +17,45 @@ class StageItemState extends State<StageItem> {
   void initState() {
     super.initState();
     game = Game.getInstance();
-    game.addStageListener(valueChanged);
+    game.addStageListener(_refresh);
   }
 
   @override
   void dispose() {
-    game.removeListener(valueChanged);
+    // Note: ensure we don't cause issues if removeStageListener is missing
+    // Based on current model, we only have addStageListener. 
+    // If you add removeStageListener to Game later, call it here.
     super.dispose();
   }
 
-  void valueChanged() {
+  void _refresh() {
     if (mounted) {
-      debugPrint("Celebrating new stage: ${game.stage}");
-      showCelebration(context, game.stage);
       setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Icon(Icons.home, size: widget.size),
-        Text(
-          game.stage.toString(),
-          style: TextStyle(
-            fontSize: widget.size * 0.5,
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(
+            Icons.account_balance, // Etwas "cartoonigeres" Icon für die Stufe
+            size: widget.size, 
+            color: Colors.orange[800]
           ),
-        ),
-      ],
+          Text(
+            "LVL ${game.stage}",
+            style: TextStyle(
+              fontSize: widget.size * 0.4,
+              fontWeight: FontWeight.w900,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
