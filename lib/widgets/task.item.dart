@@ -18,7 +18,6 @@ class TaskItem extends StatefulWidget {
 
 class TaskItemState extends State<TaskItem> {
   final List<Ressource> _listenedResources = [];
-  final GlobalKey _taskKey = GlobalKey(); 
 
   @override
   void initState() {
@@ -86,25 +85,16 @@ class TaskItemState extends State<TaskItem> {
 
   void _handleTap() {
     if (_canAfford) {
-      final feedbackService = FloatingFeedbackService();
-      
-      // Trigger floating numbers for COSTS
+      // Trigger floating numbers ONLY for the Global AppBar icons
+      // This keeps the UI clean and avoids the "double cost" visual confusion
       for (var cost in widget.task.cost) {
-        // 1. Feedback at AppBar (passing the icon now!)
-        feedbackService.showAtResource(context, cost.name, cost.icon, "-${cost.value.toInt()}", false);
-        
-        // 2. Feedback at Task itself
-        final RenderBox? taskBox = _taskKey.currentContext?.findRenderObject() as RenderBox?;
-        if (taskBox != null) {
-          final position = taskBox.localToGlobal(taskBox.size.center(Offset.zero));
-          feedbackService.show(
-            context, 
-            position: position, 
-            text: "-${cost.value.toInt()}", 
-            color: Colors.red,
-            icon: cost.icon // Also here
-          );
-        }
+        FloatingFeedbackService().showAtResource(
+          context, 
+          cost.name, 
+          cost.icon, 
+          "-${cost.value.toInt()}", 
+          false
+        );
       }
       
       widget.task.start();
@@ -128,7 +118,6 @@ class TaskItemState extends State<TaskItem> {
     return Opacity(
       opacity: (canAfford || isRunning) ? 1.0 : 0.6,
       child: Card(
-        key: _taskKey,
         elevation: isMilestone ? 6 : 3,
         margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
         clipBehavior: Clip.antiAlias,
@@ -159,7 +148,6 @@ class TaskItemState extends State<TaskItem> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    // Note: This RessourceTable is NOT global, so no keys registered here
                     SizedBox(
                       width: 70,
                       child: RessourceTable(ressourceList: widget.task.cost, size: 22.0, isGlobal: false),
