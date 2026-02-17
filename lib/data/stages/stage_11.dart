@@ -10,6 +10,7 @@ import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -81,7 +82,7 @@ final Stage stage11 = Stage(
       award: [Wisdom(value: 100.0)],
       missed: [
         SubtractRes(ressources: [Publicity(value: 2500.0), Faith(value: 500.0)]),
-        MessageModifier(message: "REPUTATIONSSCHADEN: Das Schweigen hat dem weltweiten Ansehen massiv geschadet."),
+        MessageModifier(message: "REPUTATIONSCHADEN: Das Schweigen hat dem weltweiten Ansehen massiv geschadet."),
         AddTask(task: "Medien-Skandal"),
       ],
     ),
