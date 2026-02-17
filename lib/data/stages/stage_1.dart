@@ -1,5 +1,6 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
@@ -12,20 +13,53 @@ final Stage stage1 = Stage(
   level: 1,
   member: 40,
   description: "Gemeinschaftsgruppe - Die Verantwortung wächst.",
-  activeTasks: ["Bibellesen", "Beten", "Schlafen", "FSJler einstellen"],
-  randomTasks: ["Rechnung nicht bezahlt"],
+  activeTasks: [
+    "Bibellesen", 
+    "Beten", 
+    "Schlafen", 
+    "Kuchenverkauf", 
+    "Essen in meiner Wohnung", 
+    "FSJler einstellen"
+  ],
+  randomTasks: [], // 'Rechnung nicht bezahlt' entfernt - Katastrophen erst ab Stage 2
   allTasks: [
     Task(
       name: "Bibellesen",
+      description: "Zeit investieren, um 'Glauben' zu stärken.",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
       award: [Faith(value: 15.0)],
+    ),
+    Task(
+      name: "Beten",
+      description: "Wandelt 'Glauben' in neue 'Mitglieder' um.",
+      duration: 4000.0,
+      cost: [Time(value: 1.0), Faith(value: 5.0)],
+      award: [Member(value: 1.0)],
     ),
     Task(
       name: "Schlafen",
       duration: 8000.0,
       cost: [Time(value: 8.0)],
       award: [Time(value: 16.0)],
+    ),
+    Task(
+      name: "Kuchenverkauf",
+      description: "Ein paar Kuchen verkaufen, um die Kasse für Upgrades aufzubessern.",
+      duration: 5000.0,
+      cost: [Time(value: 2.0), Faith(value: 5.0)],
+      award: [Money(value: 30.0)],
+      modifier: [
+        MessageModifier(message: "GELD: Du hast deine ersten Einnahmen! Geld brauchst du für Upgrades wie den FSJler."),
+      ],
+    ),
+    Task(
+      name: "Essen in meiner Wohnung",
+      description: "Gemeinschaft stärken und neue Leute einladen.",
+      duration: 10000.0,
+      cost: [Time(value: 4.0), Faith(value: 10.0)],
+      award: [Member(value: 5.0)],
+      // KEIN SetMax mehr - Das Limit wurde bereits in Stage 0 auf 40 erhöht.
     ),
     Task(
       name: "FSJler einstellen",
@@ -43,12 +77,9 @@ final Stage stage1 = Stage(
       name: "FSJler bezahlen",
       description: "KRITISCH: Bezahle den FSJler, bevor er kündigt!",
       duration: 10000.0,
-      timeToSolve: 60000.0, // Zeitlimit: 1 Minute
+      timeToSolve: 60000.0,
       cost: [Money(value: 36.0)],
       award: [Time(value: 8.0)],
-      online: [
-        MessageModifier(message: "WARNUNG: Ein zeitkritischer Task! Der rote Balken zeigt, wie lange du Zeit hast, ihn zu starten."),
-      ],
       missed: [
         SetMax(ressource: "Time", newMax: 24.0),
         AddTask(task: "FSJler einstellen"),
@@ -61,9 +92,6 @@ final Stage stage1 = Stage(
       duration: 5000.0,
       timeToSolve: 45000.0,
       cost: [Money(value: 30.0)],
-      online: [
-        MessageModifier(message: "ALARM: Eine unbezahlte Rechnung! Erledige sie schnell."),
-      ],
       missed: [
         SubtractRes(ressources: [Money(value: 50.0)]),
         AddTask(task: "Rechnung nicht bezahlt"),
