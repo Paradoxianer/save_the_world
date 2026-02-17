@@ -5,7 +5,7 @@ import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 
-class GameController {
+class GameController with WidgetsBindingObserver {
   final Game game;
   static late Ticker tick;
   static late ChangeNotifier notifier;
@@ -17,12 +17,36 @@ class GameController {
     notifier = ChangeNotifier();
     stageNotifier = ChangeNotifier();
     
-    // Using a proper TickerProvider for production instead of TestVSync
     tick = Ticker(updateGame);
     saveDuration = const Duration(seconds: 10);
     ticker = tick.start();
     
     Game.ressources[Member().name]?.addListener(levelListener);
+    
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        game.resumeStageTimer();
+        break;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        game.pauseStageTimer();
+        break;
+      case AppLifecycleState.hidden:
+        game.pauseStageTimer();
+        break;
+    }
+  }
+  
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    tick.dispose();
   }
 
   void addTask(Task task, {bool needInit = true}) {
@@ -72,7 +96,6 @@ class GameController {
       }
     }
     
-    // Fallback if members exceed all defined levels
     found ??= levelLength - 1;
 
     if (found != game.stage) {

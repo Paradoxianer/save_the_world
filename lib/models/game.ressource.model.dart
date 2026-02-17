@@ -38,8 +38,9 @@ class Game {
     }
   }
 
-  // Statistics for current stage (now with persistent backing)
-  DateTime _stageStartTime = DateTime.now();
+  // Statistics for current stage
+  DateTime? _lastStartTime;
+  Duration _accumulatedStageTime = Duration.zero;
   int _stageClicks = 0;
   
   // Storage for last completed stage stats to show in dialog
@@ -77,6 +78,31 @@ class Game {
     initStage(this.stage);
     ressources[Member().name]?.addListener(levelListener);
     loadState();
+    
+    // Start tracking time immediately
+    resumeStageTimer();
+  }
+
+  void resumeStageTimer() {
+    _lastStartTime = DateTime.now();
+    debugPrint("[GAME] Stage timer resumed at $_lastStartTime");
+  }
+
+  void pauseStageTimer() {
+    if (_lastStartTime != null) {
+      final now = DateTime.now();
+      _accumulatedStageTime += now.difference(_lastStartTime!);
+      _lastStartTime = null;
+      debugPrint("[GAME] Stage timer paused. Accumulated active time: ${_accumulatedStageTime.inSeconds}s");
+    }
+  }
+
+  Duration get currentActiveStageTime {
+    Duration total = _accumulatedStageTime;
+    if (_lastStartTime != null) {
+      total += DateTime.now().difference(_lastStartTime!);
+    }
+    return total;
   }
 
   void recordClick() {
@@ -102,7 +128,8 @@ class Game {
     tasks.clear();
     initRes();
     initStage(0);
-    _stageStartTime = DateTime.now();
+    _accumulatedStageTime = Duration.zero;
+    _lastStartTime = DateTime.now();
     _stageClicks = 0;
     saveState();
     notifier.notifyListeners();
@@ -128,7 +155,7 @@ class Game {
       'tasks': json.encode(tasks),
       'alltasks': json.encode(allTasks),
       'stage': stage,
-      'stageStartTime': _stageStartTime.toIso8601String(),
+      'accumulatedStageTime': _accumulatedStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
     };
   }
@@ -184,8 +211,9 @@ class Game {
     dataManager.writeJson("allTasks", json.encode(allTasks));
     dataManager.writeJson("Game", json.encode({
       'stage': stage,
-      'stageStartTime': _stageStartTime.toIso8601String(),
+      'accumulatedStageTime': currentActiveStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
+      'saveTime': DateTime.now().toIso8601String(),
     }));
   }
 
@@ -234,12 +262,17 @@ class Game {
         final Map<String, dynamic> gameData = json.decode(jsn);
         stage = gameData['stage'] as int? ?? 0;
         _stageClicks = gameData['stageClicks'] as int? ?? 0;
-        if (gameData['stageStartTime'] != null) {
-          _stageStartTime = DateTime.parse(gameData['stageStartTime']);
+        
+        if (gameData['accumulatedStageTime'] != null) {
+          _accumulatedStageTime = Duration(milliseconds: gameData['accumulatedStageTime']);
         }
+        
+        // Reset last start time to now when loading
+        _lastStartTime = DateTime.now();
+        
       } catch (e) {
-        // Fallback for old save format (where Game was just a string of the stage int)
         stage = int.tryParse(jsn) ?? 0;
+        _lastStartTime = DateTime.now();
       }
       ressources["Stage"]?.setValue(stage.toDouble());
     }
@@ -288,10 +321,15 @@ class Game {
     }
 
     if (found != null && found > stage) {
-      lastStageDuration = DateTime.now().difference(_stageStartTime);
+      // Calculate final active duration for the completed stage
+      lastStageDuration = currentActiveStageTime;
       lastStageClicks = _stageClicks;
       
-      _stageStartTime = DateTime.now();
+      debugPrint("[GAME] Stage $stage completed in ${lastStageDuration?.inSeconds}s active time with $lastStageClicks clicks.");
+
+      // Reset for next stage
+      _accumulatedStageTime = Duration.zero;
+      _lastStartTime = DateTime.now();
       _stageClicks = 0;
 
       stage = found;
