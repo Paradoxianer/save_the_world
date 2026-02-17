@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 
 class GameController with WidgetsBindingObserver {
   final Game game;
   static late Ticker tick;
   static late ChangeNotifier notifier;
-  static late ChangeNotifier stageNotifier;
+  
+  // Note: static stageNotifier removed to avoid confusion with Game.stagenNotifier
+  
   late TickerFuture ticker;
   late Duration saveDuration;
 
   GameController(this.game) {
     notifier = ChangeNotifier();
-    stageNotifier = ChangeNotifier();
     
     tick = Ticker(updateGame);
     saveDuration = const Duration(seconds: 10);
     ticker = tick.start();
     
-    Game.ressources[Member().name]?.addListener(levelListener);
+    // REDUNDANT: Member listener removed. 
+    // The Game model now handles stage progression and statistics internally.
     
     WidgetsBinding.instance.addObserver(this);
   }
@@ -36,8 +36,6 @@ class GameController with WidgetsBindingObserver {
       case AppLifecycleState.inactive:
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
-        game.pauseStageTimer();
-        break;
       case AppLifecycleState.hidden:
         game.pauseStageTimer();
         break;
@@ -50,14 +48,14 @@ class GameController with WidgetsBindingObserver {
   }
 
   void addTask(Task task, {bool needInit = true}) {
-    if (needInit) Game.tasks?.remove(task);
-    Game.tasks?.insert(0, task);
+    if (needInit) Game.tasks.removeWhere((t) => t.name == task.name);
+    Game.tasks.add(task);
     if (needInit) task.init();
     notifier.notifyListeners();
   }
 
   void removeTask(Task task) {
-    Game.tasks?.remove(task);
+    Game.tasks.remove(task);
     notifier.notifyListeners();
   }
 
@@ -69,39 +67,10 @@ class GameController with WidgetsBindingObserver {
     notifier.removeListener(listener);
   }
 
-  void addStageListener(VoidCallback listener) {
-    stageNotifier.addListener(listener);
-  }
-
   void updateGame(Duration elapse) {
     int rest = (elapse.inSeconds % saveDuration.inSeconds);
     if ((rest == 0) && (elapse.inSeconds > 0)) {
       game.saveState();
-    }
-  }
-
-  void levelListener() {
-    final memberRes = Game.ressources[Member().name];
-    if (memberRes == null) return;
-    
-    double members = memberRes.value;
-    int? found;
-    int levelLength = levels.length;
-    List<int> levelList = levels.keys.toList();
-    
-    for (int i = 0; i < levelLength; i++) {
-      if (levelList[i].toDouble() > members) {
-        found = i;
-        break;
-      }
-    }
-    
-    found ??= levelLength - 1;
-
-    if (found != game.stage) {
-      game.stage = found;
-      stageNotifier.notifyListeners();
-      debugPrint("Ich bin stage: $found. Das heißt ich bin eine: ${levels[levelList[found]]}");
     }
   }
 }
