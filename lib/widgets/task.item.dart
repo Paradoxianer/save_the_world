@@ -121,7 +121,7 @@ class TaskItemState extends State<TaskItem> {
           borderRadius: BorderRadius.circular(12.0),
           side: BorderSide(
             color: isMilestone ? Colors.orange[800]! : Colors.black87, 
-            width: 2.5, 
+            width: 1.5, // Reduced border width as requested
           ),
         ),
         child: Stack(
