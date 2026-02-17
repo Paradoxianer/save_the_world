@@ -20,7 +20,7 @@ final Stage stage1 = Stage(
     "Schlafen", 
     "Gottesdienst vorbereiten",
   ],
-  randomTasks: ["Konflikt in der Gruppe"], // Neue, langsame Katastrophe
+  randomTasks: ["Konflikt in der Gruppe"],
   allTasks: [
     Task(
       name: "Bibellesen",
@@ -34,7 +34,7 @@ final Stage stage1 = Stage(
       description: "Im Gebet für die Gemeinschaft und für neue Mitglieder einstehen.",
       duration: 4000.0,
       cost: [Time(value: 1.0), Faith(value: 5.0)],
-      award: [Member(value: 0.5)],
+      award: [Member(value: 0.2)], // Drastisch reduziert für besseres Pacing
     ),
     Task(
       name: "Schlafen",
@@ -47,8 +47,9 @@ final Stage stage1 = Stage(
       name: "Gottesdienst vorbereiten",
       description: "MEILENSTEIN: Schafft die Strukturen für regelmäßige Treffen und hebt das Mitgliederlimit auf 80.",
       duration: 12000.0,
+      isMilestone: true, // Gold-Status nur hier!
       cost: [Time(value: 6.0), Faith(value: 20.0), Wisdom(value: 10.0)],
-      award: [Member(value: 5.0)],
+      award: [Member(value: 1.0)], // Reduziert auf 1.0
       modifier: [
         MessageModifier(message: "MEILENSTEIN: Der erste Gottesdienst war ein Erfolg! Die Gemeinschaft wächst und dein Limit liegt nun bei 80 Mitgliedern."),
         SetMax(ressource: "Member", newMax: 80.0),
@@ -60,16 +61,17 @@ final Stage stage1 = Stage(
       description: "Regelmäßige Gottesdienste sind das Herzstück der wachsenden Gemeinde.",
       duration: 8000.0,
       cost: [Time(value: 4.0), Faith(value: 15.0)],
-      award: [Member(value: 2.0), Money(value: 20.0)],
+      award: [Member(value: 1.0), Money(value: 20.0)], // Reduziert auf 1.0
       modifier: [
-         MessageModifier(message: "GELD: Durch den Gottesdienst erhältst du nun Kollekte. Damit kannst du Upgrades finanzieren!"),
+         MessageModifier(message: "KOLLEKTE: Die Gemeinde gibt großzügig. Nutze das Geld für wichtige Upgrades!"),
          AddTask(task: "FSJler einstellen"),
       ]
     ),
     Task(
       name: "FSJler einstellen",
-      description: "Entlastung für dich, aber auch eine finanzielle Verantwortung.",
+      description: "Entlastung für dich. Schaltet 32h-Tag frei.",
       duration: 4000.0,
+      isMilestone: false, // KEIN Gold-Status, da organisatorisch
       cost: [Money(value: 100.0)],
       award: [],
       modifier: [
@@ -82,7 +84,7 @@ final Stage stage1 = Stage(
       name: "FSJler bezahlen",
       description: "KRITISCH: Bezahle den FSJler pünktlich, sonst verlässt er die Gemeinschaft!",
       duration: 10000.0,
-      timeToSolve: 80000.0, // Langsamer als eine Standard-Rechnung
+      timeToSolve: 80000.0,
       cost: [Money(value: 50.0)],
       award: [Time(value: 8.0)],
       missed: [
@@ -94,8 +96,8 @@ final Stage stage1 = Stage(
     Task(
       name: "Konflikt in der Gruppe",
       description: "ES BRODELT: Eine Meinungsverschiedenheit droht, die Gruppe zu spalten. Kümmere dich darum!",
-      duration: 15000.0, // Braucht Zeit und Weisheit
-      timeToSolve: 120000.0, // Sehr lange Zeit, um zu reagieren
+      duration: 15000.0,
+      timeToSolve: 120000.0,
       cost: [Time(value: 2.0), Wisdom(value: 5.0)],
       award: [Faith(value: 10.0)],
       modifier: [MessageModifier(message: "GELÖST: Puh, der Konflikt ist beigelegt. Die Gemeinschaft ist gestärkt.")],

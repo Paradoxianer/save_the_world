@@ -9,6 +9,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 class Task extends GameElement {
   double duration;
   double timeToSolve;
+  bool isMilestone; // New flag for prominent UI (Golden Task)
 
   List<Ressource> cost;
   List<Ressource> award;
@@ -24,6 +25,7 @@ class Task extends GameElement {
     this.award = const [],
     this.duration = 5000.0,
     this.timeToSolve = double.infinity,
+    this.isMilestone = false,
     List<Modifier>? modifier,
     this.missed = const [],
     this.online = const [],
@@ -72,6 +74,7 @@ class Task extends GameElement {
       description: jsn['description'] as String? ?? "",
       duration: (jsn['duration'] as num?)?.toDouble() ?? 5000.0,
       timeToSolve: jsn['timeToSolve'] != null ? (double.tryParse(jsn['timeToSolve'].toString()) ?? double.infinity) : double.infinity,
+      isMilestone: jsn['isMilestone'] as bool? ?? false,
       cost: deserializeResources(jsn['cost']),
       award: deserializeResources(jsn['award']),
       modifier: deserializeModifiers(jsn['modifier']),
@@ -89,6 +92,7 @@ class Task extends GameElement {
       'description': description,
       'duration': duration,
       'timeToSolve': timeToSolve.toString(),
+      'isMilestone': isMilestone,
       'cost': json.encode(cost),
       'award': json.encode(award),
       'missed': json.encode(missed),

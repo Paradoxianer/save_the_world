@@ -132,25 +132,24 @@ class TaskItemState extends State<TaskItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Robust check for Gatekeeper/Milestone: Check name if type check fails
-    final bool isGatekeeper = widget.task.myModifier.any((m) => m.name == "SetMax");
+    final bool isMilestone = widget.task.isMilestone;
     final bool canAfford = _canAfford;
     final bool isRunning = widget.task.controller.isAnimating;
 
     return Opacity(
       opacity: (canAfford || isRunning) ? 1.0 : 0.6,
       child: Card(
-        elevation: isGatekeeper ? 4 : 2,
+        elevation: isMilestone ? 4 : 2,
         margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
         clipBehavior: Clip.antiAlias,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
-          side: isGatekeeper 
+          side: isMilestone 
             ? const BorderSide(color: Colors.amber, width: 2.0) 
             : (canAfford ? BorderSide.none : BorderSide(color: Colors.red.withOpacity(0.3))),
         ),
         child: Container(
-          decoration: isGatekeeper ? BoxDecoration(
+          decoration: isMilestone ? BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -179,7 +178,7 @@ class TaskItemState extends State<TaskItem> {
                           children: [
                             Row(
                               children: [
-                                if (isGatekeeper) 
+                                if (isMilestone) 
                                   const Padding(
                                     padding: EdgeInsets.only(right: 4.0),
                                     child: Icon(Icons.star, color: Colors.amber, size: 16),
@@ -190,7 +189,7 @@ class TaskItemState extends State<TaskItem> {
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold, 
                                       fontSize: 15,
-                                      color: isGatekeeper ? Colors.orange[900] : Colors.black,
+                                      color: isMilestone ? Colors.orange[900] : Colors.black,
                                     ),
                                   ),
                                 ),
