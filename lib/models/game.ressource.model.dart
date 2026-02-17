@@ -164,10 +164,9 @@ class Game {
 
   void saveState() {
     debugPrint("saveState");
-    List<String> activeTaskNames = tasks.map((t) => t.name).toList();
-    
+    // CRITICAL Persistenz-Fix: Vollständige Task-Objekte speichern, nicht nur Namen!
     dataManager.writeJson("gameRes", json.encode(ressources));
-    dataManager.writeJson("activeTasks", json.encode(activeTaskNames));
+    dataManager.writeJson("activeTasks", json.encode(tasks)); // Vorher: nur Namen
     dataManager.writeJson("allTasks", json.encode(allTasks));
     dataManager.writeJson("Game", stage.toString());
   }
@@ -185,6 +184,9 @@ class Game {
       for (var name in ressources.keys) {
         if (resMap.containsKey(name)) {
           ressources[name]?.setValue(resMap[name]['value']?.toDouble() ?? 0.0);
+          // Auch min/max wiederherstellen, falls diese in der Stage geändert wurden
+          ressources[name]?.min = resMap[name]['min']?.toDouble() ?? ressources[name]!.min;
+          ressources[name]?.max = resMap[name]['max']?.toDouble() ?? ressources[name]!.max;
         }
       }
     }
@@ -194,6 +196,7 @@ class Game {
     if (jsn != null) {
       final List<dynamic> parsed = json.decode(jsn);
       allTasks = parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
+      // Erst nachdem allTasks geladen sind, können wir die aktiven Tasks laden
       dataManager.readData("activeTasks").then((val) => loadActiveTasks(val));
     }
   }
@@ -202,11 +205,10 @@ class Game {
     if (jsn != null) {
       List<dynamic> tmpList = json.decode(jsn);
       tasks.clear();
-      for (var taskName in tmpList) {
-        Task? found = getTask(taskName as String);
-        if (found != null) {
-          addTask(found, needInit: false);
-        }
+      for (var taskData in tmpList) {
+        // Task direkt aus den gespeicherten Daten (inkl. AnimationState) laden
+        Task restoredTask = Task.fromJson(taskData as Map<String, dynamic>);
+        addTask(restoredTask, needInit: false);
       }
     }
   }
@@ -280,7 +282,10 @@ class Game {
     for (var taskName in allStages[stg].activeTasks) {
       Task? found = getTask(taskName);
       if (found != null) {
-        addTask(found);
+        // Nur hinzufügen, wenn der Task nicht bereits aktiv ist (z.B. durch Laden eines Spielstands)
+        if (!tasks.any((t) => t.name == found.name)) {
+          addTask(found);
+        }
       }
     }
   }
