@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 class Money extends Ressource {
-  Money({double? value})
-      : super(
+  Money({
+    double? value,
+    super.multiplierResourceName,
+    super.multiplierValue,
+  }) : super(
           name: "Money",
           description: "wieviel Geld du hast",
           icon: Icons.attach_money,
@@ -13,11 +16,16 @@ class Money extends Ressource {
         );
 
   factory Money.fromJson(Map<String, dynamic> json) {
-    return Money(value: (json['value'] as num?)?.toDouble());
+    return Money(
+      value: (json['value'] as num?)?.toDouble(),
+      multiplierResourceName: json['multiplierResourceName'] as String?,
+      multiplierValue: (json['multiplierValue'] as num?)?.toDouble(),
+    );
   }
 
   @override
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'name': name, 'value': value};
+    final Map<String, dynamic> data = super.toJson();
+    return data;
   }
 }

@@ -5,7 +5,6 @@ import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
-import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
@@ -13,6 +12,7 @@ import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/starttaks.model.dart';
 import 'package:save_the_world_flutter_app/models/stoptaks.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
+import 'package:save_the_world_flutter_app/models/task_activation.modifier.dart';
 
 class Modifier extends GameItem {
   GameElement? workOnItem;
@@ -46,14 +46,17 @@ class Modifier extends GameItem {
         return StartTask.fromJson(jsn);
       case "MessageModifier":
         return MessageModifier.fromJson(jsn);
-      case "MultiplyRes":
-        return MultiplyRes.fromJson(jsn);
       case "AutoExecuteModifier":
         return AutoExecuteModifier.fromJson(jsn);
       case "SetMax":
         return SetMax.fromJson(jsn);
       case "SetMin":
         return SetMin.fromJson(jsn);
+      // NEW: Task Activation Modifiers
+      case "EnableTask":
+        return EnableTaskModifier.fromJson(jsn);
+      case "DisableTask":
+        return DisableTaskModifier.fromJson(jsn);
       default:
         return Modifier(name: type ?? "Unknown", description: "Generic Modifier");
     }
