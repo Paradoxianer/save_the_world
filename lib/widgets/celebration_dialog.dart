@@ -29,7 +29,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     
-    // Start explosion after a tiny delay for better visual impact
     Future.delayed(const Duration(milliseconds: 200), () {
       if (mounted) _confettiController.play();
     });
@@ -69,27 +68,30 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
               
-              // TROPHY AREA
+              // TROPHY AREA with precise positioning for the gold circle
               SizedBox(
-                height: 140,
+                height: 160,
                 child: Stack(
-                  alignment: Alignment.center,
+                  alignment: Alignment.topCenter,
                   children: <Widget>[
                     Image.asset(
                       'assets/icons/award.png',
-                      height: 130,
+                      height: 150,
                       fit: BoxFit.contain,
                     ),
                     Positioned(
-                      top: 40,
+                      top: 24, // SHIFTED UP: To fit exactly inside the gold circle of award.png
                       child: Text(
                         widget.stage.toString(),
                         style: const TextStyle(
-                          fontSize: 48,
+                          fontSize: 52,
                           fontWeight: FontWeight.w900,
                           color: Colors.black87,
+                          shadows: [
+                            Shadow(color: Colors.white70, offset: Offset(1, 1), blurRadius: 2)
+                          ]
                         ),
                       ),
                     )
@@ -107,7 +109,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
                   letterSpacing: 1,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               
               Text(
                 "Dein Limit: $maxMembers Mitglieder",
@@ -120,9 +122,8 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
                 ),
               ),
               
-              const Divider(height: 32, thickness: 2),
+              const Divider(height: 24, thickness: 2),
               
-              // STATS
               _buildStatsArea(),
             ],
           ),
@@ -143,7 +144,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
           ],
         ),
         
-        // CONFETTI OVERLAY
         Align(
           alignment: Alignment.topCenter,
           child: ConfettiWidget(
