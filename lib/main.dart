@@ -121,66 +121,68 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
+        // CARTOON APPBAR: Bold bottom border
         shape: const Border(
           bottom: BorderSide(color: Colors.black, width: 3),
         ),
-        toolbarHeight: 80, // AMPLE SPACE FOR TITLE
+        toolbarHeight: 70,
         centerTitle: true,
         title: const Text(
           'RETTE DIE WELT', 
-          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 24)
+          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 22)
         ),
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(135.0), // AMPLE SPACE for Cartoon Dashboard
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-                  child: Row(
-                    children: <Widget>[
-                      const StageItem(),
-                      const SizedBox(width: 16),
-                      Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.black.withOpacity(0.1), width: 1.5),
-                              boxShadow: const [
-                                BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 0),
-                              ],
-                            ),
-                            child: RessourceTable(
-                              ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
-                              size: 26.0,
-                              isGlobal: true,
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-                // CLASSIC LARGE TAB BAR
-                const TabBar(
-                  labelColor: Colors.black,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: Colors.orange,
-                  indicatorWeight: 4,
-                  labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
-                  tabs: [
-                    Tab(height: 45, text: "AUFGABEN"),
-                    Tab(height: 45, text: "STUFEN"),
-                  ],
-                ),
-              ],
+            preferredSize: const Size.fromHeight(70.0),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+              child: Row(
+                children: <Widget>[
+                  const StageItem(),
+                  const VerticalDivider(width: 20, thickness: 2, color: Colors.black12, indent: 10, endIndent: 10),
+                  Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(color: Colors.black12, width: 1),
+                        ),
+                        child: RessourceTable(
+                          ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
+                          size: 24.0,
+                          isGlobal: true,
+                        ),
+                      )),
+                ],
+              ),
             )
         ),
       ),
-      body: const TabBarView(
-        children: [
-          TaskList(),
-          LevelList()
-        ],
+      body: Container(
+        color: const Color(0xFFEEEEEE),
+        child: const Column(
+          children: [
+            // TAB SELECTOR
+            TabBar(
+              labelColor: Colors.black,
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.orange,
+              indicatorWeight: 4,
+              tabs: [
+                Tab(child: Text("AUFGABEN", style: TextStyle(fontWeight: FontWeight.w900))),
+                Tab(child: Text("STUFEN", style: TextStyle(fontWeight: FontWeight.w900))),
+              ],
+            ),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  TaskList(),
+                  LevelList()
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
@@ -188,27 +190,24 @@ class _HomeState extends State<Home> {
         ),
         child: BottomAppBar(
             elevation: 0,
-            height: 70,
             color: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   IconButton(
-                      icon: const Icon(Icons.share, color: Colors.black, size: 26),
+                      icon: const Icon(Icons.share, color: Colors.black),
                       onPressed: () => shareScreenshot(context)
                   ),
                   const Spacer(),
                   IconButton(
-                      icon: const Icon(Icons.replay, color: Colors.red, size: 26),
+                      icon: const Icon(Icons.replay, color: Colors.red),
                       onPressed: () {
                         _lastCelebratedStage = 0;
                         Game.getInstance().resetGame();
                       }
                   ),
                   const Spacer(),
-                  // THE DSGVO SHIELD WITH DYNAMIC GREEN CORE
                   IconButton(
                       icon: Stack(
                         alignment: Alignment.center,
@@ -227,7 +226,7 @@ class _HomeState extends State<Home> {
                       }
                   ),
                   IconButton(
-                      icon: const Icon(Icons.info_outline, color: Colors.black, size: 30),
+                      icon: const Icon(Icons.info_outline, color: Colors.black),
                       onPressed: () => showAppAboutDialog(context)
                   )
                 ]
