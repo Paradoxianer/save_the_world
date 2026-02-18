@@ -76,13 +76,20 @@ class _HomeState extends State<Home> {
     game.addStageListener(_onStageChanged);
     Game.notifier.addListener(_rebuild);
     
-    // Trigger Onboarding via the new Controller
+    // Auto-start onboarding on first run
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      OnboardingController.startSequence(
-        context, 
-        onDsgvoUpdated: (accepted) => setState(() => _dsgvoAccepted = accepted)
-      );
+      _triggerOnboarding(force: false);
     });
+  }
+
+  Future<void> _triggerOnboarding({bool force = false}) async {
+    await OnboardingController.startSequence(
+      context, 
+      force: force,
+      onDsgvoUpdated: (accepted) {
+        if (mounted) setState(() => _dsgvoAccepted = accepted);
+      }
+    );
   }
 
   @override
@@ -213,13 +220,7 @@ class _HomeState extends State<Home> {
                           const Icon(Icons.shield_outlined, color: Colors.black, size: 28),
                         ],
                       ),
-                      onPressed: () async {
-                        // Re-trigger onboarding sequence (useful for resetting/checking)
-                        OnboardingController.startSequence(
-                          context, 
-                          onDsgvoUpdated: (accepted) => setState(() => _dsgvoAccepted = accepted)
-                        );
-                      }
+                      onPressed: () => _triggerOnboarding(force: true), // FIXED: Now forces the dialog to show
                   ),
                   IconButton(
                       icon: const Icon(Icons.info_outline, color: Colors.black),
