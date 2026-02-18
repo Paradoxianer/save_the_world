@@ -44,6 +44,10 @@ class Game {
   
   Duration? lastStageDuration;
   int? lastStageClicks;
+  int? lastStageScore;
+
+  // Persistable scores per stage
+  Map<int, int> stageHighscores = {};
 
   late List<Task> allTasks;
   late List<String> randomTasks;
@@ -102,7 +106,10 @@ class Game {
 
   void recordClick() {
     _stageClicks++;
+    notifier.notifyListeners(); // Ensure statistics update
   }
+
+  int get stageClicks => _stageClicks;
 
   void initRes() {
     ressources[Faith().name] = Faith(value: 100.0);
@@ -125,20 +132,28 @@ class Game {
     _accumulatedStageTime = Duration.zero;
     _lastStartTime = DateTime.now();
     _stageClicks = 0;
+    stageHighscores.clear();
     saveState();
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
   }
 
-  /// DEBUG ONLY: Jumps to a specific stage and initializes all tasks from previous stages
-  void jumpToStage(int targetStage) {
-    debugPrint("[DEBUG] Jumping to stage $targetStage...");
+  int calculateScore(Duration duration, int clicks, int stgLevel) {
+    if (duration.inSeconds == 0) return 0;
     
-    // 1. Reset game basics
+    // Basisscore: 1000 Punkte
+    // Abzüge für Zeit (Level skaliert mit)
+    // Abzüge für unnötige Klicks
+    double timeFactor = (stgLevel + 1) * 60 / duration.inSeconds;
+    double clickFactor = (stgLevel + 1) * 10 / max(1, clicks);
+    
+    int score = (500 * timeFactor + 500 * clickFactor).toInt();
+    return min(1000, score);
+  }
+
+  void jumpToStage(int targetStage) {
     tasks.clear();
     initRes();
-    
-    // 2. Set stage and update resources
     stage = targetStage;
     ressources["Stage"]?.setValue(stage.toDouble());
     
@@ -149,7 +164,6 @@ class Game {
       ressources[Member().name]?.max = thresholds[targetStage].toDouble();
     }
 
-    // 3. Catch up: Run initStage for ALL stages up to target to collect all permanent tasks
     for (int i = 0; i <= targetStage; i++) {
       initStage(i);
     }
@@ -166,9 +180,7 @@ class Game {
   factory Game.fromJson(Map<String, dynamic> json) {
     var tList = json['tasks'] != null ? jsonDecode(json['tasks']) as List : [];
     var atList = json['alltasks'] != null ? jsonDecode(json['alltasks']) as List : [];
-    List<Task> tksList = tList.map((i) => Task.fromJson(i)).toList();
-    List<Task> aTasksList = atList.map((i) => Task.fromJson(i)).toList();
-    return Game(tasksList: tksList, allTasksList: aTasksList, stage: json['stage'] as int?);
+    return Game(tasksList: tList.map((i) => Task.fromJson(i)).toList(), allTasksList: atList.map((i) => Task.fromJson(i)).toList(), stage: json['stage'] as int?);
   }
 
   Map<String, dynamic> toJson() {
@@ -178,6 +190,7 @@ class Game {
       'stage': stage,
       'accumulatedStageTime': _accumulatedStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
+      'stageHighscores': json.encode(stageHighscores),
     };
   }
 
@@ -220,10 +233,6 @@ class Game {
     stagenNotifier.addListener(listener);
   }
 
-  List<Task> availableTasks() {
-    return allStages[stage].allTasks;
-  }
-
   void saveState() {
     dataManager.writeJson("gameRes", json.encode(ressources));
     dataManager.writeJson("activeTasks", json.encode(tasks)); 
@@ -232,7 +241,7 @@ class Game {
       'stage': stage,
       'accumulatedStageTime': currentActiveStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
-      'saveTime': DateTime.now().toIso8601String(),
+      'stageHighscores': stageHighscores,
     }));
   }
 
@@ -283,6 +292,10 @@ class Game {
         if (gameData['accumulatedStageTime'] != null) {
           _accumulatedStageTime = Duration(milliseconds: gameData['accumulatedStageTime']);
         }
+        if (gameData['stageHighscores'] != null) {
+          final Map<String, dynamic> scores = gameData['stageHighscores'];
+          stageHighscores = scores.map((k, v) => MapEntry(int.parse(k), v as int));
+        }
         _lastStartTime = DateTime.now();
       } catch (e) {
         stage = int.tryParse(jsn) ?? 0;
@@ -300,7 +313,9 @@ class Game {
       saveCalled = elapse;
     }
     if (d2 > randDuration) {
-      int rand = Random().nextInt(5);
+      // BALANCING: Reduce crisis probability in Stage 1
+      int prob = (stage == 1) ? 15 : 5; 
+      int rand = Random().nextInt(prob);
       if (rand == 1) {
         List<String> currentRandomTasks = allStages[stage].randomTasks;
         if (currentRandomTasks.isNotEmpty) {
@@ -332,6 +347,13 @@ class Game {
     if (found != null && found > stage) {
       lastStageDuration = currentActiveStageTime;
       lastStageClicks = _stageClicks;
+      lastStageScore = calculateScore(lastStageDuration!, lastStageClicks!, stage);
+      
+      // Save highscore if better
+      if (lastStageScore! > (stageHighscores[stage] ?? 0)) {
+        stageHighscores[stage] = lastStageScore!;
+      }
+
       _accumulatedStageTime = Duration.zero;
       _lastStartTime = DateTime.now();
       _stageClicks = 0;
