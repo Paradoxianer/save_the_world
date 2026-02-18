@@ -146,6 +146,7 @@ class _HomeState extends State<Home> {
                         child: RessourceTable(
                           ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
                           size: 24.0,
+                          isGlobal: true, // FIXED: Re-enabled interactivity for AppBar
                         ),
                       )),
                 ],
@@ -202,7 +203,6 @@ class _HomeState extends State<Home> {
                       }
                   ),
                   const Spacer(),
-                  // DSGVO Icon with dynamic color: Green if accepted, Red if not
                   IconButton(
                       icon: Stack(
                         alignment: Alignment.center,
@@ -216,7 +216,7 @@ class _HomeState extends State<Home> {
                         if (result == ConfirmAGB.ACCEPT) {
                           await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "true");
                           _checkDSGVO();
-                        } else if (result == ConfirmAGB.CANCEL) {
+                        } else {
                           await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "false");
                           _checkDSGVO();
                         }
