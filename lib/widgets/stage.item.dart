@@ -29,26 +29,27 @@ class StageItemState extends State<StageItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.black, width: 2),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.black.withOpacity(0.15), width: 1.5),
         boxShadow: const [
-          // Inner shadow effect to make it look "inset" (eingelassen)
-          BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 0, spreadRadius: 0),
+          // Matching the inset bevel effect of RessourceItem
+          BoxShadow(color: Colors.black12, offset: Offset(1.5, 1.5), blurRadius: 0, spreadRadius: 0),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Stack(
+            alignment: Alignment.center,
             children: [
-              // Shadow for the Icon
+              // Icon Shadow for depth
               Positioned(
-                top: 2,
-                left: 2,
-                child: Icon(Icons.account_balance, size: widget.size, color: Colors.black26),
+                top: 1.5,
+                left: 1.5,
+                child: Icon(Icons.account_balance, size: widget.size, color: Colors.black12),
               ),
               Icon(
                 Icons.account_balance, 
@@ -57,12 +58,14 @@ class StageItemState extends State<StageItem> {
               ),
             ],
           ),
+          const SizedBox(height: 2),
           Text(
             "LVL ${game.stage}",
             style: TextStyle(
               fontSize: widget.size * 0.45,
               fontWeight: FontWeight.w900,
-              color: Colors.black,
+              color: Colors.black87,
+              letterSpacing: 0.5,
               shadows: const [
                 Shadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 1),
               ],
