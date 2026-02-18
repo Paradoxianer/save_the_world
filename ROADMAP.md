@@ -1,39 +1,27 @@
 # 🗺 Save the World - Strategische Roadmap
 
-Diese Roadmap beschreibt den Weg vom aktuellen Prototyp zur globalen Version (R2). Sie basiert auf den Wachstums-Schwellen der `CHURCH_GROWTH_LOGIC.md`.
-
 ## 🛠 Phase 1: Der Weg zur Beta (Erledigt)
-*Ziel: Ein stabiles, spielbares Tutorial und funktionierende Kern-Mechaniken.*
+- [x] **Migration & Stabilität:** Flutter 3 & Null Safety.
+- [x] **Modularisierung:** 33 Stages in eigene Module ausgelagert.
+- [x] **Web-Enablement:** Stabiler DataManager für Browser-Support.
 
-- [x] **Migration & Stabilität:** Umstellung auf Flutter 3 & Null Safety.
-- [x] **Modularisierung (#23):** Auslagerung der 32 Stages in eigene Daten-Module.
-- [x] **Apostolisches Onboarding (#22):** Überarbeitung von Stage 0.
-- [x] **Gatekeeper-System (#33, #30):** Implementierung aktiver Stufenaufstiege via SetMax-Modifier.
-- [x] **UI-Synchronisation (#26):** Echtzeit-Updates der Ressourcen-Kosten im Task-UI.
-- [x] **Web-Enablement (#37):** Abstrahierter DataManager mit SharedPreferences-Support.
+## 🚀 Phase 2: Game Logic & Juice (Erledigt)
+- [x] **Visual Juice:** Wavy Progress, Floating Numbers, Haptic Bounce.
+- [x] **Debug Tools:** Stage-Jump Logik für Testing integriert.
+- [x] **Active Time Tracking:** Präzise Zeitmessung implementiert.
+- [x] **Balancing:** Erste Entschärfung der Krisen in Stage 1.
 
-## 🚀 Phase 2: Beta-Release (Erledigt)
-*Ziel: Alle 33 Stufen spielbar und motivierend.*
+## 🏁 Phase 3: Release 1 (R1 - Polish & Experience)
+*Ziel: Ein rundes Produkt für den ersten Release.*
 
-- [x] **Celebration UI (#27):** Überarbeitung des Glückwunsch-Dialogs mit Statistiken (Zeit/Klicks).
-- [x] **Adaptive UI (#28):** Automatische robuste Zahlen-Formatierung via NumberFormatter.
-- [x] **Content-Komplettierung (#15):** Alle 33 Stufen finalisiert und ausbalanciert.
-- [x] **Persistenz-Check (#5):** Vollständige Serialisierung laufender Tasks inkl. Animationsfortschritt.
-- [x] **Active Time Tracking:** Präzise Zeitmessung nur bei aktiver App-Nutzung.
-
-## 🏁 Phase 3: Release 1 (R1 - Polish & Sound)
-*Ziel: Ein fertiges Produkt für App-Stores.*
-
-- [x] **Visual "Juice" (#6):** Wavy Progress, Floating Numbers und Haptic Feedback (Erledigt).
-- [x] **Hall of Fame:** Interaktive Stufenübersicht mit Rückblick-Funktion (Erledigt).
-- [ ] **Quality Assurance & Debugging:** Implementierung von Test-Tools und Stage-Jumps für effizientes Balancing.
-- [ ] **Audio-Feedback:** Implementierung von Soundeffekten für Erfolg und Krise.
-- [ ] **Internationalisierung (#38):** Umstellung auf ARB-Dateien und lokalisierte Zahlenformate.
-- [ ] **About & Credits (#2):** Integration der Helfer-Credits.
+- [x] **Visual Polish:** Cartoon-AppBar und stylische Detail-Dialoge.
+- [ ] **Critical Fixes:** Stage-Ressource Update-Bug nach dem Laden beheben.
+- [ ] **Lokalisiertes Format:** NumberFormatter auf deutsche Suffixe (Mrd) umstellen.
+- [ ] **Immersive Onboarding:** Automatischer DSGVO-Start & Story-Intro.
+- [ ] **Visual Celebration:** Konfetti-Effekt beim Stufenaufstieg.
+- [ ] **Enhanced Level Cards:** Anzeige von Zeit, Klicks und Score in der Hall of Fame.
+- [ ] **Comic About Dialog:** Redesign inkl. dynamischer App-Version.
 
 ## 🌎 Phase 4: Release 2 (R2 - Ecosystem)
-*Ziel: Globale Vernetzung.*
-
-- [ ] **Score & Trophy System (#39):** Bewertung der Stage-Performance (Bronze/Silber/Gold).
-- [ ] **Firebase Integration (#36):** Cloud-Saves und Synchronisation.
-- [ ] **Global Scoreboard (#35):** Internationales Ranking.
+- [ ] **Trophy System:** Bronze/Silber/Gold Bewertung pro Stage.
+- [ ] **Firebase Integration:** Cloud-Saves & Global Scoreboard.

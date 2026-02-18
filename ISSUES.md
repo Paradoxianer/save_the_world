@@ -1,13 +1,6 @@
 ﻿# 📋 GitHub Issues Roadmap
 _Sortiert nach Priorität (High > Medium > Low)_
 
-## 🔥 #41: UX: Implement Immersive Onboarding & Story Intro [ui, content, prio: 1-high]
----
-**Status / Description:**
-Show mandatory DSGVO dialog on first start, followed by a short comic-style story intro explaining the game goal (Grow members!).
-
----
-
 ## 🔥 #22: UX & Balancing: Der Ruf (Tutorial-Onboarding) [balancing, content, prio: 1-high]
 ---
 **Status / Description:**
@@ -24,10 +17,31 @@ Das Onboarding muss den geistlichen Dienst widerspiegeln.
 
 ---
 
-## 🔥 #43: Balancing: Tone down crisis frequency in Stage 1 [balancing, prio: 1-high]
+## 🔥 #41: UX: Implement Immersive Onboarding & Story Intro [ui, content, prio: 1-high]
 ---
 **Status / Description:**
-Catastrophes in Stage 1 occur too frequently, causing Wisdom to drop into negative values too fast. Needs cooldown adjustment.
+Show mandatory DSGVO on first start. Add a comic-style intro dialog explaining the goal: 'Grow your members to save the world!'
+
+---
+
+## 🔥 🔴 #45: Bug: Stage resource icon in AppBar stays at 0 after loading [bug, prio: 1-high]
+---
+**Status / Description:**
+The stage resource item does not update its visual value when a savegame is loaded, even though the internal stage index is correct.
+
+---
+
+## 🔥 🔴 #47: Bug: Stage resource icon in AppBar stays at 0 after loading [bug, prio: 1-high]
+---
+**Status / Description:**
+The stage resource item does not update its visual value when a savegame is loaded, even though the internal stage index is correct.
+
+---
+
+## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
+---
+**Status / Description:**
+Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
 
 ---
 
@@ -42,6 +56,13 @@ Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
 
 ---
 
+## ⚡ #8: UX: Tab-Navigation vervollständigen [ui, prio: 2-medium]
+---
+**Status / Description:**
+Zwei Tabs (TaskList & LevelList) sind aktiv. Prüfung, ob weitere Ansichten für die Beta nötig sind.
+
+---
+
 ## ⚡ #24: Logic: Jüngerschafts- & Wachstumslogik (nach Samy El-Daour) [documentation, balancing, prio: 2-medium]
 ---
 **Status / Description:**
@@ -52,36 +73,24 @@ Jüngerschafts-Logik in Stage 4 implementiert:
 
 ---
 
-## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
+## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
 ---
 **Status / Description:**
-Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
+Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
 
 ---
 
-## ⚡ #8: UX: Tab-Navigation vervollständigen [ui, prio: 2-medium]
----
-**Status / Description:**
-Zwei Tabs (TaskList & LevelList) sind aktiv. Prüfung, ob weitere Ansichten für die Beta nötig sind.
-
----
-
-## ⚡ #21: UI: Zahlen-Sichtbarkeit & Layout-Verschiebung fixen [ui, prio: 2-medium]
+## ⚡ #46: Feature: German localized NumberFormatter (B -> Mrd) [ui, prio: 2-medium]
 ---
 **Status / Description:**
-Im Web-Build sind die Ressourcen-Zahlen schwer lesbar und das Layout wirkt verschoben. 
-
-**To-Do:**
-- Spaltenbreite in `RessourceTable` dynamisch anpassen.
-- Kontrast und Schriftgröße der Ressourcen-Werte prüfen.
-- Alignment in der AppBar für Web optimieren.
+Adjust NumberFormatter suffixes to match German naming conventions (Mio, Mrd instead of M, B).
 
 ---
 
-## ⚡ ✨ #40: Feature: Debug Tools & Stage Jump Logic [enhancement, prio: 2-medium]
+## ⚡ #48: Feature: German localized NumberFormatter (B -> Mrd) [ui, prio: 2-medium]
 ---
 **Status / Description:**
-Implement debug-only tools to jump between stages for testing and balancing. Needs a logic to correctly initialize all prerequisite tasks from previous stages.
+Adjust NumberFormatter suffixes to match German naming conventions (Mio, Mrd instead of M, B).
 
 ---
 
@@ -99,16 +108,24 @@ Implement confetti/fireworks effects on level up. Add a scoring algorithm (Time 
 
 ---
 
-## ⚡ #35: Feature: Web Compatibility & Optimization [ui, refactor, prio: 2-medium]
+## ☕ #7: Balancing: Task-Werte [balancing, prio: 3-low]
 ---
 **Status / Description:**
-Prüfung und Sicherstellung der volle Funktionalität im Browser.
+Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
 
-**To-Do:**
-- LocalStorage vs. FileSystem (DataManager) für Web anpassen.
-- Responsive Layout-Checks (AppBar und Listen).
-- Performance-Optimierung für WASM/Skia Renderer.
-- Sicherstellen, dass Share-Funktionen im Web korrekt gehandhabt werden (share_plus Fallbacks).
+---
+
+## ☕ #2: Assets: Icon Credits integrieren [documentation, prio: 3-low]
+---
+**Status / Description:**
+Credits aus globals.dart in ein About-Menü überführen.
+
+---
+
+## ☕ #9: Code Cleanup: Mock-Data verschieben [refactor, prio: 3-low]
+---
+**Status / Description:**
+testTasks aus der Produktionslogik in eine dedizierte Mock-Klasse verschieben.
 
 ---
 
@@ -120,27 +137,6 @@ Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
 **Konsequenz:**
 - Bei Unterschreitung der Mitgliederschwelle gehen Aufgaben der höheren Stufe wieder verloren.
 - Markiert als Low Priority Enhancement.
-
----
-
-## ☕ #2: Assets: Icon Credits integrieren [documentation, prio: 3-low]
----
-**Status / Description:**
-Credits aus globals.dart in ein About-Menü überführen.
-
----
-
-## ☕ #7: Balancing: Task-Werte [balancing, prio: 3-low]
----
-**Status / Description:**
-Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
-
----
-
-## ☕ #9: Code Cleanup: Mock-Data verschieben [refactor, prio: 3-low]
----
-**Status / Description:**
-testTasks aus der Produktionslogik in eine dedizierte Mock-Klasse verschieben.
 
 ---
 
