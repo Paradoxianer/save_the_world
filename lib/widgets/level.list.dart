@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart'; // REQUIRED for kDebugMode
+import 'package:flutter/foundation.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
@@ -27,10 +27,12 @@ class LevelList extends StatelessWidget {
           final bool isCurrent = index == game.stage;
           final bool isPassed = index < game.stage;
           final bool isFuture = index > game.stage;
+          
+          // Get saved highscore for this stage
+          final int? highscore = game.stageHighscores[index];
 
           return GestureDetector(
             onTap: (isPassed || isCurrent) ? () => _showLevelDetails(context, index, stageName) : null,
-            // DEBUG CHEAT: Long press to jump to stage (only in Debug Mode)
             onLongPress: kDebugMode ? () => _confirmStageJump(context, index, stageName) : null,
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
@@ -41,15 +43,15 @@ class LevelList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
                     color: isCurrent ? Colors.orange[800]! : (kDebugMode ? Colors.blue.withOpacity(0.3) : Colors.black87),
-                    width: isCurrent ? 3 : 1.5,
+                    width: 1.5,
                   ),
                 ),
                 color: isPassed ? Colors.green[50] : (isCurrent ? Colors.white : Colors.grey[200]),
-                child: Stack(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
                           Container(
                             width: 45,
@@ -62,11 +64,7 @@ class LevelList extends StatelessWidget {
                             child: Center(
                               child: Text(
                                 index.toString(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 18,
-                                ),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
                               ),
                             ),
                           ),
@@ -87,11 +85,7 @@ class LevelList extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   "Limit: ${NumberFormatter.format(memberThreshold.toDouble())} Mitglieder",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: isFuture ? Colors.grey[500] : Colors.black54,
-                                  ),
+                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black54),
                                 ),
                               ],
                             ),
@@ -103,22 +97,28 @@ class LevelList extends StatelessWidget {
                           ),
                         ],
                       ),
-                    ),
-                    // DEBUG VISUAL HINT
-                    if (kDebugMode)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: const BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8)),
+                      
+                      // STATISTICS AREA (Only for passed or current stages)
+                      if (highscore != null && (isPassed || isCurrent))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _miniStat(Icons.emoji_events, "SCORE: $highscore", Colors.orange[700]!),
+                                // Note: We could store and show time/clicks here too if we extend highscores map
+                              ],
+                            ),
                           ),
-                          child: const Text("DEBUG", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
                         ),
-                      ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -128,21 +128,28 @@ class LevelList extends StatelessWidget {
     );
   }
 
+  Widget _miniStat(IconData icon, String label, Color color) {
+    return Row(
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: color)),
+      ],
+    );
+  }
+
   void _confirmStageJump(BuildContext context, int index, String name) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("DEBUG: Stage Jump"),
-        content: Text("Möchtest du wirklich direkt zu Stufe $index ($name) springen? Alle permanenten Tasks der Vorstufen werden aktiviert."),
+        content: Text("Möchtest du direkt zu Stufe $index ($name) springen?"),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("ABBRECHEN")),
           ElevatedButton(
             onPressed: () {
               Game.getInstance().jumpToStage(index);
               Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Jump zu Stufe $index erfolgreich!")),
-              );
             }, 
             child: const Text("JUMP!")
           ),
