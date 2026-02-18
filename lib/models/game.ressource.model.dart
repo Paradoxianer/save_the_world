@@ -46,8 +46,10 @@ class Game {
   int? lastStageClicks;
   int? lastStageScore;
 
-  // Persistable scores per stage
+  // Persistence for all stage statistics
   Map<int, int> stageHighscores = {};
+  Map<int, int> stageBestTimesMs = {};
+  Map<int, int> stageBestClicks = {};
 
   late List<Task> allTasks;
   late List<String> randomTasks;
@@ -106,7 +108,7 @@ class Game {
 
   void recordClick() {
     _stageClicks++;
-    notifier.notifyListeners(); // Ensure statistics update
+    notifier.notifyListeners();
   }
 
   int get stageClicks => _stageClicks;
@@ -133,6 +135,8 @@ class Game {
     _lastStartTime = DateTime.now();
     _stageClicks = 0;
     stageHighscores.clear();
+    stageBestTimesMs.clear();
+    stageBestClicks.clear();
     saveState();
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
@@ -140,13 +144,9 @@ class Game {
 
   int calculateScore(Duration duration, int clicks, int stgLevel) {
     if (duration.inSeconds == 0) return 0;
-    
-    // Basisscore: 1000 Punkte
-    // Abzüge für Zeit (Level skaliert mit)
-    // Abzüge für unnötige Klicks
+    // Base score calculation logic
     double timeFactor = (stgLevel + 1) * 60 / duration.inSeconds;
     double clickFactor = (stgLevel + 1) * 10 / max(1, clicks);
-    
     int score = (500 * timeFactor + 500 * clickFactor).toInt();
     return min(1000, score);
   }
@@ -180,7 +180,11 @@ class Game {
   factory Game.fromJson(Map<String, dynamic> json) {
     var tList = json['tasks'] != null ? jsonDecode(json['tasks']) as List : [];
     var atList = json['alltasks'] != null ? jsonDecode(json['alltasks']) as List : [];
-    return Game(tasksList: tList.map((i) => Task.fromJson(i)).toList(), allTasksList: atList.map((i) => Task.fromJson(i)).toList(), stage: json['stage'] as int?);
+    return Game(
+      tasksList: tksList = tList.map((i) => Task.fromJson(i)).toList(), 
+      allTasksList: aTasksList = atList.map((i) => Task.fromJson(i)).toList(), 
+      stage: json['stage'] as int?
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -191,6 +195,8 @@ class Game {
       'accumulatedStageTime': _accumulatedStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
       'stageHighscores': json.encode(stageHighscores),
+      'stageBestTimesMs': json.encode(stageBestTimesMs),
+      'stageBestClicks': json.encode(stageBestClicks),
     };
   }
 
@@ -242,6 +248,8 @@ class Game {
       'accumulatedStageTime': currentActiveStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
       'stageHighscores': stageHighscores,
+      'stageBestTimesMs': stageBestTimesMs,
+      'stageBestClicks': stageBestClicks,
     }));
   }
 
@@ -296,6 +304,14 @@ class Game {
           final Map<String, dynamic> scores = gameData['stageHighscores'];
           stageHighscores = scores.map((k, v) => MapEntry(int.parse(k), v as int));
         }
+        if (gameData['stageBestTimesMs'] != null) {
+          final Map<String, dynamic> times = gameData['stageBestTimesMs'];
+          stageBestTimesMs = times.map((k, v) => MapEntry(int.parse(k), v as int));
+        }
+        if (gameData['stageBestClicks'] != null) {
+          final Map<String, dynamic> clicks = gameData['stageBestClicks'];
+          stageBestClicks = clicks.map((k, v) => MapEntry(int.parse(k), v as int));
+        }
         _lastStartTime = DateTime.now();
       } catch (e) {
         stage = int.tryParse(jsn) ?? 0;
@@ -313,7 +329,6 @@ class Game {
       saveCalled = elapse;
     }
     if (d2 > randDuration) {
-      // BALANCING: Reduce crisis probability in Stage 1
       int prob = (stage == 1) ? 15 : 5; 
       int rand = Random().nextInt(prob);
       if (rand == 1) {
@@ -349,9 +364,11 @@ class Game {
       lastStageClicks = _stageClicks;
       lastStageScore = calculateScore(lastStageDuration!, lastStageClicks!, stage);
       
-      // Save highscore if better
+      // Update highscores and best stats
       if (lastStageScore! > (stageHighscores[stage] ?? 0)) {
         stageHighscores[stage] = lastStageScore!;
+        stageBestTimesMs[stage] = lastStageDuration!.inMilliseconds;
+        stageBestClicks[stage] = lastStageClicks!;
       }
 
       _accumulatedStageTime = Duration.zero;
