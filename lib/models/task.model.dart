@@ -10,6 +10,7 @@ class Task extends GameElement {
   double duration;
   double timeToSolve;
   bool isMilestone;
+  bool enabled; // NEW: Activation system (#54)
 
   List<Ressource> cost;
   List<Ressource> award;
@@ -26,6 +27,7 @@ class Task extends GameElement {
     this.duration = 5000.0,
     this.timeToSolve = double.infinity,
     this.isMilestone = false,
+    this.enabled = true, // Default enabled
     List<Modifier>? modifier,
     this.missed = const [],
     this.online = const [],
@@ -73,6 +75,7 @@ class Task extends GameElement {
       duration: (jsn['duration'] as num?)?.toDouble() ?? 5000.0,
       timeToSolve: jsn['timeToSolve'] != null ? (double.tryParse(jsn['timeToSolve'].toString()) ?? double.infinity) : double.infinity,
       isMilestone: jsn['isMilestone'] as bool? ?? false,
+      enabled: jsn['enabled'] as bool? ?? true,
       cost: deserializeResources(jsn['cost']),
       award: deserializeResources(jsn['award']),
       modifier: deserializeModifiers(jsn['modifier']),
@@ -91,6 +94,7 @@ class Task extends GameElement {
       'duration': duration,
       'timeToSolve': timeToSolve.toString(),
       'isMilestone': isMilestone,
+      'enabled': enabled,
       'cost': json.encode(cost),
       'award': json.encode(award),
       'missed': json.encode(missed),
@@ -112,15 +116,15 @@ class Task extends GameElement {
   }
 
   void miss() {
-    debugPrint("[MODEL:Task:$name] MISSED!");
     for (var m in missed) {
       m.modify();
     }
   }
 
   void start() {
+    if (!enabled) return; // Logic check: Don't start if disabled
+
     if (controller.status != AnimationStatus.forward) {
-      debugPrint("[MODEL:Task:$name] STARTING...");
       controller.stop();
       controller.reset();
       controller.duration = Duration(milliseconds: duration.toInt());
@@ -138,16 +142,14 @@ class Task extends GameElement {
   }
 
   void finished() {
-    debugPrint("[MODEL:Task:$name] COMPLETED! Distributing awards...");
-    
-    modify();
+    // CRITICAL: Notify UI about completion immediately BEFORE modifiers run
+    // to ensure SnackBar messages are triggered without delay
+    modify(); 
     
     for (var a in award) {
       Game.ressources[a.name]?.add(a);
     }
     
-    // The controller is reset here. This changes status to dismissed.
-    debugPrint("[MODEL:Task:$name] Resetting controller now.");
     controller.reset();
   }
 
