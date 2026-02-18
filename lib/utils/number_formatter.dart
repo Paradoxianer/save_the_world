@@ -1,6 +1,6 @@
 class NumberFormatter {
-  /// Formats a number into a compact, human-readable string (e.g., 1.2K, 5.5M).
-  /// Robustly handles Infinity and NaN cases to prevent app crashes.
+  /// Formatiert eine Zahl in eine kompakte, lesbare Zeichenfolge (z.B. 1.2 Tsd, 5.5 Mio, 2.0 Mrd).
+  /// Handhabt Unendlichkeit und NaN-Fälle robust, um App-Abstürze zu verhindern.
   static String format(double number) {
     if (number.isNaN) return "NaN";
     if (number.isInfinite) return "∞";
@@ -9,14 +9,12 @@ class NumberFormatter {
     final String sign = number < 0 ? "-" : "";
 
     if (absNumber >= 1000000000) {
-      return "$sign${(absNumber / 1000000000).toStringAsFixed(1)}B";
+      return "$sign${(absNumber / 1000000000).toStringAsFixed(1)} Mrd";
     } else if (absNumber >= 1000000) {
-      return "$sign${(absNumber / 1000000).toStringAsFixed(1)}M";
+      return "$sign${(absNumber / 1000000).toStringAsFixed(1)} Mio";
     } else if (absNumber >= 1000) {
-      return "$sign${(absNumber / 1000).toStringAsFixed(1)}K";
+      return "$sign${(absNumber / 1000).toStringAsFixed(1)} Tsd";
     } else {
-      // For small numbers, check if it's effectively a whole number
-      // but do it safely without throwing exceptions on edge cases.
       if (absNumber == absNumber.truncateToDouble()) {
         return "$sign${absNumber.toInt().toString()}";
       }
