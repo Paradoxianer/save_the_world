@@ -46,7 +46,6 @@ class Game {
   int? lastStageClicks;
   int? lastStageScore;
 
-  // Persistence for all stage statistics
   Map<int, int> stageHighscores = {};
   Map<int, int> stageBestTimesMs = {};
   Map<int, int> stageBestClicks = {};
@@ -313,13 +312,17 @@ class Game {
           stageBestClicks = clicks.map((k, v) => MapEntry(int.parse(k), v as int));
         }
         
-        // CRITICAL FIX: Ensure the Stage Ressource is updated with the loaded value
+        // BUGFIX #47: Ensure the Stage Ressource and UI are updated after load
         ressources["Stage"]?.setValue(stage.toDouble());
+        stagenNotifier.notifyListeners();
+        notifier.notifyListeners();
         
         _lastStartTime = DateTime.now();
       } catch (e) {
         stage = int.tryParse(jsn) ?? 0;
         ressources["Stage"]?.setValue(stage.toDouble());
+        stagenNotifier.notifyListeners();
+        notifier.notifyListeners();
         _lastStartTime = DateTime.now();
       }
     }
