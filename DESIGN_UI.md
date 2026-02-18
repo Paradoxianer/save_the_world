@@ -1,34 +1,32 @@
 # 🎨 Design & UI/UX Guide - Save the World
 
-## 🌟 Vision: "The Living Cartoon World"
-Ein haptisches, farbenfrohes Comic-Erlebnis. Jedes UI-Element atmet, reagiert und fühlt sich wie ein Teil einer interaktiven Welt an.
+## 🌟 Vision: "The Vibrant Living Cartoon"
+Das Spiel muss sich wie ein High-Energy Comic anfühlen. Weg mit der Business-Nüchternheit, her mit grellen Farben, Tiefe und einer lebendigen Umgebung.
 
 ## 🛠 Visuelle Prinzipien
-* **Cartoon Aesthetics:** Dicke schwarze Konturen (Border), kräftige Farben, "Bouncy" Animationen.
-* **Liquid Progress:** Fortschritt fühlt sich organisch an (Wellen-Füllung).
-* **Information Hierarchy:** Wichtige Dinge (Milestones) sind Gold und glänzen.
+* **Cartoon Punch:** Dicke schwarze Outlines (2.0+), kräftige Primärfarben, dynamische Schatten.
+* **Environment Immersion:** Der Spieler befindet sich nicht in einer Liste, sondern an einem Ort (Stage Backgrounds).
+* **High Contrast:** Wichtige Gameplay-Elemente (Tasks, Ressourcen) müssen vor dem Hintergrund "poppen".
 
-## 🚀 "Juice" Features & Roadmap
+## 🚀 "Juice" & Environment Roadmap
 
-### 1. Wavy Liquid Progress (Enhanced)
-* **Standard:** Blau/Grün von Links nach Rechts.
-* **Krise:** Rot von Rechts nach Links.
-* **Milestones (Gold):** Goldene Welle für "Meilenstein"-Aufgaben.
-* **Visual:** Trennkante ist eine Bezier-Welle.
+### 1. Stage Environment System (High Priority)
+* **Konzept:** Jede Stage hat ein individuelles Background-Asset.
+* **Visual:** Sanfter Cross-Fade beim Stufenaufstieg. Die Umgebung wächst mit der Gemeinde mit.
+* **Asset-Typ:** Cartoon-Illustrationen (z.B. SVG oder hochauflösende PNGs).
 
-### 2. Reactive Floating Feedback
-* Jede Änderung an Ressourcen triggert eine schwebende Zahl direkt am AppBar-Icon.
-* Synchronisierte Icons und farbliche Kodierung (Rot/Grün).
+### 2. Vibrant UI Panels
+* **Main Background:** Statt F5F5F5 nutzen wir lebendige Themenfarben pro Stage-Gruppe (z.B. Tutorial = Warmes Gelb, Wachstum = Frisches Grün).
+* **Panel Texture:** Einsatz von dezenten Mustern (z.B. Comic-Dots/Halftone) auf Dialog-Hintergründen.
 
-### 3. Cartoon Interface Components
-* **AppBar:** Fette Outlines, Schatten-Effekte, weg vom flachen Material-Look.
-* **Dialoge/Info-Boxen:** Task-Details werden in "Comic-Panels" angezeigt (starke Ränder, handgezeichneter Touch).
-* **Resource Tooltips:** Klick auf Ressourcen in der AppBar zeigt Details (Min/Max, Info) in einem Cartoon-Popup.
+### 3. Wavy Liquid Progress & Feedback (Erledigt)
+* Bi-direktionale Wellen-Füllung (Gold für Milestones).
+* Reaktives Floating Feedback an allen Ressourcen.
 
-### 4. Stage-Atmosphäre
-* Jede Stage nutzt ein spezifisches Cartoon-Hintergrundbild (Cross-Fade beim Wechsel).
+### 4. Interactive Hall of Fame (Erledigt)
+* Stilisierte Level-Übersicht mit Rückblick-Funktion.
 
-## 📐 Technische Roadmap
-1. **Milestone Styling:** Update `TaskItem` für goldene Wellen.
-2. **Resource Detail Dialog:** Implementierung der Klick-Logik für AppBar-Ressourcen.
-3. **AppBar & Info Polishing:** Styling-Update für alle statischen UI-Container.
+## 📐 Technische Roadmap (Next)
+1. **Background-Controller:** Implementierung eines Widgets, das basierend auf `game.stage` den Hintergrund wechselt.
+2. **Stage Model Update:** Hinzufügen von `String backgroundAsset` zu jeder Stage-Definition.
+3. **Color Theme Sync:** Dynamische Anpassung der Scaffold-Farbe an die aktuelle Stufe.
