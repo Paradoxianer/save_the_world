@@ -13,14 +13,17 @@
 ## 🏁 Phase 3: Release 1 (R1 - Polish & Experience)
 *Ziel: Ein fertiges Produkt für den ersten Release.*
 
-- [ ] **Comic Dialog System:** Vereinheitlichung aller Popups (Ressourcen, Info, Level) im Cartoon-Stil.
-- [ ] **Immersive Onboarding:** Automatischer DSGVO-Start & Story-Intro (Ziel: Member-Wachstum).
-- [ ] **Visual Celebration:** Konfetti-Effekt beim Stufenaufstieg.
-- [ ] **Enhanced Level Cards:** Anzeige von Zeit, Klicks und Score in der Hall of Fame.
-- [ ] **Comic About Dialog:** Redesign inkl. dynamischer App-Version.
-- [ ] **Lokalisiertes Format:** NumberFormatter auf deutsche Suffixe (Mrd) umstellen.
+- [x] **Comic Dialog System:** Vereinheitlichung aller Popups (Ressourcen, Info, Level) im Cartoon-Stil (#51).
+- [x] **Immersive Onboarding:** Sequentieller DSGVO-Start & Story-Intro (Heilsarmee-Kontext) (#41).
+- [x] **Visual Celebration:** Konfetti-Effekt & animierte Dialoge beim Stufenaufstieg (#42).
+- [x] **Lokalisiertes Format:** NumberFormatter auf deutsche Suffixe (Mrd, Mio, Tsd) umgestellt (#48).
+- [x] **Smart Award System:** Dynamische Multiplikator-Logik direkt in Ressourcen-Modellen (#55).
+- [x] **Stability Fixes:** Behebung von Race Conditions beim App-Start und Stage-Sync (#47).
+- [x] **Task Logic Refinement:** Implementierung des Task-Aktivierungssystems (enabled/disabled) (#54).
 
 ## 🌎 Phase 4: Release 2 (R2 - Ecosystem)
-- [ ] **Trophy System:** Bronze/Silber/Gold Bewertung pro Stage.
-- [ ] **Internationalisierung (#38):** Umstellung auf ARB-Dateien.
+- [ ] **Audio Engine:** Integration von Soundeffekten und Hintergrundmusik ohne Interferenz mit Drittanbieter-Apps (#56).
+- [ ] **Trophy System:** Bronze/Silber/Gold Bewertung pro Stage basierend auf Performance (#42).
+- [ ] **App Icon Finish:** Finalisierung des Brandings für mobile Plattformen (#56).
+- [ ] **Internationalisierung:** Umstellung auf ARB-Dateien für Multi-Language Support (#38).
 - [ ] **Firebase Integration:** Cloud-Saves & Global Scoreboard.

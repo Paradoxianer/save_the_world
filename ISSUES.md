@@ -1,20 +1,6 @@
 ﻿# 📋 GitHub Issues Roadmap
 _Sortiert nach Priorität (High > Medium > Low)_
 
-## 🔥 🔴 #47: 🔥 🔴 Bug: Stage Sync & Startup Race Condition [bug, prio: 1-high]
----
-**Status / Description:**
-Der Bug persistiert: 1. Stage-Icon in AppBar zeigt 0 nach Load. 2. Celebration Dialog erscheint 2-3 mal beim Start mit Stage 0. Ursache: Async Ladevorgang kollidiert mit UI-Initialisierung.
-
----
-
-## 🔥 ✨ #51: UI: Standardize all Dialogs to 'Comic Panel' Style [enhancement, ui, prio: 1-high]
----
-**Status / Description:**
-Unify the design of resource popups, task info, and level details. Use 3.0 width borders, color-coded headers, and stylized buttons.
-
----
-
 ## 🔥 #22: UX & Balancing: Der Ruf (Tutorial-Onboarding) [balancing, content, prio: 1-high]
 ---
 **Status / Description:**
@@ -31,17 +17,10 @@ Das Onboarding muss den geistlichen Dienst widerspiegeln.
 
 ---
 
-## 🔥 #41: UX: Implement Immersive Onboarding & Story Intro [ui, content, prio: 1-high]
+## 🔥 ✨ #51: UI: Standardize all Dialogs to 'Comic Panel' Style [enhancement, ui, prio: 1-high]
 ---
 **Status / Description:**
-Refinement des Intros: Fokus auf Heilsarmee-Kontext (Offizier). Erklärung der Mechanik (Mitglieder-Limit, goldene Tasks). Vorbereitung für Bild-Einbindungen (Screenshots/Icons).
-
----
-
-## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
----
-**Status / Description:**
-Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
+Unify the design of resource popups, task info, and level details. Use 3.0 width borders, color-coded headers, and stylized buttons.
 
 ---
 
@@ -56,10 +35,24 @@ Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
 
 ---
 
+## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
+---
+**Status / Description:**
+Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
+
+---
+
 ## ⚡ #8: UX: Tab-Navigation vervollständigen [ui, prio: 2-medium]
 ---
 **Status / Description:**
 Zwei Tabs (TaskList & LevelList) sind aktiv. Prüfung, ob weitere Ansichten für die Beta nötig sind.
+
+---
+
+## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
+---
+**Status / Description:**
+Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
 
 ---
 
@@ -73,31 +66,10 @@ Jüngerschafts-Logik in Stage 4 implementiert:
 
 ---
 
-## ⚡ ✨ #42: Feature: Visual Celebration & Stage Scoring [enhancement, ui, prio: 2-medium]
+## ☕ #2: Assets: Icon Credits integrieren [documentation, prio: 3-low]
 ---
 **Status / Description:**
-Implement confetti/fireworks effects on level up. Add a scoring algorithm (Time vs Clicks) and display Score/Trophies in CelebrationDialog and LevelList.
-
----
-
-## ⚡ #48: Feature: German localized NumberFormatter (B -> Mrd) [ui, prio: 2-medium]
----
-**Status / Description:**
-Adjust NumberFormatter suffixes to match German naming conventions (Mio, Mrd instead of M, B).
-
----
-
-## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
----
-**Status / Description:**
-Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
-
----
-
-## ☕ #7: Balancing: Task-Werte [balancing, prio: 3-low]
----
-**Status / Description:**
-Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
+Credits aus globals.dart in ein About-Menü überführen.
 
 ---
 
@@ -108,10 +80,10 @@ testTasks aus der Produktionslogik in eine dedizierte Mock-Klasse verschieben.
 
 ---
 
-## ☕ #2: Assets: Icon Credits integrieren [documentation, prio: 3-low]
+## ☕ #7: Balancing: Task-Werte [balancing, prio: 3-low]
 ---
 **Status / Description:**
-Credits aus globals.dart in ein About-Menü überführen.
+Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
 
 ---
 
@@ -122,10 +94,10 @@ Credits aus globals.dart in ein About-Menü überführen.
 
 ---
 
-## #55: ⚡ UI: Dynamische Anzeige von MultiplyRes-Gewinnen
+## #54: ⚡ Logic: Task Enable/Disable System
 ---
 **Status / Description:**
-Gewinne, die von anderen Ressourcen abhängen (z.B. Kollekte = Members * 2), müssen in der TaskInfo berechnet angezeigt werden. Architektur: Erweiterung des Award-Modells um ein 'multiplierResource' Feld.
+Einführung von 'enabled' (bool) im Task-Modell. Neue Modifier: EnableTask('Name') und DisableTask('Name'). Dies löst auch die Race Condition in Stage 0, indem Tutorial-Tasks explizit deaktiviert werden können.
 
 ---
 
@@ -140,20 +112,6 @@ Die App unterstützt bereits Locales (DE/EN) in der main.dart, aber viele Inhalt
 - [ ] **ARB-Dateien:** Extraktion aller Hardcoded Strings (z.B. in MessageModifier oder Task-Beschreibungen) in ARB-Dateien.
 - [ ] **Pluralisierung:** Korrekte Handhabung von Ressourcen-Texten (z.B. '1 Mitglied' vs '2 Mitglieder').
 - [ ] **intl Package:** Integration des intl Packages in die pubspec.yaml für robuste Formatierung.
-
----
-
-## #53: 🔥 🔴 Bug: DSGVO Button in BottomBar nicht klickbar
----
-**Status / Description:**
-Das Schild-Icon in der BottomAppBar reagiert nicht mehr auf Taps. Wahrscheinlich ein Layout-Overlap oder Fokus-Problem nach dem UI-Refactoring.
-
----
-
-## #54: ⚡ Logic: Task Enable/Disable System
----
-**Status / Description:**
-Einführung von 'enabled' (bool) im Task-Modell. Neue Modifier: EnableTask('Name') und DisableTask('Name'). Dies löst auch die Race Condition in Stage 0, indem Tutorial-Tasks explizit deaktiviert werden können.
 
 ---
 
