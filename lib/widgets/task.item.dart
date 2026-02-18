@@ -5,8 +5,6 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 import 'package:save_the_world_flutter_app/widgets/wavy_task_painter.dart';
-import 'package:save_the_world_flutter_app/models/message.modifier.dart';
-import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 
 class TaskItem extends StatefulWidget {
   final Task task;
@@ -62,9 +60,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
     }
   }
 
-  // ENHANCED: Now listens to cost AND dynamic award dependencies
   void _updateListeners() {
-    // Listen to cost resources for afford-check
     for (var costRes in widget.task.cost) {
       final globalRes = Game.ressources[costRes.name];
       if (globalRes != null) {
@@ -72,12 +68,9 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
         _listenedResources.add(globalRes);
       }
     }
-
-    // Listen to multiplier resources for dynamic award display
     for (var awardRes in widget.task.award) {
       if (awardRes.multiplierResourceName != null) {
         final factorRes = Game.ressources[awardRes.multiplierResourceName!];
-        // Ensure we don't add the same listener twice
         if (factorRes != null && !_listenedResources.contains(factorRes)) {
           factorRes.addListener(_onResourceChanged);
           _listenedResources.add(factorRes);
@@ -134,10 +127,6 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
     final double displayProgress = isReverse 
         ? (1.0 - widget.task.controller.value) 
         : widget.task.controller.value;
-
-    // Minimalistic Modifier Icons
-    final bool hasMessage = widget.task.myModifier.any((m) => m is MessageModifier);
-    final bool hasSpecialEffect = widget.task.myModifier.any((m) => m is AddTask || m.name != "MessageModifier");
 
     return GestureDetector(
       onTap: (canAfford && isEnabled) ? _handleTap : null,
@@ -202,13 +191,6 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                                     ),
                                   ),
                                 ),
-                                if (hasMessage) 
-                                  const Icon(Icons.chat_bubble_outline, size: 14, color: Colors.blueAccent),
-                                if (hasSpecialEffect) 
-                                  const Padding(
-                                    padding: EdgeInsets.only(left: 4),
-                                    child: Icon(Icons.auto_awesome, size: 14, color: Colors.purpleAccent),
-                                  ),
                               ],
                             ),
                             const SizedBox(height: 4),
@@ -236,7 +218,6 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                   ),
                 ),
 
-                // LOCK OVERLAY
                 if (!isEnabled)
                   Positioned.fill(
                     child: Container(
