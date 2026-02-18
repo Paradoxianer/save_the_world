@@ -4,13 +4,15 @@ import 'package:save_the_world_flutter_app/globals.dart';
 class CelebrationDialog extends StatefulWidget {
   final int stage;
   final Duration? duration; 
-  final int? clicks;       
+  final int? clicks;
+  final int? score;
 
   const CelebrationDialog({
     super.key, 
     required this.stage,
     this.duration,
     this.clicks,
+    this.score,
   });
 
   @override
@@ -73,13 +75,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 20,
-                  spreadRadius: 5,
-                )
-              ],
+              border: Border.all(color: Colors.black, width: 2),
             ),
             child: SingleChildScrollView(
               child: Column(
@@ -90,7 +86,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
                     'GRATULATION!',
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                       letterSpacing: 2,
                     ),
                   ),
@@ -137,13 +133,9 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: Text(
-                      "Die Gemeinde wächst! Dein Limit liegt nun bei $maxMembers Mitgliedern.",
+                      "Dein Limit liegt nun bei $maxMembers Mitgliedern.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                        fontStyle: FontStyle.italic,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14, fontStyle: FontStyle.italic),
                     ),
                   ),
                   
@@ -158,9 +150,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                     ),
                     child: const Text('WEITER DIENEN'),
                   ),
@@ -187,12 +177,14 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
           const Text("DEINE STATISTIK", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           const SizedBox(height: 10),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               if (widget.duration != null)
                 _statItem(Icons.timer, _formatDuration(widget.duration!)),
               if (widget.clicks != null)
                 _statItem(Icons.touch_app, "${widget.clicks}"),
+              if (widget.score != null)
+                _statItem(Icons.emoji_events, "${widget.score}", isScore: true),
             ],
           ),
         ],
@@ -200,18 +192,18 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
     );
   }
 
-  Widget _statItem(IconData icon, String text) {
+  Widget _statItem(IconData icon, String text, {bool isScore = false}) {
     return Row(
       children: [
-        Icon(icon, size: 16, color: Colors.orange),
+        Icon(icon, size: isScore ? 20 : 16, color: isScore ? Colors.orange[700] : Colors.orange),
         const SizedBox(width: 5),
-        Text(text, style: const TextStyle(fontWeight: FontWeight.w600)),
+        Text(text, style: TextStyle(fontWeight: isScore ? FontWeight.w900 : FontWeight.w600, fontSize: isScore ? 16 : 14)),
       ],
     );
   }
 }
 
-void showCelebration(BuildContext context, int stage, {Duration? duration, int? clicks}) {
+void showCelebration(BuildContext context, int stage, {Duration? duration, int? clicks, int? score}) {
   showGeneralDialog(
     context: context,
     pageBuilder: (context, anim1, anim2) => Container(),
@@ -223,6 +215,7 @@ void showCelebration(BuildContext context, int stage, {Duration? duration, int? 
         stage: stage,
         duration: duration,
         clicks: clicks,
+        score: score,
       );
     },
   );
