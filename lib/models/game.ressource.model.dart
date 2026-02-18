@@ -144,7 +144,6 @@ class Game {
 
   int calculateScore(Duration duration, int clicks, int stgLevel) {
     if (duration.inSeconds == 0) return 0;
-    // Base score calculation logic
     double timeFactor = (stgLevel + 1) * 60 / duration.inSeconds;
     double clickFactor = (stgLevel + 1) * 10 / max(1, clicks);
     int score = (500 * timeFactor + 500 * clickFactor).toInt();
@@ -180,9 +179,10 @@ class Game {
   factory Game.fromJson(Map<String, dynamic> json) {
     var tList = json['tasks'] != null ? jsonDecode(json['tasks']) as List : [];
     var atList = json['alltasks'] != null ? jsonDecode(json['alltasks']) as List : [];
+    
     return Game(
-      tasksList: tksList = tList.map((i) => Task.fromJson(i)).toList(), 
-      allTasksList: aTasksList = atList.map((i) => Task.fromJson(i)).toList(), 
+      tasksList: tList.map((i) => Task.fromJson(i)).toList(), 
+      allTasksList: atList.map((i) => Task.fromJson(i)).toList(), 
       stage: json['stage'] as int?
     );
   }
@@ -312,12 +312,16 @@ class Game {
           final Map<String, dynamic> clicks = gameData['stageBestClicks'];
           stageBestClicks = clicks.map((k, v) => MapEntry(int.parse(k), v as int));
         }
+        
+        // CRITICAL FIX: Ensure the Stage Ressource is updated with the loaded value
+        ressources["Stage"]?.setValue(stage.toDouble());
+        
         _lastStartTime = DateTime.now();
       } catch (e) {
         stage = int.tryParse(jsn) ?? 0;
+        ressources["Stage"]?.setValue(stage.toDouble());
         _lastStartTime = DateTime.now();
       }
-      ressources["Stage"]?.setValue(stage.toDouble());
     }
   }
 
@@ -364,7 +368,6 @@ class Game {
       lastStageClicks = _stageClicks;
       lastStageScore = calculateScore(lastStageDuration!, lastStageClicks!, stage);
       
-      // Update highscores and best stats
       if (lastStageScore! > (stageHighscores[stage] ?? 0)) {
         stageHighscores[stage] = lastStageScore!;
         stageBestTimesMs[stage] = lastStageDuration!.inMilliseconds;
