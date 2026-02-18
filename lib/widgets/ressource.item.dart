@@ -3,16 +3,17 @@ import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/utils/number_formatter.dart';
 import 'package:save_the_world_flutter_app/utils/floating_feedback_service.dart';
+import 'package:save_the_world_flutter_app/widgets/comic_panel_dialog.dart';
 
 class RessourceItem extends StatefulWidget {
   final Ressource ressource;
   final double size;
-  final bool interactive; // NEW: Control if the dialog should show
+  final bool interactive; 
 
   const RessourceItem(this.ressource, {
     super.key, 
     this.size = 30.0,
-    this.interactive = true, // Default to true for AppBar
+    this.interactive = true, 
   });
 
   @override
@@ -85,51 +86,62 @@ class RessourceItemState extends State<RessourceItem> {
   }
 
   void _showResourceDetails() {
-    if (!widget.interactive) return; // Ignore if not interactive
+    if (!widget.interactive) return;
 
     final res = widget.ressource;
     final String valStr = NumberFormatter.format(res.value);
     final String minStr = NumberFormatter.format(res.min);
     final String maxStr = (res.max.isInfinite || res.max > 1e15) ? "∞" : NumberFormatter.format(res.max);
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-          side: const BorderSide(color: Colors.black, width: 3),
-        ),
-        title: Row(
-          children: [
-            Icon(res.icon, size: 36, color: Colors.orange[800]),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                res.name.toUpperCase(), 
-                style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
-                overflow: TextOverflow.ellipsis,
-              ),
+    context.showComicDialog(
+      title: res.name,
+      icon: res.icon,
+      headerColor: Colors.orange[700]!,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            res.description, 
+            style: const TextStyle(
+              fontStyle: FontStyle.italic, 
+              color: Colors.black54,
+              fontSize: 14,
+            )
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.black12),
             ),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(res.description, style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black54)),
-            const Divider(height: 32, thickness: 2, color: Colors.black12),
-            _detailRow("AKTUELL:", valStr),
-            _detailRow("MINIMUM:", minStr),
-            _detailRow("MAXIMUM:", maxStr),
-            const SizedBox(height: 24),
-            if (!res.max.isInfinite && !res.max.isNaN && res.max > 0 && res.max < 1e15)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.grey)),
-                  const SizedBox(height: 6),
-                  ClipRRect(
+            child: Column(
+              children: [
+                _detailRow("AKTUELL:", valStr, isHighlight: true),
+                const Divider(height: 20),
+                _detailRow("MINIMUM:", minStr),
+                _detailRow("MAXIMUM:", maxStr),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          if (!res.max.isInfinite && !res.max.isNaN && res.max > 0 && res.max < 1e15)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.grey)),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.black, width: 2),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
                     child: LinearProgressIndicator(
                       value: ((res.value - res.min) / (res.max - res.min)).clamp(0.0, 1.0),
                       minHeight: 14,
@@ -137,43 +149,72 @@ class RessourceItemState extends State<RessourceItem> {
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.orange[700]!),
                     ),
                   ),
-                ],
-              )
-            else
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: Colors.orange.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-                child: const Center(child: Text("UNBEGRENZTE KAPAZITÄT", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.orange))),
+                ),
+              ],
+            )
+          else
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.1), 
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange.withOpacity(0.3)),
               ),
-          ],
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black87,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: const Center(
+                child: Text(
+                  "UNBEGRENZTE KAPAZITÄT", 
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.orange)
+                )
               ),
-              child: const Text("ALLES KLAR!", style: TextStyle(fontWeight: FontWeight.w900)),
             ),
-          ),
         ],
       ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange[700],
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            elevation: 4,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: Colors.black, width: 2.5),
+            ),
+          ),
+          child: const Text(
+            "ALLES KLAR!", 
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1)
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _detailRow(String label, String value) {
+  Widget _detailRow(String label, String value, {bool isHighlight = false}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.grey, letterSpacing: 0.5)),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.black)),
+          Text(
+            label, 
+            style: TextStyle(
+              fontWeight: FontWeight.w900, 
+              fontSize: 10, 
+              color: isHighlight ? Colors.black54 : Colors.grey, 
+              letterSpacing: 0.5
+            )
+          ),
+          Text(
+            value, 
+            style: TextStyle(
+              fontWeight: FontWeight.w900, 
+              fontSize: isHighlight ? 22 : 16, 
+              color: isHighlight ? Colors.orange[800] : Colors.black
+            )
+          ),
         ],
       ),
     );
