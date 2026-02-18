@@ -24,13 +24,6 @@ Show mandatory DSGVO on first start. Add a comic-style intro dialog explaining t
 
 ---
 
-## 🔥 🔴 #45: Bug: Stage resource icon in AppBar stays at 0 after loading [bug, prio: 1-high]
----
-**Status / Description:**
-The stage resource item does not update its visual value when a savegame is loaded, even though the internal stage index is correct.
-
----
-
 ## 🔥 🔴 #47: Bug: Stage resource icon in AppBar stays at 0 after loading [bug, prio: 1-high]
 ---
 **Status / Description:**
@@ -38,21 +31,17 @@ The stage resource item does not update its visual value when a savegame is load
 
 ---
 
+## 🔥 #49: UX: Implement Story Intro Dialog [ui, content, prio: 1-high]
+---
+**Status / Description:**
+Add a comic-style intro dialog explaining the game's core loop at the first start.
+
+---
+
 ## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
 ---
 **Status / Description:**
 Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
-
----
-
-## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
----
-**Status / Description:**
-Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
-
-**Szenario:**
-- Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
-- Konsequenzen für Status und Aufgaben-Pool definieren.
 
 ---
 
@@ -73,10 +62,21 @@ Jüngerschafts-Logik in Stage 4 implementiert:
 
 ---
 
-## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
+## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
 ---
 **Status / Description:**
-Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
+Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
+
+**Szenario:**
+- Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
+- Konsequenzen für Status und Aufgaben-Pool definieren.
+
+---
+
+## ⚡ ✨ #39: Feature: Stage Score & Trophy System [enhancement, ui, prio: 2-medium]
+---
+**Status / Description:**
+Implement a scoring system based on active time and click count per stage. Award Bronze, Silber, or Gold trophies based on performance. Display trophies in the LevelList.
 
 ---
 
@@ -94,10 +94,10 @@ Adjust NumberFormatter suffixes to match German naming conventions (Mio, Mrd ins
 
 ---
 
-## ⚡ ✨ #39: Feature: Stage Score & Trophy System [enhancement, ui, prio: 2-medium]
+## ⚡ ✨ #50: UI: Add Confetti Effect to Level-Up [enhancement, ui, prio: 2-medium]
 ---
 **Status / Description:**
-Implement a scoring system based on active time and click count per stage. Award Bronze, Silber, or Gold trophies based on performance. Display trophies in the LevelList.
+Integrate a particle system (e.g. confetti package) to celebrate stage completion.
 
 ---
 
@@ -105,6 +105,13 @@ Implement a scoring system based on active time and click count per stage. Award
 ---
 **Status / Description:**
 Implement confetti/fireworks effects on level up. Add a scoring algorithm (Time vs Clicks) and display Score/Trophies in CelebrationDialog and LevelList.
+
+---
+
+## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
+---
+**Status / Description:**
+Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
 
 ---
 
