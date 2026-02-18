@@ -6,6 +6,7 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/utils/number_formatter.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
+import 'package:save_the_world_flutter_app/widgets/comic_panel_dialog.dart';
 
 class LevelList extends StatelessWidget {
   const LevelList({super.key});
@@ -28,22 +29,27 @@ class LevelList extends StatelessWidget {
           final bool isPassed = index < game.stage;
           final bool isFuture = index > game.stage;
           
-          // Get saved highscore for this stage
           final int? highscore = game.stageHighscores[index];
 
           return GestureDetector(
             onTap: (isPassed || isCurrent) ? () => _showLevelDetails(context, index, stageName) : null,
             onLongPress: kDebugMode ? () => _confirmStageJump(context, index, stageName) : null,
             child: Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: isCurrent ? [
+                  const BoxShadow(color: Colors.black26, offset: Offset(4, 4), blurRadius: 0),
+                ] : null,
+              ),
               child: Card(
-                elevation: isCurrent ? 4 : 1,
+                elevation: 0, // Handled by manual shadow
                 clipBehavior: Clip.antiAlias,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   side: BorderSide(
-                    color: isCurrent ? Colors.orange[800]! : (kDebugMode ? Colors.blue.withOpacity(0.3) : Colors.black87),
-                    width: 1.5,
+                    color: isCurrent ? Colors.orange[800]! : Colors.black,
+                    width: isCurrent ? 3.0 : 2.0,
                   ),
                 ),
                 color: isPassed ? Colors.green[50] : (isCurrent ? Colors.white : Colors.grey[200]),
@@ -54,17 +60,18 @@ class LevelList extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            width: 45,
-                            height: 45,
+                            width: 50,
+                            height: 50,
                             decoration: BoxDecoration(
                               color: isPassed ? Colors.green : (isCurrent ? Colors.orange : Colors.grey),
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.black87, width: 2),
+                              border: Border.all(color: Colors.black, width: 2.5),
+                              boxShadow: const [BoxShadow(color: Colors.black12, offset: Offset(2, 2))],
                             ),
                             child: Center(
                               child: Text(
                                 index.toString(),
-                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20),
                               ),
                             ),
                           ),
@@ -77,7 +84,7 @@ class LevelList extends StatelessWidget {
                                   stageName.toUpperCase(),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    fontSize: 15,
+                                    fontSize: 16,
                                     color: isFuture ? Colors.grey[600] : Colors.black87,
                                     letterSpacing: 0.5,
                                   ),
@@ -85,7 +92,11 @@ class LevelList extends StatelessWidget {
                                 const SizedBox(height: 4),
                                 Text(
                                   "Limit: ${NumberFormatter.format(memberThreshold.toDouble())} Mitglieder",
-                                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.black54),
+                                  style: TextStyle(
+                                    fontSize: 12, 
+                                    fontWeight: FontWeight.bold, 
+                                    color: isFuture ? Colors.grey : Colors.black54
+                                  ),
                                 ),
                               ],
                             ),
@@ -93,26 +104,30 @@ class LevelList extends StatelessWidget {
                           Icon(
                             isPassed ? Icons.check_circle : (isCurrent ? Icons.play_circle_filled : Icons.lock),
                             color: isPassed ? Colors.green : (isCurrent ? Colors.orange : Colors.grey[400]),
-                            size: 24,
+                            size: 28,
                           ),
                         ],
                       ),
                       
-                      // STATISTICS AREA (Only for passed or current stages)
                       if (highscore != null && (isPassed || isCurrent))
                         Padding(
                           padding: const EdgeInsets.only(top: 12.0),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.orange.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.orange.withOpacity(0.2)),
                             ),
                             child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _miniStat(Icons.emoji_events, "SCORE: $highscore", Colors.orange[700]!),
-                                // Note: We could store and show time/clicks here too if we extend highscores map
+                                const Icon(Icons.emoji_events, size: 16, color: Colors.orange),
+                                const SizedBox(width: 8),
+                                Text(
+                                  "BESTER SCORE: $highscore", 
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.orange)
+                                ),
                               ],
                             ),
                           ),
@@ -128,33 +143,37 @@ class LevelList extends StatelessWidget {
     );
   }
 
-  Widget _miniStat(IconData icon, String label, Color color) {
-    return Row(
-      children: [
-        Icon(icon, size: 14, color: color),
-        const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: color)),
-      ],
-    );
-  }
-
   void _confirmStageJump(BuildContext context, int index, String name) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("DEBUG: Stage Jump"),
-        content: Text("Möchtest du direkt zu Stufe $index ($name) springen?"),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("ABBRECHEN")),
-          ElevatedButton(
-            onPressed: () {
-              Game.getInstance().jumpToStage(index);
-              Navigator.pop(context);
-            }, 
-            child: const Text("JUMP!")
-          ),
-        ],
+    context.showComicDialog(
+      title: "Debug Jump",
+      icon: Icons.bug_report,
+      headerColor: Colors.redAccent,
+      content: Text(
+        "Möchtest du direkt zu Stufe $index ($name) springen?\n\nDies überschreibt deinen aktuellen Fortschritt!",
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Game.getInstance().jumpToStage(index);
+            Navigator.pop(context);
+          }, 
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.redAccent,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: Colors.black, width: 2),
+            ),
+          ),
+          child: const Text("JUMP!", style: TextStyle(fontWeight: FontWeight.w900)),
+        ),
+        const SizedBox(height: 8),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("ABBRECHEN", style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
+        ),
+      ],
     );
   }
 
@@ -162,64 +181,65 @@ class LevelList extends StatelessWidget {
     if (stageIndex >= allStages.length) return;
     final List<Task> stageTasks = allStages[stageIndex].allTasks;
 
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.black, width: 3),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-                  border: Border(bottom: BorderSide(color: Colors.black, width: 3)),
-                ),
-                child: Text(
-                  "STUFE $stageIndex: $stageName".toUpperCase(),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16),
-                ),
+    context.showComicDialog(
+      title: "Stufe $stageIndex Details",
+      icon: Icons.list_alt,
+      headerColor: Colors.blueAccent,
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "VERFÜGBARE AUFGABEN:",
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1),
+            ),
+            const SizedBox(height: 12),
+            Flexible(
+              child: ListView.separated(
+                shrinkWrap: true,
+                padding: EdgeInsets.zero,
+                itemCount: stageTasks.length,
+                separatorBuilder: (context, i) => const Divider(height: 1),
+                itemBuilder: (context, i) {
+                  final tsk = stageTasks[i];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    leading: Icon(
+                      tsk.isMilestone ? Icons.stars : Icons.assignment, 
+                      color: tsk.isMilestone ? Colors.amber[700] : Colors.blueAccent,
+                      size: 20,
+                    ),
+                    title: Text(
+                      tsk.name, 
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)
+                    ),
+                    trailing: const Icon(Icons.chevron_right, size: 16),
+                    onTap: () => showTaskInfo(context, tsk),
+                  );
+                },
               ),
-              Flexible(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  padding: const EdgeInsets.all(16),
-                  itemCount: stageTasks.length,
-                  itemBuilder: (context, i) {
-                    final tsk = stageTasks[i];
-                    return ListTile(
-                      dense: true,
-                      leading: Icon(tsk.isMilestone ? Icons.stars : Icons.assignment, color: tsk.isMilestone ? Colors.orange : Colors.blue),
-                      title: Text(tsk.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      onTap: () => showTaskInfo(context, tsk),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black87,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: const Text("ZURÜCK", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
-                ),
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blueAccent,
+            foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: const BorderSide(color: Colors.black, width: 2.5),
+            ),
+          ),
+          child: const Text("ALLES KLAR!", style: TextStyle(fontWeight: FontWeight.w900)),
+        ),
+      ],
     );
   }
 }
