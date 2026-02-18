@@ -3,7 +3,6 @@ import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
@@ -33,8 +32,12 @@ final Task collectMoney = Task(
   description: "Sammelt Spenden der Mitglieder. Skaliert mit Gemeindegröße.",
   duration: 3000.0,
   cost: [Time(value: 1.0)],
-  modifier: [
-    MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 0.5),
+  award: [
+    Money(
+      value: 1.0, 
+      multiplierResourceName: "Member", 
+      multiplierValue: 0.5
+    )
   ],
 );
 

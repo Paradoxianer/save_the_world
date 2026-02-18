@@ -3,7 +3,6 @@ import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
@@ -27,7 +26,13 @@ final Stage stage2 = Stage(
       description: "Regelmäßige Spenden der Mitglieder.",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
-      modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 0.6)],
+      award: [
+        Money(
+          value: 1.0, 
+          multiplierResourceName: "Member", 
+          multiplierValue: 0.6
+        )
+      ],
     ),
     Task(
       name: "Gottesdienst in der Wohnung",

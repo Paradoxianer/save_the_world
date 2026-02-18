@@ -2,6 +2,7 @@ import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/setmin.model.dart';
@@ -41,11 +42,11 @@ final Stage stage0 = Stage(
       description: "Zeitaufwendig, aber bringt leute näher zu Gott.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
-      award: [Member(value: 0.75], // Reduziert von 2.0
+      award: [Member(value: 0.75)], // Reduziert von 2.0
       modifier: [
         AddTask(task: "Essen in meiner Wohnung"),
         AddTask(task: "Hausbesuch"),
-        RemoveTask("Mein erster Hausbesuch"),
+        RemoveTask(task: "Mein erster Hausbesuch"),
         MessageModifier(message: "STRATEGIE: Manche Aufgaben brauchen viel Zeit. Behalte den blauen Zeit-Balken oben im Auge!"),
       ],
     ),
