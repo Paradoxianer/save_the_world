@@ -5,13 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:save_the_world_flutter_app/about.dart';
+import 'package:save_the_world_flutter_app/controller/onboarding_controller.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/celebration_dialog.dart';
 import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
-import 'package:save_the_world_flutter_app/widgets/comic_panel_dialog.dart';
 import 'package:share_plus/share_plus.dart';
 
 void main() {
@@ -76,77 +76,13 @@ class _HomeState extends State<Home> {
     game.addStageListener(_onStageChanged);
     Game.notifier.addListener(_rebuild);
     
-    // Start Onboarding Flow after first frame
+    // Trigger Onboarding via the new Controller
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _runOnboardingFlow();
+      OnboardingController.startSequence(
+        context, 
+        onDsgvoUpdated: (accepted) => setState(() => _dsgvoAccepted = accepted)
+      );
     });
-  }
-
-  Future<void> _runOnboardingFlow() async {
-    final dataManager = Game.getInstance().dataManager;
-    
-    // 1. DSGVO CHECK
-    final dsgvoStatus = await dataManager.readData("dsgvo_accepted");
-    if (dsgvoStatus != "true") {
-      final result = await showDSGVODialog(context);
-      if (result == ConfirmAGB.ACCEPT) {
-        await dataManager.writeJson("dsgvo_accepted", "true");
-        setState(() => _dsgvoAccepted = true);
-      } else {
-        // If canceled, we might want to show a hint or exit, 
-        // but for now we just don't set the flag.
-        return; 
-      }
-    } else {
-      setState(() => _dsgvoAccepted = true);
-    }
-
-    // 2. STORY INTRO CHECK
-    final introSeen = await dataManager.readData("intro_seen");
-    if (introSeen != "true") {
-      await _showStoryIntro();
-      await dataManager.writeJson("intro_seen", "true");
-    }
-  }
-
-  Future<void> _showStoryIntro() async {
-    return context.showComicDialog(
-      title: "DEINE MISSION",
-      icon: Icons.auto_awesome,
-      headerColor: Colors.amber[700]!,
-      content: const Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "WILLKOMMEN, RETTER!",
-            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Colors.orange),
-          ),
-          SizedBox(height: 16),
-          Text(
-            "Die Welt versinkt im Chaos. Überall brennt es, und die Hoffnung schwindet.\n\n"
-            "Deine Aufgabe ist es, eine Gemeinschaft aufzubauen, Menschen zu inspirieren und Ressourcen klug zu verwalten.\n\n"
-            "Wachse über dich hinaus, um die Welt Stufe für Stufe zu retten. Bist du bereit?",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, height: 1.5),
-          ),
-        ],
-      ),
-      actions: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber[700],
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-              side: const BorderSide(color: Colors.black, width: 2.5),
-            ),
-          ),
-          child: const Text("ICH BIN BEREIT!", style: TextStyle(fontWeight: FontWeight.w900)),
-        ),
-      ],
-    );
   }
 
   @override
@@ -278,14 +214,11 @@ class _HomeState extends State<Home> {
                         ],
                       ),
                       onPressed: () async {
-                        final result = await showDSGVODialog(context);
-                        if (result == ConfirmAGB.ACCEPT) {
-                          await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "true");
-                          _runOnboardingFlow(); // Re-trigger check
-                        } else {
-                          await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "false");
-                          setState(() => _dsgvoAccepted = false);
-                        }
+                        // Re-trigger onboarding sequence (useful for resetting/checking)
+                        OnboardingController.startSequence(
+                          context, 
+                          onDsgvoUpdated: (accepted) => setState(() => _dsgvoAccepted = accepted)
+                        );
                       }
                   ),
                   IconButton(
