@@ -23,8 +23,18 @@ final Stage stage0 = Stage(
       award: [Faith(value: 15.0)],
       modifier: [
         AddTask(task: "Beten"),
+        RemoveTask(task: "Bibellesen"),
+        AddTask(task: "Stille Zeit"),
         MessageModifier(message: "BASICS: Aufgaben kosten links angezeigte Ressourcen (hier 1x Zeit) und bringen rechts Belohnungen (hier Glauben)."),
       ],
+    ),
+    Task(
+      name: "Stille Zeit",
+      description: "Zeit in Gottes Wort, das stärk meinen Glauben",
+      duration: 3000.0,
+      cost: [Time(value: 1.0)],
+      award: [Faith(value: 15.0)],
+      modifier: [],
     ),
     Task(
       name: "Beten",
@@ -33,9 +43,19 @@ final Stage stage0 = Stage(
       cost: [Time(value: 1.0), Faith(value: 5.0)],
       award: [Member(value: 0.5)], // Reduziert von 1.0
       modifier: [
+        AddTask(task: "Meine Gebetszeit"),
+        RemoveTask(task: "Beten"),
         AddTask(task: "Mein erster Hausbesuch"),
         MessageModifier(message: "ACHTUNG: 'Beten' benötigt Zeit UND Glauben. Hast du von einer Ressource zu wenig, wird die Karte blass und lässt sich nicht starten!"),
       ],
+    ),
+    Task(
+      name: "Meine Gebetszeit",
+      description: "Ohne Gebet funtkioniert nichts",
+      duration: 4000.0,
+      cost: [Time(value: 1.0), Faith(value: 5.0)],
+      award: [Member(value: 0.5)], // Reduziert von 1.0
+      modifier: [     ],
     ),
     Task(
       name: "Mein erster Hausbesuch",
@@ -55,7 +75,7 @@ final Stage stage0 = Stage(
       description: "Regelmäßige Besuche bei Gemeindegliedern zur Seelsorge.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
-      award: [Member(value: 1.1)], // Etwas effizienter, da Routine
+      award: [Member(value: 0.9)], // Etwas effizienter, da Routine
     ),
     Task(
       name: "Schlafen",
@@ -72,7 +92,7 @@ final Stage stage0 = Stage(
       description: "MEILENSTEIN: Erhöht deine maximale Mitglieder-Kapazität auf 40.",
       duration: 10000.0,
       cost: [Time(value: 4.0), Member(value: 5.0)],
-      award: [Member(value: 10.0)], // Reduziert von 15.0
+      award: [Member(value: 8.0)], // Reduziert von 15.0
       modifier: [
         MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein neues Maximum liegt nun bei 40 Mitgliedern. Wenn du über 20 kommst steigst in die Stufe 1 auf."),
         SetMin(ressource: "Member", newMin: 1.0), 
@@ -86,7 +106,7 @@ final Stage stage0 = Stage(
       description: "Gemeinschaft stärken und neue Leute einladen.",
       duration: 10000.0,
       cost: [Time(value: 4.0), Faith(value: 5.0)],
-      award: [Member(value: 2.0)],
+      award: [Member(value: 1.0)],
     ),
   ],
 );
