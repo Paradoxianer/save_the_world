@@ -64,6 +64,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int? _lastCelebratedStage;
+  bool _dsgvoAccepted = false;
   
   @override
   void initState() {
@@ -72,6 +73,17 @@ class _HomeState extends State<Home> {
     _lastCelebratedStage = game.stage;
     game.addStageListener(_onStageChanged);
     Game.notifier.addListener(_rebuild);
+    
+    _checkDSGVO();
+  }
+
+  Future<void> _checkDSGVO() async {
+    final status = await Game.getInstance().dataManager.readData("dsgvo_accepted");
+    if (status == "true") {
+      setState(() {
+        _dsgvoAccepted = true;
+      });
+    }
   }
 
   @override
@@ -112,49 +124,52 @@ class _HomeState extends State<Home> {
         shape: const Border(
           bottom: BorderSide(color: Colors.black, width: 3),
         ),
-        toolbarHeight: 60, // COMPACTED
+        toolbarHeight: 80, // AMPLE SPACE FOR TITLE
         centerTitle: true,
         title: const Text(
           'RETTE DIE WELT', 
-          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 20)
+          style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 2, fontSize: 24)
         ),
         bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(80.0), // MORE SPACE FOR DASHBOARD
+            preferredSize: const Size.fromHeight(135.0), // AMPLE SPACE for Cartoon Dashboard
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                   child: Row(
                     children: <Widget>[
                       const StageItem(),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 16),
                       Expanded(
                           child: Container(
-                            padding: const EdgeInsets.all(6),
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.black.withOpacity(0.1), width: 1),
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: Colors.black.withOpacity(0.1), width: 1.5),
+                              boxShadow: const [
+                                BoxShadow(color: Colors.black12, offset: Offset(2, 2), blurRadius: 0),
+                              ],
                             ),
                             child: RessourceTable(
                               ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
-                              size: 22.0,
+                              size: 26.0,
                               isGlobal: true,
                             ),
                           )),
                     ],
                   ),
                 ),
-                // TAB BAR (COMPACTED)
+                // CLASSIC LARGE TAB BAR
                 const TabBar(
                   labelColor: Colors.black,
                   unselectedLabelColor: Colors.grey,
                   indicatorColor: Colors.orange,
-                  indicatorWeight: 3,
-                  labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 12),
+                  indicatorWeight: 4,
+                  labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
                   tabs: [
-                    Tab(height: 35, text: "AUFGABEN"),
-                    Tab(height: 35, text: "STUFEN"),
+                    Tab(height: 45, text: "AUFGABEN"),
+                    Tab(height: 45, text: "STUFEN"),
                   ],
                 ),
               ],
@@ -173,7 +188,7 @@ class _HomeState extends State<Home> {
         ),
         child: BottomAppBar(
             elevation: 0,
-            height: 60, // COMPACTED
+            height: 70,
             color: Colors.white,
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -181,24 +196,38 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   IconButton(
-                      icon: const Icon(Icons.share, color: Colors.black, size: 22),
+                      icon: const Icon(Icons.share, color: Colors.black, size: 26),
                       onPressed: () => shareScreenshot(context)
                   ),
                   const Spacer(),
                   IconButton(
-                      icon: const Icon(Icons.replay, color: Colors.red, size: 22),
+                      icon: const Icon(Icons.replay, color: Colors.red, size: 26),
                       onPressed: () {
                         _lastCelebratedStage = 0;
                         Game.getInstance().resetGame();
                       }
                   ),
                   const Spacer(),
+                  // THE DSGVO SHIELD WITH DYNAMIC GREEN CORE
                   IconButton(
-                      icon: const Icon(Icons.shield_outlined, color: Colors.black, size: 22),
-                      onPressed: () => showDSGVODialog(context)
+                      icon: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          if (_dsgvoAccepted)
+                            const Icon(Icons.shield, color: Colors.green, size: 20),
+                          const Icon(Icons.shield_outlined, color: Colors.black, size: 30),
+                        ],
+                      ),
+                      onPressed: () async {
+                        final result = await showDSGVODialog(context);
+                        if (result == ConfirmAGB.ACCEPT) {
+                          await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "true");
+                          _checkDSGVO();
+                        }
+                      }
                   ),
                   IconButton(
-                      icon: const Icon(Icons.info_outline, color: Colors.black, size: 22),
+                      icon: const Icon(Icons.info_outline, color: Colors.black, size: 30),
                       onPressed: () => showAppAboutDialog(context)
                   )
                 ]

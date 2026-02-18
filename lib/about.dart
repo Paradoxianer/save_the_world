@@ -94,49 +94,58 @@ void showAppAboutDialog(BuildContext context) {
   );
 }
 
-void showDSGVODialog(BuildContext context) {
+Future<ConfirmAGB?> showDSGVODialog(BuildContext context) {
   final ThemeData themeData = Theme.of(context);
   final TextStyle? aboutTextStyle = themeData.textTheme.bodyMedium;
   final TextStyle? linkStyle =
       themeData.textTheme.bodyMedium?.copyWith(color: themeData.colorScheme.secondary);
 
-  showDialog(
+  return showDialog<ConfirmAGB>(
       context: context,
       barrierDismissible: false, // user must tap button for close dialog!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Stimmst du den AGB und DSGVO zu?'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Colors.black, width: 3),
+          ),
+          title: const Text('STIMMST DU DEN AGB UND DSGVO ZU?', style: TextStyle(fontWeight: FontWeight.w900)),
           content: SingleChildScrollView(
               child: RichText(
                   text: TextSpan(children: <TextSpan>[
             TextSpan(
                 style: aboutTextStyle,
-                text: 'Wir die Appentwickler haben begründetes'
-                    'Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App'
-                    'zu erheben und innerhalb der App zu speichern. Die App stellt diese dann,'
-                    'soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android oder IOS'
-                    'internes Social Media Plugin benutzt.'
-                    'die Screenshots werden innerhalb der App solange gespeicher bis sie an die entsprechenden social Media'
-                    'Kanäle weitergegben wurden. Danach werden Sie automatisch im Spiel gelöscht und stehen dem Spiel nicht mehr zur Verfügung'
-                    'um Spielsptände zu speicher, wird der zugriff für die Appinternen speicher benötigt und benutzt. Sollten Sie dass nicht wollen'
-                    'müssen Sie den Entwickler kontaktieren, wir stellen ihnen dann eine Version zur verfügung die dann ihre spielstände nicht mehr speicher'
-                    'sie können gern jederzeit wiedersprechen, allerdings wird dann diese App nicht mehr nutzbar.\n Dass Sie diesen Text lesen müssen'
-                    'verdanken Sie unfähigen Politiken und paranoiden Datenschützen, die keinen Realitätsbezug haben.\n'),
+                text: 'Wir die Appentwickler haben begründetes '
+                    'Interesses (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App '
+                    'zu erheben und innerhalb der App zu speichern. Die App stellt diese dann, '
+                    'soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird die Android oder IOS '
+                    'internes Social Media Plugin benutzt. '
+                    'Die Screenshots werden innerhalb der App solange gespeichert bis sie an die entsprechenden social Media '
+                    'Kanäle weitergegben wurden. Danach werden Sie automatisch im Spiel gelöscht und stehen dem Spiel nicht mehr zur Verfügung. '
+                    'Um Spielstände zu speichern, wird der Zugriff für den App-internen Speicher benötigt und benutzt. Sollten Sie das nicht wollen, '
+                    'müssen Sie den Entwickler kontaktieren, wir stellen Ihnen dann eine Version zur Verfügung die dann Ihre Spielstände nicht mehr speichert. '
+                    'Sie können gerne jederzeit widersprechen, allerdings wird dann diese App nicht mehr nutzbar.\n\n Dass Sie diesen Text lesen müssen '
+                    'verdanken Sie unfähigen Politikern und paranoiden Datenschützern, die keinen Realitätsbezug haben.\n'),
             _LinkTextSpan(
               style: linkStyle,
               url: 'https://github.com/Paradoxianer/save_the_world',
-              text: 'kontakt zum Entwickler',
+              text: 'Kontakt zum Entwickler',
             ),
           ]))),
           actions: <Widget>[
             TextButton(
-              child: const Text('Abbrechen'),
+              child: const Text('Abbrechen', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
               onPressed: () {
                 Navigator.of(context).pop(ConfirmAGB.CANCEL);
               },
             ),
-            TextButton(
-              child: const Text('Ich stimme zu'),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.black87,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('ICH STIMME ZU', style: TextStyle(fontWeight: FontWeight.w900)),
               onPressed: () {
                 Navigator.of(context).pop(ConfirmAGB.ACCEPT);
               },
