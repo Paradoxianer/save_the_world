@@ -26,6 +26,7 @@ Diese Roadmap beschreibt den Weg vom aktuellen Prototyp zur globalen Version (R2
 
 - [x] **Visual "Juice" (#6):** Wavy Progress, Floating Numbers und Haptic Feedback (Erledigt).
 - [x] **Hall of Fame:** Interaktive Stufenübersicht mit Rückblick-Funktion (Erledigt).
+- [ ] **Quality Assurance & Debugging:** Implementierung von Test-Tools und Stage-Jumps für effizientes Balancing.
 - [ ] **Audio-Feedback:** Implementierung von Soundeffekten für Erfolg und Krise.
 - [ ] **Internationalisierung (#38):** Umstellung auf ARB-Dateien und lokalisierte Zahlenformate.
 - [ ] **About & Credits (#2):** Integration der Helfer-Credits.

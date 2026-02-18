@@ -17,6 +17,16 @@ Das Onboarding muss den geistlichen Dienst widerspiegeln.
 
 ---
 
+## ⚡ #24: Logic: Jüngerschafts- & Wachstumslogik (nach Samy El-Daour) [documentation, balancing, prio: 2-medium]
+---
+**Status / Description:**
+Jüngerschafts-Logik in Stage 4 implementiert:
+- Task '1-zu-1 Mentoring' als Basis für Leiterentwicklung.
+- Task 'Aufgaben abgeben' generiert nun Zeit-Ressourcen
+
+
+---
+
 ## ⚡ #21: UI: Zahlen-Sichtbarkeit & Layout-Verschiebung fixen [ui, prio: 2-medium]
 ---
 **Status / Description:**
@@ -29,10 +39,10 @@ Im Web-Build sind die Ressourcen-Zahlen schwer lesbar und das Layout wirkt versc
 
 ---
 
-## ⚡ ✨ #39: Feature: Stage Score & Trophy System [enhancement, ui, prio: 2-medium]
+## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
 ---
 **Status / Description:**
-Implement a scoring system based on active time and click count per stage. Award Bronze, Silber, or Gold trophies based on performance. Display trophies in the LevelList.
+Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
 
 ---
 
@@ -43,17 +53,21 @@ Zwei Tabs (TaskList & LevelList) sind aktiv. Prüfung, ob weitere Ansichten für
 
 ---
 
-## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
+## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
 ---
 **Status / Description:**
-Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
+Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
+
+**Szenario:**
+- Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
+- Konsequenzen für Status und Aufgaben-Pool definieren.
 
 ---
 
-## ⚡ ✨ #6: UI-Feedback: Fehlende Visualisierung bei Kosten [enhancement, ui, prio: 2-medium]
+## ⚡ ✨ #39: Feature: Stage Score & Trophy System [enhancement, ui, prio: 2-medium]
 ---
 **Status / Description:**
-Wenn Ressourcen für einen Task abgezogen werden, gibt es kein visuelles Feedback für den Spieler.
+Implement a scoring system based on active time and click count per stage. Award Bronze, Silber, or Gold trophies based on performance. Display trophies in the LevelList.
 
 ---
 
@@ -70,24 +84,21 @@ Prüfung und Sicherstellung der volle Funktionalität im Browser.
 
 ---
 
-## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
+## ⚡ ✨ #40: Feature: Debug Tools & Stage Jump Logic [enhancement, prio: 2-medium]
+---
+**Status / Description:**
+Implement debug-only tools to jump between stages for testing and balancing. Needs a logic to correctly initialize all prerequisite tasks from previous stages.
+
+---
+
+## ☕ ✨ #32: Enhancement: Stage-Fallback System [enhancement, prio: 3-low]
 ---
 **Status / Description:**
 Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
 
-**Szenario:**
-- Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
-- Konsequenzen für Status und Aufgaben-Pool definieren.
-
----
-
-## ⚡ #24: Logic: Jüngerschafts- & Wachstumslogik (nach Samy El-Daour) [documentation, balancing, prio: 2-medium]
----
-**Status / Description:**
-Jüngerschafts-Logik in Stage 4 implementiert:
-- Task '1-zu-1 Mentoring' als Basis für Leiterentwicklung.
-- Task 'Aufgaben abgeben' generiert nun Zeit-Ressourcen
-
+**Konsequenz:**
+- Bei Unterschreitung der Mitgliederschwelle gehen Aufgaben der höheren Stufe wieder verloren.
+- Markiert als Low Priority Enhancement.
 
 ---
 
@@ -109,17 +120,6 @@ Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
 ---
 **Status / Description:**
 testTasks aus der Produktionslogik in eine dedizierte Mock-Klasse verschieben.
-
----
-
-## ☕ ✨ #32: Enhancement: Stage-Fallback System [enhancement, prio: 3-low]
----
-**Status / Description:**
-Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
-
-**Konsequenz:**
-- Bei Unterschreitung der Mitgliederschwelle gehen Aufgaben der höheren Stufe wieder verloren.
-- Markiert als Low Priority Enhancement.
 
 ---
 
