@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:confetti/confetti.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
+import 'package:save_the_world_flutter_app/widgets/comic_panel_dialog.dart';
 
 class CelebrationDialog extends StatefulWidget {
   final int stage;
@@ -19,35 +21,23 @@ class CelebrationDialog extends StatefulWidget {
   State<CelebrationDialog> createState() => _CelebrationDialogState();
 }
 
-class _CelebrationDialogState extends State<CelebrationDialog> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<double> _fadeAnimation;
+class _CelebrationDialogState extends State<CelebrationDialog> {
+  late ConfettiController _confettiController;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 800),
-    );
-
-    _scaleAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.elasticOut,
-    );
-
-    _fadeAnimation = CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeIn,
-    );
-
-    _controller.forward();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    
+    // Start explosion after a tiny delay for better visual impact
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (mounted) _confettiController.play();
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _confettiController.dispose();
     super.dispose();
   }
 
@@ -64,140 +54,153 @@ class _CelebrationDialogState extends State<CelebrationDialog> with SingleTicker
     final stageTitle = levels[stageList[widget.stage]] ?? "Unbekannt";
     final maxMembers = stageList[widget.stage].toString();
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: FadeTransition(
-          opacity: _fadeAnimation,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: Colors.black, width: 2),
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const SizedBox(height: 30),
-                  const Text(
-                    'GRATULATION!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  const Text("Du hast eine neue Stufe erreicht:"),
-                  const SizedBox(height: 20),
-                  
-                  SizedBox(
-                    height: 180,
-                    child: Stack(
-                      alignment: Alignment.topCenter,
-                      children: <Widget>[
-                        Image.asset(
-                          'assets/icons/award.png',
-                          height: 170,
-                          fit: BoxFit.contain,
-                        ),
-                        Positioned(
-                          top: 22,
-                          child: Text(
-                            widget.stage.toString(),
-                            style: const TextStyle(
-                              fontSize: 56,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  
-                  Text(
-                    stageTitle,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      fontSize: 22,
-                      color: Colors.orange,
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Text(
-                      "Dein Limit liegt nun bei $maxMembers Mitgliedern.",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 14, fontStyle: FontStyle.italic),
-                    ),
-                  ),
-                  
-                  if (widget.duration != null || widget.clicks != null)
-                    _buildStatsArea(),
-
-                  const SizedBox(height: 30),
-                  
-                  ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    ),
-                    child: const Text('WEITER DIENEN'),
-                  ),
-                  const SizedBox(height: 30),
-                ],
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        ComicPanelDialog(
+          title: 'GRATULATION!',
+          icon: Icons.emoji_events,
+          headerColor: Colors.amber[700]!,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "DU HAST EINE NEUE STUFE ERREICHT!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
               ),
+              const SizedBox(height: 20),
+              
+              // TROPHY AREA
+              SizedBox(
+                height: 140,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    Image.asset(
+                      'assets/icons/award.png',
+                      height: 130,
+                      fit: BoxFit.contain,
+                    ),
+                    Positioned(
+                      top: 40,
+                      child: Text(
+                        widget.stage.toString(),
+                        style: const TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              
+              Text(
+                stageTitle.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w900, 
+                  fontSize: 22,
+                  color: Colors.orange,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 12),
+              
+              Text(
+                "Dein Limit: $maxMembers Mitglieder",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey[600], 
+                  fontSize: 14, 
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic
+                ),
+              ),
+              
+              const Divider(height: 32, thickness: 2),
+              
+              // STATS
+              _buildStatsArea(),
+            ],
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber[700],
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Colors.black, width: 2.5),
+                ),
+              ),
+              child: const Text('WEITER DIENEN', style: TextStyle(fontWeight: FontWeight.w900)),
             ),
+          ],
+        ),
+        
+        // CONFETTI OVERLAY
+        Align(
+          alignment: Alignment.topCenter,
+          child: ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirectionality: BlastDirectionality.explosive,
+            shouldLoop: false,
+            colors: const [
+              Colors.green,
+              Colors.blue,
+              Colors.pink,
+              Colors.orange,
+              Colors.purple,
+              Colors.amber
+            ],
+            gravity: 0.1,
           ),
         ),
-      ),
+      ],
     );
   }
 
   Widget _buildStatsArea() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, left: 30, right: 30),
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        children: [
-          const Text("DEINE STATISTIK", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              if (widget.duration != null)
-                _statItem(Icons.timer, _formatDuration(widget.duration!)),
-              if (widget.clicks != null)
-                _statItem(Icons.touch_app, "${widget.clicks}"),
-              if (widget.score != null)
-                _statItem(Icons.emoji_events, "${widget.score}", isScore: true),
-            ],
-          ),
-        ],
-      ),
+    return Column(
+      children: [
+        const Text(
+          "DEINE PERFORMANCE", 
+          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.grey, letterSpacing: 1)
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            if (widget.duration != null)
+              _statItem(Icons.timer, _formatDuration(widget.duration!)),
+            if (widget.clicks != null)
+              _statItem(Icons.touch_app, "${widget.clicks}"),
+            if (widget.score != null)
+              _statItem(Icons.stars, "${widget.score}", isScore: true),
+          ],
+        ),
+      ],
     );
   }
 
   Widget _statItem(IconData icon, String text, {bool isScore = false}) {
-    return Row(
+    return Column(
       children: [
-        Icon(icon, size: isScore ? 20 : 16, color: isScore ? Colors.orange[700] : Colors.orange),
-        const SizedBox(width: 5),
-        Text(text, style: TextStyle(fontWeight: isScore ? FontWeight.w900 : FontWeight.w600, fontSize: isScore ? 16 : 14)),
+        Icon(icon, size: isScore ? 28 : 22, color: isScore ? Colors.amber[800] : Colors.grey[700]),
+        const SizedBox(height: 4),
+        Text(
+          text, 
+          style: TextStyle(
+            fontWeight: FontWeight.w900, 
+            fontSize: isScore ? 18 : 14,
+            color: isScore ? Colors.amber[900] : Colors.black87
+          )
+        ),
       ],
     );
   }
@@ -207,15 +210,21 @@ void showCelebration(BuildContext context, int stage, {Duration? duration, int? 
   showGeneralDialog(
     context: context,
     pageBuilder: (context, anim1, anim2) => Container(),
-    barrierDismissible: true,
+    barrierDismissible: false,
     barrierLabel: '',
-    transitionDuration: const Duration(milliseconds: 200),
+    transitionDuration: const Duration(milliseconds: 300),
     transitionBuilder: (context, anim1, anim2, child) {
-      return CelebrationDialog(
-        stage: stage,
-        duration: duration,
-        clicks: clicks,
-        score: score,
+      return FadeTransition(
+        opacity: anim1,
+        child: ScaleTransition(
+          scale: CurvedAnimation(parent: anim1, curve: Curves.elasticOut),
+          child: CelebrationDialog(
+            stage: stage,
+            duration: duration,
+            clicks: clicks,
+            score: score,
+          ),
+        ),
       );
     },
   );
