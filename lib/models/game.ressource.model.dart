@@ -82,7 +82,6 @@ class Game {
 
   void resumeStageTimer() {
     _lastStartTime = DateTime.now();
-    debugPrint("[GAME] Stage timer resumed at $_lastStartTime");
   }
 
   void pauseStageTimer() {
@@ -90,7 +89,6 @@ class Game {
       final now = DateTime.now();
       _accumulatedStageTime += now.difference(_lastStartTime!);
       _lastStartTime = null;
-      debugPrint("[GAME] Stage timer paused. Accumulated active time: ${_accumulatedStageTime.inSeconds}s");
     }
   }
 
@@ -120,7 +118,6 @@ class Game {
   }
 
   void resetGame() {
-    debugPrint("[GAME] Resetting game state...");
     stage = 0;
     tasks.clear();
     initRes();
@@ -137,7 +134,7 @@ class Game {
   void jumpToStage(int targetStage) {
     debugPrint("[DEBUG] Jumping to stage $targetStage...");
     
-    // 1. Reset game basics but keep resources at a reasonable level
+    // 1. Reset game basics
     tasks.clear();
     initRes();
     
@@ -145,7 +142,6 @@ class Game {
     stage = targetStage;
     ressources["Stage"]?.setValue(stage.toDouble());
     
-    // Set members to just below the next level threshold for convenience
     List<int> thresholds = levels.keys.toList();
     if (targetStage < thresholds.length) {
       double targetMembers = thresholds[targetStage].toDouble() - 1.0;
@@ -153,12 +149,11 @@ class Game {
       ressources[Member().name]?.max = thresholds[targetStage].toDouble();
     }
 
-    // 3. Catch up logic: Run initStage for ALL stages up to target to collect all permanent tasks
+    // 3. Catch up: Run initStage for ALL stages up to target to collect all permanent tasks
     for (int i = 0; i <= targetStage; i++) {
       initStage(i);
     }
 
-    // 4. Reset statistics for the new stage
     _accumulatedStageTime = Duration.zero;
     _lastStartTime = DateTime.now();
     _stageClicks = 0;
@@ -171,15 +166,9 @@ class Game {
   factory Game.fromJson(Map<String, dynamic> json) {
     var tList = json['tasks'] != null ? jsonDecode(json['tasks']) as List : [];
     var atList = json['alltasks'] != null ? jsonDecode(json['alltasks']) as List : [];
-    
     List<Task> tksList = tList.map((i) => Task.fromJson(i)).toList();
     List<Task> aTasksList = atList.map((i) => Task.fromJson(i)).toList();
-    
-    return Game(
-        tasksList: tksList, 
-        allTasksList: aTasksList, 
-        stage: json['stage'] as int?
-    );
+    return Game(tasksList: tksList, allTasksList: aTasksList, stage: json['stage'] as int?);
   }
 
   Map<String, dynamic> toJson() {
@@ -210,7 +199,6 @@ class Game {
     try {
       return allTasks.firstWhere((tsk) => tsk.name == name);
     } catch (e) {
-      debugPrint("getTask - Error could not find name: $name");
       return null;
     }
   }
@@ -237,7 +225,6 @@ class Game {
   }
 
   void saveState() {
-    debugPrint("saveState");
     dataManager.writeJson("gameRes", json.encode(ressources));
     dataManager.writeJson("activeTasks", json.encode(tasks)); 
     dataManager.writeJson("allTasks", json.encode(allTasks));
@@ -250,7 +237,6 @@ class Game {
   }
 
   void loadState() {
-    debugPrint("loadState");
     dataManager.readData("gameRes").then((jsn) => loadRes(jsn));
     dataManager.readData("allTasks").then((jsn) => loadAllTasks(jsn));
     dataManager.readData("Game").then((jsn) => loadGame(jsn));
@@ -294,13 +280,10 @@ class Game {
         final Map<String, dynamic> gameData = json.decode(jsn);
         stage = gameData['stage'] as int? ?? 0;
         _stageClicks = gameData['stageClicks'] as int? ?? 0;
-        
         if (gameData['accumulatedStageTime'] != null) {
           _accumulatedStageTime = Duration(milliseconds: gameData['accumulatedStageTime']);
         }
-        
         _lastStartTime = DateTime.now();
-        
       } catch (e) {
         stage = int.tryParse(jsn) ?? 0;
         _lastStartTime = DateTime.now();
@@ -312,12 +295,10 @@ class Game {
   void updateGame(Duration elapse) {
     Duration d1 = elapse - saveCalled;
     Duration d2 = elapse - randCalled;
-    
     if (d1 > saveDuration) {
       saveState();
       saveCalled = elapse;
     }
-    
     if (d2 > randDuration) {
       int rand = Random().nextInt(5);
       if (rand == 1) {
@@ -338,33 +319,25 @@ class Game {
   void levelListener() {
     final memberRes = ressources[Member().name];
     if (memberRes == null) return;
-    
     double members = memberRes.value;
     int? found;
     int levelLength = levels.length;
     List<int> levelList = levels.keys.toList();
-    
     for (int i = 0; i < levelLength; i++) {
       if ((levelList[i] + 1) > members.floor()) {
         found = i;
         break;
       }
     }
-
     if (found != null && found > stage) {
       lastStageDuration = currentActiveStageTime;
       lastStageClicks = _stageClicks;
-      
-      debugPrint("[GAME] Stage $stage completed in ${lastStageDuration?.inSeconds}s active time with $lastStageClicks clicks.");
-
       _accumulatedStageTime = Duration.zero;
       _lastStartTime = DateTime.now();
       _stageClicks = 0;
-
       stage = found;
       ressources["Stage"]?.setValue(stage.toDouble());
       stagenNotifier.notifyListeners();
-      
       ressources[Member().name]?.max = levelList[found].toDouble();
       initStage(found);
       saveState();
@@ -373,7 +346,6 @@ class Game {
 
   void initStage(int stg) {
     allTasks = allStages[stg].allTasks;
-    
     for (var taskName in allStages[stg].activeTasks) {
       Task? found = getTask(taskName);
       if (found != null) {
