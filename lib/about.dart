@@ -84,7 +84,7 @@ void showAppAboutDialog(BuildContext context) async {
             applicationLegalese: '© 2019-2026 Paradoxon',
           );
         },
-        child: const Text('LIZENZEN', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.grey)),
+        child: const Text('LIZENZEN ANZEIGEN', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.grey)),
       ),
       const SizedBox(height: 8),
       ElevatedButton(
@@ -115,7 +115,7 @@ Future<ConfirmAGB?> showDSGVODialog(BuildContext context) {
   final TextStyle aboutTextStyle = const TextStyle(
     color: Colors.black87,
     fontSize: 13,
-    height: 1.4,
+    height: 1.5,
   );
 
   final TextStyle linkStyle = const TextStyle(
@@ -141,12 +141,12 @@ Future<ConfirmAGB?> showDSGVODialog(BuildContext context) {
                   children: <TextSpan>[
                     TextSpan(
                       style: aboutTextStyle,
-                      text: 'Wir erheben Daten in Form von Screenshots und speichern diese lokal, '
-                          'um sie auf Ihren Wunsch hin über soziale Medien zu teilen. '
-                          'Spielstände werden im internen Speicher gesichert.\n\n'
-                          'Mit der Nutzung der App stimmen Sie diesen Bedingungen zu. '
-                          'Dass Sie diesen Text lesen müssen, verdanken Sie der DSGVO und dem '
-                          'Schutz Ihrer Privatsphäre.\n\n',
+                      text: 'Wir die Appentwickler haben begründetes Interesse (s. Art. 6 Abs. 1 lit. f. DSGVO) Daten in Form von Screenshots der App zu erheben und innerhalb der App zu speichern. '
+                          'Die App stellt diese dann, soweit es von Ihnen gewollt wird, über soziale Medien zur Verfügung. Dafür wird das interne Social Media Plugin (Android/iOS) benutzt.\n\n'
+                          'Die Screenshots werden innerhalb der App solange gespeichert, bis sie geteilt wurden, und danach automatisch gelöscht. '
+                          'Um Spielstände zu speichern, wird der Zugriff auf den App-internen Speicher benötigt. Sollten Sie das nicht wünschen, kontaktieren Sie uns bitte für eine alternative Version.\n\n'
+                          'Sie können jederzeit widersprechen, allerdings ist die App dann technisch nicht mehr nutzbar.\n\n'
+                          'Dass Sie diesen Text lesen müssen, verdanken Sie der DSGVO und dem Schutz Ihrer Privatsphäre.\n\n',
                     ),
                     TextSpan(
                       style: linkStyle,
