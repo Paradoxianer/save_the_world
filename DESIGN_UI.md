@@ -4,7 +4,7 @@
 Ein haptisches, farbenfrohes Comic-Erlebnis. Jedes UI-Element atmet, reagiert und fühlt sich wie ein Teil einer interaktiven Welt an.
 
 ## 🛠 Visuelle Prinzipien
-* **Cartoon Aesthetics:** Dicke schwarze Konturen (Border: 3.0), kräftige Farben, "Bouncy" Animationen.
+* **Cartoon Aesthetics:** Dicke schwarze Konturen (Border: 1.5), kräftige Farben, "Bouncy" Animationen.
 * **Consistent Dialogs:** Einheitliches "Comic Panel" Design für alle Popups.
 * **Information Hierarchy:** Klare Farbcodes für Informationstypen.
 

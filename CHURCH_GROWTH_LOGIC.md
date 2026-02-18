@@ -16,14 +16,17 @@ Mit steigender Stage werden Aufgaben nicht nur teurer, sondern auch "fragmentier
 *   **Der Solo-Pfad:** Der Spieler kann versuchen, alles selbst zu machen. Das führt ab Stage 4-5 zu massivem Stress und zeitlichen Engpässen (`Time` Flaschenhals). Es ist der Weg des "Ausbrennens".
 *   **Delegation & Multiplikation:** Ab der "Gemeinde-Phase" ist Delegation der einzige Weg. Der Einsatz von `AutoExecuteModifier` (Automatisierung) und `MultiplyRes` (Multiplikation) ist essenziell. Erfolg bedeutet, dass Dinge ohne direktes Zutun des Spielers passieren.
 
-### 3. Krisen-Management (Rote Tasks)
+### 3. Das "Progression-Swap-Pattern" (Race Condition Schutz) 🛡️
+Um Endlosschleifen und logische Fehler zu vermeiden (z.B. ein Tutorial-Task, der sich selbst immer wieder triggert), gilt folgende Regel für alle Story-relevanten Aufgaben:
+*   **Einmalige Trigger:** Aufgaben, die neue Möglichkeiten freischalten (z.B. "Mein erster Hausbesuch"), müssen sich bei Abschluss sofort selbst entfernen (`RemoveTask`) und durch eine "Routine-Version" (z.B. "Hausbesuch (Routine)") ersetzen.
+*   **Golden Gate Tasks:** Ein Meilenstein-Task (`isMilestone: true`), der das Limit erhöht, darf niemals dauerhaft in der Liste bleiben. Er entfernt sich selbst und schaltet die nächste Stufe oder Wartungs-Aufgaben frei.
+*   **Symmetrie:** Wenn A den Task B freischaltet, sollte A verschwinden, sobald B aktiv ist, um die UI übersichtlich zu halten.
+
+### 4. Krisen-Management (Rote Tasks)
 Krisen-Tasks dienen als Stress-Test für die Organisation.
 *   **Selbstreinigungs-Regel:** Krisentasks müssen sich nach Abschluss (Erfolg ODER Misserfolg) immer selbst aus der Taskliste entfernen (`RemoveTask`). Eine gelöste Krise darf die Liste nicht weiter blockieren.
-*   **Dynamik:** Während sie am Anfang langsam sind, werden sie im Endgame schneller und erfordern entweder schnelle Reaktion oder automatisierte Abwehrsysteme.
-*   **Nicht geklöste Kriesen** ziehen meist weiter Kriesen nach sich
-
-### 4. Ressourcen-Hürden
-Meilenstein-Tasks (`isMilestone: true`) fordern signifikante Kosten in den Ressourcen, die für die aktuelle Phase kritisch sind (Einstieg: Time/Faith; Aufbau: Money/Wisdom; Global: Publicity/Influence).
+*   **Dynamik:** Endgame-Krisen sind schneller und aggressiver.
+*   **Kaskaden:** Nicht gelöste Krisen ziehen oft Folge-Krisen nach sich.
 
 ---
 
@@ -35,9 +38,3 @@ Meilenstein-Tasks (`isMilestone: true`) fordern signifikante Kosten in den Resso
 | **Gemeinde** | 4-10 | **Leiter** | Task-Chaining & Delegation |
 | **Bewegung**| 11-20 | **Stratege** | Auto-Execution & Netzwerke |
 | **Global** | 21-32 | **Visionär** | Globale Multiplikation |
-
----
-
-## ⚖️ Gameplay-Regel: Der "Meilenstein-Abschluss"
-1.  Sobald ein `isMilestone` Task das Limit erhöht hat, muss er sich selbst entfernen (`RemoveTask`).
-2.  Er wird durch eine "Standard-Version" ersetzt (Wartung des Status Quo), die keine Gold-Markierung mehr hat und weniger Ressourcen-Impact erzeugt. Dies lenkt den Fokus visuell auf die nächste Wachstumsschwelle.
