@@ -5,6 +5,8 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 import 'package:save_the_world_flutter_app/widgets/wavy_task_painter.dart';
+import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 
 class TaskItem extends StatefulWidget {
   final Task task;
@@ -26,7 +28,6 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
     _updateListeners();
     widget.task.controller.addListener(_onAnimationTick);
     
-    // CLICK FEEDBACK CONTROLLER: Very fast bounce
     _clickController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 60),
@@ -61,12 +62,26 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
     }
   }
 
+  // ENHANCED: Now listens to cost AND dynamic award dependencies
   void _updateListeners() {
+    // Listen to cost resources for afford-check
     for (var costRes in widget.task.cost) {
       final globalRes = Game.ressources[costRes.name];
       if (globalRes != null) {
         globalRes.addListener(_onResourceChanged);
         _listenedResources.add(globalRes);
+      }
+    }
+
+    // Listen to multiplier resources for dynamic award display
+    for (var awardRes in widget.task.award) {
+      if (awardRes.multiplierResourceName != null) {
+        final factorRes = Game.ressources[awardRes.multiplierResourceName!];
+        // Ensure we don't add the same listener twice
+        if (factorRes != null && !_listenedResources.contains(factorRes)) {
+          factorRes.addListener(_onResourceChanged);
+          _listenedResources.add(factorRes);
+        }
       }
     }
   }
@@ -95,14 +110,9 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
   }
 
   void _handleTap() async {
-    if (_canAfford) {
-      // VISUAL BOUNCE: Always play the full animation regardless of touch duration
+    if (_canAfford && widget.task.enabled) {
       _clickController.forward().then((_) => _clickController.reverse());
-      
-      // RECORD THE CLICK IN GAME MODEL
       Game.getInstance().recordClick();
-      
-      // Start the task
       widget.task.start();
     }
   }
@@ -111,6 +121,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
   Widget build(BuildContext context) {
     final bool isMilestone = widget.task.isMilestone;
     final bool canAfford = _canAfford;
+    final bool isEnabled = widget.task.enabled;
     final bool isRunning = widget.task.controller.isAnimating || widget.task.controller.value > 0;
     
     final bool isReverse = widget.task.controller.status == AnimationStatus.reverse;
@@ -124,14 +135,17 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
         ? (1.0 - widget.task.controller.value) 
         : widget.task.controller.value;
 
+    // Minimalistic Modifier Icons
+    final bool hasMessage = widget.task.myModifier.any((m) => m is MessageModifier);
+    final bool hasSpecialEffect = widget.task.myModifier.any((m) => m is AddTaskModifier || m.name != "MessageModifier");
+
     return GestureDetector(
-      // Only trigger logic on tap, animation is now handled in _handleTap
-      onTap: canAfford ? _handleTap : null,
+      onTap: (canAfford && isEnabled) ? _handleTap : null,
       onLongPress: () => showTaskInfo(context, widget.task),
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: Opacity(
-          opacity: (canAfford || isRunning) ? 1.0 : 0.6,
+          opacity: (isEnabled && (canAfford || isRunning)) ? 1.0 : 0.5,
           child: Card(
             elevation: isMilestone ? 6 : 2, 
             margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
@@ -140,7 +154,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
               borderRadius: BorderRadius.circular(12.0),
               side: BorderSide(
                 color: isMilestone ? Colors.orange[800]! : Colors.black87, 
-                width: 1.5, 
+                width: isMilestone ? 2.5 : 1.5, 
               ),
             ),
             child: Stack(
@@ -175,7 +189,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                                 if (isMilestone) 
                                   const Padding(
                                     padding: EdgeInsets.only(right: 6.0),
-                                    child: Icon(Icons.stars, color: Colors.orange, size: 24),
+                                    child: Icon(Icons.stars, color: Colors.orange, size: 20),
                                   ),
                                 Expanded(
                                   child: Text(
@@ -188,15 +202,23 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                                     ),
                                   ),
                                 ),
+                                if (hasMessage) 
+                                  const Icon(Icons.chat_bubble_outline, size: 14, color: Colors.blueAccent),
+                                if (hasSpecialEffect) 
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 4),
+                                    child: Icon(Icons.auto_awesome, size: 14, color: Colors.purpleAccent),
+                                  ),
                               ],
                             ),
                             const SizedBox(height: 4),
                             Text(
                               widget.task.description,
                               style: TextStyle(
-                                color: Colors.grey[900], 
+                                color: isEnabled ? Colors.grey[900] : Colors.grey[600], 
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
+                                fontStyle: isEnabled ? FontStyle.normal : FontStyle.italic,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -213,6 +235,17 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                     ],
                   ),
                 ),
+
+                // LOCK OVERLAY
+                if (!isEnabled)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.1),
+                      child: const Center(
+                        child: Icon(Icons.lock_outline, color: Colors.black54, size: 28),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
