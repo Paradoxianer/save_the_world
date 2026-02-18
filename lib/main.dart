@@ -73,17 +73,14 @@ class _HomeState extends State<Home> {
     _lastCelebratedStage = game.stage;
     game.addStageListener(_onStageChanged);
     Game.notifier.addListener(_rebuild);
-    
     _checkDSGVO();
   }
 
   Future<void> _checkDSGVO() async {
     final status = await Game.getInstance().dataManager.readData("dsgvo_accepted");
-    if (status == "true") {
-      setState(() {
-        _dsgvoAccepted = true;
-      });
-    }
+    setState(() {
+      _dsgvoAccepted = (status == "true");
+    });
   }
 
   @override
@@ -121,7 +118,6 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
-        // CARTOON APPBAR: Bold bottom border
         shape: const Border(
           bottom: BorderSide(color: Colors.black, width: 3),
         ),
@@ -150,7 +146,6 @@ class _HomeState extends State<Home> {
                         child: RessourceTable(
                           ressourceList: Game.ressources.values.where((r) => r.name != "Stage").toList(),
                           size: 24.0,
-                          isGlobal: true,
                         ),
                       )),
                 ],
@@ -160,10 +155,9 @@ class _HomeState extends State<Home> {
       ),
       body: Container(
         color: const Color(0xFFEEEEEE),
-        child: const Column(
+        child: Column(
           children: [
-            // TAB SELECTOR
-            TabBar(
+            const TabBar(
               labelColor: Colors.black,
               unselectedLabelColor: Colors.grey,
               indicatorColor: Colors.orange,
@@ -173,7 +167,7 @@ class _HomeState extends State<Home> {
                 Tab(child: Text("STUFEN", style: TextStyle(fontWeight: FontWeight.w900))),
               ],
             ),
-            Expanded(
+            const Expanded(
               child: TabBarView(
                 children: [
                   TaskList(),
@@ -208,19 +202,22 @@ class _HomeState extends State<Home> {
                       }
                   ),
                   const Spacer(),
+                  // DSGVO Icon with dynamic color: Green if accepted, Red if not
                   IconButton(
                       icon: Stack(
                         alignment: Alignment.center,
                         children: [
-                          if (_dsgvoAccepted)
-                            const Icon(Icons.shield, color: Colors.green, size: 20),
-                          const Icon(Icons.shield_outlined, color: Colors.black, size: 30),
+                          Icon(Icons.shield, color: _dsgvoAccepted ? Colors.green : Colors.red, size: 18),
+                          const Icon(Icons.shield_outlined, color: Colors.black, size: 28),
                         ],
                       ),
                       onPressed: () async {
                         final result = await showDSGVODialog(context);
                         if (result == ConfirmAGB.ACCEPT) {
                           await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "true");
+                          _checkDSGVO();
+                        } else if (result == ConfirmAGB.CANCEL) {
+                          await Game.getInstance().dataManager.writeJson("dsgvo_accepted", "false");
                           _checkDSGVO();
                         }
                       }
