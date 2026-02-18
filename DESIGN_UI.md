@@ -1,36 +1,34 @@
 # 🎨 Design & UI/UX Guide - Save the World
 
 ## 🌟 Vision: "The Vibrant Living Cartoon"
-Das Spiel muss sich wie ein High-Energy Comic anfühlen. Grelle Farben, Tiefe durch Outlines und eine lebendige Umgebung töten die "Business-Nüchternheit".
+Ein haptisches, farbenfrohes Comic-Erlebnis. Jedes UI-Element atmet, reagiert und fühlt sich wie ein Teil einer interaktiven Welt an.
 
 ## 🛠 Visuelle Prinzipien
-* **Cartoon Punch:** Dicke schwarze Outlines (1.5 - 2.0), kräftige Primärfarben, dynamisches Cel-Shading.
-* **Environment Immersion:** Jede Stage ist ein Ort, keine Liste.
-* **High Contrast:** Gameplay-Elemente müssen vor dem Hintergrund "poppen".
+* **Cartoon Aesthetics:** Dicke schwarze Konturen (Border: 3.0), kräftige Farben, "Bouncy" Animationen.
+* **Consistent Dialogs:** Einheitliches "Comic Panel" Design für alle Popups.
+* **Information Hierarchy:** Klare Farbcodes für Informationstypen.
 
-## 🚀 "Juice" & Feedback Roadmap
+## 🚀 "Juice" & Feedback Roadmap (Phase 3)
 
-### 1. Liquid Progress & Feedback (Erledigt)
-* Wavy Progress Fill (Normal/Krise/Gold).
-* Reaktive Floating Resource Numbers an der AppBar.
-* Haptischer Bounce-Effekt beim Task-Klick.
+### 1. The Comic Dialog Standard (High Priority)
+* **Visual:** Weißer Hintergrund, abgerundete Ecken (24), dicke schwarze Umrandung (3.0), Offset-Schatten (6, 6).
+* **Header:** Farbiges Kopf-Panel (Full width) mit weißem Text in Großbuchstaben.
+* **Colors:** 
+    * `BlueAccent`: Allgemeine Info (Level Review).
+    * `Orange`: Ressourcen & Gameplay.
+    * `Amber/Gold`: Meilensteine & Erfolge.
+    * `RedAccent`: Krisen & Warnungen.
+* **Buttons:** Breite `ElevatedButtons` mit schwarzer Kontur und fetter Typografie.
 
-### 2. Gamified Information
-* **Resource Tooltips:** Klick auf Ressourcen in der AppBar zeigt Details (Min/Max, Info) im Cartoon-Popup.
-* **Stufen-Review:** Klick auf abgeschlossene Stufen in der Liste öffnet Rückblick-Dialog mit alten Aufgaben.
-* **Enhanced Level Cards:** Anzeige von `Zeit`, `Klicks` und `Score` direkt auf den Karten in der Stufenliste.
+### 2. Enhanced Statistics & Scoring
+* **Score-Visualisierung:** Anzeige von `Score`, `Zeit` und `Klicks` im CelebrationDialog und in der LevelList.
+* **Trophy System:** Bronze/Silber/Gold Bewertung pro Stage (Vorbereitung für R2).
 
-### 3. Visual Celebration
-* **Confetti/Fireworks:** Bei Level-Aufstieg wird der Dialog von Partikeleffekten begleitet.
-* **Trophy System:** Score-basierte Bewertung (Bronze/Silber/Gold) pro Stage.
-
-### 4. Onboarding & Compliance
-* **DSGVO Start:** Zwingende Anzeige des DSGVO-Dialogs beim ersten App-Start.
-* **Story Intro:** Kurzer, knackiger Comic-Dialog am Anfang: "Das Ziel: Rette Seelen, vergrößere die Gemeinde!"
-* **Cartoon About:** Überarbeitung des Info-Dialogs im Comic-Stil inkl. dynamischer Versionsnummer.
+### 3. Onboarding Experience
+* **Mandatory Flow:** DSGVO -> Story Intro (Goal Explanation).
+* **Comic Story Dialogs:** Stylische Einführung in die Welt von 'Save the World'.
 
 ## 📐 Technische Roadmap
-1. **Score Engine:** Implementierung der Berechnungslogik für Stage-Performance.
-2. **Partikel-System:** Integration eines einfachen Konfetti-Widgets (z.B. `confetti` package).
-3. **Onboarding Flow:** Steuerung der Initial-Dialoge in `main.dart`.
-4. **Balancing:** Entschärfung der Krisenfrequenz in Stage 1.
+1. **Dialog Refactoring:** Vereinheitlichung von `RessourceItem`, `TaskInfo` und `LevelList` Dialogen.
+2. **Onboarding Controller:** Steuerung der Startsequenz in `main.dart`.
+3. **NumberFormatter Localization:** Umstellung auf deutsche Suffixe (Mrd statt B).
