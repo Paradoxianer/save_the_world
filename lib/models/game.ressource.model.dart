@@ -38,6 +38,8 @@ class Game {
     }
   }
 
+  bool isLoading = true; // NEW: Block listeners during load process
+
   DateTime? _lastStartTime;
   Duration _accumulatedStageTime = Duration.zero;
   int _stageClicks = 0;
@@ -126,6 +128,7 @@ class Game {
   }
 
   void resetGame() {
+    isLoading = true;
     stage = 0;
     tasks.clear();
     initRes();
@@ -137,6 +140,8 @@ class Game {
     stageBestTimesMs.clear();
     stageBestClicks.clear();
     saveState();
+    
+    isLoading = false;
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
   }
@@ -150,6 +155,7 @@ class Game {
   }
 
   void jumpToStage(int targetStage) {
+    isLoading = true;
     tasks.clear();
     initRes();
     stage = targetStage;
@@ -171,6 +177,7 @@ class Game {
     _stageClicks = 0;
 
     saveState();
+    isLoading = false;
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
   }
@@ -252,10 +259,20 @@ class Game {
     }));
   }
 
-  void loadState() {
-    dataManager.readData("gameRes").then((jsn) => loadRes(jsn));
-    dataManager.readData("allTasks").then((jsn) => loadAllTasks(jsn));
-    dataManager.readData("Game").then((jsn) => loadGame(jsn));
+  void loadState() async {
+    isLoading = true;
+    final resJsn = await dataManager.readData("gameRes");
+    loadRes(resJsn);
+    
+    final allTasksJsn = await dataManager.readData("allTasks");
+    await loadAllTasks(allTasksJsn);
+    
+    final gameJsn = await dataManager.readData("Game");
+    loadGame(gameJsn);
+    
+    isLoading = false;
+    notifier.notifyListeners();
+    stagenNotifier.notifyListeners();
   }
 
   void loadRes(String? jsn) {
@@ -271,11 +288,12 @@ class Game {
     }
   }
 
-  void loadAllTasks(String? jsn) {
+  Future<void> loadAllTasks(String? jsn) async {
     if (jsn != null) {
       final List<dynamic> parsed = json.decode(jsn);
       allTasks = parsed.map<Task>((tmpJson) => Task.fromJson(tmpJson)).toList();
-      dataManager.readData("activeTasks").then((val) => loadActiveTasks(val));
+      final activeTasksJsn = await dataManager.readData("activeTasks");
+      loadActiveTasks(activeTasksJsn);
     }
   }
 
@@ -312,23 +330,19 @@ class Game {
           stageBestClicks = clicks.map((k, v) => MapEntry(int.parse(k), v as int));
         }
         
-        // BUGFIX #47: Ensure the Stage Ressource and UI are updated after load
         ressources["Stage"]?.setValue(stage.toDouble());
-        stagenNotifier.notifyListeners();
-        notifier.notifyListeners();
-        
         _lastStartTime = DateTime.now();
       } catch (e) {
         stage = int.tryParse(jsn) ?? 0;
         ressources["Stage"]?.setValue(stage.toDouble());
-        stagenNotifier.notifyListeners();
-        notifier.notifyListeners();
         _lastStartTime = DateTime.now();
       }
     }
   }
 
   void updateGame(Duration elapse) {
+    if (isLoading) return; // Don't tick while loading
+    
     Duration d1 = elapse - saveCalled;
     Duration d2 = elapse - randCalled;
     if (d1 > saveDuration) {
@@ -354,6 +368,8 @@ class Game {
   }
 
   void levelListener() {
+    if (isLoading) return; // Prevent level-up logic during initial load
+
     final memberRes = ressources[Member().name];
     if (memberRes == null) return;
     double members = memberRes.value;
