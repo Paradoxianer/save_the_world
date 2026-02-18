@@ -15,14 +15,25 @@ class TaskItem extends StatefulWidget {
   TaskItemState createState() => TaskItemState();
 }
 
-class TaskItemState extends State<TaskItem> {
+class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin {
   final List<Ressource> _listenedResources = [];
+  late AnimationController _clickController;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     _updateListeners();
     widget.task.controller.addListener(_onAnimationTick);
+    
+    // CLICK FEEDBACK CONTROLLER: Very fast bounce
+    _clickController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 60),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _clickController, curve: Curves.easeOutCubic),
+    );
   }
 
   @override
@@ -40,6 +51,7 @@ class TaskItemState extends State<TaskItem> {
   void dispose() {
     _removeListeners();
     widget.task.controller.removeListener(_onAnimationTick);
+    _clickController.dispose();
     super.dispose();
   }
 
@@ -82,8 +94,15 @@ class TaskItemState extends State<TaskItem> {
     return true;
   }
 
-  void _handleTap() {
+  void _handleTap() async {
     if (_canAfford) {
+      // VISUAL BOUNCE: Always play the full animation regardless of touch duration
+      _clickController.forward().then((_) => _clickController.reverse());
+      
+      // RECORD THE CLICK IN GAME MODEL
+      Game.getInstance().recordClick();
+      
+      // Start the task
       widget.task.start();
     }
   }
@@ -95,112 +114,108 @@ class TaskItemState extends State<TaskItem> {
     final bool isRunning = widget.task.controller.isAnimating || widget.task.controller.value > 0;
     
     final bool isReverse = widget.task.controller.status == AnimationStatus.reverse;
+    final Color progressColor = isReverse 
+        ? Colors.redAccent 
+        : (isMilestone ? const Color(0xFFFFD700) : Theme.of(context).primaryColor);
     
-    Color progressColor;
-    if (isReverse) {
-      progressColor = Colors.redAccent;
-    } else if (isMilestone) {
-      progressColor = const Color(0xFFFFD700); 
-    } else {
-      progressColor = Theme.of(context).primaryColor;
-    }
-
     final FillDirection direction = isReverse ? FillDirection.rightToLeft : FillDirection.leftToRight;
 
     final double displayProgress = isReverse 
         ? (1.0 - widget.task.controller.value) 
         : widget.task.controller.value;
 
-    return Opacity(
-      opacity: (canAfford || isRunning) ? 1.0 : 0.6,
-      child: Card(
-        elevation: isMilestone ? 6 : 2, 
-        margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          side: BorderSide(
-            color: isMilestone ? Colors.orange[800]! : Colors.black87, 
-            width: 1.5, // Reduced border width as requested
-          ),
-        ),
-        child: Stack(
-          children: [
-            // BACKGROUND: Wavy Progress Fill
-            Positioned.fill(
-              child: CustomPaint(
-                painter: WavyTaskPainter(
-                  progress: displayProgress,
-                  color: progressColor,
-                  direction: direction,
-                ),
+    return GestureDetector(
+      // Only trigger logic on tap, animation is now handled in _handleTap
+      onTap: canAfford ? _handleTap : null,
+      onLongPress: () => showTaskInfo(context, widget.task),
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: Opacity(
+          opacity: (canAfford || isRunning) ? 1.0 : 0.6,
+          child: Card(
+            elevation: isMilestone ? 6 : 2, 
+            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+            clipBehavior: Clip.antiAlias,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
+              side: BorderSide(
+                color: isMilestone ? Colors.orange[800]! : Colors.black87, 
+                width: 1.5, 
               ),
             ),
-            
-            // CONTENT
-            InkWell(
-              onTap: canAfford ? _handleTap : null,
-              onLongPress: () => showTaskInfo(context, widget.task),
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 70,
-                      child: RessourceTable(ressourceList: widget.task.cost, size: 22.0),
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: WavyTaskPainter(
+                      progress: displayProgress,
+                      color: progressColor,
+                      direction: direction,
                     ),
-                    const SizedBox(width: 12),
-                    
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              if (isMilestone) 
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 6.0),
-                                  child: Icon(Icons.stars, color: Colors.orange, size: 24),
-                                ),
-                              Expanded(
-                                child: Text(
-                                  widget.task.name.toUpperCase(),
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900, 
-                                    fontSize: 14,
-                                    letterSpacing: 0.5,
-                                    color: isMilestone ? Colors.orange[900] : Colors.black87,
+                  ),
+                ),
+                
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 70,
+                        child: RessourceTable(ressourceList: widget.task.cost, size: 22.0, isGlobal: false),
+                      ),
+                      const SizedBox(width: 12),
+                      
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                if (isMilestone) 
+                                  const Padding(
+                                    padding: EdgeInsets.only(right: 6.0),
+                                    child: Icon(Icons.stars, color: Colors.orange, size: 24),
+                                  ),
+                                Expanded(
+                                  child: Text(
+                                    widget.task.name.toUpperCase(),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900, 
+                                      fontSize: 14,
+                                      letterSpacing: 0.5,
+                                      color: isMilestone ? Colors.orange[900] : Colors.black87,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.task.description,
-                            style: TextStyle(
-                              color: Colors.grey[900], 
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
+                              ],
                             ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Text(
+                              widget.task.description,
+                              style: TextStyle(
+                                color: Colors.grey[900], 
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    
-                    SizedBox(
-                      width: 70,
-                      child: RessourceTable(ressourceList: widget.task.award, size: 22.0),
-                    ),
-                  ],
+                      const SizedBox(width: 12),
+                      
+                      SizedBox(
+                        width: 70,
+                        child: RessourceTable(ressourceList: widget.task.award, size: 22.0, isGlobal: false),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

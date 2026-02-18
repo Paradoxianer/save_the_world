@@ -17,17 +17,22 @@ Das Onboarding muss den geistlichen Dienst widerspiegeln.
 
 ---
 
-## ⚡ ✨ #6: UI-Feedback: Fehlende Visualisierung bei Kosten [enhancement, ui, prio: 2-medium]
+## ⚡ #21: UI: Zahlen-Sichtbarkeit & Layout-Verschiebung fixen [ui, prio: 2-medium]
 ---
 **Status / Description:**
-Wenn Ressourcen für einen Task abgezogen werden, gibt es kein visuelles Feedback für den Spieler.
+Im Web-Build sind die Ressourcen-Zahlen schwer lesbar und das Layout wirkt verschoben. 
+
+**To-Do:**
+- Spaltenbreite in `RessourceTable` dynamisch anpassen.
+- Kontrast und Schriftgröße der Ressourcen-Werte prüfen.
+- Alignment in der AppBar für Web optimieren.
 
 ---
 
-## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
+## ⚡ ✨ #39: Feature: Stage Score & Trophy System [enhancement, ui, prio: 2-medium]
 ---
 **Status / Description:**
-Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
+Implement a scoring system based on active time and click count per stage. Award Bronze, Silber, or Gold trophies based on performance. Display trophies in the LevelList.
 
 ---
 
@@ -38,13 +43,17 @@ Zwei Tabs (TaskList & LevelList) sind aktiv. Prüfung, ob weitere Ansichten für
 
 ---
 
-## ⚡ #24: Logic: Jüngerschafts- & Wachstumslogik (nach Samy El-Daour) [documentation, balancing, prio: 2-medium]
+## ⚡ ✨ #1: Logic: Miss-Mechanik verfeinern [enhancement, prio: 2-medium]
 ---
 **Status / Description:**
-Jüngerschafts-Logik in Stage 4 implementiert:
-- Task '1-zu-1 Mentoring' als Basis für Leiterentwicklung.
-- Task 'Aufgaben abgeben' generiert nun Zeit-Ressourcen
+Basis-Migration der miss-Logik in den Modifikatoren vorbereitet.
 
+---
+
+## ⚡ ✨ #6: UI-Feedback: Fehlende Visualisierung bei Kosten [enhancement, ui, prio: 2-medium]
+---
+**Status / Description:**
+Wenn Ressourcen für einen Task abgezogen werden, gibt es kein visuelles Feedback für den Spieler.
 
 ---
 
@@ -61,18 +70,6 @@ Prüfung und Sicherstellung der volle Funktionalität im Browser.
 
 ---
 
-## ⚡ #21: UI: Zahlen-Sichtbarkeit & Layout-Verschiebung fixen [ui, prio: 2-medium]
----
-**Status / Description:**
-Im Web-Build sind die Ressourcen-Zahlen schwer lesbar und das Layout wirkt verschoben. 
-
-**To-Do:**
-- Spaltenbreite in `RessourceTable` dynamisch anpassen.
-- Kontrast und Schriftgröße der Ressourcen-Werte prüfen.
-- Alignment in der AppBar für Web optimieren.
-
----
-
 ## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
 ---
 **Status / Description:**
@@ -81,6 +78,16 @@ Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
 **Szenario:**
 - Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
 - Konsequenzen für Status und Aufgaben-Pool definieren.
+
+---
+
+## ⚡ #24: Logic: Jüngerschafts- & Wachstumslogik (nach Samy El-Daour) [documentation, balancing, prio: 2-medium]
+---
+**Status / Description:**
+Jüngerschafts-Logik in Stage 4 implementiert:
+- Task '1-zu-1 Mentoring' als Basis für Leiterentwicklung.
+- Task 'Aufgaben abgeben' generiert nun Zeit-Ressourcen
+
 
 ---
 

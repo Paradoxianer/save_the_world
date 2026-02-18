@@ -89,8 +89,12 @@ class _RessourceTableState extends State<RessourceTable> {
         cells.add(
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2.0),
-            // PASS THE GLOBAL FLAG DOWN
-            child: RessourceItem(widget.ressourceList[i], size: widget.size),
+            // ONLY interative if this is the Global AppBar Table
+            child: RessourceItem(
+              widget.ressourceList[i], 
+              size: widget.size, 
+              interactive: widget.isGlobal
+            ),
           )
         );
       } else {
