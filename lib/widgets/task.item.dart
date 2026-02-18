@@ -137,7 +137,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
 
     // Minimalistic Modifier Icons
     final bool hasMessage = widget.task.myModifier.any((m) => m is MessageModifier);
-    final bool hasSpecialEffect = widget.task.myModifier.any((m) => m is AddTaskModifier || m.name != "MessageModifier");
+    final bool hasSpecialEffect = widget.task.myModifier.any((m) => m is AddTask || m.name != "MessageModifier");
 
     return GestureDetector(
       onTap: (canAfford && isEnabled) ? _handleTap : null,
