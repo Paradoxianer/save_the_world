@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // REQUIRED for kDebugMode
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/utils/number_formatter.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
-import 'package:save_the_world_flutter_app/stages.dart'; // REQUIRED IMPORT FIXED
+import 'package:save_the_world_flutter_app/stages.dart';
 
 class LevelList extends StatelessWidget {
   const LevelList({super.key});
@@ -29,6 +30,8 @@ class LevelList extends StatelessWidget {
 
           return GestureDetector(
             onTap: (isPassed || isCurrent) ? () => _showLevelDetails(context, index, stageName) : null,
+            // DEBUG CHEAT: Long press to jump to stage (only in Debug Mode)
+            onLongPress: kDebugMode ? () => _confirmStageJump(context, index, stageName) : null,
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
               child: Card(
@@ -37,67 +40,85 @@ class LevelList extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                   side: BorderSide(
-                    color: isCurrent ? Colors.orange[800]! : Colors.black87,
+                    color: isCurrent ? Colors.orange[800]! : (kDebugMode ? Colors.blue.withOpacity(0.3) : Colors.black87),
                     width: isCurrent ? 3 : 1.5,
                   ),
                 ),
                 color: isPassed ? Colors.green[50] : (isCurrent ? Colors.white : Colors.grey[200]),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 45,
-                        height: 45,
-                        decoration: BoxDecoration(
-                          color: isPassed ? Colors.green : (isCurrent ? Colors.orange : Colors.grey),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.black87, width: 2),
-                        ),
-                        child: Center(
-                          child: Text(
-                            index.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 18,
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              color: isPassed ? Colors.green : (isCurrent ? Colors.orange : Colors.grey),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.black87, width: 2),
+                            ),
+                            child: Center(
+                              child: Text(
+                                index.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18,
+                                ),
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  stageName.toUpperCase(),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 15,
+                                    color: isFuture ? Colors.grey[600] : Colors.black87,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  "Limit: ${NumberFormatter.format(memberThreshold.toDouble())} Mitglieder",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: isFuture ? Colors.grey[500] : Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            isPassed ? Icons.check_circle : (isCurrent ? Icons.play_circle_filled : Icons.lock),
+                            color: isPassed ? Colors.green : (isCurrent ? Colors.orange : Colors.grey[400]),
+                            size: 24,
+                          ),
+                        ],
+                      ),
+                    ),
+                    // DEBUG VISUAL HINT
+                    if (kDebugMode)
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: const BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8)),
+                          ),
+                          child: const Text("DEBUG", style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              stageName.toUpperCase(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 15,
-                                color: isFuture ? Colors.grey[600] : Colors.black87,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              "Limit: ${NumberFormatter.format(memberThreshold.toDouble())} Mitglieder",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isFuture ? Colors.grey[500] : Colors.black54,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        isPassed ? Icons.check_circle : (isCurrent ? Icons.play_circle_filled : Icons.lock),
-                        color: isPassed ? Colors.green : (isCurrent ? Colors.orange : Colors.grey[400]),
-                        size: 24,
-                      ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
             ),
@@ -107,10 +128,31 @@ class LevelList extends StatelessWidget {
     );
   }
 
-  void _showLevelDetails(BuildContext context, int stageIndex, String stageName) {
-    // Ensure index is within bounds of allStages
-    if (stageIndex >= allStages.length) return;
+  void _confirmStageJump(BuildContext context, int index, String name) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("DEBUG: Stage Jump"),
+        content: Text("Möchtest du wirklich direkt zu Stufe $index ($name) springen? Alle permanenten Tasks der Vorstufen werden aktiviert."),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("ABBRECHEN")),
+          ElevatedButton(
+            onPressed: () {
+              Game.getInstance().jumpToStage(index);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Jump zu Stufe $index erfolgreich!")),
+              );
+            }, 
+            child: const Text("JUMP!")
+          ),
+        ],
+      ),
+    );
+  }
 
+  void _showLevelDetails(BuildContext context, int stageIndex, String stageName) {
+    if (stageIndex >= allStages.length) return;
     final List<Task> stageTasks = allStages[stageIndex].allTasks;
 
     showDialog(

@@ -38,12 +38,10 @@ class Game {
     }
   }
 
-  // Statistics for current stage
   DateTime? _lastStartTime;
   Duration _accumulatedStageTime = Duration.zero;
   int _stageClicks = 0;
   
-  // Storage for last completed stage stats to show in dialog
   Duration? lastStageDuration;
   int? lastStageClicks;
 
@@ -79,7 +77,6 @@ class Game {
     ressources[Member().name]?.addListener(levelListener);
     loadState();
     
-    // Start tracking time immediately
     resumeStageTimer();
   }
 
@@ -131,6 +128,41 @@ class Game {
     _accumulatedStageTime = Duration.zero;
     _lastStartTime = DateTime.now();
     _stageClicks = 0;
+    saveState();
+    notifier.notifyListeners();
+    stagenNotifier.notifyListeners();
+  }
+
+  /// DEBUG ONLY: Jumps to a specific stage and initializes all tasks from previous stages
+  void jumpToStage(int targetStage) {
+    debugPrint("[DEBUG] Jumping to stage $targetStage...");
+    
+    // 1. Reset game basics but keep resources at a reasonable level
+    tasks.clear();
+    initRes();
+    
+    // 2. Set stage and update resources
+    stage = targetStage;
+    ressources["Stage"]?.setValue(stage.toDouble());
+    
+    // Set members to just below the next level threshold for convenience
+    List<int> thresholds = levels.keys.toList();
+    if (targetStage < thresholds.length) {
+      double targetMembers = thresholds[targetStage].toDouble() - 1.0;
+      ressources[Member().name]?.setValue(max(2.0, targetMembers));
+      ressources[Member().name]?.max = thresholds[targetStage].toDouble();
+    }
+
+    // 3. Catch up logic: Run initStage for ALL stages up to target to collect all permanent tasks
+    for (int i = 0; i <= targetStage; i++) {
+      initStage(i);
+    }
+
+    // 4. Reset statistics for the new stage
+    _accumulatedStageTime = Duration.zero;
+    _lastStartTime = DateTime.now();
+    _stageClicks = 0;
+
     saveState();
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
@@ -267,7 +299,6 @@ class Game {
           _accumulatedStageTime = Duration(milliseconds: gameData['accumulatedStageTime']);
         }
         
-        // Reset last start time to now when loading
         _lastStartTime = DateTime.now();
         
       } catch (e) {
@@ -321,13 +352,11 @@ class Game {
     }
 
     if (found != null && found > stage) {
-      // Calculate final active duration for the completed stage
       lastStageDuration = currentActiveStageTime;
       lastStageClicks = _stageClicks;
       
       debugPrint("[GAME] Stage $stage completed in ${lastStageDuration?.inSeconds}s active time with $lastStageClicks clicks.");
 
-      // Reset for next stage
       _accumulatedStageTime = Duration.zero;
       _lastStartTime = DateTime.now();
       _stageClicks = 0;
