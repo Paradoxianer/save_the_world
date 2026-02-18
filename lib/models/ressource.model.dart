@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
@@ -14,11 +15,17 @@ class Ressource extends GameElement {
   double _max = 100.0;
   bool willAdd = true;
 
+  // NEW: Fields for dynamic calculation (#55)
+  String? multiplierResourceName;
+  double? multiplierValue;
+
   Ressource({
     super.name,
     super.description,
     super.icon,
     double? value,
+    this.multiplierResourceName,
+    this.multiplierValue,
     List<Modifier>? modifier,
     double min = 0.0,
     double max = 100.0,
@@ -28,16 +35,25 @@ class Ressource extends GameElement {
     if (value != null) _value = value;
   }
 
-  // Getters
-  double get value => _value;
-  double get min => _min;
-  double get max => _max;
+  // DYNAMIC GETTER: Calculates value on the fly if multiplier is set
+  double get value {
+    if (multiplierResourceName != null && multiplierValue != null) {
+      final factorRes = Game.ressources[multiplierResourceName!];
+      if (factorRes != null) {
+        return _value * factorRes.value * multiplierValue!;
+      }
+    }
+    return _value;
+  }
 
-  // Setters with notification for UI Sync (#26)
+  // Setter now only sets the base value
   set value(double val) {
     _value = val;
     notifier.notifyListeners();
   }
+
+  double get min => _min;
+  double get max => _max;
 
   set min(double val) {
     _min = val;
@@ -79,6 +95,8 @@ class Ressource extends GameElement {
     
     res.min = (json['min'] as num?)?.toDouble() ?? res.min;
     res.max = (json['max'] as num?)?.toDouble() ?? res.max;
+    res.multiplierResourceName = json['multiplierResourceName'] as String?;
+    res.multiplierValue = (json['multiplierValue'] as num?)?.toDouble();
     return res;
   }
 
@@ -87,13 +105,15 @@ class Ressource extends GameElement {
     return <String, dynamic>{
       'name': name,
       'min': min,
-      'value': value,
+      'value': _value, // Store the base value, not the calculated one
       'max': max,
+      'multiplierResourceName': multiplierResourceName,
+      'multiplierValue': multiplierValue,
     };
   }
 
   void subtract(Ressource other) {
-    _value -= other.value;
+    _value -= other.value; // Uses the getter, so dynamic values work here too
     if (_value < _min) {
       _value = _min;
     }
@@ -101,7 +121,7 @@ class Ressource extends GameElement {
   }
 
   void add(Ressource other) {
-    _value += other.value;
+    _value += other.value; // Uses the getter, so dynamic values work here too
     if (_value > _max) {
       _value = _max;
     }
@@ -115,14 +135,14 @@ class Ressource extends GameElement {
 
   bool canAdd(Ressource other) {
     if (name == other.name) {
-      return (_value + other.value) <= _max;
+      return (this.value + other.value) <= _max;
     }
     return false;
   }
 
   bool canSubtract(Ressource other) {
     if (name == other.name) {
-      return (_value - other.value) >= _min;
+      return (this.value - other.value) >= _min;
     }
     return false;
   }
