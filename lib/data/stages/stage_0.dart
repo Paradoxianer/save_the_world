@@ -53,7 +53,7 @@ final Stage stage0 = Stage(
       description: "Regelmäßige Besuche bei Gemeindegliedern zur Seelsorge.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
-      award: [Member(value: 1.5)], // Etwas effizienter, da Routine
+      award: [Member(value: 0.75)], // Etwas effizienter, da Routine
     ),
     Task(
       name: "Schlafen",
@@ -84,7 +84,7 @@ final Stage stage0 = Stage(
       description: "Gemeinschaft stärken und neue Leute einladen.",
       duration: 10000.0,
       cost: [Time(value: 4.0), Faith(value: 5.0)],
-      award: [Member(value: 2.0)],
+      award: [Member(value: 1.0)],
     ),
   ],
 );
