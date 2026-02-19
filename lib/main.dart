@@ -13,9 +13,16 @@ import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:audio_session/audio_session.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // FIX #56: Configure audio session to be ambient.
+  // This prevents the app from pausing background music (YouTube Music, Spotify, etc.)
+  final session = await AudioSession.instance;
+  await session.configure(const AudioSessionConfiguration.ambient());
+  
   runApp(const MyApp());
 }
 
@@ -220,7 +227,7 @@ class _HomeState extends State<Home> {
                           const Icon(Icons.shield_outlined, color: Colors.black, size: 28),
                         ],
                       ),
-                      onPressed: () => _triggerOnboarding(force: true), // FIXED: Now forces the dialog to show
+                      onPressed: () => _triggerOnboarding(force: true),
                   ),
                   IconButton(
                       icon: const Icon(Icons.info_outline, color: Colors.black),
