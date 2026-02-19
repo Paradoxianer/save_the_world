@@ -1,6 +1,13 @@
 ﻿# 📋 GitHub Issues Roadmap
 _Sortiert nach Priorität (High > Medium > Low)_
 
+## 🔥 ✨ #51: UI: Standardize all Dialogs to 'Comic Panel' Style [enhancement, ui, prio: 1-high]
+---
+**Status / Description:**
+Unify the design of resource popups, task info, and level details. Use 3.0 width borders, color-coded headers, and stylized buttons.
+
+---
+
 ## 🔥 #22: UX & Balancing: Der Ruf (Tutorial-Onboarding) [balancing, content, prio: 1-high]
 ---
 **Status / Description:**
@@ -14,24 +21,6 @@ Das Onboarding muss den geistlichen Dienst widerspiegeln.
 5. Gemeinde-Keimzelle (Essen in Wohnung ab 5 Pers.)
 
 **Fokus:** Weg von Organisation (Kasse), hin zur geistlichen Basis.
-
----
-
-## 🔥 ✨ #51: UI: Standardize all Dialogs to 'Comic Panel' Style [enhancement, ui, prio: 1-high]
----
-**Status / Description:**
-Unify the design of resource popups, task info, and level details. Use 3.0 width borders, color-coded headers, and stylized buttons.
-
----
-
-## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
----
-**Status / Description:**
-Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
-
-**Szenario:**
-- Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
-- Konsequenzen für Status und Aufgaben-Pool definieren.
 
 ---
 
@@ -49,13 +38,6 @@ Zwei Tabs (TaskList & LevelList) sind aktiv. Prüfung, ob weitere Ansichten für
 
 ---
 
-## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
----
-**Status / Description:**
-Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
-
----
-
 ## ⚡ #24: Logic: Jüngerschafts- & Wachstumslogik (nach Samy El-Daour) [documentation, balancing, prio: 2-medium]
 ---
 **Status / Description:**
@@ -63,6 +45,31 @@ Jüngerschafts-Logik in Stage 4 implementiert:
 - Task '1-zu-1 Mentoring' als Basis für Leiterentwicklung.
 - Task 'Aufgaben abgeben' generiert nun Zeit-Ressourcen
 
+
+---
+
+## ⚡ ✨ #44: UX: Comic-style About Dialog with dynamic Version [enhancement, ui, prio: 2-medium]
+---
+**Status / Description:**
+Redesign the Info/About dialog to match the 'Living Cartoon' look. Display the current app version read from package_info.
+
+---
+
+## ⚡ #29: Logic: Stage-Fallback bei Ressourcenverlust [balancing, prio: 2-medium]
+---
+**Status / Description:**
+Prüfung, ob ein Zurückfallen in eine niedrigere Stufe sinnvoll ist.
+
+**Szenario:**
+- Durch 'Streit' sinkt die Mitgliederzahl unter die Schwelle der aktuellen Stufe.
+- Konsequenzen für Status und Aufgaben-Pool definieren.
+
+---
+
+## ☕ #7: Balancing: Task-Werte [balancing, prio: 3-low]
+---
+**Status / Description:**
+Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
 
 ---
 
@@ -80,17 +87,10 @@ testTasks aus der Produktionslogik in eine dedizierte Mock-Klasse verschieben.
 
 ---
 
-## ☕ #7: Balancing: Task-Werte [balancing, prio: 3-low]
+## ✨ #57: ✨ Feature: National & International Scoreboard (Firebase) [enhancement]
 ---
 **Status / Description:**
-Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
-
----
-
-## #56: ⚡ Assets: App Icon & Audio Interference
----
-**Status / Description:**
-1. App Icon ist noch Standard (Asset-Check). 2. Bug: YouTube Music pausiert, wenn App aktiv ist. Prüfung auf AudioFocus-Anfragen oder zu hohe Ressourcenlast.
+Implementierung eines globalen Rankingsystems. 1. National (Filter nach Locale/Land) 2. International (Weltweit). Daten-Backend via Firebase Firestore.
 
 ---
 
@@ -98,6 +98,13 @@ Rebalancing der Kosten/Nutzen-Rechnung (z.B. studieren vs. Kasse führen).
 ---
 **Status / Description:**
 Einführung von 'enabled' (bool) im Task-Modell. Neue Modifier: EnableTask('Name') und DisableTask('Name'). Dies löst auch die Race Condition in Stage 0, indem Tutorial-Tasks explizit deaktiviert werden können.
+
+---
+
+## #56: ⚡ Assets: App Icon & Audio Interference
+---
+**Status / Description:**
+1. App Icon ist noch Standard (Asset-Check). 2. Bug: YouTube Music pausiert, wenn App aktiv ist. Prüfung auf AudioFocus-Anfragen oder zu hohe Ressourcenlast.
 
 ---
 
