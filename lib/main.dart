@@ -21,7 +21,20 @@ void main() async {
   // FIX #56: Configure audio session to be ambient.
   // This prevents the app from pausing background music (YouTube Music, Spotify, etc.)
   final session = await AudioSession.instance;
-  await session.configure(const AudioSessionConfiguration.ambient());
+  await session.configure(const AudioSessionConfiguration(
+    avAudioSessionCategory: AVAudioSessionCategory.ambient,
+    avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
+    avAudioSessionMode: AVAudioSessionMode.defaultMode,
+    avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
+    avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+    androidAudioAttributes: AndroidAudioAttributes(
+      contentType: AndroidAudioContentType.music,
+      flags: AndroidAudioFlags.none,
+      usage: AndroidAudioUsage.game,
+    ),
+    androidAudioFocusGainType: AndroidAudioFocusGainType.gainTransientMayDuck,
+    androidWillPauseWhenDucked: false,
+  ));
   
   runApp(const MyApp());
 }
