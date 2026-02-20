@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
@@ -130,7 +131,8 @@ void main() {
       Game.ressources["Money"]?.value = 150.0;
       expect(canAfford(task), isTrue);
     });
-   group('Persistence Tests', () {
+
+    group('Persistence Tests', () {
       test('Game JSON round-trip consistency', () {
         Game.mInstance = null;
         final g = Game.getInstance();
