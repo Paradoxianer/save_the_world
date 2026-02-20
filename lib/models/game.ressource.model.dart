@@ -27,7 +27,9 @@ class Game {
   static late ChangeNotifier notifier;
   static late ChangeNotifier stagenNotifier;
   static Game? mInstance;
-  static final TickerProvider tick = GameTickerProvider();
+  
+  // ARCHITEKTUR-FIX: Nicht final, um in Tests TestVSync zu ermöglichen
+  static TickerProvider tick = GameTickerProvider();
   
   String? _snackbarMessage;
   String? get snackbarMessage => _snackbarMessage;
@@ -38,7 +40,7 @@ class Game {
     }
   }
 
-  bool isLoading = true; // NEW: Block listeners during load process
+  bool isLoading = true;
 
   DateTime? _lastStartTime;
   Duration _accumulatedStageTime = Duration.zero;
@@ -195,14 +197,12 @@ class Game {
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      'tasks': json.encode(tasks),
-      'alltasks': json.encode(allTasks),
+      'tasks': json.encode(tasks.map((t) => t.toJson()).toList()),
+      'alltasks': json.encode(allTasks.map((t) => t.toJson()).toList()),
       'stage': stage,
       'accumulatedStageTime': _accumulatedStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
-      'stageHighscores': json.encode(stageHighscores),
-      'stageBestTimesMs': json.encode(stageBestTimesMs),
-      'stageBestClicks': json.encode(stageBestClicks),
+      'stageHighscores': json.encode(stageHighscores.map((k, v) => MapEntry(k.toString(), v))),
     };
   }
 
@@ -247,15 +247,13 @@ class Game {
 
   void saveState() {
     dataManager.writeJson("gameRes", json.encode(ressources));
-    dataManager.writeJson("activeTasks", json.encode(tasks)); 
-    dataManager.writeJson("allTasks", json.encode(allTasks));
+    dataManager.writeJson("activeTasks", json.encode(tasks.map((t) => t.toJson()).toList())); 
+    dataManager.writeJson("allTasks", json.encode(allTasks.map((t) => t.toJson()).toList()));
     dataManager.writeJson("Game", json.encode({
       'stage': stage,
       'accumulatedStageTime': currentActiveStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
-      'stageHighscores': stageHighscores,
-      'stageBestTimesMs': stageBestTimesMs,
-      'stageBestClicks': stageBestClicks,
+      'stageHighscores': stageHighscores.map((k, v) => MapEntry(k.toString(), v)),
     }));
   }
 
@@ -321,14 +319,6 @@ class Game {
           final Map<String, dynamic> scores = gameData['stageHighscores'];
           stageHighscores = scores.map((k, v) => MapEntry(int.parse(k), v as int));
         }
-        if (gameData['stageBestTimesMs'] != null) {
-          final Map<String, dynamic> times = gameData['stageBestTimesMs'];
-          stageBestTimesMs = times.map((k, v) => MapEntry(int.parse(k), v as int));
-        }
-        if (gameData['stageBestClicks'] != null) {
-          final Map<String, dynamic> clicks = gameData['stageBestClicks'];
-          stageBestClicks = clicks.map((k, v) => MapEntry(int.parse(k), v as int));
-        }
         
         ressources["Stage"]?.setValue(stage.toDouble());
         _lastStartTime = DateTime.now();
@@ -341,7 +331,7 @@ class Game {
   }
 
   void updateGame(Duration elapse) {
-    if (isLoading) return; // Don't tick while loading
+    if (isLoading) return;
     
     Duration d1 = elapse - saveCalled;
     Duration d2 = elapse - randCalled;
@@ -368,7 +358,7 @@ class Game {
   }
 
   void levelListener() {
-    if (isLoading) return; // Prevent level-up logic during initial load
+    if (isLoading) return;
 
     final memberRes = ressources[Member().name];
     if (memberRes == null) return;
@@ -389,8 +379,6 @@ class Game {
       
       if (lastStageScore! > (stageHighscores[stage] ?? 0)) {
         stageHighscores[stage] = lastStageScore!;
-        stageBestTimesMs[stage] = lastStageDuration!.inMilliseconds;
-        stageBestClicks[stage] = lastStageClicks!;
       }
 
       _accumulatedStageTime = Duration.zero;
