@@ -91,6 +91,7 @@ final Stage stage0 = Stage(
       name: "Essen in meiner Wohnung",
       description: "MEILENSTEIN: Erhöht deine maximale Mitglieder-Kapazität auf 40.",
       duration: 10000.0,
+      isMilestone: true,
       cost: [Time(value: 4.0), Member(value: 5.0)],
       award: [Member(value: 8.0)], // Reduziert von 15.0
       modifier: [
