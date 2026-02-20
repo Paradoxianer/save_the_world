@@ -5,6 +5,9 @@ import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 
 void main() {
+  // Required for Ticker initialization in Game model
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Ressource Model Tests', () {
     test('Standard values and constraints', () {
       final res = Ressource(name: "Test", value: 50.0, min: 0.0, max: 100.0);
@@ -20,7 +23,10 @@ void main() {
 
     test('Dynamic Multiplier Calculation (Smart Awards)', () {
       // Setup global resources for multiplier lookup
+      Game.mInstance = null; // Reset singleton
       final game = Game.getInstance();
+      game.isLoading = false;
+
       Game.ressources["Member"] = Member(value: 10.0);
       
       final dynamicAward = Money(

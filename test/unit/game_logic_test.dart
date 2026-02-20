@@ -1,17 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
-import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/removetask.model.dart';
-import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
-import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task_activation.modifier.dart';
-import 'package:save_the_world_flutter_app/stages.dart';
 
 void main() {
+  // Required for Ticker/AnimationController initialization in Game/Task models
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Comprehensive Game Logic Tests', () {
     late Game game;
 
@@ -42,7 +40,7 @@ void main() {
     });
 
     test('Progression-Swap-Pattern (Stage 0 Simulation)', () {
-      // Setup stage 0 environment
+      // Setup environment
       final initialTask = Task(
         name: "Hausbesuch (Tutorial)",
         award: [Member(value: 1.0)],
@@ -131,6 +129,20 @@ void main() {
       
       Game.ressources["Money"]?.value = 150.0;
       expect(canAfford(task), isTrue);
+    });
+   group('Persistence Tests', () {
+      test('Game JSON round-trip consistency', () {
+        Game.mInstance = null;
+        final g = Game.getInstance();
+        g.stage = 3;
+        g.recordClick();
+        
+        final jsonStr = json.encode(g.toJson());
+        final data = json.decode(jsonStr) as Map<String, dynamic>;
+        
+        expect(data['stage'], 3);
+        expect(data['stageClicks'], 1);
+      });
     });
   });
 }
