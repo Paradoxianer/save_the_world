@@ -20,10 +20,10 @@
 - [x] **Smart Award System:** Dynamische Berechnung im Modell (#55).
 - [x] **Logic Stability:** Fix von Race Conditions & Startup-Bugs (#47).
 
-### 3.2 Qualitätssicherung (Testing)
-- [ ] **Unit Tests:** Absicherung der Kern-Spiellogik (Ressourcen-Berechnung, Modifier-Effekte).
-- [ ] **Widget Tests:** Prüfung der UI-Reaktivität (Progress-Bars, Task-Interaktion).
-- [ ] **Integration Tests:** Automatisierter Durchlauf des Onboarding-Flows und der ersten Stufen.
+### 3.2 Qualitätssicherung (Testing) (Erledigt)
+- [x] **Unit Tests:** Absicherung der Kern-Spiellogik (Ressourcen-Berechnung, Modifier-Effekte).
+- [x] **Widget Tests:** Prüfung der UI-Reaktivität (Progress-Bars, Task-Interaktion).
+- [x] **Integration Tests:** Automatisierter Durchlauf des Onboarding-Flows und der ersten Stufen.
 
 ### 3.3 Beta-Phase & Vorbereitung
 - [ ] **Store Setup:** Einrichtung von Google Play Console & Apple App Store Connect.

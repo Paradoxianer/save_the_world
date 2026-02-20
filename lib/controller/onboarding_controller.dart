@@ -70,6 +70,7 @@ class OnboardingController {
       ),
       actions: [
         ElevatedButton(
+          key: const Key('onboarding-continue-button'),
           onPressed: () => Navigator.pop(context),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.amber[700],

@@ -161,6 +161,7 @@ Future<ConfirmAGB?> showDSGVODialog(BuildContext context) {
         ),
         actions: [
           ElevatedButton(
+            key: const Key('dsgvo-accept-button'),
             onPressed: () => Navigator.of(context).pop(ConfirmAGB.ACCEPT),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.green[700],
