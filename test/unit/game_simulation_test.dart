@@ -105,10 +105,8 @@ Task? _decideNextTask(List<Task> available) {
   final currentTime = Game.ressources["Time"]?.value ?? 0.0;
 
   // PRIO 1: ÜBERLEBEN (Zeit-Management)
-  // Wenn Zeit kritisch ist, erzwinge Regeneration.
   if (currentTime < 8.0) {
     var survival = available.where((t) => t.name == "Schlafen" || t.name == "Freizeit").toList();
-    // Schlafen ist effizienter als Freizeit
     survival.sort((a, b) => b.award.fold(0.0, (p, aw) => p + (aw.name == "Time" ? aw.value : 0))
         .compareTo(a.award.fold(0.0, (p, aw) => p + (aw.name == "Time" ? aw.value : 0))));
     
@@ -122,7 +120,6 @@ Task? _decideNextTask(List<Task> available) {
   if (growthTasks.isNotEmpty) {
     growthTasks.sort((a, b) {
       if (a.isMilestone != b.isMilestone) return a.isMilestone ? -1 : 1;
-      // Sortiere nach dem höchsten Member-Ertrag
       double aMem = a.award.where((aw) => aw.name == "Member").fold(0, (p, aw) => p + aw.value);
       double bMem = b.award.where((aw) => aw.name == "Member").fold(0, (p, aw) => p + aw.value);
       return bMem.compareTo(aMem);
@@ -133,8 +130,7 @@ Task? _decideNextTask(List<Task> available) {
     }
   }
 
-  // PRIO 3: REGENERATION (Falls Wachstum zu teuer ist)
-  // Suche Aufgaben, die Ressourcen bringen, die aktuell knapp sind.
+  // PRIO 3: REGENERATION
   for (var res in Game.ressources.entries) {
     if (res.value.value < res.value.max * 0.3) {
         var fixers = available.where((t) => t.award.any((a) => a.name == res.key)).toList();
@@ -158,13 +154,19 @@ void _logStageSummary(int stage, int clicks, int waits, Map<String, int> usage, 
   else if (stage <= 10) mode = "LEITER (Gemeinde)";
   else mode = "STRATEGE (Bewegung)";
 
+  final sortedTasks = usage.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+  final topTaskSummary = sortedTasks.isEmpty
+      ? "N/A"
+      : sortedTasks.take(3).map((e) => "${e.key}(${e.value})").join(', ');
+
+
   final log = """
 📊 STAGE $stage ZUSAMMENFASSUNG:
    Modus:      $mode
    Klicks:     $clicks
    Wartezyklen: $waits
    Mitglieder: ${Game.ressources["Member"]?.value.toStringAsFixed(1)}
-   Top Task:   ${usage.entries.isEmpty ? "N/A" : usage.entries.toList()..sort((a,b) => b.value.compareTo(a.value))}
+   Top Tasks:  $topTaskSummary
 -----------------------------------""";
   
   print(log);
@@ -172,7 +174,6 @@ void _logStageSummary(int stage, int clicks, int waits, Map<String, int> usage, 
 }
 
 extension TaskExecutor on Task {
-    /// Simuliert die Ausführung eines Tasks ohne Zeitverzögerung
     void execute() {
         for (var cost in this.cost) {
             Game.ressources[cost.name]?.subtract(cost);
@@ -182,5 +183,5 @@ extension TaskExecutor on Task {
 }
 
 extension ListUtils<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
+  T? get firstOrNull => this.isEmpty ? null : first;
 }
