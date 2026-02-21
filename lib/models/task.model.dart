@@ -56,6 +56,11 @@ class Task extends GameElement {
     }
   }
 
+  // ECHTER FIX: Ressourcen sauber freigeben
+  void dispose() {
+    controller.dispose();
+  }
+
   factory Task.fromJson(Map<String, dynamic> jsn) {
     List<Ressource> deserializeResources(dynamic data) {
       if (data == null) return [];
@@ -142,8 +147,6 @@ class Task extends GameElement {
   }
 
   void finished() {
-    // CRITICAL: Notify UI about completion immediately BEFORE modifiers run
-    // to ensure SnackBar messages are triggered without delay
     modify(); 
     
     for (var a in award) {

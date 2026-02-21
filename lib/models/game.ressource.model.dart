@@ -27,12 +27,8 @@ class Game {
   static late ChangeNotifier notifier;
   static late ChangeNotifier stagenNotifier;
   static Game? mInstance;
+  static final TickerProvider tick = GameTickerProvider();
   
-  // Testbarkeit: Nicht final, damit wir in Tests einen kontrollierten VSync injizieren können
-  static TickerProvider tick = GameTickerProvider();
-  
-  Ticker? _mainTicker;
-
   String? _snackbarMessage;
   String? get snackbarMessage => _snackbarMessage;
   set snackbarMessage(String? value) {
@@ -70,9 +66,7 @@ class Game {
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
     
-    // Ticker speichern für Lifecycle-Management
-    _mainTicker = tick.createTicker(updateGame);
-    _mainTicker!.start();
+    tick.createTicker(updateGame).start();
     
     if (tasksList != null) tasks = tasksList;
     
@@ -91,12 +85,6 @@ class Game {
     loadState();
     
     resumeStageTimer();
-  }
-
-  // WICHTIG: Stoppt den Hintergrund-Loop (verhindert Leaks & Testfehler)
-  void dispose() {
-    _mainTicker?.dispose();
-    _mainTicker = null;
   }
 
   void resumeStageTimer() {
@@ -206,7 +194,6 @@ class Game {
   }
 
   Map<String, dynamic> toJson() {
-    // FIX: JSON Keys müssen Strings sein. Highscores werden konvertiert.
     return <String, dynamic>{
       'tasks': json.encode(tasks.map((t) => t.toJson()).toList()),
       'alltasks': json.encode(allTasks.map((t) => t.toJson()).toList()),
