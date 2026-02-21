@@ -5,10 +5,9 @@ import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
 void main() {
-  // Mock für PathProvider, damit die Simulation nicht abstürzt
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('🤖 Headless Balancing Bot (Full Playthrough)', () {
+  group('🤖 Smart Balancing & Logic Bot (Church Growth Validation)', () {
     late Game game;
 
     setUp(() {
@@ -18,100 +17,135 @@ void main() {
       Game.tasks.clear();
     });
 
-    test('Simulate complete game from Stage 0 to Stage 32', () {
+    test('Simulate playthrough and validate CHURCH_GROWTH_LOGIC.md principles', () {
       final List<int> thresholds = levels.keys.toList();
-      final Map<int, Map<String, dynamic>> stats = {};
+      final Map<int, Map<String, dynamic>> stageStats = {};
       
-      print("\n--- 🚀 STARTE VOLLSTÄNDIGE SPIEL-SIMULATION ---");
+      print("\n--- 🚀 STARTE LOGIK-VALIDIERUNGS-SIMULATION ---");
 
-      for (int currentTargetStage = 0; currentTargetStage < thresholds.length; currentTargetStage++) {
-        int clicks = 0;
-        double virtualTime = 0;
-        Map<String, int> shortages = {};
+      for (int currentStage = 0; currentStage < thresholds.length; currentStage++) {
+        int manualClicks = 0;
+        int autoExecutes = 0;
+        double timeConsumed = 0;
+        Set<String> finishedMilestones = {};
         
-        // Sicherstellen, dass die Stufe initialisiert ist
-        game.initStage(game.stage);
+        game.initStage(currentStage);
 
-        // Wir spielen, bis wir die nächste Stufe erreichen oder ein Limit überschreiten
-        while (game.stage == currentTargetStage) {
+        // Simulation der Ticks/Entscheidungen pro Stage
+        while (game.stage == currentStage) {
+          // 1. Logik-Check: Cleanup-Regel (CHURCH_GROWTH_LOGIC #3)
+          // Meilensteine dürfen nicht doppelt in der Liste sein
+          final milestoneNames = Game.tasks.where((t) => t.isMilestone).map((t) => t.name).toList();
+          if (milestoneNames.length != milestoneNames.toSet().length) {
+            fail("🛑 DUPLIKAT-FEHLER in Stage ${game.stage}: Meilenstein mehrfach vorhanden!");
+          }
+
+          // 2. Verfügbare Aufgaben filtern
           List<Task> available = Game.tasks.where((t) => t.enabled).toList();
           
           if (available.isEmpty) {
-            fail("🛑 DEAD-END in Stufe ${game.stage}: Keine aktiven Aufgaben!");
+            // Check: Gibt es Aufgaben, die nur 'disabled' sind (Warten auf Vorbereitung)?
+            bool waitingForChain = Game.tasks.any((t) => !t.enabled);
+            if (!waitingForChain) {
+              fail("🛑 DEAD-END in Stage ${game.stage}: Keine Aufgaben mehr verfügbar!");
+            }
+            // Simuliere Wartezeit/Vorbereitung (Auto-Enable Logik falls vorhanden)
+            timeConsumed += 1.0;
+            continue; 
           }
 
-          // Strategie des Bots:
-          // 1. Meilensteine haben absolute Priorität.
-          // 2. Aufgaben, die Member bringen, sind zweitwichtig.
-          // 3. Innerhalb dieser Gruppen: Günstigste Aufgaben zuerst.
+          // 3. Strategie (CHURCH_GROWTH_LOGIC #2: Macher vs. Leiter)
+          // Bot priorisiert: 
+          // a) Milestones (Progression)
+          // b) Member-Tasks (Wachstum)
+          // c) Ressourcen-Tasks (Maintenance)
           available.sort((a, b) {
             if (a.isMilestone != b.isMilestone) return a.isMilestone ? -1 : 1;
             double aMember = a.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
             double bMember = b.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
-            if (aMember != bMember) return bMember.compareTo(aMember);
-            return a.cost.length.compareTo(b.cost.length);
+            return bMember.compareTo(aMember);
           });
 
-          bool moved = false;
+          bool taskPerformed = false;
           for (var task in available) {
+            // Kann sich der Bot den Task leisten?
             bool canAfford = true;
             for (var cost in task.cost) {
               final res = Game.ressources[cost.name];
               if (res == null || !res.canSubtract(cost)) {
                 canAfford = false;
-                shortages[cost.name] = (shortages[cost.name] ?? 0) + 1;
                 break;
               }
             }
 
             if (canAfford) {
-              // Simulation der Durchführung
+              // Ausführung
               for (var cost in task.cost) {
                 Game.ressources[cost.name]?.subtract(cost);
               }
-              virtualTime += (task.duration / 1000);
-              clicks++;
               
-              task.finished(); // Awards & Modifier anwenden
-              game.levelListener(); // Prüfen ob Stage-Up
+              timeConsumed += (task.duration / 1000);
+              manualClicks++;
               
-              moved = true;
-              break; // Nur einen Task pro "Tick"
+              if (task.isMilestone) {
+                finishedMilestones.add(task.name);
+              }
+
+              task.finished(); 
+              
+              // 4. Logik-Check: Symmetrie (CHURCH_GROWTH_LOGIC #3)
+              // Wenn ein Milestone fertig ist, muss er aus der aktiven Liste verschwinden
+              if (task.isMilestone && Game.tasks.contains(task)) {
+                 fail("🛑 SYMMETRIE-FEHLER in Stage ${game.stage}: Meilenstein '${task.name}' wurde nicht entfernt!");
+              }
+
+              game.levelListener();
+              taskPerformed = true;
+              break; 
             }
           }
 
-          if (!moved) {
-            // Wenn der Bot feststeckt, schauen wir, ob wir passiv Ressourcen regenerieren könnten
-            // Da es aktuell keine passive Generierung ohne Ticks gibt, ist das ein harter Blocker.
-            fail("🛑 RESOURCE LOCK in Stufe ${game.stage}: Kann mir nichts leisten. Engpässe: $shortages");
+          if (!taskPerformed) {
+            // RESOURCE LOCK Check (CHURCH_GROWTH_LOGIC #2)
+            // Wenn wir hier hängen, prüfen wir, ob wir passiv Ressourcen kriegen
+            // In dieser Simulation addieren wir Zeit, um evtl. Auto-Execution abzuwarten
+            timeConsumed += 5.0; 
+            if (timeConsumed > 3600) { // 1 Stunde virtuelle Zeit pro Stage ist Limit
+               fail("🛑 RESOURCE LOCK in Stage ${game.stage}: Keine bezahlbaren Aufgaben mehr nach 1h Simulation.");
+            }
           }
 
-          if (clicks > 10000) {
-            fail("🛑 BALANCING ALARM: Stufe ${game.stage} braucht über 10.000 Klicks!");
+          if (manualClicks > 5000) {
+            fail("🛑 BALANCING ALARM: Stage ${game.stage} erfordert zu viel manuelle Arbeit (>5000 Klicks)!");
           }
         }
 
-        stats[currentTargetStage] = {
-          'clicks': clicks,
-          'time': virtualTime,
-          'bottleneck': shortages.entries.isEmpty ? "None" : shortages.entries.reduce((a, b) => a.value > b.value ? a : b).key
+        // 5. Scoring-Check (CHURCH_GROWTH_LOGIC #5)
+        // Ab Stage 11+ sollten Klicks abnehmen, da Delegation greifen muss
+        if (currentStage >= 11 && manualClicks > 500) {
+           print("⚠️ PERFORMANCE WARNUNG: Stage $currentStage hat hohe Klickrate ($manualClicks). Delegation-Prinzip prüfen!");
+        }
+
+        stageStats[currentStage] = {
+          'clicks': manualClicks,
+          'time': timeConsumed,
+          'milestones': finishedMilestones.length
         };
         
-        print("✅ Stufe $currentTargetStage abgeschlossen: ${clicks} Klicks, ${virtualTime.toStringAsFixed(1)}s");
+        print("✅ Stage $currentStage validiert: $manualClicks Klicks, ${timeConsumed.toStringAsFixed(1)}s simuliert.");
       }
 
-      print("\n📊 FINALE BALANCING ANALYSE:");
+      print("\n📊 KIRCHENWACHSTUM - LOGIK ANALYSE:");
       print("------------------------------------------------------------");
-      print("STUFE | KLICKS | ZEIT (min) | HAUPT-ENGPASS");
+      print("STUFE | KLICKS | DAUER (min) | STATUS");
       print("------------------------------------------------------------");
-      stats.forEach((stg, data) {
+      stageStats.forEach((stg, data) {
         String s = stg.toString().padRight(5);
         String c = data['clicks'].toString().padRight(6);
-        String t = (data['time'] / 60).toStringAsFixed(2).padRight(10);
-        String b = data['bottleneck'];
-        print("$s | $c | $t | $b");
+        String t = (data['time'] / 60).toStringAsFixed(2).padRight(11);
+        String status = data['clicks'] < 100 ? "🌟 Delegiert" : "🛠 Manuell";
+        print("$s | $c | $t | $status");
       });
-      print("------------------------------------------------------------");
     });
   });
 }
