@@ -91,8 +91,14 @@ class Game {
   }
 
   void dispose() {
-    _ticker?.dispose();
-    _ticker = null;
+    // Robustere Ticker-Disposal für Tests
+    if (_ticker != null) {
+      if (_ticker!.isActive) {
+        _ticker!.stop();
+      }
+      _ticker!.dispose();
+      _ticker = null;
+    }
     ressources[Member().name]?.removeListener(levelListener);
   }
 

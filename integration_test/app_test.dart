@@ -10,20 +10,18 @@ void main() {
   group('Onboarding & First Stage Progression', () {
     
     setUp(() {
-      // Sicherstellen, dass wir mit einer frischen Instanz starten
       Game.resetInstance();
     });
 
-    tearDown(() {
-      // WICHTIG: Ticker stoppen, um "Animation still running" Fehler zu vermeiden
+    tearDown(() async {
+      // Dem Framework Zeit geben, auslaufende Ticks zu verarbeiten
+      await ImageCache().clear(); 
       Game.resetInstance();
     });
 
     testWidgets('Complete Onboarding and arrive at Stage 1', (WidgetTester tester) async {
       app.main();
       
-      // pumpAndSettle kann bei dauerlaufenden Tickern (Game Loop) hängen.
-      // Wir nutzen daher gezielte pump-Aufrufe.
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
 
@@ -57,7 +55,7 @@ void main() {
         memberRes.value = 21.0; 
       }
       
-      // Dem Game-Loop Zeit geben, den Level-Up zu triggern
+      // Zeit für Level-Up Animationen
       for(int i=0; i<5; i++) {
         await tester.pump(const Duration(milliseconds: 500));
       }
@@ -65,20 +63,21 @@ void main() {
       // 5. Celebration Dialog bestätigen
       expect(find.text('GRATULATION!'), findsOneWidget);
       
-      // Wir nutzen den neuen Key für den Button
       final celebButton = find.byKey(const Key('celebration-continue-button'));
       expect(celebButton, findsOneWidget);
       
-      // Tap ohne Warnung, da Konfetti im Weg sein könnte (trotz IgnorePointer)
       await tester.tap(celebButton, warnIfMissed: false);
       
-      // Animationen auslaufen lassen
+      // Dialog-Ausblendung abwarten
       for(int i=0; i<5; i++) {
         await tester.pump(const Duration(milliseconds: 500));
       }
 
       // 6. Verifikation: Wir sind in LVL 1
       expect(find.text('LVL 1'), findsOneWidget);
+      
+      // Finaler Pump um sicherzustellen, dass keine Animationen mehr in der Queue sind
+      await tester.pump(const Duration(seconds: 1));
     });
   });
 }
