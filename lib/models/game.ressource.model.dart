@@ -28,9 +28,12 @@ class Game {
   static late ChangeNotifier stagenNotifier;
   static Game? mInstance;
   
-  // ARCHITEKTUR-FIX: Nicht final, um in Tests TestVSync zu ermöglichen
+  // ARCHITEKTUR-FIX: Nicht mehr final, um Dependency Injection für Tests zu ermöglichen.
+  // Das erlaubt einen kontrollierten Zeitgeber in Unit-Tests.
   static TickerProvider tick = GameTickerProvider();
   
+  Ticker? _mainTicker;
+
   String? _snackbarMessage;
   String? get snackbarMessage => _snackbarMessage;
   set snackbarMessage(String? value) {
@@ -68,7 +71,8 @@ class Game {
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
     
-    tick.createTicker(updateGame).start();
+    _mainTicker = tick.createTicker(updateGame);
+    _mainTicker!.start();
     
     if (tasksList != null) tasks = tasksList;
     
@@ -87,6 +91,12 @@ class Game {
     loadState();
     
     resumeStageTimer();
+  }
+
+  // WICHTIG FÜR STABILITÄT: Ressourcen beim Beenden/Reset sauber freigeben.
+  void dispose() {
+    _mainTicker?.dispose();
+    _mainTicker = null;
   }
 
   void resumeStageTimer() {
