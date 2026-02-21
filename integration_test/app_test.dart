@@ -8,78 +8,52 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding & First Stage Progression', () {
-    
-    setUp(() {
-      Game.resetInstance();
-    });
-
-    tearDown(() {
-      Game.resetInstance();
-    });
-
     testWidgets('Complete Onboarding and arrive at Stage 1', (WidgetTester tester) async {
       app.main();
-      
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
 
-      // 1. DSGVO Dialog
-      final acceptButton = find.byKey(const Key('dsgvo-accept-button'));
+      // 1. DSGVO Dialog (Warte bis zu 5 Sek)
       bool dialogFound = false;
-      for (int i = 0; i < 20; i++) {
-        await tester.pump(const Duration(milliseconds: 200));
-        if (acceptButton.evaluate().isNotEmpty) {
+      for (int i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 500));
+        if (find.text('AGB & DATENSCHUTZ').evaluate().isNotEmpty) {
           dialogFound = true;
           break;
         }
       }
       expect(dialogFound, isTrue, reason: "DSGVO Dialog nicht erschienen");
-      await tester.tap(acceptButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.tap(find.byKey(const Key('dsgvo-accept-button')));
+      await tester.pumpAndSettle();
 
-      // 2. Story Intro
-      final continueButton = find.byKey(const Key('onboarding-continue-button'));
-      expect(continueButton, findsOneWidget);
-      await tester.tap(continueButton);
-      await tester.pump(const Duration(milliseconds: 500));
+      // 2. Story Intro wegklicken
+      expect(find.text('DEIN RUF'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('onboarding-continue-button')));
+      await tester.pumpAndSettle();
 
       // 3. Im Spiel: Startzustand prüfen
       expect(find.text('RETTE DIE WELT'), findsOneWidget);
       expect(find.text('LVL 0'), findsOneWidget); 
       
-      // 4. Stufenaufstieg simulieren
+      // 4. Stufenaufstieg simulieren (Stage 0 -> 1)
       final memberRes = Game.ressources['Member'];
       if (memberRes != null) {
-        memberRes.value = 21.0; 
+        memberRes.value = 21.0; // Threshold für Stage 1 ist 20
       }
       
-      // Zeit für Level-Up Logik
-      for(int i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 500));
-      }
+      // Dem Game-Loop Zeit geben, den Level-Up zu bemerken (kein pumpAndSettle wegen Ticker!)
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
 
       // 5. Celebration Dialog bestätigen
       expect(find.text('GRATULATION!'), findsOneWidget);
-      
-      final celebButton = find.byKey(const Key('celebration-continue-button'));
-      expect(celebButton, findsOneWidget);
-      
-      await tester.tap(celebButton, warnIfMissed: false);
-      
-      // Animationen ausblenden
-      for(int i = 0; i < 5; i++) {
-        await tester.pump(const Duration(milliseconds: 500));
-      }
+      await tester.tap(find.text('WEITER DIENEN'));
 
-      // 6. Verifikation: Wir sind in LVL 1
+      // Zeit zum Ausfaden geben
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      // 6. Verifikation: Wir sind in LVL 1 (Anzeige im StageItem)
       expect(find.text('LVL 1'), findsOneWidget);
-      
-      // --- FIX FÜR DEN TICKER FEHLER ---
-      // Wir stoppen den Ticker JETZT, während der Tester noch aktiv ist.
-      Game.resetInstance();
-      
-      // Einen letzten Frame pumpen, um den allerletzten geplanten Callback zu "verbrauchen"
-      await tester.pump(const Duration(milliseconds: 100));
     });
   });
 }

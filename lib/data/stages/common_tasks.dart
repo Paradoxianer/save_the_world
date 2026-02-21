@@ -18,6 +18,14 @@ final Task baseSleep = Task(
   award: [Time(value: 16.0)],
 );
 
+final Task baseFreeTime = Task(
+  name: "Freizeit",
+  description: "Kleine Pause zum Durchatmen.",
+  duration: 12000.0, 
+  cost: [], 
+  award: [Time(value: 1.0)],
+);
+
 final Task baseBible = Task(
   name: "Bibellesen",
   description: "Geistliches Fundament vertiefen.",

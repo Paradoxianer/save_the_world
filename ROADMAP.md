@@ -23,8 +23,8 @@
 ### 3.2 Qualitätssicherung (Testing)
 - [x] **Unit Tests (Core Logik):** Ressourcen-Mathematik, Modifier-Chains und NumberFormatter (Mrd/Bio).
 - [x] **Widget Tests (UI Reaktivität):** Validierung von TaskItems, Resource-Feedback und allen Dialogen.
-- [x] **Integration & Simulation:**
-    - [x] `app_test.dart`: Automatisierter Onboarding-Flow (Fixing: Ticker-Leaks & Timing).
+- [ ] **Integration & Simulation (In Arbeit):**
+    - [ ] `app_test.dart`: Automatisierter Onboarding-Flow (Fixing: Ticker-Leaks & Timing).
     - [ ] `game_simulation_test.dart`: Headless Balancing Bot (Fixing: Ressourcen-Lock Erkennung).
 
 ### 3.3 Beta-Phase & Vorbereitung

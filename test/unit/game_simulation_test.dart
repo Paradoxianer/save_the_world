@@ -63,14 +63,14 @@ void main() {
           smartLog("   [START] ${getResourceStatus()}", important: true);
 
           int iterations = 0;
-          const int maxIterations = 15000;
+          const int maxIterations = 20000; // Erhöht für langsame Freizeit-Tasks
 
           while (game.stage == currentStage && iterations < maxIterations) {
             iterations++;
             List<Task> available = Game.tasks.where((t) => t.enabled).toList();
             
             if (available.isEmpty) {
-              iterations += 100; // Beschleunigt das Warten
+              iterations += 100;
               continue; 
             }
 
@@ -79,33 +79,49 @@ void main() {
 
             // --- HIERARCHISCHE ENTSCHEIDUNGSLOGIK ---
 
-            // PRIO 1: ÜBERLEBEN (Schlaf-Notfall)
             final currentTime = Game.ressources["Time"]?.value ?? 0.0;
+
+            // PRIO 1: ÜBERLEBEN (Zeit-Rettung)
             if (currentTime < 9.0) {
+              // 1a: Schlafen wenn möglich (Effizient)
               try {
                 final sleepTask = available.firstWhere((t) => t.name == "Schlafen");
                 if (sleepTask.cost.every((c) => Game.ressources[c.name]!.canSubtract(c))) {
                   selectedTask = sleepTask;
-                  choiceReason = "[PRIO 1: NOTFALL] Zeitkritisch, erzwinge Schlaf.";
+                  choiceReason = "[PRIO 1a: SCHLAF] Zeitkritisch, regeneriere groß.";
                 }
               } catch (_) {}
+
+              // 1b: Freizeit wenn Schlafen zu teuer (Rettungsnetz)
+              if (selectedTask == null) {
+                try {
+                  final rescueTask = available.firstWhere((t) => t.name == "Freizeit");
+                  selectedTask = rescueTask;
+                  choiceReason = "[PRIO 1b: RETTUNG] Zeit am Abgrund (<8h). Nutze Freizeit.";
+                } catch (_) {}
+              }
             }
 
-            // PRIO 2: WACHSTUM (Member generieren)
+            // PRIO 2: WACHSTUM (Member / Milestones)
             if (selectedTask == null) {
-              var growthTasks = available.where((t) => t.award.any((a) => a.name == "Member")).toList();
-              growthTasks.sort((a,b) => b.award.firstWhere((aw) => aw.name == "Member").value.compareTo(a.award.firstWhere((aw) => aw.name == "Member").value)); // Effektivster zuerst
+              var growthTasks = available.where((t) => t.award.any((a) => a.name == "Member") || t.isMilestone).toList();
+              growthTasks.sort((a,b) {
+                  if (a.isMilestone != b.isMilestone) return a.isMilestone ? -1 : 1;
+                  double aMem = a.award.where((aw)=>aw.name=="Member").fold(0, (p,aw)=>p+aw.value);
+                  double bMem = b.award.where((aw)=>aw.name=="Member").fold(0, (p,aw)=>p+aw.value);
+                  return bMem.compareTo(aMem);
+              });
 
               for(var task in growthTasks) {
                   if (task.cost.every((c) => Game.ressources[c.name]!.canSubtract(c))) {
                       selectedTask = task;
-                      choiceReason = "[PRIO 2: WACHSTUM] Fokus auf neue Mitglieder.";
+                      choiceReason = "[PRIO 2: PROGRESSION]";
                       break;
                   }
               }
             }
             
-            // PRIO 3: REGENERATION (Restliche Ressourcen auffüllen)
+            // PRIO 3: REGENERATION (Andere Ressourcen)
             if (selectedTask == null) {
                 final criticalRes = Game.ressources.entries.where((e) => e.value.value < e.value.max * 0.25 && e.key != "Time").map((e) => e.key).toList();
                 if (criticalRes.isNotEmpty) {
@@ -117,13 +133,12 @@ void main() {
                 }
             }
 
-            // PRIO 4: WARTUNG (Günstigster Task, der noch geht)
+            // PRIO 4: WARTUNG
             if (selectedTask == null) {
-                available.sort((a,b) => a.cost.length.compareTo(b.cost.length));
                 for(var task in available) {
                     if (task.cost.every((c) => Game.ressources[c.name]!.canSubtract(c))) {
                         selectedTask = task;
-                        choiceReason = "[PRIO 4: WARTUNG] Günstigste Aufgabe.";
+                        choiceReason = "[PRIO 4: WARTUNG]";
                         break;
                     }
                 }
@@ -131,10 +146,8 @@ void main() {
 
             // AUSFÜHRUNG
             if (selectedTask != null) {
-              if (selectedTask.isMilestone) {
-                  smartLog("🚩 GOLDENER TASK: ${selectedTask.name} - ${choiceReason}", important: true);
-              } else if (choiceReason.contains("PRIO 1")) {
-                  smartLog("  ${choiceReason} -> ${selectedTask.name}", important: true);
+              if (selectedTask.isMilestone || choiceReason.contains("PRIO 1")) {
+                  smartLog("   ${choiceReason} -> ${selectedTask.name} (${getResourceStatus()})", important: true);
               }
 
               selectedTask.execute();
@@ -142,8 +155,8 @@ void main() {
 
               if (game.stage != currentStage) {
                   smartLog("🚀 STUFENAUFSTIEG NACH ${game.stage}!", important: true);
-                  smartLog("   Neue verfügbare Aufgaben: ${Game.tasks.map((t) => t.name).join(", ")}", important: true);
-                  break; // Stage-Loop verlassen
+                  smartLog("   Verfügbare Aufgaben: ${Game.tasks.map((t) => t.name).join(", ")}", important: true);
+                  break;
               }
             } else {
               iterations += 100;
@@ -153,7 +166,6 @@ void main() {
           if (iterations >= maxIterations) {
              smartLog("\n🛑 DEADLOCK IN STAGE $currentStage!", important: true);
              smartLog("   Ressourcen: ${getResourceStatus()}", important: true);
-             smartLog("   Verfügbare Tasks: ${Game.tasks.where((t)=>t.enabled).map((t)=>t.name).join(", ")}", important: true);
              fail("Abbruch in Stage $currentStage.");
           }
 
@@ -167,7 +179,6 @@ void main() {
     });
   });
 }
-
 
 extension TaskExecutor on Task {
     void execute() {
