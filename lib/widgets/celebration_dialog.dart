@@ -36,6 +36,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
 
   @override
   void dispose() {
+    _confettiController.stop(); // WICHTIG: Erst stoppen
     _confettiController.dispose();
     super.dispose();
   }
@@ -60,7 +61,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
           title: 'GRATULATION!',
           icon: Icons.emoji_events,
           headerColor: Colors.amber[700]!,
-          content: SingleChildScrollView( // FIX: Scrollbar für kleine Bildschirme hinzugefügt
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -71,7 +72,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
                 ),
                 const SizedBox(height: 10),
                 
-                // TROPHY AREA
                 SizedBox(
                   height: 160,
                   child: Stack(
@@ -90,9 +90,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
                             fontSize: 52,
                             fontWeight: FontWeight.w900,
                             color: Colors.black87,
-                            shadows: [
-                              Shadow(color: Colors.white70, offset: Offset(1, 1), blurRadius: 2)
-                            ]
                           ),
                         ),
                       )
@@ -119,7 +116,6 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
                     color: Colors.grey[600], 
                     fontSize: 14, 
                     fontWeight: FontWeight.bold,
-                    fontStyle: FontStyle.italic
                   ),
                 ),
                 
@@ -131,6 +127,7 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
           ),
           actions: [
             ElevatedButton(
+              key: const Key('celebration-continue-button'), // KEY FÜR TESTS
               onPressed: () => Navigator.of(context).pop(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber[700],
@@ -146,21 +143,16 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
           ],
         ),
         
-        Align(
-          alignment: Alignment.topCenter,
-          child: ConfettiWidget(
-            confettiController: _confettiController,
-            blastDirectionality: BlastDirectionality.explosive,
-            shouldLoop: false,
-            colors: const [
-              Colors.green,
-              Colors.blue,
-              Colors.pink,
-              Colors.orange,
-              Colors.purple,
-              Colors.amber
-            ],
-            gravity: 0.1,
+        IgnorePointer( // Konfetti darf keine Taps abfangen
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              colors: const [Colors.green, Colors.blue, Colors.pink, Colors.orange, Colors.purple, Colors.amber],
+              gravity: 0.1,
+            ),
           ),
         ),
       ],

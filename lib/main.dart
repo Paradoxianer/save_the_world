@@ -18,8 +18,10 @@ import 'package:audio_session/audio_session.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize Game Singleton once at startup
+  Game.getInstance();
+  
   // FIX #56: Configure audio session to be ambient.
-  // This prevents the app from pausing background music (YouTube Music, Spotify, etc.)
   final session = await AudioSession.instance;
   await session.configure(const AudioSessionConfiguration(
     avAudioSessionCategory: AVAudioSessionCategory.ambient,
@@ -46,7 +48,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Game.getInstance();
+    // Game.getInstance() removed from here to prevent re-initialization during rebuilds/tests
     
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -115,6 +117,7 @@ class _HomeState extends State<Home> {
   @override
   void dispose() {
     Game.notifier.removeListener(_rebuild);
+    // Note: We don't remove stage listener here because it's a global singleton listener
     super.dispose();
   }
 
