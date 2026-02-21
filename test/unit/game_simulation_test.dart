@@ -27,125 +27,153 @@ void main() {
       report.clear();
     });
 
-    void writeReportToFile() {
-      final file = File('simulation_report.log');
-      file.writeAsStringSync(report.toString());
-      print("📝 Simulationsbericht geschrieben in: ${file.absolute.path}");
+    void smartLog(String msg, {bool important = false}) {
+      if (important) {
+        print("⭐ $msg");
+      }
+      if (report.length < 5 * 1024 * 1024) { 
+        report.writeln(msg);
+      }
     }
 
-    test('Simulate playthrough with Sustainable Time Management', () {
+    String getResourceStatus() {
+      return Game.ressources.entries
+          .where((e) => e.key != "Stage")
+          .map((e) => "${e.key}: ${e.value.value.toStringAsFixed(1)}")
+          .join(" | ");
+    }
+
+    void writeReportToFile() {
+      try {
+        final file = File('simulation_report.log');
+        file.writeAsStringSync(report.toString());
+      } catch (_) {}
+    }
+
+    test('Simulate playthrough with Hierarchical Strategy', () {
       final List<int> thresholds = levels.keys.toList();
       final Map<int, Map<String, dynamic>> stageStats = {};
       
-      report.writeln("--- 🚀 STARTE NACHHALTIGE LOGIK-SIMULATION ---");
-      report.writeln("Regel: Bot versucht nie unter 9h Zeit zu fallen (Schutz vor Erschöpfung).\n");
+      smartLog("--- 🚀 STARTE SMARTE SIMULATION (Hierarchische Strategie) ---", important: true);
 
       try {
         for (int currentStage = 0; currentStage < thresholds.length; currentStage++) {
-          int manualClicks = 0;
-          double timeInSeconds = 0;
-          
           game.initStage(currentStage);
-          report.writeln("\n>>> BETRETE STAGE $currentStage (${levels[thresholds[currentStage]]})");
+          smartLog("\n>>> BETRETE STAGE $currentStage (${levels[thresholds[currentStage]]})");
+          smartLog("   [START] ${getResourceStatus()}", important: true);
 
-          while (game.stage == currentStage) {
-            final currentTime = Game.ressources['Time']?.value ?? 0.0;
+          int iterations = 0;
+          const int maxIterations = 15000;
+
+          while (game.stage == currentStage && iterations < maxIterations) {
+            iterations++;
             List<Task> available = Game.tasks.where((t) => t.enabled).toList();
             
             if (available.isEmpty) {
-              report.writeln("⚠️ Keine aktiven Aufgaben. Warte auf Chains...");
-              timeInSeconds += 1.0;
+              iterations += 100; // Beschleunigt das Warten
               continue; 
             }
 
-            // --- NACHHALTIGKEITS-LOGIK (Schlafen-Prio) ---
-            Task? sleepTask;
-            try {
-              sleepTask = Game.tasks.firstWhere((t) => t.name.toLowerCase().contains("schlafen") && t.enabled);
-            } catch (_) {
-              sleepTask = null;
-            }
-
             Task? selectedTask;
+            String choiceReason = "";
 
-            // Wenn Zeit kritisch (< 9h), erzwinge Schlafen falls möglich
-            if (currentTime < 9.0 && sleepTask != null) {
-              bool canAffordSleep = true;
-              for (var cost in sleepTask.cost) {
-                if (!(Game.ressources[cost.name]?.canSubtract(cost) ?? false)) canAffordSleep = false;
-              }
-              if (canAffordSleep) {
-                selectedTask = sleepTask;
-                report.writeln("  [MODUS: REGENERATION] Zeit ist knapp ($currentTime h). Gehe schlafen...");
-              }
+            // --- HIERARCHISCHE ENTSCHEIDUNGSLOGIK ---
+
+            // PRIO 1: ÜBERLEBEN (Schlaf-Notfall)
+            final currentTime = Game.ressources["Time"]?.value ?? 0.0;
+            if (currentTime < 9.0) {
+              try {
+                final sleepTask = available.firstWhere((t) => t.name == "Schlafen");
+                if (sleepTask.cost.every((c) => Game.ressources[c.name]!.canSubtract(c))) {
+                  selectedTask = sleepTask;
+                  choiceReason = "[PRIO 1: NOTFALL] Zeitkritisch, erzwinge Schlaf.";
+                }
+              } catch (_) {}
             }
 
-            // Falls kein Schlaf nötig/möglich, wähle nach Strategie
+            // PRIO 2: WACHSTUM (Member generieren)
             if (selectedTask == null) {
-              available.sort((a, b) {
-                if (a.isMilestone != b.isMilestone) return a.isMilestone ? -1 : 1;
-                double aMember = a.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
-                double bMember = b.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
-                return bMember.compareTo(aMember);
-              });
+              var growthTasks = available.where((t) => t.award.any((a) => a.name == "Member")).toList();
+              growthTasks.sort((a,b) => b.award.firstWhere((aw) => aw.name == "Member").value.compareTo(a.award.firstWhere((aw) => aw.name == "Member").value)); // Effektivster zuerst
 
-              for (var task in available) {
-                // Check: Würde dieser Task uns unter das Schlaf-Limit (8h Kosten) drücken?
-                // Ausnahme: Der Task ist Schlafen selbst.
-                double timeCost = task.cost.where((c) => c.name == "Time").fold(0.0, (p, c) => p + c.value);
-                bool isSleep = task.name.toLowerCase().contains("schlafen");
-                
-                if (!isSleep && (currentTime - timeCost) < 8.0) {
-                  continue; // Zu riskant, wir brauchen Puffer für Schlaf
-                }
-
-                bool canAfford = true;
-                for (var cost in task.cost) {
-                  if (!(Game.ressources[cost.name]?.canSubtract(cost) ?? false)) canAfford = false;
-                }
-
-                if (canAfford) {
-                  selectedTask = task;
-                  break;
-                }
+              for(var task in growthTasks) {
+                  if (task.cost.every((c) => Game.ressources[c.name]!.canSubtract(c))) {
+                      selectedTask = task;
+                      choiceReason = "[PRIO 2: WACHSTUM] Fokus auf neue Mitglieder.";
+                      break;
+                  }
               }
             }
+            
+            // PRIO 3: REGENERATION (Restliche Ressourcen auffüllen)
+            if (selectedTask == null) {
+                final criticalRes = Game.ressources.entries.where((e) => e.value.value < e.value.max * 0.25 && e.key != "Time").map((e) => e.key).toList();
+                if (criticalRes.isNotEmpty) {
+                    var generators = available.where((t) => t.award.any((a) => criticalRes.contains(a.name))).toList();
+                    if(generators.isNotEmpty) {
+                        selectedTask = generators.first;
+                        choiceReason = "[PRIO 3: REGEN] Fülle ${criticalRes.join(", ")} auf.";
+                    }
+                }
+            }
 
-            // Ausführung des gewählten Tasks
+            // PRIO 4: WARTUNG (Günstigster Task, der noch geht)
+            if (selectedTask == null) {
+                available.sort((a,b) => a.cost.length.compareTo(b.cost.length));
+                for(var task in available) {
+                    if (task.cost.every((c) => Game.ressources[c.name]!.canSubtract(c))) {
+                        selectedTask = task;
+                        choiceReason = "[PRIO 4: WARTUNG] Günstigste Aufgabe.";
+                        break;
+                    }
+                }
+            }
+
+            // AUSFÜHRUNG
             if (selectedTask != null) {
-              for (var cost in selectedTask.cost) {
-                Game.ressources[cost.name]?.subtract(cost);
+              if (selectedTask.isMilestone) {
+                  smartLog("🚩 GOLDENER TASK: ${selectedTask.name} - ${choiceReason}", important: true);
+              } else if (choiceReason.contains("PRIO 1")) {
+                  smartLog("  ${choiceReason} -> ${selectedTask.name}", important: true);
               }
-              timeInSeconds += (selectedTask.duration / 1000);
-              manualClicks++;
-              
-              report.writeln("  [Click $manualClicks] Executed: ${selectedTask.name} (Time left: ${Game.ressources['Time']?.value}h)");
-              
-              selectedTask.finished(); 
+
+              selectedTask.execute();
               game.levelListener();
-            } else {
-              // Kein Task möglich (entweder Ressourcen-Mangel oder wir warten auf Puffer für Schlaf)
-              timeInSeconds += 10.0; 
-              if (timeInSeconds > 10000) { 
-                 report.writeln("\n🛑 DEADLOCK DETECTED!");
-                 report.writeln("Zeit: $currentTime h");
-                 Game.ressources.forEach((name, res) => report.writeln("  - $name: ${res.value}"));
-                 report.writeln("Tasks in Liste: ${Game.tasks.map((t)=>t.name).join(", ")}");
-                 writeReportToFile();
-                 fail("RESOURCE LOCK in Stage ${game.stage}. Check simulation_report.log");
+
+              if (game.stage != currentStage) {
+                  smartLog("🚀 STUFENAUFSTIEG NACH ${game.stage}!", important: true);
+                  smartLog("   Neue verfügbare Aufgaben: ${Game.tasks.map((t) => t.name).join(", ")}", important: true);
+                  break; // Stage-Loop verlassen
               }
+            } else {
+              iterations += 100;
             }
           }
 
-          stageStats[currentStage] = {'clicks': manualClicks, 'time': timeInSeconds};
-          report.writeln("✅ Stage $currentStage erfolgreich beendet.");
+          if (iterations >= maxIterations) {
+             smartLog("\n🛑 DEADLOCK IN STAGE $currentStage!", important: true);
+             smartLog("   Ressourcen: ${getResourceStatus()}", important: true);
+             smartLog("   Verfügbare Tasks: ${Game.tasks.where((t)=>t.enabled).map((t)=>t.name).join(", ")}", important: true);
+             fail("Abbruch in Stage $currentStage.");
+          }
+
+          smartLog("✅ Stage $currentStage beendet. [ENDE] ${getResourceStatus()}", important: true);
         }
       } catch (e) {
-        report.writeln("\n🔥 Simulation Error: $e");
         rethrow;
       } finally {
         writeReportToFile();
       }
     });
   });
+}
+
+
+extension TaskExecutor on Task {
+    void execute() {
+        for (var cost in this.cost) {
+            Game.ressources[cost.name]?.subtract(cost);
+        }
+        this.finished();
+    }
 }

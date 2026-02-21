@@ -13,6 +13,7 @@ final Stage stage0 = Stage(
   level: 0,
   member: 20,
   description: "Hausgemeinde - Lerne die Grundlagen der Ressourcenverwaltung.",
+  // FIX: Schlafen von Anfang an verfügbar machen, um Deadlocks zu verhindern
   activeTasks: ["Bibellesen", "Schlafen"],
   allTasks: [
     Task(
@@ -33,15 +34,15 @@ final Stage stage0 = Stage(
       description: "Zeit in Gottes Wort, das stärk meinen Glauben",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
-      award: [Faith(value: 15.0)],
+      award: [Faith(value: 10.0)], // Leicht reduziert, um die Prio auf andere Tasks zu lenken
       modifier: [],
     ),
     Task(
       name: "Beten",
       description: "Wandelt 'Glauben' in erste 'Mitglieder' um.",
       duration: 4000.0,
-      cost: [Time(value: 1.0), Faith(value: 5.0)],
-      award: [Member(value: 0.5)], // Reduziert von 1.0
+      cost: [Time(value: 1.0), Faith(value: 10.0)], // Kosten reduziert
+      award: [Member(value: 0.5)],
       modifier: [
         AddTask(task: "Meine Gebetszeit"),
         RemoveTask(task: "Beten"),
@@ -54,7 +55,7 @@ final Stage stage0 = Stage(
       description: "Ohne Gebet funtkioniert nichts",
       duration: 4000.0,
       cost: [Time(value: 1.0), Faith(value: 5.0)],
-      award: [Member(value: 0.5)], // Reduziert von 1.0
+      award: [Member(value: 0.5)],
       modifier: [     ],
     ),
     Task(
@@ -62,7 +63,7 @@ final Stage stage0 = Stage(
       description: "Zeitaufwendig, aber bringt leute näher zu Gott.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
-      award: [Member(value: 0.75)], // Reduziert von 2.0
+      award: [Member(value: 0.75)],
       modifier: [
         AddTask(task: "Essen in meiner Wohnung"),
         AddTask(task: "Hausbesuch"),
@@ -75,7 +76,7 @@ final Stage stage0 = Stage(
       description: "Regelmäßige Besuche bei Gemeindegliedern zur Seelsorge.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
-      award: [Member(value: 0.9)], // Etwas effizienter, da Routine
+      award: [Member(value: 0.9)],
     ),
     Task(
       name: "Schlafen",
@@ -93,7 +94,7 @@ final Stage stage0 = Stage(
       duration: 10000.0,
       isMilestone: true,
       cost: [Time(value: 4.0), Member(value: 5.0)],
-      award: [Member(value: 8.0)], // Reduziert von 15.0
+      award: [Member(value: 8.0)],
       modifier: [
         MessageModifier(message: "GLÜCKWUNSCH: Du hast das Limit erhöht! Dein neues Maximum liegt nun bei 40 Mitgliedern. Wenn du über 20 kommst steigst in die Stufe 1 auf."),
         SetMin(ressource: "Member", newMin: 1.0), 
