@@ -11,8 +11,9 @@ class Faith extends Ressource {
           description: "wieviel Glauben du hast",
           icon: const IconData(59401, fontFamily: "SaveTheWorldFont"),
           value: value,
-          min: double.negativeInfinity,
-          max: double.maxFinite,
+          // FIX: Nutze große endliche Werte statt Infinity für JSON-Sicherheit
+          min: -1e18, 
+          max: 1e18,
         );
 
   factory Faith.fromJson(Map<String, dynamic> json) {

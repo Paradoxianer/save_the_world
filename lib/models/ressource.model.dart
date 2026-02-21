@@ -15,7 +15,6 @@ class Ressource extends GameElement {
   double _max = 100.0;
   bool willAdd = true;
 
-  // NEW: Fields for dynamic calculation (#55)
   String? multiplierResourceName;
   double? multiplierValue;
 
@@ -35,7 +34,6 @@ class Ressource extends GameElement {
     if (value != null) _value = value;
   }
 
-  // DYNAMIC GETTER: Calculates value on the fly if multiplier is set
   double get value {
     if (multiplierResourceName != null && multiplierValue != null) {
       final factorRes = Game.ressources[multiplierResourceName!];
@@ -46,7 +44,6 @@ class Ressource extends GameElement {
     return _value;
   }
 
-  // Setter now only sets the base value
   set value(double val) {
     _value = val;
     notifier.notifyListeners();
@@ -65,36 +62,42 @@ class Ressource extends GameElement {
     notifier.notifyListeners();
   }
 
+  /// Hilfsmethode, um JSON-Werte (Zahl oder String) sicher in double umzuwandeln
+  static double _parseJsonDouble(dynamic val, double defaultValue) {
+    if (val == null) return defaultValue;
+    if (val is num) return val.toDouble();
+    if (val is String) {
+      if (val == "Infinity") return double.infinity;
+      if (val == "-Infinity") return double.negativeInfinity;
+      if (val == "NaN") return double.nan;
+    }
+    return defaultValue;
+  }
+
+  /// Hilfsmethode, um double sicher für JSON vorzubereiten
+  static dynamic _encodeJsonDouble(double val) {
+    if (val.isInfinite) return val.isNegative ? "-Infinity" : "Infinity";
+    if (val.isNaN) return "NaN";
+    return val;
+  }
+
   factory Ressource.fromJson(Map<String, dynamic> json) {
     String name = json['name'];
-    double val = (json['value'] as num?)?.toDouble() ?? 0.0;
+    double val = _parseJsonDouble(json['value'], 0.0);
     
     Ressource res;
     switch (name) {
-      case "Faith":
-        res = Faith(value: val);
-        break;
-      case "Member":
-        res = Member(value: val);
-        break;
-      case "Money":
-        res = Money(value: val);
-        break;
-      case "Publicity":
-        res = Publicity(value: val);
-        break;
-      case "Time":
-        res = Time(value: val);
-        break;
-      case "Wisdom":
-        res = Wisdom(value: val);
-        break;
-      default:
-        res = Ressource(name: name, value: val);
+      case "Faith": res = Faith(value: val); break;
+      case "Member": res = Member(value: val); break;
+      case "Money": res = Money(value: val); break;
+      case "Publicity": res = Publicity(value: val); break;
+      case "Time": res = Time(value: val); break;
+      case "Wisdom": res = Wisdom(value: val); break;
+      default: res = Ressource(name: name, value: val);
     }
     
-    res.min = (json['min'] as num?)?.toDouble() ?? res.min;
-    res.max = (json['max'] as num?)?.toDouble() ?? res.max;
+    res.min = _parseJsonDouble(json['min'], res.min);
+    res.max = _parseJsonDouble(json['max'], res.max);
     res.multiplierResourceName = json['multiplierResourceName'] as String?;
     res.multiplierValue = (json['multiplierValue'] as num?)?.toDouble();
     return res;
@@ -104,27 +107,23 @@ class Ressource extends GameElement {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'min': min,
-      'value': _value, // Store the base value, not the calculated one
-      'max': max,
+      'min': _encodeJsonDouble(min),
+      'value': _encodeJsonDouble(_value), 
+      'max': _encodeJsonDouble(max),
       'multiplierResourceName': multiplierResourceName,
       'multiplierValue': multiplierValue,
     };
   }
 
   void subtract(Ressource other) {
-    _value -= other.value; // Uses the getter, so dynamic values work here too
-    if (_value < _min) {
-      _value = _min;
-    }
+    _value -= other.value;
+    if (_value < _min) _value = _min;
     notifier.notifyListeners();
   }
 
   void add(Ressource other) {
-    _value += other.value; // Uses the getter, so dynamic values work here too
-    if (_value > _max) {
-      _value = _max;
-    }
+    _value += other.value;
+    if (_value > _max) _value = _max;
     notifier.notifyListeners();
   }
 
@@ -134,21 +133,12 @@ class Ressource extends GameElement {
   }
 
   bool canAdd(Ressource other) {
-    if (name == other.name) {
-      return (this.value + other.value) <= _max;
-    }
+    if (name == other.name) return (this.value + other.value) <= _max;
     return false;
   }
 
   bool canSubtract(Ressource other) {
-    if (name == other.name) {
-      return (this.value - other.value) >= _min;
-    }
+    if (name == other.name) return (this.value - other.value) >= _min;
     return false;
-  }
-
-  @override
-  String toString() {
-    return 'Ressource{name: $name, min: $min, value: $value, max: $max}';
   }
 }

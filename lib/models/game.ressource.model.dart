@@ -244,7 +244,10 @@ class Game {
   }
 
   void saveState() {
-    dataManager.writeJson("gameRes", json.encode(ressources));
+    // FIX: Ressourcen-Map in JSON-kompatible Map umwandeln
+    Map<String, dynamic> resJson = ressources.map((key, value) => MapEntry(key, value.toJson()));
+    dataManager.writeJson("gameRes", json.encode(resJson));
+
     dataManager.writeJson("activeTasks", json.encode(tasks.map((t) => t.toJson()).toList())); 
     dataManager.writeJson("allTasks", json.encode(allTasks.map((t) => t.toJson()).toList()));
     dataManager.writeJson("Game", json.encode({
