@@ -29,6 +29,8 @@ class Game {
   static Game? mInstance;
   static final TickerProvider tick = GameTickerProvider();
   
+  Ticker? _ticker;
+
   String? _snackbarMessage;
   String? get snackbarMessage => _snackbarMessage;
   set snackbarMessage(String? value) {
@@ -66,7 +68,8 @@ class Game {
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
     
-    tick.createTicker(updateGame).start();
+    _ticker = tick.createTicker(updateGame);
+    _ticker!.start();
     
     if (tasksList != null) tasks = tasksList;
     
@@ -85,6 +88,12 @@ class Game {
     loadState();
     
     resumeStageTimer();
+  }
+
+  void dispose() {
+    _ticker?.dispose();
+    _ticker = null;
+    ressources[Member().name]?.removeListener(levelListener);
   }
 
   void resumeStageTimer() {
@@ -229,6 +238,11 @@ class Game {
   static Game getInstance() {
     mInstance ??= Game();
     return mInstance!;
+  }
+
+  static void resetInstance() {
+    mInstance?.dispose();
+    mInstance = null;
   }
 
   void addListener(VoidCallback listener) {

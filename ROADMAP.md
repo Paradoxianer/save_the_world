@@ -20,16 +20,18 @@
 - [x] **Smart Award System:** Dynamische Berechnung im Modell (#55).
 - [x] **Logic Stability:** Fix von Race Conditions & Startup-Bugs (#47).
 
-### 3.2 Qualitätssicherung (Testing) (Erledigt)
-- [x] **Unit Tests:** Absicherung der Kern-Spiellogik (Ressourcen-Berechnung, Modifier-Effekte).
-- [x] **Widget Tests:** Prüfung der UI-Reaktivität (Progress-Bars, Task-Interaktion).
-- [x] **Integration Tests:** Automatisierter Durchlauf des Onboarding-Flows und der ersten Stufen.
+### 3.2 Qualitätssicherung (Testing)
+- [x] **Unit Tests (Core Logik):** Ressourcen-Mathematik, Modifier-Chains und NumberFormatter (Mrd/Bio).
+- [x] **Widget Tests (UI Reaktivität):** Validierung von TaskItems, Resource-Feedback und allen Dialogen.
+- [ ] **Integration & Simulation (In Arbeit):**
+    - [ ] `app_test.dart`: Automatisierter Onboarding-Flow (Fixing: Ticker-Leaks & Timing).
+    - [ ] `game_simulation_test.dart`: Headless Balancing Bot (Fixing: Ressourcen-Lock Erkennung).
 
 ### 3.3 Beta-Phase & Vorbereitung
+- [ ] **Performance Profiling:** Optimierung der Ressourcenlast (insb. Ticker-Logik).
+- [ ] **Balancing Fine-tuning:** Auswertung der Simulator-Daten zur Optimierung der Stage-Kurve.
 - [ ] **Store Setup:** Einrichtung von Google Play Console & Apple App Store Connect.
 - [ ] **CI/CD:** Automatisierte Build-Erstellung für TestFlight & Google Play Beta.
-- [ ] **Closed Beta:** Feedback-Runde mit Test-Nutzern zur Validierung des Tutorials.
-- [ ] **Performance Profiling:** Optimierung der Ressourcenlast (insb. Ticker-Logik).
 
 ### 3.4 Finalisierung & Launch
 - [ ] **Store Assets:** Professionelle Screenshots, Icons und App-Beschreibungen.

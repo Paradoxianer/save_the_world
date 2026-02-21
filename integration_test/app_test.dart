@@ -8,6 +8,12 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Onboarding & First Stage Progression', () {
+    
+    // Aufräumen nach jedem Test, um Ticker-Leaks zu vermeiden
+    tearDown(() {
+      Game.resetInstance();
+    });
+
     testWidgets('Complete Onboarding and arrive at Stage 1', (WidgetTester tester) async {
       app.main();
       await tester.pumpAndSettle();
@@ -40,19 +46,24 @@ void main() {
         memberRes.value = 21.0; // Threshold für Stage 1 ist 20
       }
       
-      // Dem Game-Loop Zeit geben, den Level-Up zu bemerken (kein pumpAndSettle wegen Ticker!)
+      // Dem Game-Loop Zeit geben (kein pumpAndSettle wegen Ticker/Konfetti!)
       await tester.pump(const Duration(seconds: 1));
       await tester.pump(const Duration(seconds: 1));
 
       // 5. Celebration Dialog bestätigen
       expect(find.text('GRATULATION!'), findsOneWidget);
-      await tester.tap(find.text('WEITER DIENEN'));
+      
+      // Kurz warten, bis die Einblend-Animation des Dialogs fertig ist
+      await tester.pump(const Duration(milliseconds: 500));
+      
+      // Tap mit warnIfMissed: false, da Animationen/Konfetti den Hit-Test stören können
+      await tester.tap(find.text('WEITER DIENEN'), warnIfMissed: false);
       
       // Zeit zum Ausfaden geben
       await tester.pump(const Duration(seconds: 1));
       await tester.pump(const Duration(seconds: 1));
 
-      // 6. Verifikation: Wir sind in LVL 1 (Anzeige im StageItem)
+      // 6. Verifikation: Wir sind in LVL 1
       expect(find.text('LVL 1'), findsOneWidget);
     });
   });

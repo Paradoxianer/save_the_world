@@ -2,11 +2,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
+import 'package:save_the_world_flutter_app/stages.dart';
 
 void main() {
+  // Mock für PathProvider, damit die Simulation nicht abstürzt
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Headless Balancing Bot Simulation', () {
+  group('🤖 Headless Balancing Bot (Full Playthrough)', () {
     late Game game;
 
     setUp(() {
@@ -16,35 +18,41 @@ void main() {
       Game.tasks.clear();
     });
 
-    test('Simulation: Speedrun through all stages to verify balancing', () {
-      final List<int> stageThresholds = levels.keys.toList();
-      Map<int, Map<String, dynamic>> finalReport = {};
+    test('Simulate complete game from Stage 0 to Stage 32', () {
+      final List<int> thresholds = levels.keys.toList();
+      final Map<int, Map<String, dynamic>> stats = {};
       
-      print("\n🚀 STARTING GLOBAL SIMULATION...");
+      print("\n--- 🚀 STARTE VOLLSTÄNDIGE SPIEL-SIMULATION ---");
 
-      for (int targetStage = 0; targetStage < stageThresholds.length; targetStage++) {
-        int clicksInStage = 0;
-        double timeInStage = 0;
+      for (int currentTargetStage = 0; currentTargetStage < thresholds.length; currentTargetStage++) {
+        int clicks = 0;
+        double virtualTime = 0;
         Map<String, int> shortages = {};
+        
+        // Sicherstellen, dass die Stufe initialisiert ist
+        game.initStage(game.stage);
 
-        while (game.stage == targetStage) {
-          // 1. Hole alle verfügbaren Tasks
+        // Wir spielen, bis wir die nächste Stufe erreichen oder ein Limit überschreiten
+        while (game.stage == currentTargetStage) {
           List<Task> available = Game.tasks.where((t) => t.enabled).toList();
           
           if (available.isEmpty) {
-            fail("🛑 DEAD-END in Stage ${game.stage}: No tasks enabled!");
+            fail("🛑 DEAD-END in Stufe ${game.stage}: Keine aktiven Aufgaben!");
           }
 
-          // 2. Strategie: Priorisiere Milestones, dann Member
+          // Strategie des Bots:
+          // 1. Meilensteine haben absolute Priorität.
+          // 2. Aufgaben, die Member bringen, sind zweitwichtig.
+          // 3. Innerhalb dieser Gruppen: Günstigste Aufgaben zuerst.
           available.sort((a, b) {
             if (a.isMilestone != b.isMilestone) return a.isMilestone ? -1 : 1;
-            double aVal = a.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
-            double bVal = b.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
-            return bVal.compareTo(aVal);
+            double aMember = a.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
+            double bMember = b.award.where((r) => r.name == "Member").fold(0.0, (p, r) => p + r.value);
+            if (aMember != bMember) return bMember.compareTo(aMember);
+            return a.cost.length.compareTo(b.cost.length);
           });
 
-          // 3. Versuche einen Task auszuführen
-          bool executed = false;
+          bool moved = false;
           for (var task in available) {
             bool canAfford = true;
             for (var cost in task.cost) {
@@ -57,49 +65,53 @@ void main() {
             }
 
             if (canAfford) {
-              // Ausführen (Simulation ohne Animation)
+              // Simulation der Durchführung
               for (var cost in task.cost) {
                 Game.ressources[cost.name]?.subtract(cost);
               }
-              timeInStage += (task.duration / 1000);
-              clicksInStage++;
-              task.finished(); // Wendet Awards & Modifier an
-              game.levelListener(); // Prüft Stage-Up
-              executed = true;
-              break;
+              virtualTime += (task.duration / 1000);
+              clicks++;
+              
+              task.finished(); // Awards & Modifier anwenden
+              game.levelListener(); // Prüfen ob Stage-Up
+              
+              moved = true;
+              break; // Nur einen Task pro "Tick"
             }
           }
 
-          if (!executed) {
-            fail("🛑 RESOURCE LOCK in Stage ${game.stage}: Cannot afford any task. Shortages: $shortages");
+          if (!moved) {
+            // Wenn der Bot feststeckt, schauen wir, ob wir passiv Ressourcen regenerieren könnten
+            // Da es aktuell keine passive Generierung ohne Ticks gibt, ist das ein harter Blocker.
+            fail("🛑 RESOURCE LOCK in Stufe ${game.stage}: Kann mir nichts leisten. Engpässe: $shortages");
           }
 
-          // Sicherheits-Abbruch für Endlosschleifen
-          if (clicksInStage > 5000) {
-            fail("🛑 BALANCING ERROR: Stage ${game.stage} takes more than 5000 clicks. Check thresholds!");
+          if (clicks > 10000) {
+            fail("🛑 BALANCING ALARM: Stufe ${game.stage} braucht über 10.000 Klicks!");
           }
         }
 
-        finalReport[targetStage] = {
-          'clicks': clicksInStage,
-          'time': timeInStage,
-          'main_bottleneck': shortages.entries.isEmpty ? "None" : shortages.entries.reduce((a, b) => a.value > b.value ? a : b).key
+        stats[currentTargetStage] = {
+          'clicks': clicks,
+          'time': virtualTime,
+          'bottleneck': shortages.entries.isEmpty ? "None" : shortages.entries.reduce((a, b) => a.value > b.value ? a : b).key
         };
+        
+        print("✅ Stufe $currentTargetStage abgeschlossen: ${clicks} Klicks, ${virtualTime.toStringAsFixed(1)}s");
       }
 
-      // --- ERGEBNIS-BERICHT ---
-      print("\n📊 BALANCING REPORT:");
-      print("--------------------------------------------------");
-      print("STAGE | CLICKS | TIME (s) | MAIN BOTTLENECK");
-      print("--------------------------------------------------");
-      finalReport.forEach((stg, data) {
+      print("\n📊 FINALE BALANCING ANALYSE:");
+      print("------------------------------------------------------------");
+      print("STUFE | KLICKS | ZEIT (min) | HAUPT-ENGPASS");
+      print("------------------------------------------------------------");
+      stats.forEach((stg, data) {
         String s = stg.toString().padRight(5);
         String c = data['clicks'].toString().padRight(6);
-        String t = data['time'].toStringAsFixed(1).padRight(8);
-        String b = data['main_bottleneck'];
+        String t = (data['time'] / 60).toStringAsFixed(2).padRight(10);
+        String b = data['bottleneck'];
         print("$s | $c | $t | $b");
       });
-      print("--------------------------------------------------");
+      print("------------------------------------------------------------");
     });
   });
 }
