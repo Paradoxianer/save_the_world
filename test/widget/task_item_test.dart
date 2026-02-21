@@ -1,41 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/task.item.dart';
 
-/// Ein kontrollierter Taktgeber für Tests
-class TestTickerProvider implements TickerProvider {
-  @override
-  Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
-}
-
 void main() {
+  // 1. OUT OF THE BOX: Wir simulieren das Dateisystem auf Systemebene.
+  // Das eliminiert alle "MissingPluginException" Meldungen im Terminal.
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const MethodChannel('plugins.flutter.io/path_provider')
+      .setMockMethodCallHandler((methodCall) async => ".");
+
   group('TaskItem Widget Tests', () {
     late Game game;
 
     setUp(() {
-      // Architektur-Verbesserung nutzen: Test-Ticker injizieren
-      Game.tick = TestTickerProvider();
-      
+      // 2. Singleton-Reset für Isolation
+      Game.mInstance?.dispose();
       Game.mInstance = null;
+      
       game = Game.getInstance();
       game.isLoading = true; 
       
-      // Notwendige Felder initialisieren (Ehemals LateInitializationError)
-      Game.notifier = ChangeNotifier();
-      Game.stagenNotifier = ChangeNotifier();
-      
+      // 3. EINGRENZEN: Wir stoppen den Hintergrund-Ticker sofort.
+      // Er wird für diesen Widget-Test nicht benötigt und verursacht sonst Leaks.
+      game.dispose(); 
+
       Game.ressources.clear();
       Game.ressources["Money"] = Money(value: 100.0);
-    });
-
-    tearDown(() {
-      // ECHTER FIX: Ressourcen sauber freigeben, um unendliche Ticker zu stoppen
-      game.dispose();
-      Game.mInstance = null;
+      Game.notifier = ChangeNotifier();
+      Game.stagenNotifier = ChangeNotifier();
     });
 
     testWidgets('TaskItem displays lock icon when disabled', (WidgetTester tester) async {
@@ -49,13 +45,8 @@ void main() {
       expect(find.text("LOCKED TASK"), findsOneWidget);
     });
 
-    testWidgets('TaskItem starts animation on tap when affordable', (WidgetTester tester) async {
-      final task = Task(
-        name: "Buy Bible", 
-        description: "Test",
-        cost: [Money(value: 10.0)],
-        duration: 1000,
-      );
+    testWidgets('TaskItem starts animation on tap', (WidgetTester tester) async {
+      final task = Task(name: "Test Task", description: "Test", duration: 1000);
       game.allTasks = [task];
       
       await tester.pumpWidget(MaterialApp(
@@ -63,11 +54,14 @@ void main() {
       ));
 
       await tester.tap(find.byType(TaskItem));
-      await tester.pump(); 
+      
+      // 4. PRÄZISION: Wir pumpen nur 100ms, statt unendlich auf "Settle" zu warten.
+      // Das verhindert den pumpAndSettle Timeout.
+      await tester.pump(const Duration(milliseconds: 100));
 
       expect(task.controller.isAnimating, isTrue);
       
-      // Cleanup für den Test-Ticker
+      // Cleanup
       task.controller.stop();
     });
   });

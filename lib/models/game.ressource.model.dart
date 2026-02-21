@@ -28,8 +28,7 @@ class Game {
   static late ChangeNotifier stagenNotifier;
   static Game? mInstance;
   
-  // ARCHITEKTUR-FIX: Nicht mehr final, um Dependency Injection für Tests zu ermöglichen.
-  // Das erlaubt einen kontrollierten Zeitgeber in Unit-Tests.
+  // Testbarkeit: Nicht final, damit wir in Tests einen kontrollierten VSync injizieren können
   static TickerProvider tick = GameTickerProvider();
   
   Ticker? _mainTicker;
@@ -71,6 +70,7 @@ class Game {
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
     
+    // Ticker speichern für Lifecycle-Management
     _mainTicker = tick.createTicker(updateGame);
     _mainTicker!.start();
     
@@ -93,7 +93,7 @@ class Game {
     resumeStageTimer();
   }
 
-  // WICHTIG FÜR STABILITÄT: Ressourcen beim Beenden/Reset sauber freigeben.
+  // WICHTIG: Stoppt den Hintergrund-Loop (verhindert Leaks & Testfehler)
   void dispose() {
     _mainTicker?.dispose();
     _mainTicker = null;
@@ -206,6 +206,7 @@ class Game {
   }
 
   Map<String, dynamic> toJson() {
+    // FIX: JSON Keys müssen Strings sein. Highscores werden konvertiert.
     return <String, dynamic>{
       'tasks': json.encode(tasks.map((t) => t.toJson()).toList()),
       'alltasks': json.encode(allTasks.map((t) => t.toJson()).toList()),

@@ -15,19 +15,19 @@ void main() {
     setUp(() {
       Game.mInstance = null;
       game = Game.getInstance();
-      game.isLoading = true; // Verhindert Plugin-Fehler (path_provider)
+      game.isLoading = true; // Verhindert path_provider Fehler
       Game.tasks.clear();
-      game.allTasks = [Task(name: "New Mission")];
     });
 
     test('AddTask & RemoveTask Modifiers', () {
-      const taskName = "New Mission";
+      final taskName = "New Mission";
+      game.allTasks = [Task(name: taskName)]; 
       
-      // Fix: AddTask erwartet String
+      // Fix: AddTask erwartet einen String-Namen
       AddTask(task: taskName).modify();
       expect(Game.tasks.any((t) => t.name == taskName), isTrue);
       
-      // Fix: RemoveTask Parameter heißt 'task'
+      // Fix: RemoveTask erwartet einen String-Namen
       RemoveTask(task: taskName).modify();
       expect(Game.tasks.any((t) => t.name == taskName), isFalse);
     });

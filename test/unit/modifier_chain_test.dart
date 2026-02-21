@@ -3,7 +3,6 @@ import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/task_activation.modifier.dart';
-import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -14,35 +13,41 @@ void main() {
     setUp(() {
       Game.mInstance = null;
       game = Game.getInstance();
-      game.isLoading = true; // CRITICAL: Stop auto-loading from disk in tests
+      game.isLoading = true; // Blockiert automatische Datei-Operationen
       Game.tasks.clear();
     });
 
     test('Complex progression: Task A disables itself and enables Task B', () {
-      // Setup: Task B starts disabled and is not in the game yet
+      // 1. Erstelle Task B (startet deaktiviert)
       final taskB = Task(name: "Follow-up Task", enabled: false);
-      game.allTasks = [taskB]; // Put it in the global pool
       
+      // 2. Erstelle Task A (mit Modifikatoren)
       final taskA = Task(
         name: "Initial Task",
         enabled: true,
         modifier: [
           DisableTaskModifier(taskName: "Initial Task"),
-          AddTask(task: "Follow-up Task"), // Fix: Pass String, not Task object
+          AddTask(task: "Follow-up Task"),
           EnableTaskModifier(taskName: "Follow-up Task"),
         ],
       );
 
+      // 3. WICHTIG: Registriere beide Instanzen im globalen Pool, 
+      // damit die Modifier genau diese Objekte finden und verändern.
+      game.allTasks = [taskA, taskB];
+      
+      // Task A zum aktiven Spiel hinzufügen
       game.addTask(taskA);
       
-      // Execute
+      // 4. Aktion: Task A wird abgeschlossen
       taskA.finished();
 
-      expect(taskA.enabled, isFalse, reason: "Task A should be disabled");
-      expect(Game.tasks.any((t) => t.name == "Follow-up Task"), isTrue, reason: "Task B should be added");
+      // 5. Assertions
+      expect(taskA.enabled, isFalse, reason: "Task A sollte durch den DisableTaskModifier deaktiviert worden sein");
+      expect(Game.tasks.any((t) => t.name == "Follow-up Task"), isTrue, reason: "Task B sollte durch AddTask hinzugefügt worden sein");
       
       final foundB = Game.tasks.firstWhere((t) => t.name == "Follow-up Task");
-      expect(foundB.enabled, isTrue, reason: "Task B should be enabled");
+      expect(foundB.enabled, isTrue, reason: "Task B sollte durch EnableTaskModifier aktiviert worden sein");
     });
   });
 }
