@@ -28,6 +28,13 @@ Krisen-Tasks dienen als Stress-Test für die Organisation.
 *   **Dynamik:** Endgame-Krisen sind schneller und aggressiver.
 *   **Kaskaden:** Nicht gelöste Krisen ziehen oft Folge-Krisen nach sich.
 
+### 5. Prinzipien der Erfolgsbewertung (Scoring)
+Der Score einer Stage bemisst sich an der **Effizienz der Leitung**.
+*   **Clan-Phase (Stage 0-3):** Hoher Fokus auf Klick-Geschwindigkeit (Manuelle Arbeit).
+*   **Gemeinde-Phase (Stage 4-10):** Balance zwischen Klicks und Zeit (Erste Delegation).
+*   **Bewegungs-/Global-Phase (Stage 11+):** Fokus fast rein auf Zeit-Effizienz. Klicks sind hier ein Zeichen für *mangelnde* Delegation und sollten den Score nicht mehr massiv beeinflussen.
+*   **Benchmark:** Die Zeit-Erwartung wächst nicht-linear mit der Komplexität der Stage-Tasks.
+
 ---
 
 ## 🏗 Struktur der Schwellen & Fokus-Phasen
