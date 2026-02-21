@@ -60,72 +60,74 @@ class _CelebrationDialogState extends State<CelebrationDialog> {
           title: 'GRATULATION!',
           icon: Icons.emoji_events,
           headerColor: Colors.amber[700]!,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "DU HAST EINE NEUE STUFE ERREICHT!",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-              ),
-              const SizedBox(height: 10),
-              
-              // TROPHY AREA with precise positioning for the gold circle
-              SizedBox(
-                height: 160,
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/icons/award.png',
-                      height: 150,
-                      fit: BoxFit.contain,
-                    ),
-                    Positioned(
-                      top: 24, // SHIFTED UP: To fit exactly inside the gold circle of award.png
-                      child: Text(
-                        widget.stage.toString(),
-                        style: const TextStyle(
-                          fontSize: 52,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.black87,
-                          shadows: [
-                            Shadow(color: Colors.white70, offset: Offset(1, 1), blurRadius: 2)
-                          ]
-                        ),
+          content: SingleChildScrollView( // FIX: Scrollbar für kleine Bildschirme hinzugefügt
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "DU HAST EINE NEUE STUFE ERREICHT!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                ),
+                const SizedBox(height: 10),
+                
+                // TROPHY AREA
+                SizedBox(
+                  height: 160,
+                  child: Stack(
+                    alignment: Alignment.topCenter,
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/icons/award.png',
+                        height: 150,
+                        fit: BoxFit.contain,
                       ),
-                    )
-                  ],
+                      Positioned(
+                        top: 24, 
+                        child: Text(
+                          widget.stage.toString(),
+                          style: const TextStyle(
+                            fontSize: 52,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black87,
+                            shadows: [
+                              Shadow(color: Colors.white70, offset: Offset(1, 1), blurRadius: 2)
+                            ]
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              
-              Text(
-                stageTitle.toUpperCase(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w900, 
-                  fontSize: 22,
-                  color: Colors.orange,
-                  letterSpacing: 1,
+                
+                Text(
+                  stageTitle.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w900, 
+                    fontSize: 22,
+                    color: Colors.orange,
+                    letterSpacing: 1,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              
-              Text(
-                "Dein Limit: $maxMembers Mitglieder",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey[600], 
-                  fontSize: 14, 
-                  fontWeight: FontWeight.bold,
-                  fontStyle: FontStyle.italic
+                const SizedBox(height: 8),
+                
+                Text(
+                  "Dein Limit: $maxMembers Mitglieder",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey[600], 
+                    fontSize: 14, 
+                    fontWeight: FontWeight.bold,
+                    fontStyle: FontStyle.italic
+                  ),
                 ),
-              ),
-              
-              const Divider(height: 24, thickness: 2),
-              
-              _buildStatsArea(),
-            ],
+                
+                const Divider(height: 24, thickness: 2),
+                
+                _buildStatsArea(),
+              ],
+            ),
           ),
           actions: [
             ElevatedButton(
