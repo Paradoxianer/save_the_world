@@ -13,9 +13,7 @@ void main() {
       Game.resetInstance();
     });
 
-    tearDown(() async {
-      // Dem Framework Zeit geben, auslaufende Ticks zu verarbeiten
-      await ImageCache().clear(); 
+    tearDown(() {
       Game.resetInstance();
     });
 
@@ -55,8 +53,8 @@ void main() {
         memberRes.value = 21.0; 
       }
       
-      // Zeit für Level-Up Animationen
-      for(int i=0; i<5; i++) {
+      // Zeit für Level-Up Logik
+      for(int i = 0; i < 5; i++) {
         await tester.pump(const Duration(milliseconds: 500));
       }
 
@@ -68,16 +66,20 @@ void main() {
       
       await tester.tap(celebButton, warnIfMissed: false);
       
-      // Dialog-Ausblendung abwarten
-      for(int i=0; i<5; i++) {
+      // Animationen ausblenden
+      for(int i = 0; i < 5; i++) {
         await tester.pump(const Duration(milliseconds: 500));
       }
 
       // 6. Verifikation: Wir sind in LVL 1
       expect(find.text('LVL 1'), findsOneWidget);
       
-      // Finaler Pump um sicherzustellen, dass keine Animationen mehr in der Queue sind
-      await tester.pump(const Duration(seconds: 1));
+      // --- FIX FÜR DEN TICKER FEHLER ---
+      // Wir stoppen den Ticker JETZT, während der Tester noch aktiv ist.
+      Game.resetInstance();
+      
+      // Einen letzten Frame pumpen, um den allerletzten geplanten Callback zu "verbrauchen"
+      await tester.pump(const Duration(milliseconds: 100));
     });
   });
 }
