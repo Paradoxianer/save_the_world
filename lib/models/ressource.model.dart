@@ -35,13 +35,14 @@ class Ressource extends GameElement {
   }
 
   double get value {
+    double base = _value;
     if (multiplierResourceName != null && multiplierValue != null) {
       final factorRes = Game.ressources[multiplierResourceName!];
       if (factorRes != null) {
-        return _value * factorRes.value * multiplierValue!;
+        base = _value * factorRes.value * multiplierValue!;
       }
     }
-    return _value;
+    return base;
   }
 
   set value(double val) {
@@ -62,28 +63,30 @@ class Ressource extends GameElement {
     notifier.notifyListeners();
   }
 
-  /// Hilfsmethode, um JSON-Werte (Zahl oder String) sicher in double umzuwandeln
-  static double _parseJsonDouble(dynamic val, double defaultValue) {
+  /// Hilfsmethode, um JSON-Werte (Zahl oder String) sicher in double umzuwandeln.
+  /// Jetzt korrekt als static deklariert.
+  static double parseJsonDouble(dynamic val, double defaultValue) {
     if (val == null) return defaultValue;
     if (val is num) return val.toDouble();
     if (val is String) {
-      if (val == "Infinity") return double.infinity;
-      if (val == "-Infinity") return double.negativeInfinity;
-      if (val == "NaN") return double.nan;
+      if (val.contains("Infinity")) return val.startsWith("-") ? -1e15 : 1e15;
+      if (val == "NaN") return defaultValue;
+      return double.tryParse(val) ?? defaultValue;
     }
     return defaultValue;
   }
 
-  /// Hilfsmethode, um double sicher für JSON vorzubereiten
-  static dynamic _encodeJsonDouble(double val) {
+  /// Hilfsmethode, um double sicher für JSON vorzubereiten.
+  /// Jetzt korrekt als static deklariert.
+  static dynamic encodeJsonDouble(double val) {
     if (val.isInfinite) return val.isNegative ? "-Infinity" : "Infinity";
     if (val.isNaN) return "NaN";
     return val;
   }
 
   factory Ressource.fromJson(Map<String, dynamic> json) {
-    String name = json['name'];
-    double val = _parseJsonDouble(json['value'], 0.0);
+    String name = json['name'] ?? "Unknown";
+    double val = parseJsonDouble(json['value'], 0.0);
     
     Ressource res;
     switch (name) {
@@ -96,8 +99,8 @@ class Ressource extends GameElement {
       default: res = Ressource(name: name, value: val);
     }
     
-    res.min = _parseJsonDouble(json['min'], res.min);
-    res.max = _parseJsonDouble(json['max'], res.max);
+    res.min = parseJsonDouble(json['min'], res.min);
+    res.max = parseJsonDouble(json['max'], res.max);
     res.multiplierResourceName = json['multiplierResourceName'] as String?;
     res.multiplierValue = (json['multiplierValue'] as num?)?.toDouble();
     return res;
@@ -107,9 +110,9 @@ class Ressource extends GameElement {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,
-      'min': _encodeJsonDouble(min),
-      'value': _encodeJsonDouble(_value), 
-      'max': _encodeJsonDouble(max),
+      'min': encodeJsonDouble(_min),
+      'value': encodeJsonDouble(_value), 
+      'max': encodeJsonDouble(_max),
       'multiplierResourceName': multiplierResourceName,
       'multiplierValue': multiplierValue,
     };
