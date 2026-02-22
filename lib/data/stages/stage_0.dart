@@ -12,20 +12,20 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 final Stage stage0 = Stage(
   level: 0,
   member: 20,
-  description: "Hausgemeinde - Lerne die Grundlagen der Ressourcenverwaltung.",
+  description: "Hausgemeinde - Lerne die Grundlagen von Save the World kennen.",
   activeTasks: ["Bibellesen", "Schlafen", "Freizeit"],
   allTasks: [
     Task(
       name: "Bibellesen",
-      description: "Zeit investieren, um 'Glauben' zu stärken - Deine Ressource Glauben zu erhöhen.",
+      description: "Zeit investieren, um 'Glauben' zu stärken - Erhöht deine Ressource \"Glauben\".",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
-      award: [Faith(value: 15.0)],
+      award: [Faith(value: 7.0)],
       modifier: [
         AddTask(task: "Beten"),
         RemoveTask(task: "Bibellesen"),
         AddTask(task: "Stille Zeit"),
-        MessageModifier(message: "BASICS: Aufgaben kosten links angezeigte Ressourcen (hier 1x Zeit) und bringen rechts Belohnungen (hier Glauben)."),
+        MessageModifier(message: "BASICS: Aufgaben kosten Ressourcen - links (1x Zeit) und bringen Belohnungen - rechts (1x Glauben)."),
       ],
     ),
     Task(
@@ -33,12 +33,12 @@ final Stage stage0 = Stage(
       description: "Zeit in Gottes Wort, das stärk meinen Glauben",
       duration: 3000.0,
       cost: [Time(value: 1.0)],
-      award: [Faith(value: 15.0)],
+      award: [Faith(value: 7.0)],
       modifier: [],
     ),
     Task(
       name: "Beten",
-      description: "Wandelt 'Glauben' in erste 'Mitglieder' um.",
+      description: "Beten Wandelt 'Glauben' in erste 'Mitglieder' um.",
       duration: 4000.0,
       cost: [Time(value: 1.0), Faith(value: 5.0)],
       award: [Member(value: 0.5)], // Reduziert von 1.0
@@ -51,7 +51,7 @@ final Stage stage0 = Stage(
     ),
     Task(
       name: "Meine Gebetszeit",
-      description: "Ohne Gebet funtkioniert nichts",
+      description: "Ohne Gebet funtkioniert nichts.",
       duration: 4000.0,
       cost: [Time(value: 1.0), Faith(value: 5.0)],
       award: [Member(value: 0.5)], // Reduziert von 1.0
@@ -59,7 +59,7 @@ final Stage stage0 = Stage(
     ),
     Task(
       name: "Mein erster Hausbesuch",
-      description: "Zeitaufwendig, aber bringt leute näher zu Gott.",
+      description: "Zeitaufwendig, aber bringt Leute näher zu Gott.",
       duration: 6000.0,
       cost: [Time(value: 3.0)],
       award: [Member(value: 0.75)], // Reduziert von 2.0
@@ -67,7 +67,7 @@ final Stage stage0 = Stage(
         AddTask(task: "Essen in meiner Wohnung"),
         AddTask(task: "Hausbesuch"),
         RemoveTask(task: "Mein erster Hausbesuch"),
-        MessageModifier(message: "STRATEGIE: Manche Aufgaben brauchen viel Zeit. Behalte den blauen Zeit-Balken oben im Auge!"),
+        MessageModifier(message: "STRATEGIE: Manche Aufgaben brauchen viel Zeit. Behalte deine Zeit oben rechts im Auge!"),
       ],
     ),
     Task(
@@ -79,7 +79,7 @@ final Stage stage0 = Stage(
     ),
     Task(
       name: "Schlafen",
-      description: "Regeneriert 'Zeit'. WICHTIG: Ohne Zeit-Punkte kannst du keine Aufgaben starten!",
+      description: "Regeneriert 'Zeit'. WICHTIG: Ohne Zeit kannst du keine Aufgaben starten!",
       duration: 8000.0,
       cost: [Time(value: 8.0)],
       award: [Time(value: 16.0)],
@@ -97,7 +97,7 @@ final Stage stage0 = Stage(
     Task(
       name: "Essen in meiner Wohnung",
       description: "MEILENSTEIN: Erhöht deine maximale Mitglieder-Kapazität auf 40.",
-      duration: 10000.0,
+      duration: 15000.0,
       isMilestone: true,
       cost: [Time(value: 4.0), Member(value: 5.0)],
       award: [Member(value: 8.0)], // Reduziert von 15.0

@@ -21,7 +21,7 @@ final Task baseSleep = Task(
 final Task baseFreeTime = Task(
   name: "Freizeit",
   description: "Kleine Pause zum Durchatmen.",
-  duration: 12000.0, 
+  duration: 20000.0,
   cost: [], 
   award: [Time(value: 1.0)],
 );

@@ -11,6 +11,17 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
+//Das müssten wir überarbeiten FSJler macht für mich kein Sinn und Gottesdienst sollte gechaint werden..
+//"ersten Gottesdienst planen" ruft ... "ersten Gottesdienst halten" (Gold Task) auf (und beide werden wieder gelöscht und
+//mit Gottsdienst vorbereiten und Gottesdienst halten ersetzt werden..aber Gottesdienst halten sollte disabled gesetzte sein
+//Gottesdienst halten soll erst enabled werden, wenn der Gottesdienst vorberietet wurde... und umgedreht sollte solange
+//der GD noch nicht gehalten wurde die vorbereitung noch disalbed sein...
+////ersten GD planen sollte wirklich sehr viel kosten (weisheit und Glaube...) damit er nicht einfach erreichbar ist
+// weiter sollten wir auch Freizeit mit reinnhemen... ( freizeit und schlaf sollte auch in die common_tasks... oder?
+// als Heilsarmeeoffizier sollten auch noch die mölgichkeit Obdachlosen helfen ... evtl gebne... einfach ein Task
+//bei dem man Publicity, ganz wenig bkeommen kann.. aber er kostet Geld und Zeit, schaltete aber auch spendensammeln frei..
+// Spendensammeln.. die höhe hängt von der Publiicty ab.. (das könnte auch in die common_task oder?
+
 final Stage stage1 = Stage(
   level: 1,
   member: 40,
@@ -64,7 +75,7 @@ final Stage stage1 = Stage(
       description: "Regelmäßige Gottesdienste sind das Herzstück der wachsenden Gemeinde.",
       duration: 8000.0,
       cost: [Time(value: 4.0), Faith(value: 15.0)],
-      award: [Member(value: 1.0), Money(value: 20.0)],
+      award: [Member(value: 1.0), Money(value: 10.0,multiplierResourceName: "Member", multiplierValue: 0.1)],
       modifier: [
          MessageModifier(message: "KOLLEKTE: Die Gemeinde gibt großzügig. Nutze das Geld für wichtige Upgrades!"),
          AddTask(task: "FSJler einstellen"),
@@ -107,7 +118,7 @@ final Stage stage1 = Stage(
       duration: 15000.0,
       timeToSolve: 120000.0, 
       cost: [Time(value: 2.0), Wisdom(value: 5.0)],
-      award: [Faith(value: 10.0)],
+      award: [Wisdom(value: 7.0)],
       modifier: [
         MessageModifier(message: "GELÖST: Puh, der Konflikt ist beigelegt. Die Gemeinschaft ist gestärkt."),
         RemoveTask(task: "Konflikt in der Gruppe"),

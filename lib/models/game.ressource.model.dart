@@ -27,7 +27,10 @@ class Game {
   static late ChangeNotifier notifier;
   static late ChangeNotifier stagenNotifier;
   static Game? mInstance;
-  static final TickerProvider tick = GameTickerProvider();
+  
+  /// Der Taktgeber für alle Animationen und Timer im Spiel.
+  /// Nicht final, damit er in Tests durch einen MockTickerProvider ersetzt werden kann.
+  static TickerProvider tick = GameTickerProvider();
   
   Ticker? _ticker;
 
@@ -91,7 +94,6 @@ class Game {
   }
 
   void dispose() {
-    // Robustere Ticker-Disposal für Tests
     if (_ticker != null) {
       if (_ticker!.isActive) {
         _ticker!.stop();
@@ -264,7 +266,6 @@ class Game {
   }
 
   void saveState() {
-    // FIX: Ressourcen-Map in JSON-kompatible Map umwandeln
     Map<String, dynamic> resJson = ressources.map((key, value) => MapEntry(key, value.toJson()));
     dataManager.writeJson("gameRes", json.encode(resJson));
 
@@ -299,9 +300,10 @@ class Game {
       Map<String, dynamic> resMap = json.decode(jsn);
       for (var name in ressources.keys) {
         if (resMap.containsKey(name)) {
-          ressources[name]?.setValue(resMap[name]['value']?.toDouble() ?? 0.0);
-          ressources[name]?.min = resMap[name]['min']?.toDouble() ?? ressources[name]!.min;
-          ressources[name]?.max = resMap[name]['max']?.toDouble() ?? ressources[name]!.max;
+          double val = Ressource.parseJsonDouble(resMap[name]['value'], 0.0);
+          ressources[name]?.setValue(val);
+          ressources[name]?.min = Ressource.parseJsonDouble(resMap[name]['min'], ressources[name]!.min);
+          ressources[name]?.max = Ressource.parseJsonDouble(resMap[name]['max'], ressources[name]!.max);
         }
       }
     }

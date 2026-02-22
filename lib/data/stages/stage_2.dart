@@ -12,6 +12,10 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
+//Gottesdienst in der Wohnung sollte hier raus... hier sind wir schlielich  über 80 Personen
+// es sollten noch als weiter Aufgaben praktisch alle von Stage 1 dazu kommen.. (evtl mit Ressourcenabhängigen  Ressourcen?)
+// hier könnten w
+
 final Stage stage2 = Stage(
   level: 2,
   member: 80,
