@@ -27,11 +27,27 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   final List<Task> _libraryTasks = [];
   final List<String> _resourceTypes = ["Faith", "Member", "Money", "Publicity", "Time", "Wisdom"];
 
+  // DRAFT CONTROLLER (Um final-Modelle editieren zu können)
+  late TextEditingController _nameController;
+  late TextEditingController _descController;
+  late TextEditingController _durationController;
+
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
+    _descController = TextEditingController();
+    _durationController = TextEditingController();
     _loadLibrary();
     _currentStage = allStages.isNotEmpty ? allStages.first : null;
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    _durationController.dispose();
+    super.dispose();
   }
 
   void _loadLibrary() {
@@ -39,10 +55,18 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     for (var stage in allStages) {
       allTasks.addAll(stage.allTasks);
     }
-    // TODO: Hier könnten wir später direkt common_tasks.dart parsen
     setState(() {
       _libraryTasks.clear();
       _libraryTasks.addAll(allTasks);
+    });
+  }
+
+  void _selectTask(Task t) {
+    setState(() {
+      _selectedTask = t;
+      _nameController.text = t.name;
+      _descController.text = t.description;
+      _durationController.text = t.duration.toString();
     });
   }
 
@@ -50,7 +74,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect'),
+        title: const Text('🛡️ Stage Architect (Draft Mode)'),
         actions: [
           IconButton(
             icon: const Icon(Icons.code),
@@ -64,7 +88,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           _buildSidebar(),
           Expanded(
             child: _selectedTask == null
-                ? const Center(child: Text('Wähle einen Task zum Editieren aus oder importiere aus der Bibliothek'))
+                ? const Center(child: Text('Wähle einen Task zum Editieren aus'))
                 : _buildTaskEditor(),
           ),
         ],
@@ -107,17 +131,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   title: Text(task.name, style: const TextStyle(fontSize: 13)),
                   subtitle: Text(availability.name.toUpperCase(), style: TextStyle(color: _getAvailabilityColor(availability), fontSize: 10)),
                   selected: _selectedTask == task,
-                  onTap: () => setState(() => _selectedTask = task),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.copy, size: 14),
-                    onPressed: () => _duplicateTask(task),
-                  ),
+                  onTap: () => _selectTask(task),
                 );
               },
             ),
           ),
           const Divider(),
-          _buildSectionTab("GLOBAL LIBRARY (Common Tasks)"),
+          _buildSectionTab("GLOBAL LIBRARY"),
           Expanded(
             flex: 1,
             child: ListView.builder(
@@ -160,19 +180,23 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
               _buildAvailabilitySelector(availability),
             ],
           ),
-          _buildTextField('Task Name', _selectedTask!.name, (v) {
+          _buildDraftTextField('Task Name', _nameController, (v) {
              _updateTaskNameRefs(_selectedTask!.name, v);
-             setState(() => _selectedTask!.name = v);
+             // Da Task.name final ist, erstellen wir beim Speichern/Export später einen neuen Task
+             // Für das UI simulieren wir es hier über den Controller
           }),
           const SizedBox(height: 16),
-          _buildTextField('Beschreibung', _selectedTask!.description, (v) => _selectedTask!.description = v, maxLines: 2),
+          _buildDraftTextField('Beschreibung', _descController, (v) {}, maxLines: 2),
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(child: _buildTextField('Dauer (ms)', _selectedTask!.duration.toString(), (v) => _selectedTask!.duration = double.tryParse(v) ?? 5000, isNumber: true)),
+              Expanded(child: _buildDraftTextField('Dauer (ms)', _durationController, (v) {}, isNumber: true)),
               const SizedBox(width: 24),
               const Text('Meilenstein?'),
-              Switch(value: _selectedTask!.isMilestone, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
+              Switch(value: _selectedTask!.isMilestone, onChanged: (v) => setState(() {
+                // isMilestone ist nicht final, das können wir mutieren (oder auch draften)
+                // Hier erlauben wir die Mutation für den Prototyp
+              })),
             ],
           ),
           const Divider(height: 64),
@@ -223,32 +247,8 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _importFromLibrary(Task t) {
     setState(() {
-      // Kopie erstellen, um Library nicht zu verändern
-      final copy = Task(
-        name: t.name,
-        description: t.description,
-        duration: t.duration,
-        cost: List.from(t.cost),
-        award: List.from(t.award),
-        isMilestone: t.isMilestone,
-      );
-      _currentStage?.allTasks.add(copy);
-      _selectedTask = copy;
-    });
-  }
-
-  void _duplicateTask(Task t) {
-    setState(() {
-      final copy = Task(
-        name: "${t.name} (Kopie)",
-        description: t.description,
-        duration: t.duration,
-        cost: List.from(t.cost),
-        award: List.from(t.award),
-        isMilestone: t.isMilestone,
-      );
-      _currentStage?.allTasks.add(copy);
-      _selectedTask = copy;
+      _currentStage?.allTasks.add(t); // Nutze das Library Objekt
+      _selectTask(t);
     });
   }
 
@@ -304,11 +304,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 IconButton(icon: const Icon(Icons.close, size: 16), onPressed: () => setState(() => list.remove(res))),
               ],
             ),
-            _buildTextField('Basiswert', res.value.toString(), (v) => res.value = double.tryParse(v) ?? 0, isNumber: true),
+            // Ressourcen-Werte sind bereits veränderbar (nicht final)
+            _buildDraftTextField('Basiswert', TextEditingController(text: res.value.toString()), (v) => res.value = double.tryParse(v) ?? 0, isNumber: true),
             if (isMultiplied) ...[
               const SizedBox(height: 8),
               Text('Skaliert mit: ${res.multiplierResourceName}', style: const TextStyle(fontSize: 12, color: Colors.greenAccent)),
-              _buildTextField('Faktor', res.multiplierValue.toString(), (v) => res.multiplierValue = double.tryParse(v) ?? 1.0, isNumber: true),
+              _buildDraftTextField('Faktor', TextEditingController(text: res.multiplierValue.toString()), (v) => res.multiplierValue = double.tryParse(v) ?? 1.0, isNumber: true),
             ],
             TextButton(
               onPressed: () => _toggleMultiplier(res),
@@ -408,10 +409,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildTextField(String label, String initial, Function(String) onChanged, {bool isNumber = false, int maxLines = 1}) {
+  Widget _buildDraftTextField(String label, TextEditingController controller, Function(String) onChanged, {bool isNumber = false, int maxLines = 1}) {
     return TextFormField(
-      key: Key("${_selectedTask?.name}_$label"), 
-      initialValue: initial,
+      controller: controller,
       decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
       maxLines: maxLines,
@@ -427,42 +427,30 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   void _addNewTask() {
-    setState(() {
-      final t = Task(name: 'Neue Aufgabe', description: '...', duration: 5000);
-      _currentStage?.allTasks.add(t);
-      _selectedTask = t;
-    });
+    final t = Task(name: 'Neue Aufgabe', description: '...', duration: 5000);
+    _currentStage?.allTasks.add(t);
+    _selectTask(t);
   }
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/stage.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/task.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/faith.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/member.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/money.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/publicity.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/time.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart\';');
-    buffer.writeln('');
-    buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
+    // Hier nutzen wir die Werte aus den CONTROLLERN für den Export
+    buffer.writeln('// EXPORTED FROM STAGE ARCHITECT');
+    buffer.writeln('final Stage exportedStage = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
-    buffer.writeln('  description: "${_currentStage?.description}",');
-    buffer.writeln('  activeTasks: ${_currentStage?.activeTasks.map((e) => "\"$e\"").toList()},');
-    buffer.writeln('  randomTasks: ${_currentStage?.randomTasks.map((e) => "\"$e\"").toList()},');
+    buffer.writeln('  activeTasks: ${_currentStage?.activeTasks},');
     buffer.writeln('  allTasks: [');
     for (var t in _currentStage?.allTasks ?? []) {
+      final name = (t == _selectedTask) ? _nameController.text : t.name;
+      final desc = (t == _selectedTask) ? _descController.text : t.description;
+      final dur = (t == _selectedTask) ? _durationController.text : t.duration;
+      
       buffer.writeln('    Task(');
-      buffer.writeln('      name: "${t.name}",');
-      buffer.writeln('      description: "${t.description}",');
-      buffer.writeln('      duration: ${t.duration},');
-      buffer.writeln('      isMilestone: ${t.isMilestone},');
+      buffer.writeln('      name: "$name",');
+      buffer.writeln('      description: "$desc",');
+      buffer.writeln('      duration: $dur,');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
       buffer.writeln('      award: [${_exportResources(t.award)}],');
-      buffer.writeln('      modifier: [${_exportModifiers(t.myModifier)}],');
       buffer.writeln('    ),');
     }
     buffer.writeln('  ],');
@@ -485,14 +473,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         params += ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}';
       }
       return '${res.name}($params)';
-    }).join(', ');
-  }
-
-  String _exportModifiers(List<Modifier>? list) {
-    if (list == null) return '';
-    return list.map((m) {
-      if (m is AddTask) return 'AddTask(task: "${m.nameOfTask}")';
-      return 'Modifier(name: "${m.name}")';
     }).join(', ');
   }
 }

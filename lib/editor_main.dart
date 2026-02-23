@@ -20,7 +20,7 @@ class StageArchitectApp extends StatelessWidget {
         primarySwatch: Colors.amber,
         useMaterial3: true,
         scaffoldBackgroundColor: const Color(0xFF121212),
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData( // FIX: CardThemeData statt CardTheme Widget
           color: const Color(0xFF1E1E1E),
           elevation: 4,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
