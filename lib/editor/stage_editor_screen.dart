@@ -78,7 +78,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildSidebar() {
     return Container(
-      width: 300,
+      width: 350,
       decoration: const BoxDecoration(border: Border(right: BorderSide(color: Colors.white12))),
       child: Column(
         children: [
@@ -87,20 +87,35 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             child: DropdownButtonFormField<Stage>(
               decoration: const InputDecoration(labelText: 'Stage auswählen'),
               value: _currentStage,
-              items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level}'))).toList(),
+              items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level}: ${s.description.split(" ").take(2).join(" ")}...'))).toList(),
               onChanged: (s) => setState(() { _currentStage = s; _selectedTask = null; }),
             ),
+          ),
+          const Divider(),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text("Tasks in dieser Stage", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber)),
           ),
           Expanded(
             child: ListView.builder(
               itemCount: _currentStage?.allTasks.length ?? 0,
               itemBuilder: (context, index) {
                 final task = _currentStage!.allTasks[index];
+                final isActive = _currentStage!.activeTasks.contains(task.name);
+                final isRandom = _currentStage!.randomTasks.contains(task.name);
+
                 return ListTile(
+                  dense: true,
                   title: Text(task.name),
+                  subtitle: Text(isActive ? "START" : (isRandom ? "EVENT" : "HIDDEN")),
                   selected: _selectedTask == task,
+                  leading: Icon(
+                    isActive ? Icons.play_arrow : (isRandom ? Icons.shuffle : Icons.link_off),
+                    size: 16,
+                    color: isActive ? Colors.green : (isRandom ? Colors.orange : Colors.grey),
+                  ),
                   onTap: () => setState(() => _selectedTask = task),
-                  trailing: task.isMilestone ? const Icon(Icons.star, color: Colors.amber, size: 16) : null,
+                  trailing: task.isMilestone ? const Icon(Icons.star, color: Colors.amber, size: 14) : null,
                 );
               },
             ),
@@ -111,13 +126,52 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   Widget _buildTaskEditor() {
+    final isActive = _currentStage?.activeTasks.contains(_selectedTask!.name) ?? false;
+    final isRandom = _currentStage?.randomTasks.contains(_selectedTask!.name) ?? false;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Basis-Konfiguration'),
-          _buildTextField('Task Name', _selectedTask!.name, (v) => setState(() => _selectedTask!.name = v)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildSectionHeader('Basis-Konfiguration'),
+              _buildStatusBadges(isActive, isRandom),
+            ],
+          ),
+          _buildTextField('Task Name', _selectedTask!.name, (v) {
+             // Namensänderung in den Listen synchronisieren
+             _updateTaskNameRefs(_selectedTask!.name, v);
+             setState(() => _selectedTask!.name = v);
+          }),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _buildStatusToggle("Sofort Aktiv (Start-Task)", isActive, (v) {
+                setState(() {
+                  if (v!) {
+                    _currentStage!.activeTasks.add(_selectedTask!.name);
+                    _currentStage!.randomTasks.remove(_selectedTask!.name);
+                  } else {
+                    _currentStage!.activeTasks.remove(_selectedTask!.name);
+                  }
+                });
+              }),
+              const SizedBox(width: 32),
+              _buildStatusToggle("Zufalls-Event (Random)", isRandom, (v) {
+                setState(() {
+                  if (v!) {
+                    _currentStage!.randomTasks.add(_selectedTask!.name);
+                    _currentStage!.activeTasks.remove(_selectedTask!.name);
+                  } else {
+                    _currentStage!.randomTasks.remove(_selectedTask!.name);
+                  }
+                });
+              }),
+            ],
+          ),
           const SizedBox(height: 16),
           _buildTextField('Beschreibung', _selectedTask!.description, (v) => _selectedTask!.description = v, maxLines: 2),
           const SizedBox(height: 16),
@@ -139,6 +193,34 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         ],
       ),
     );
+  }
+
+  void _updateTaskNameRefs(String oldName, String newName) {
+    if (_currentStage == null) return;
+    if (_currentStage!.activeTasks.contains(oldName)) {
+      _currentStage!.activeTasks.remove(oldName);
+      _currentStage!.activeTasks.add(newName);
+    }
+    if (_currentStage!.randomTasks.contains(oldName)) {
+      _currentStage!.randomTasks.remove(oldName);
+      _currentStage!.randomTasks.add(newName);
+    }
+  }
+
+  Widget _buildStatusToggle(String label, bool value, Function(bool?) onChanged) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Checkbox(value: value, onChanged: onChanged),
+        Text(label),
+      ],
+    );
+  }
+
+  Widget _buildStatusBadges(bool active, bool random) {
+    if (active) return const Badge(label: Text("START-TASK"), backgroundColor: Colors.green);
+    if (random) return const Badge(label: Text("RANDOM-EVENT"), backgroundColor: Colors.orange);
+    return const Badge(label: Text("HIDDEN / CHAINED"), backgroundColor: Colors.grey);
   }
 
   Widget _buildResourceSection(String title, List<Ressource> list) {
@@ -286,6 +368,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildTextField(String label, String initial, Function(String) onChanged, {bool isNumber = false, int maxLines = 1}) {
     return TextFormField(
+      key: Key("${_selectedTask?.name}_$label"), // Verhindert Controller-Konflikte beim Wechsel
       initialValue: initial,
       decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
@@ -311,12 +394,22 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('final Stage exportedStage = Stage(');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/stage.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/task.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
+    buffer.writeln('');
+    buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
+    buffer.writeln('  description: "${_currentStage?.description}",');
+    buffer.writeln('  activeTasks: ${_currentStage?.activeTasks},');
+    buffer.writeln('  randomTasks: ${_currentStage?.randomTasks},');
     buffer.writeln('  allTasks: [');
     for (var t in _currentStage?.allTasks ?? []) {
       buffer.writeln('    Task(');
       buffer.writeln('      name: "${t.name}",');
+      buffer.writeln('      description: "${t.description}",');
       buffer.writeln('      duration: ${t.duration},');
       buffer.writeln('      isMilestone: ${t.isMilestone},');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
