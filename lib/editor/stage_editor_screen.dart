@@ -8,6 +8,8 @@ import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
+import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -15,7 +17,6 @@ import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
-import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
 class StageEditorScreen extends StatefulWidget {
@@ -79,7 +80,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V2.2'),
+        title: const Text('🛡️ Stage Architect V2.3'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -242,7 +243,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildSpecificModifierInputs(Modifier m) {
     if (m is AddTask) {
-      return _buildTaskDropdown('Task Name', m.nameOfTask, (v) {
+      return _buildTaskDropdown('Task zum Hinzufügen', m.nameOfTask, (v) {
         if (v != null) {
           final index = _selectedTask!.myModifier!.indexOf(m);
           _selectedTask!.myModifier![index] = AddTask(task: v);
@@ -251,7 +252,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       });
     }
     if (m is RemoveTask) {
-      return _buildTaskDropdown('Task Name', m.nameOfTask, (v) {
+      return _buildTaskDropdown('Task zum Entfernen', m.nameOfTask, (v) {
         if (v != null) {
           final index = _selectedTask!.myModifier!.indexOf(m);
           _selectedTask!.myModifier![index] = RemoveTask(task: v);
@@ -277,11 +278,48 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         ],
       );
     }
+    if (m is SetMin) {
+      return Row(
+        children: [
+          Expanded(child: _buildResourceDropdown('Ressource', m.workOn, (v) {
+            if (v != null) {
+              final index = _selectedTask!.myModifier!.indexOf(m);
+              _selectedTask!.myModifier![index] = SetMin(ressource: v, newMin: m.newMin);
+              setState(() {});
+            }
+          })),
+          const SizedBox(width: 16),
+          Expanded(child: _buildDraftTextField('Neu Min', TextEditingController(text: m.newMin.toString()), (v) {
+             final index = _selectedTask!.myModifier!.indexOf(m);
+             _selectedTask!.myModifier![index] = SetMin(ressource: m.workOn, newMin: double.tryParse(v) ?? 0);
+          }, isNumber: true)),
+        ],
+      );
+    }
+    if (m is AddToRandom) {
+      return _buildTaskDropdown('Task für Random Pool', m.nameOfTask, (v) {
+        if (v != null) {
+          final index = _selectedTask!.myModifier!.indexOf(m);
+          _selectedTask!.myModifier![index] = AddToRandom(task: v);
+          setState(() {});
+        }
+      });
+    }
+    if (m is AutoExecuteModifier) {
+      return Column(
+        children: [
+          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) {
+             final index = _selectedTask!.myModifier!.indexOf(m);
+             _selectedTask!.myModifier![index] = AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000);
+          }, isNumber: true),
+          const Text('Führt verschachtelte Modifier aus'),
+        ],
+      );
+    }
     if (m is MessageModifier) {
       final ctrl = TextEditingController(text: m.message);
       return _buildDraftTextField('Nachricht', ctrl, (v) {
          // Wir mappen das hier einfach für den Export
-         // In einem echten Refactoring würde man hier einen State-Wrapper nutzen
       });
     }
     return Text(m.description);
@@ -310,17 +348,34 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Modifier Typ'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(title: const Text('AddTask'), onTap: () { setState(() => _selectedTask!.myModifier?.add(AddTask(task: ""))); Navigator.pop(context); }),
-            ListTile(title: const Text('RemoveTask'), onTap: () { setState(() => _selectedTask!.myModifier?.add(RemoveTask(task: ""))); Navigator.pop(context); }),
-            ListTile(title: const Text('SetMax'), onTap: () { setState(() => _selectedTask!.myModifier?.add(SetMax(ressource: "Member", newMax: 100))); Navigator.pop(context); }),
-            ListTile(title: const Text('Message'), onTap: () { setState(() => _selectedTask!.myModifier?.add(MessageModifier(message: "Tutorial Text"))); Navigator.pop(context); }),
-          ],
+        title: const Text('Modifier Typ wählen'),
+        content: SizedBox(
+          width: 300,
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              _modTypeTile('AddTask', () => AddTask(task: "")),
+              _modTypeTile('RemoveTask', () => RemoveTask(task: "")),
+              _modTypeTile('AddToRandom', () => AddToRandom(task: "")),
+              _modTypeTile('SetMax', () => SetMax(ressource: "Member", newMax: 100)),
+              _modTypeTile('SetMin', () => SetMin(ressource: "Member", newMin: 0)),
+              _modTypeTile('AutoExecute', () => AutoExecuteModifier(modifiers: [], intervalMs: 5000)),
+              _modTypeTile('Message', () => MessageModifier(message: "Info")),
+              _modTypeTile('SubtractRes', () => SubtractRes(ressources: [])),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _modTypeTile(String label, Modifier Function() creator) {
+    return ListTile(
+      title: Text(label),
+      onTap: () {
+        setState(() => _selectedTask!.myModifier?.add(creator()));
+        Navigator.pop(context);
+      },
     );
   }
 
@@ -476,22 +531,17 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     _selectTask(t);
   }
 
-  // --- DER TIEFE EXPORT ---
   void _exportStage() {
     final buffer = StringBuffer();
     buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/faith.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/member.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/message.modifier.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/money.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/publicity.ressource.model.dart\';');
     buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/stage.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/AddToRandom.model.dart\';');
     buffer.writeln('import \'package:save_the_world_flutter_app/models/setmax.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/setmin.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/autoexecute.model.dart\';');
     buffer.writeln('import \'package:save_the_world_flutter_app/models/subtractres.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/task.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/time.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/message.modifier.dart\';');
+    buffer.writeln('// ... weitere Ressourcen-Imports ...');
     buffer.writeln('');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
@@ -546,8 +596,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     return list.map((m) {
       if (m is AddTask) return 'AddTask(task: "${m.nameOfTask}")';
       if (m is RemoveTask) return 'RemoveTask(task: "${m.nameOfTask}")';
+      if (m is AddToRandom) return 'AddToRandom(task: "${m.nameOfTask}")';
       if (m is SetMax) return 'SetMax(ressource: "${m.workOn}", newMax: ${m.newMax})';
+      if (m is SetMin) return 'SetMin(ressource: "${m.workOn}", newMin: ${m.newMin})';
+      if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [], intervalMs: ${m.intervalMs})';
       if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
+      if (m is SubtractRes) return 'SubtractRes(ressources: [${_exportResources(m.ressources)}])';
       return '// Unknown Modifier: ${m.name}';
     }).join(', ');
   }
