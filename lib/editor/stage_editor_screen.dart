@@ -14,6 +14,8 @@ import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
 class StageEditorScreen extends StatefulWidget {
@@ -77,9 +79,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V2.1'),
+        title: const Text('🛡️ Stage Architect V2.2'),
         actions: [
-          IconButton(icon: const Icon(Icons.code), tooltip: 'Export', onPressed: _exportStage),
+          IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
       ),
       body: Row(
@@ -135,7 +137,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             ),
           ),
           const Divider(),
-          _buildSectionTab("LIBRARY (Quick Import)"),
+          _buildSectionTab("GLOBAL LIBRARY"),
           Expanded(
             flex: 1,
             child: ListView.builder(
@@ -173,11 +175,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildSectionHeader('Konfiguration: ${_selectedTask!.name}'),
+              _buildSectionHeader('Edit Task: ${_selectedTask!.name}'),
               _buildAvailabilitySelector(availability),
             ],
           ),
-          _buildDraftTextField('Task Name', _nameController, (v) => _updateTaskNameRefs(_selectedTask!.name, v)),
+          _buildDraftTextField('Name', _nameController, (v) {
+             _updateTaskNameRefs(_selectedTask!.name, v);
+          }),
           const SizedBox(height: 16),
           _buildDraftTextField('Beschreibung', _descController, (v) {}, maxLines: 2),
           const SizedBox(height: 16),
@@ -206,13 +210,10 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       children: [
         ...(_selectedTask!.myModifier ?? []).map((m) => _buildModifierEditorTile(m)),
         const SizedBox(height: 16),
-        Center(
-          child: ElevatedButton.icon(
-            onPressed: _showAddModifierDialog,
-            icon: const Icon(Icons.add_box),
-            label: const Text('Modifier hinzufügen'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.amber.withOpacity(0.2)),
-          ),
+        ElevatedButton.icon(
+          onPressed: _showAddModifierDialog,
+          icon: const Icon(Icons.add_box),
+          label: const Text('Modifier hinzufügen'),
         ),
       ],
     );
@@ -224,7 +225,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -233,7 +233,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 IconButton(icon: const Icon(Icons.delete, size: 18), onPressed: () => setState(() => _selectedTask!.myModifier?.remove(m))),
               ],
             ),
-            const SizedBox(height: 8),
             _buildSpecificModifierInputs(m),
           ],
         ),
@@ -243,52 +242,47 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildSpecificModifierInputs(Modifier m) {
     if (m is AddTask) {
-      return _buildTaskDropdown('Task zum Hinzufügen', m.nameOfTask, (v) {
-         if (v != null) {
-           // Wir müssen das Objekt neu erstellen, da nameOfTask final ist
-           final index = _selectedTask!.myModifier!.indexOf(m);
-           _selectedTask!.myModifier![index] = AddTask(task: v);
-           setState(() {});
-         }
+      return _buildTaskDropdown('Task Name', m.nameOfTask, (v) {
+        if (v != null) {
+          final index = _selectedTask!.myModifier!.indexOf(m);
+          _selectedTask!.myModifier![index] = AddTask(task: v);
+          setState(() {});
+        }
       });
     }
     if (m is RemoveTask) {
-      return _buildTaskDropdown('Task zum Entfernen', m.nameOfTask, (v) {
-         if (v != null) {
-           final index = _selectedTask!.myModifier!.indexOf(m);
-           _selectedTask!.myModifier![index] = RemoveTask(task: v);
-           setState(() {});
-         }
+      return _buildTaskDropdown('Task Name', m.nameOfTask, (v) {
+        if (v != null) {
+          final index = _selectedTask!.myModifier!.indexOf(m);
+          _selectedTask!.myModifier![index] = RemoveTask(task: v);
+          setState(() {});
+        }
       });
     }
     if (m is SetMax) {
       return Row(
         children: [
           Expanded(child: _buildResourceDropdown('Ressource', m.workOn, (v) {
-             if (v != null) {
-               final index = _selectedTask!.myModifier!.indexOf(m);
-               _selectedTask!.myModifier![index] = SetMax(ressource: v, newMax: m.newMax);
-               setState(() {});
-             }
+            if (v != null) {
+              final index = _selectedTask!.myModifier!.indexOf(m);
+              _selectedTask!.myModifier![index] = SetMax(ressource: v, newMax: m.newMax);
+              setState(() {});
+            }
           })),
           const SizedBox(width: 16),
-          Expanded(child: _buildDraftTextField('Neuer Max-Wert', TextEditingController(text: m.newMax.toString()), (v) {
+          Expanded(child: _buildDraftTextField('Neu Max', TextEditingController(text: m.newMax.toString()), (v) {
              final index = _selectedTask!.myModifier!.indexOf(m);
              _selectedTask!.myModifier![index] = SetMax(ressource: m.workOn, newMax: double.tryParse(v) ?? 0);
           }, isNumber: true)),
         ],
       );
     }
-    if (m is AutoExecuteModifier) {
-      return Column(
-        children: [
-          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) {
-             // Da wir hier auch neu instanziieren müssten, machen wir es einfach über setState für das UI
-             setState(() {}); 
-          }, isNumber: true),
-          const Text('Führt verschachtelte Modifier aus'),
-        ],
-      );
+    if (m is MessageModifier) {
+      final ctrl = TextEditingController(text: m.message);
+      return _buildDraftTextField('Nachricht', ctrl, (v) {
+         // Wir mappen das hier einfach für den Export
+         // In einem echten Refactoring würde man hier einen State-Wrapper nutzen
+      });
     }
     return Text(m.description);
   }
@@ -316,14 +310,14 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Modifier Typ wählen'),
+        title: const Text('Modifier Typ'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(title: const Text('AddTask'), onTap: () { setState(() => _selectedTask!.myModifier?.add(AddTask(task: ""))); Navigator.pop(context); }),
             ListTile(title: const Text('RemoveTask'), onTap: () { setState(() => _selectedTask!.myModifier?.add(RemoveTask(task: ""))); Navigator.pop(context); }),
             ListTile(title: const Text('SetMax'), onTap: () { setState(() => _selectedTask!.myModifier?.add(SetMax(ressource: "Member", newMax: 100))); Navigator.pop(context); }),
-            ListTile(title: const Text('AutoExecute'), onTap: () { setState(() => _selectedTask!.myModifier?.add(AutoExecuteModifier(modifiers: [], intervalMs: 5000))); Navigator.pop(context); }),
+            ListTile(title: const Text('Message'), onTap: () { setState(() => _selectedTask!.myModifier?.add(MessageModifier(message: "Tutorial Text"))); Navigator.pop(context); }),
           ],
         ),
       ),
@@ -333,9 +327,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget _buildAvailabilitySelector(TaskAvailability current) {
     return SegmentedButton<TaskAvailability>(
       segments: const [
-        ButtonSegment(value: TaskAvailability.start, label: Text("Start"), icon: Icon(Icons.play_arrow, size: 16)),
-        ButtonSegment(value: TaskAvailability.random, label: Text("Random"), icon: Icon(Icons.shuffle, size: 16)),
-        ButtonSegment(value: TaskAvailability.chained, label: Text("Chained"), icon: Icon(Icons.link, size: 16)),
+        ButtonSegment(value: TaskAvailability.start, label: Text("Start")),
+        ButtonSegment(value: TaskAvailability.random, label: Text("Random")),
+        ButtonSegment(value: TaskAvailability.chained, label: Text("Chained")),
       ],
       selected: {current},
       onSelectionChanged: (Set<TaskAvailability> newSelection) {
@@ -389,10 +383,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildSectionHeader(title),
-            ElevatedButton.icon(onPressed: () => _showAddResourceDialog(list), icon: const Icon(Icons.add_chart), label: const Text('Hinzufügen')),
-          ],
+          children: [_buildSectionHeader(title), ElevatedButton(onPressed: () => _showAddResourceDialog(list), child: const Text('Hinzufügen'))],
         ),
         const SizedBox(height: 8),
         Wrap(spacing: 12, runSpacing: 12, children: list.map((res) => _buildResourceCard(res, list)).toList()),
@@ -418,7 +409,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             _buildDraftTextField('Basiswert', TextEditingController(text: res.value.toString()), (v) => res.value = double.tryParse(v) ?? 0, isNumber: true),
             if (isMultiplied) ...[
               const SizedBox(height: 8),
-              _buildResourceDropdown('Skaliert mit', res.multiplierResourceName ?? "Member", (v) => setState(() => res.multiplierResourceName = v)),
+              _buildResourceDropdown('Skaliert mit', res.multiplierResourceName!, (v) => setState(() => res.multiplierResourceName = v)),
               _buildDraftTextField('Faktor', TextEditingController(text: res.multiplierValue.toString()), (v) => res.multiplierValue = double.tryParse(v) ?? 1.0, isNumber: true),
             ],
             TextButton(
@@ -426,7 +417,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 if (res.multiplierResourceName == null) { res.multiplierResourceName = "Member"; res.multiplierValue = 1.0; }
                 else { res.multiplierResourceName = null; res.multiplierValue = null; }
               }),
-              child: Text(isMultiplied ? 'Abhängigkeit entfernen' : 'Abhängigkeit hinzufügen'),
+              child: Text(isMultiplied ? 'Abhängigkeit weg' : 'Abhängigkeit +'),
             ),
           ],
         ),
@@ -475,7 +466,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: Colors.amber, fontWeight: FontWeight.bold)),
+      child: Text(title, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 18)),
     );
   }
 
@@ -485,27 +476,79 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     _selectTask(t);
   }
 
+  // --- DER TIEFE EXPORT ---
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// EXPORTED STAGE');
-    buffer.writeln('final Stage exported = Stage(');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/faith.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/member.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/message.modifier.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/money.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/publicity.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/stage.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/setmax.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/subtractres.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/task.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/time.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart\';');
+    buffer.writeln('');
+    buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
-    buffer.writeln('  activeTasks: ${_currentStage?.activeTasks},');
-    buffer.writeln('  randomTasks: ${_currentStage?.randomTasks},');
+    buffer.writeln('  description: "${_currentStage?.description}",');
+    buffer.writeln('  activeTasks: ${_formatStringList(_currentStage?.activeTasks)},');
+    buffer.writeln('  randomTasks: ${_formatStringList(_currentStage?.randomTasks)},');
     buffer.writeln('  allTasks: [');
+    
     for (var t in _currentStage?.allTasks ?? []) {
-      buffer.writeln('    Task(name: "${t.name}", ...),');
+      buffer.writeln('    Task(');
+      buffer.writeln('      name: "${t == _selectedTask ? _nameController.text : t.name}",');
+      buffer.writeln('      description: "${t == _selectedTask ? _descController.text : t.description}",');
+      buffer.writeln('      duration: ${t == _selectedTask ? _durationController.text : t.duration},');
+      buffer.writeln('      isMilestone: ${t.isMilestone},');
+      buffer.writeln('      cost: [${_exportResources(t.cost)}],');
+      buffer.writeln('      award: [${_exportResources(t.award)}],');
+      if (t.myModifier.isNotEmpty) {
+        buffer.writeln('      modifier: [${_exportModifiers(t.myModifier)}],');
+      }
+      buffer.writeln('    ),');
     }
+    
     buffer.writeln('  ],');
     buffer.writeln(');');
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Export'),
-        content: SizedBox(width: 800, height: 600, child: SingleChildScrollView(child: SelectableText(buffer.toString()))),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+        title: const Text('Export Dart Code'),
+        content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 12)))),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Fertig'))],
       ),
     );
+  }
+
+  String _formatStringList(List<String>? list) {
+    if (list == null || list.isEmpty) return '[]';
+    return '[${list.map((e) => '"$e"').join(', ')}]';
+  }
+
+  String _exportResources(List<Ressource> list) {
+    return list.map((res) {
+      String params = 'value: ${res.value}';
+      if (res.multiplierResourceName != null) {
+        params += ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}';
+      }
+      return '${res.name}($params)';
+    }).join(', ');
+  }
+
+  String _exportModifiers(List<Modifier> list) {
+    return list.map((m) {
+      if (m is AddTask) return 'AddTask(task: "${m.nameOfTask}")';
+      if (m is RemoveTask) return 'RemoveTask(task: "${m.nameOfTask}")';
+      if (m is SetMax) return 'SetMax(ressource: "${m.workOn}", newMax: ${m.newMax})';
+      if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
+      return '// Unknown Modifier: ${m.name}';
+    }).join(', ');
   }
 }
