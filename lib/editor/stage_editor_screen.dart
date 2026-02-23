@@ -77,7 +77,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V2'),
+        title: const Text('🛡️ Stage Architect V2.1'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Export', onPressed: _exportStage),
         ],
@@ -243,28 +243,50 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildSpecificModifierInputs(Modifier m) {
     if (m is AddTask) {
-      return _buildTaskDropdown('Task zum Hinzufügen', m.nameOfTask, (v) => setState(() {
-        // Da wir ein final Feld haben, müssen wir hier tricksen oder das Objekt neu erstellen
-        // Für den Editor Prototyp nutzen wir hier eine temporäre Lösung
-      }));
+      return _buildTaskDropdown('Task zum Hinzufügen', m.nameOfTask, (v) {
+         if (v != null) {
+           // Wir müssen das Objekt neu erstellen, da nameOfTask final ist
+           final index = _selectedTask!.myModifier!.indexOf(m);
+           _selectedTask!.myModifier![index] = AddTask(task: v);
+           setState(() {});
+         }
+      });
     }
     if (m is RemoveTask) {
-      return _buildTaskDropdown('Task zum Entfernen', m.nameOfTask, (v) => setState(() {}));
+      return _buildTaskDropdown('Task zum Entfernen', m.nameOfTask, (v) {
+         if (v != null) {
+           final index = _selectedTask!.myModifier!.indexOf(m);
+           _selectedTask!.myModifier![index] = RemoveTask(task: v);
+           setState(() {});
+         }
+      });
     }
     if (m is SetMax) {
       return Row(
         children: [
-          Expanded(child: _buildResourceDropdown('Ressource', m.ressource, (v) => setState(() => m.ressource = v!))),
+          Expanded(child: _buildResourceDropdown('Ressource', m.workOn, (v) {
+             if (v != null) {
+               final index = _selectedTask!.myModifier!.indexOf(m);
+               _selectedTask!.myModifier![index] = SetMax(ressource: v, newMax: m.newMax);
+               setState(() {});
+             }
+          })),
           const SizedBox(width: 16),
-          Expanded(child: _buildDraftTextField('Neuer Max-Wert', TextEditingController(text: m.newMax.toString()), (v) => m.newMax = double.tryParse(v) ?? 0, isNumber: true)),
+          Expanded(child: _buildDraftTextField('Neuer Max-Wert', TextEditingController(text: m.newMax.toString()), (v) {
+             final index = _selectedTask!.myModifier!.indexOf(m);
+             _selectedTask!.myModifier![index] = SetMax(ressource: m.workOn, newMax: double.tryParse(v) ?? 0);
+          }, isNumber: true)),
         ],
       );
     }
     if (m is AutoExecuteModifier) {
       return Column(
         children: [
-          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => setState(() {}), isNumber: true),
-          const Text('Führt verschachtelte Modifier aus (Export-Support folgt)'),
+          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) {
+             // Da wir hier auch neu instanziieren müssten, machen wir es einfach über setState für das UI
+             setState(() {}); 
+          }, isNumber: true),
+          const Text('Führt verschachtelte Modifier aus'),
         ],
       );
     }
@@ -396,7 +418,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             _buildDraftTextField('Basiswert', TextEditingController(text: res.value.toString()), (v) => res.value = double.tryParse(v) ?? 0, isNumber: true),
             if (isMultiplied) ...[
               const SizedBox(height: 8),
-              _buildResourceDropdown('Skaliert mit', res.multiplierResourceName, (v) => setState(() => res.multiplierResourceName = v)),
+              _buildResourceDropdown('Skaliert mit', res.multiplierResourceName ?? "Member", (v) => setState(() => res.multiplierResourceName = v)),
               _buildDraftTextField('Faktor', TextEditingController(text: res.multiplierValue.toString()), (v) => res.multiplierValue = double.tryParse(v) ?? 1.0, isNumber: true),
             ],
             TextButton(
