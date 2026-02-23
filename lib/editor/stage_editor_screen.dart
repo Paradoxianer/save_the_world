@@ -19,29 +19,30 @@ class StageEditorScreen extends StatefulWidget {
   State<StageEditorScreen> createState() => _StageEditorScreenState();
 }
 
+enum TaskAvailability { start, random, chained }
+
 class _StageEditorScreenState extends State<StageEditorScreen> {
   Stage? _currentStage;
   Task? _selectedTask;
-  final List<String> _allExistingTaskNames = [];
+  final List<Task> _libraryTasks = [];
   final List<String> _resourceTypes = ["Faith", "Member", "Money", "Publicity", "Time", "Wisdom"];
 
   @override
   void initState() {
     super.initState();
-    _loadAllTaskNames();
+    _loadLibrary();
     _currentStage = allStages.isNotEmpty ? allStages.first : null;
   }
 
-  void _loadAllTaskNames() {
-    final names = <String>{};
+  void _loadLibrary() {
+    final allTasks = <Task>[];
     for (var stage in allStages) {
-      for (var task in stage.allTasks) {
-        names.add(task.name);
-      }
+      allTasks.addAll(stage.allTasks);
     }
+    // TODO: Hier könnten wir später direkt common_tasks.dart parsen
     setState(() {
-      _allExistingTaskNames.clear();
-      _allExistingTaskNames.addAll(names.toList()..sort());
+      _libraryTasks.clear();
+      _libraryTasks.addAll(allTasks);
     });
   }
 
@@ -63,7 +64,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           _buildSidebar(),
           Expanded(
             child: _selectedTask == null
-                ? const Center(child: Text('Wähle einen Task zum Editieren aus'))
+                ? const Center(child: Text('Wähle einen Task zum Editieren aus oder importiere aus der Bibliothek'))
                 : _buildTaskEditor(),
           ),
         ],
@@ -81,41 +82,53 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       width: 350,
       decoration: const BoxDecoration(border: Border(right: BorderSide(color: Colors.white12))),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropdownButtonFormField<Stage>(
               decoration: const InputDecoration(labelText: 'Stage auswählen'),
               value: _currentStage,
-              items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level}: ${s.description.split(" ").take(2).join(" ")}...'))).toList(),
+              items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level}'))).toList(),
               onChanged: (s) => setState(() { _currentStage = s; _selectedTask = null; }),
             ),
           ),
           const Divider(),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text("Tasks in dieser Stage", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber)),
-          ),
+          _buildSectionTab("TASKS IN STAGE"),
           Expanded(
+            flex: 2,
             child: ListView.builder(
               itemCount: _currentStage?.allTasks.length ?? 0,
               itemBuilder: (context, index) {
                 final task = _currentStage!.allTasks[index];
-                final isActive = _currentStage!.activeTasks.contains(task.name);
-                final isRandom = _currentStage!.randomTasks.contains(task.name);
-
+                final availability = _getAvailability(task.name);
                 return ListTile(
                   dense: true,
-                  title: Text(task.name),
-                  subtitle: Text(isActive ? "START" : (isRandom ? "EVENT" : "HIDDEN")),
+                  title: Text(task.name, style: const TextStyle(fontSize: 13)),
+                  subtitle: Text(availability.name.toUpperCase(), style: TextStyle(color: _getAvailabilityColor(availability), fontSize: 10)),
                   selected: _selectedTask == task,
-                  leading: Icon(
-                    isActive ? Icons.play_arrow : (isRandom ? Icons.shuffle : Icons.link_off),
-                    size: 16,
-                    color: isActive ? Colors.green : (isRandom ? Colors.orange : Colors.grey),
-                  ),
                   onTap: () => setState(() => _selectedTask = task),
-                  trailing: task.isMilestone ? const Icon(Icons.star, color: Colors.amber, size: 14) : null,
+                  trailing: IconButton(
+                    icon: const Icon(Icons.copy, size: 14),
+                    onPressed: () => _duplicateTask(task),
+                  ),
+                );
+              },
+            ),
+          ),
+          const Divider(),
+          _buildSectionTab("GLOBAL LIBRARY (Common Tasks)"),
+          Expanded(
+            flex: 1,
+            child: ListView.builder(
+              itemCount: _libraryTasks.length,
+              itemBuilder: (context, index) {
+                final task = _libraryTasks[index];
+                return ListTile(
+                  dense: true,
+                  title: Text(task.name, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                  trailing: const Icon(Icons.add, size: 14),
+                  onTap: () => _importFromLibrary(task),
                 );
               },
             ),
@@ -125,9 +138,15 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
+  Widget _buildSectionTab(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.amber, fontSize: 11)),
+    );
+  }
+
   Widget _buildTaskEditor() {
-    final isActive = _currentStage?.activeTasks.contains(_selectedTask!.name) ?? false;
-    final isRandom = _currentStage?.randomTasks.contains(_selectedTask!.name) ?? false;
+    final availability = _getAvailability(_selectedTask!.name);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
@@ -138,40 +157,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildSectionHeader('Basis-Konfiguration'),
-              _buildStatusBadges(isActive, isRandom),
+              _buildAvailabilitySelector(availability),
             ],
           ),
           _buildTextField('Task Name', _selectedTask!.name, (v) {
-             // Namensänderung in den Listen synchronisieren
              _updateTaskNameRefs(_selectedTask!.name, v);
              setState(() => _selectedTask!.name = v);
           }),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildStatusToggle("Sofort Aktiv (Start-Task)", isActive, (v) {
-                setState(() {
-                  if (v!) {
-                    _currentStage!.activeTasks.add(_selectedTask!.name);
-                    _currentStage!.randomTasks.remove(_selectedTask!.name);
-                  } else {
-                    _currentStage!.activeTasks.remove(_selectedTask!.name);
-                  }
-                });
-              }),
-              const SizedBox(width: 32),
-              _buildStatusToggle("Zufalls-Event (Random)", isRandom, (v) {
-                setState(() {
-                  if (v!) {
-                    _currentStage!.randomTasks.add(_selectedTask!.name);
-                    _currentStage!.activeTasks.remove(_selectedTask!.name);
-                  } else {
-                    _currentStage!.randomTasks.remove(_selectedTask!.name);
-                  }
-                });
-              }),
-            ],
-          ),
           const SizedBox(height: 16),
           _buildTextField('Beschreibung', _selectedTask!.description, (v) => _selectedTask!.description = v, maxLines: 2),
           const SizedBox(height: 16),
@@ -179,7 +171,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             children: [
               Expanded(child: _buildTextField('Dauer (ms)', _selectedTask!.duration.toString(), (v) => _selectedTask!.duration = double.tryParse(v) ?? 5000, isNumber: true)),
               const SizedBox(width: 24),
-              const Text('Goldene Aufgabe?'),
+              const Text('Meilenstein?'),
               Switch(value: _selectedTask!.isMilestone, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
             ],
           ),
@@ -195,6 +187,71 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
+  Widget _buildAvailabilitySelector(TaskAvailability current) {
+    return SegmentedButton<TaskAvailability>(
+      segments: const [
+        ButtonSegment(value: TaskAvailability.start, label: Text("Start"), icon: Icon(Icons.play_arrow, size: 16)),
+        ButtonSegment(value: TaskAvailability.random, label: Text("Random"), icon: Icon(Icons.shuffle, size: 16)),
+        ButtonSegment(value: TaskAvailability.chained, label: Text("Chained"), icon: Icon(Icons.link, size: 16)),
+      ],
+      selected: {current},
+      onSelectionChanged: (Set<TaskAvailability> newSelection) {
+        setState(() {
+          final val = newSelection.first;
+          _currentStage!.activeTasks.remove(_selectedTask!.name);
+          _currentStage!.randomTasks.remove(_selectedTask!.name);
+          if (val == TaskAvailability.start) _currentStage!.activeTasks.add(_selectedTask!.name);
+          if (val == TaskAvailability.random) _currentStage!.randomTasks.add(_selectedTask!.name);
+        });
+      },
+    );
+  }
+
+  TaskAvailability _getAvailability(String taskName) {
+    if (_currentStage?.activeTasks.contains(taskName) ?? false) return TaskAvailability.start;
+    if (_currentStage?.randomTasks.contains(taskName) ?? false) return TaskAvailability.random;
+    return TaskAvailability.chained;
+  }
+
+  Color _getAvailabilityColor(TaskAvailability a) {
+    switch (a) {
+      case TaskAvailability.start: return Colors.green;
+      case TaskAvailability.random: return Colors.orange;
+      case TaskAvailability.chained: return Colors.blueGrey;
+    }
+  }
+
+  void _importFromLibrary(Task t) {
+    setState(() {
+      // Kopie erstellen, um Library nicht zu verändern
+      final copy = Task(
+        name: t.name,
+        description: t.description,
+        duration: t.duration,
+        cost: List.from(t.cost),
+        award: List.from(t.award),
+        isMilestone: t.isMilestone,
+      );
+      _currentStage?.allTasks.add(copy);
+      _selectedTask = copy;
+    });
+  }
+
+  void _duplicateTask(Task t) {
+    setState(() {
+      final copy = Task(
+        name: "${t.name} (Kopie)",
+        description: t.description,
+        duration: t.duration,
+        cost: List.from(t.cost),
+        award: List.from(t.award),
+        isMilestone: t.isMilestone,
+      );
+      _currentStage?.allTasks.add(copy);
+      _selectedTask = copy;
+    });
+  }
+
   void _updateTaskNameRefs(String oldName, String newName) {
     if (_currentStage == null) return;
     if (_currentStage!.activeTasks.contains(oldName)) {
@@ -205,22 +262,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       _currentStage!.randomTasks.remove(oldName);
       _currentStage!.randomTasks.add(newName);
     }
-  }
-
-  Widget _buildStatusToggle(String label, bool value, Function(bool?) onChanged) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Checkbox(value: value, onChanged: onChanged),
-        Text(label),
-      ],
-    );
-  }
-
-  Widget _buildStatusBadges(bool active, bool random) {
-    if (active) return const Badge(label: Text("START-TASK"), backgroundColor: Colors.green);
-    if (random) return const Badge(label: Text("RANDOM-EVENT"), backgroundColor: Colors.orange);
-    return const Badge(label: Text("HIDDEN / CHAINED"), backgroundColor: Colors.grey);
   }
 
   Widget _buildResourceSection(String title, List<Ressource> list) {
@@ -338,6 +379,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   void _showAddModifierDialog() {
+    final allTaskNames = _libraryTasks.map((t) => t.name).toSet().toList()..sort();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -346,9 +388,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           width: 400,
           child: ListView.builder(
             shrinkWrap: true,
-            itemCount: _allExistingTaskNames.length,
+            itemCount: allTaskNames.length,
             itemBuilder: (context, index) {
-              final name = _allExistingTaskNames[index];
+              final name = allTaskNames[index];
               return ListTile(
                 title: Text('AddTask: $name'),
                 onTap: () {
@@ -368,7 +410,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildTextField(String label, String initial, Function(String) onChanged, {bool isNumber = false, int maxLines = 1}) {
     return TextFormField(
-      key: Key("${_selectedTask?.name}_$label"), // Verhindert Controller-Konflikte beim Wechsel
+      key: Key("${_selectedTask?.name}_$label"), 
       initialValue: initial,
       decoration: InputDecoration(labelText: label, border: const OutlineInputBorder()),
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
@@ -399,12 +441,18 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     buffer.writeln('import \'package:save_the_world_flutter_app/models/ressource.model.dart\';');
     buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
     buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/faith.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/member.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/money.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/publicity.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/time.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart\';');
     buffer.writeln('');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
-    buffer.writeln('  activeTasks: ${_currentStage?.activeTasks},');
-    buffer.writeln('  randomTasks: ${_currentStage?.randomTasks},');
+    buffer.writeln('  activeTasks: ${_currentStage?.activeTasks.map((e) => "\"$e\"").toList()},');
+    buffer.writeln('  randomTasks: ${_currentStage?.randomTasks.map((e) => "\"$e\"").toList()},');
     buffer.writeln('  allTasks: [');
     for (var t in _currentStage?.allTasks ?? []) {
       buffer.writeln('    Task(');
