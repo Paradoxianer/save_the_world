@@ -4,20 +4,30 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:flutter/foundation.dart';
 
 class RemoveModifer extends Modifier {
-  final String? nameOfTask;
+  final String? nameOfTask; // Konsistent zu AddTask
   final List<Modifier> mymodifer;
 
-  RemoveModifer({String? task, required List<Modifier> modifier})
-      : nameOfTask = task,
+  RemoveModifer({String? nameOfTask, required List<Modifier> modifier})
+      : nameOfTask = nameOfTask,
         mymodifer = modifier,
         super(
             name: "RemoveModifer",
             description: "Removes the given list of Modifier from the given task");
 
   factory RemoveModifer.fromJson(Map<String, dynamic> json) {
-    // Note: To fully implement fromJson, we'd need to deserialize the modifier list too.
-    // For now, providing a basic implementation to satisfy the compiler.
-    return RemoveModifer(task: json['task'] as String?, modifier: []);
+    return RemoveModifer(
+      nameOfTask: (json['nameOfTask'] ?? json['task']) as String?, 
+      modifier: []
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'nameOfTask': nameOfTask,
+      'mymodifer': mymodifer.map((m) => m.toJson()).toList(),
+    };
   }
 
   @override
