@@ -53,7 +53,15 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     _loadStage(allStages.first);
   }
 
-  void _loadInitialLibrary() {
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descController.dispose();
+    _durationController.dispose();
+    super.dispose();
+  }
+
+  void _loadLibrary() {
     setState(() {
       _libraryTasks = [
         common.baseSleep,
@@ -94,7 +102,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.3 (Reactive Dialogs)'),
+        title: const Text('🛡️ Stage Architect V4.3'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
         ],
@@ -136,7 +144,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           DropdownButton<Stage>(
             value: _currentStage,
             dropdownColor: const Color(0xFF1E1E1E),
-            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level} - ${s.description.split(" ").take(3).join(" ")}...'))).toList(),
+            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level}'))).toList(),
             onChanged: (s) => _loadStage(s!),
           ),
         ],
@@ -214,7 +222,11 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                       final task = isLibrary 
                           ? _libraryTasks.firstWhere((t) => t.name == name)
                           : _stageAllTasks.firstWhere((t) => t.name == name, orElse: () => Task(name: name));
-                      return _buildDraggableWrapper(task!, list, isLibrary || isMaster, title, ValueKey("${title}_$name"));
+                      return ReorderableDragStartListener(
+                        key: ValueKey("${title}_$name"),
+                        index: list.indexOf(name),
+                        child: _buildTaskCard(task!, isProtected: isLibrary || isMaster, onDelete: (isLibrary || isMaster) ? null : () => setState(() => list.remove(task.name))),
+                      );
                     }).toList(),
                   );
                 },
@@ -226,36 +238,28 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildDraggableWrapper(Task task, List<String> list, bool isProtected, String colTitle, Key key) {
-    return Draggable<String>(
-      key: key,
-      data: task.name,
-      feedback: Material(color: Colors.transparent, child: _buildCompactCard(task, width: 250, isDragging: true)),
-      child: ReorderableDragStartListener(
-        index: list.indexOf(task.name),
-        child: _buildTaskListItem(task, isProtected: isProtected, onDelete: isProtected ? null : () => setState(() => list.remove(task.name))),
-      ),
-    );
-  }
-
-  Widget _buildTaskListItem(Task t, {bool isProtected = false, VoidCallback? onDelete}) {
+  Widget _buildTaskCard(Task t, {bool isProtected = false, VoidCallback? onDelete}) {
     final isSelected = _selectedTask == t;
     return GestureDetector(
       onTap: () => _selectTask(t),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.15) : (t.isMilestone ? Colors.amber.withOpacity(0.05) : const Color(0xFF1E1E1E)),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? Colors.amber : (t.isMilestone ? Colors.amber.withOpacity(0.5) : Colors.white10)),
-        ),
-        child: Stack(
-          children: [
-            _buildCompactCard(t),
-            if (onDelete != null)
-              Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete)),
-            Positioned(left: 4, top: 12, child: Icon(Icons.drag_indicator, size: 16, color: t.isMilestone ? Colors.amber : Colors.white10)),
-          ],
+      child: Draggable<String>(
+        data: t.name,
+        feedback: Material(color: Colors.transparent, child: _buildCompactCard(t, width: 250, isDragging: true)),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.amber.withOpacity(0.15) : (t.isMilestone ? Colors.amber.withOpacity(0.05) : const Color(0xFF1E1E1E)),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: isSelected ? Colors.amber : (t.isMilestone ? Colors.amber.withOpacity(0.5) : Colors.white10)),
+          ),
+          child: Stack(
+            children: [
+              _buildCompactCard(t),
+              if (onDelete != null)
+                Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete)),
+              Positioned(left: 4, top: 12, child: Icon(Icons.drag_indicator, size: 16, color: t.isMilestone ? Colors.amber : Colors.white10)),
+            ],
+          ),
         ),
       ),
     );
@@ -447,7 +451,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       );
     }
     if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => updateCB(RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
-    if (m is MessageModifier) return _buildDraftTextField('Nachricht', TextEditingController(text: m.message), (v) => updateCB(MessageModifier(message: v)));
+    if (m is MessageModifier) return _buildDraftTextField('Text', TextEditingController(text: m.message), (v) => updateCB(MessageModifier(message: v)));
     
     return Text(m.description, style: const TextStyle(fontSize: 10));
   }
