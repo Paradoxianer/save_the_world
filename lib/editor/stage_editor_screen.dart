@@ -80,7 +80,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   void _selectTask(Task t) {
     setState(() {
       _selectedTask = t;
-      // Sicherstellen, dass Listen mutierbar sind
       _selectedTask!.modifier ??= [];
       _selectedTask!.online ??= [];
       _selectedTask!.missed ??= [];
@@ -95,7 +94,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.2'),
+        title: const Text('🛡️ Stage Architect V4.3 (Reactive Dialogs)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
         ],
@@ -147,12 +146,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildVisualBoard() {
     return Container(
-      width: 1150,
+      width: 1100,
       padding: const EdgeInsets.all(8),
       color: Colors.black12,
       child: Row(
         children: [
-          _buildDropColumn("LIBRARY (COMMON)", _libraryTasks.map((e) => e.name).toList(), Colors.blue.withOpacity(0.05), Icons.library_books, isLibrary: true),
+          _buildDropColumn("LIBRARY", _libraryTasks.map((e) => e.name).toList(), Colors.blue.withOpacity(0.05), Icons.library_books, isLibrary: true),
           _buildDropColumn("START SETUP", _stageActiveTasks, Colors.green.withOpacity(0.05), Icons.play_circle_fill),
           _buildDropColumn("RANDOM EVENTS", _stageRandomTasks, Colors.orange.withOpacity(0.05), Icons.shuffle),
           _buildDropColumn("ALL STAGE TASKS", _stageAllTasks.map((e) => e.name).toList(), Colors.white.withOpacity(0.05), Icons.list, isMaster: true),
@@ -175,7 +174,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   Icon(icon, size: 16, color: Colors.amber),
                   const SizedBox(width: 8),
                   Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))),
-                  if (isLibrary) IconButton(icon: const Icon(Icons.ios_share, size: 14), tooltip: 'Library Code', onPressed: _exportLibrary),
+                  if (isLibrary) IconButton(icon: const Icon(Icons.ios_share, size: 14), tooltip: 'Export Library', onPressed: _exportLibrary),
                 ],
               ),
             ),
@@ -343,9 +342,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           const SizedBox(height: 32),
           _buildResSection('OUTPUT / BELOHNUNG', _selectedTask!.award, Colors.greenAccent),
           const Divider(height: 64),
-          _buildModifierListWidget(_selectedTask!.online ?? [], "ONLINE MODIFIER (BEIM AKTIVIEREN)", Colors.purpleAccent),
+          _buildModifierListWidget(_selectedTask!.online ?? [], "ONLINE MODIFIER (AKTIVIERUNG)", Colors.purpleAccent),
           const SizedBox(height: 32),
-          _buildModifierListWidget(_selectedTask!.myModifier, "FINISHED MODIFIER (BEI ABSCHLUSS)", Colors.blueAccent),
+          _buildModifierListWidget(_selectedTask!.myModifier, "FINISHED MODIFIER (ABSCHLUSS)", Colors.blueAccent),
         ],
       ),
     );
@@ -393,7 +392,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildModifierListWidget(List<Modifier> list, String title, Color accentColor) {
+  Widget _buildModifierListWidget(List<Modifier> list, String title, Color accentColor, {StateSetter? dialogState}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -401,7 +400,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title, style: TextStyle(color: accentColor, fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.add_box, color: Colors.amber), onPressed: () => _showAddModDialog(list)),
+            IconButton(icon: const Icon(Icons.add_box, color: Colors.amber), onPressed: () => _showAddModDialog(list, onUpdate: dialogState)),
           ],
         ),
         const SizedBox(height: 12),
@@ -410,38 +409,45 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           child: ListTile(
             dense: true,
             title: Text(m.name, style: TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 11)),
-            subtitle: _buildModInput(m, list),
-            trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () => setState(() => list.remove(m))),
+            subtitle: _buildModInput(m, list, onUpdate: dialogState),
+            trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () {
+              if (dialogState != null) dialogState(() => list.remove(m));
+              else setState(() => list.remove(m));
+            }),
           ),
         )),
       ],
     );
   }
 
-  Widget _buildModInput(Modifier m, List<Modifier> parentList) {
+  Widget _buildModInput(Modifier m, List<Modifier> parentList, {StateSetter? onUpdate}) {
     final allTaskNames = {..._libraryTasks.map((e)=>e.name), ...(_stageAllTasks.map((e)=>e.name))}.toList()..sort();
-    
-    if (m is AddTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(parentList, m, AddTask(task: v!)));
-    if (m is RemoveTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(parentList, m, RemoveTask(task: v!)));
-    if (m is AddToRandom) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(parentList, m, AddToRandom(task: v!)));
-    if (m is SetMax) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateModInList(parentList, m, SetMax(ressource: v!, newMax: m.newMax)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Max', TextEditingController(text: m.newMax.toString()), (v)=>_updateModInList(parentList, m, SetMax(ressource: m.workOn, newMax: double.tryParse(v)??0)), isNumber: true))]);
-    if (m is SetMin) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateModInList(parentList, m, SetMin(ressource: v!, newMin: m.newMin)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Min', TextEditingController(text: m.newMin.toString()), (v)=>_updateModInList(parentList, m, SetMin(ressource: m.workOn, newMin: double.tryParse(v)??0)), isNumber: true))]);
+    final updateCB = (Modifier nm) {
+      if (onUpdate != null) onUpdate(() => _updateModInList(parentList, m, nm));
+      else _updateModInList(parentList, m, nm);
+    };
+
+    if (m is AddTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => updateCB(AddTask(task: v!)));
+    if (m is RemoveTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => updateCB(RemoveTask(task: v!)));
+    if (m is AddToRandom) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => updateCB(AddToRandom(task: v!)));
+    if (m is SetMax) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>updateCB(SetMax(ressource: v!, newMax: m.newMax)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Max', TextEditingController(text: m.newMax.toString()), (v)=>updateCB(SetMax(ressource: m.workOn, newMax: double.tryParse(v)??0)), isNumber: true))]);
+    if (m is SetMin) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>updateCB(SetMin(ressource: v!, newMin: m.newMin)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Min', TextEditingController(text: m.newMin.toString()), (v)=>updateCB(SetMin(ressource: m.workOn, newMin: double.tryParse(v)??0)), isNumber: true))]);
     if (m is AutoExecuteModifier) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => _updateModInList(parentList, m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000)), isNumber: true),
+          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => updateCB(AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000)), isNumber: true),
           const SizedBox(height: 8),
           ElevatedButton.icon(
-            icon: const Icon(Icons.edit_note, size: 14),
+            icon: const Icon(Icons.settings_input_component, size: 14),
             label: Text("Modifier verwalten (${m.modifiers.length})"),
             onPressed: () => _showNestedModifierDialog(m),
           ),
         ],
       );
     }
-    if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => _updateModInList(parentList, m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
-    if (m is MessageModifier) return _buildDraftTextField('Text', TextEditingController(text: m.message), (v) => _updateModInList(parentList, m, MessageModifier(message: v)));
+    if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => updateCB(RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
+    if (m is MessageModifier) return _buildDraftTextField('Nachricht', TextEditingController(text: m.message), (v) => updateCB(MessageModifier(message: v)));
     
     return Text(m.description, style: const TextStyle(fontSize: 10));
   }
@@ -453,12 +459,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         builder: (context, setDialogState) => AlertDialog(
           title: const Text('⚙️ AutoExecute: Verschachtelte Modifier'),
           content: SizedBox(
-            width: 500,
+            width: 550,
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildModifierListWidget(parent.modifiers, "UNTER-MODIFIER", Colors.orangeAccent),
+                  _buildModifierListWidget(parent.modifiers, "UNTER-MODIFIER", Colors.orangeAccent, dialogState: setDialogState),
                 ],
               ),
             ),
@@ -472,7 +478,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   void _updateModInList(List<Modifier> list, Modifier old, Modifier newMod) {
     setState(() {
       final index = list.indexOf(old);
-      list[index] = newMod;
+      if (index >= 0) list[index] = newMod;
     });
   }
 
@@ -484,16 +490,22 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     return DropdownButtonFormField<String>(isDense: true, value: _resourceTypes.contains(current) ? current : null, decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.all(8), border: OutlineInputBorder()), items: _resourceTypes.map((n) => DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 11)))).toList(), onChanged: onChanged);
   }
 
-  void _showAddModDialog(List<Modifier> list) {
+  void _showAddModDialog(List<Modifier> list, {StateSetter? onUpdate}) {
+    final callback = (Modifier m) {
+      if (onUpdate != null) onUpdate(() => list.add(m));
+      else setState(() => list.add(m));
+      Navigator.pop(context);
+    };
+
     showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Modifier Typ'), content: Column(mainAxisSize: MainAxisSize.min, children: [
-      ListTile(title: const Text('AddTask'), onTap: () { setState(() => list.add(AddTask(task: ""))); Navigator.pop(context); }),
-      ListTile(title: const Text('RemoveTask'), onTap: () { setState(() => list.add(RemoveTask(task: ""))); Navigator.pop(context); }),
-      ListTile(title: const Text('AddToRandom'), onTap: () { setState(() => list.add(AddToRandom(task: ""))); Navigator.pop(context); }),
-      ListTile(title: const Text('SetMax'), onTap: () { setState(() => list.add(SetMax(ressource: "Member", newMax: 100))); Navigator.pop(context); }),
-      ListTile(title: const Text('SetMin'), onTap: () { setState(() => list.add(SetMin(ressource: "Member", newMin: 0))); Navigator.pop(context); }),
-      ListTile(title: const Text('AutoExecute'), onTap: () { setState(() => list.add(AutoExecuteModifier(modifiers: [], intervalMs: 5000))); Navigator.pop(context); }),
-      ListTile(title: const Text('RemoveModifer'), onTap: () { setState(() => list.add(RemoveModifer(nameOfTask: "", modifier: []))); Navigator.pop(context); }),
-      ListTile(title: const Text('Message'), onTap: () { setState(() => list.add(MessageModifier(message: ""))); Navigator.pop(context); }),
+      ListTile(title: const Text('AddTask'), onTap: () => callback(AddTask(task: ""))),
+      ListTile(title: const Text('RemoveTask'), onTap: () => callback(RemoveTask(task: ""))),
+      ListTile(title: const Text('AddToRandom'), onTap: () => callback(AddToRandom(task: ""))),
+      ListTile(title: const Text('SetMax'), onTap: () => callback(SetMax(ressource: "Member", newMax: 100))),
+      ListTile(title: const Text('SetMin'), onTap: () => callback(SetMin(ressource: "Member", newMin: 0))),
+      ListTile(title: const Text('AutoExecute'), onTap: () => callback(AutoExecuteModifier(modifiers: [], intervalMs: 5000))),
+      ListTile(title: const Text('RemoveModifer'), onTap: () => callback(RemoveModifer(nameOfTask: "", modifier: []))),
+      ListTile(title: const Text('Message'), onTap: () => callback(MessageModifier(message: ""))),
     ])));
   }
 
@@ -523,7 +535,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _addNewTask() {
     setState(() {
-      final t = Task(name: 'New Task ${_stageAllTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: []);
+      final t = Task(name: 'New Task ${_stageAllTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: [], online: []);
       _stageAllTasks.add(t);
       _selectTask(t);
     });
@@ -547,7 +559,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- STAGE EXPORT V4.2 ---');
+    buffer.writeln('// --- STAGE EXPORT V4.3 ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -562,7 +574,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       buffer.writeln('      isMilestone: ${t.isMilestone},');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
       buffer.writeln('      award: [${_exportResources(t.award)}],');
-      if ((t.modifier?.isNotEmpty ?? false) || t.myModifier.isNotEmpty) buffer.writeln('      modifier: [${_exportModifiers(t.myModifier)}],');
+      if (t.myModifier.isNotEmpty) buffer.writeln('      modifier: [${_exportModifiers(t.myModifier)}],');
       if (t.online?.isNotEmpty ?? false) buffer.writeln('      online: [${_exportModifiers(t.online!)}],');
       buffer.writeln('    ),');
     }
