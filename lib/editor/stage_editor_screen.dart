@@ -10,7 +10,7 @@ import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
-import 'package:save_the_world_flutter_app/models/removemodifier.model.dart'; 
+import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -90,9 +90,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.0 (Visual Logic)'),
+        title: const Text('🛡️ Stage Architect V4.1'),
         actions: [
-          IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
+          IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
         ],
       ),
       body: Column(
@@ -170,7 +170,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   Icon(icon, size: 16, color: Colors.amber),
                   const SizedBox(width: 8),
                   Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))),
-                  if (isLibrary) IconButton(icon: const Icon(Icons.ios_share, size: 14), tooltip: 'Library Code generieren', onPressed: _exportLibrary),
+                  if (isLibrary) IconButton(icon: const Icon(Icons.ios_share, size: 14), tooltip: 'Library Code', onPressed: _exportLibrary),
                 ],
               ),
             ),
@@ -179,10 +179,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 onAccept: (data) {
                   setState(() {
                     if (isLibrary) {
-                      // Hinzufügen zur Library aus einer Stage (Kopie erstellen)
                       if (!_libraryTasks.any((t) => t.name == data)) {
-                        final original = _stageAllTasks.firstWhere((t) => t.name == data);
-                        _libraryTasks.add(original);
+                        final task = _stageAllTasks.firstWhere((t) => t.name == data);
+                        _libraryTasks.add(task);
                       }
                       return;
                     }
@@ -336,7 +335,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           const SizedBox(height: 32),
           _buildResSection('OUTPUT / BELOHNUNG', _selectedTask!.award, Colors.greenAccent),
           const Divider(height: 64),
-          _buildModifierList(),
+          _buildModifierListWidget(_selectedTask!.myModifier, "LOGIK MODIFIER"),
         ],
       ),
     );
@@ -384,55 +383,55 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildModifierList() {
+  Widget _buildModifierListWidget(List<Modifier> list, String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text("LOGIK MODIFIER", style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.add_box), onPressed: _showAddModDialog),
+            Text(title, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
+            IconButton(icon: const Icon(Icons.add_box), onPressed: () => _showAddModDialog(list)),
           ],
         ),
         const SizedBox(height: 12),
-        ...(_selectedTask!.myModifier).map((m) => Card(
+        ...list.map((m) => Card(
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
             dense: true,
             title: Text(m.name, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 11)),
-            subtitle: _buildModInput(m),
-            trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () => setState(() => _selectedTask!.myModifier.remove(m))),
+            subtitle: _buildModInput(m, list),
+            trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () => setState(() => list.remove(m))),
           ),
         )),
       ],
     );
   }
 
-  Widget _buildModInput(Modifier m) {
+  Widget _buildModInput(Modifier m, List<Modifier> parentList) {
     final allTaskNames = {..._libraryTasks.map((e)=>e.name), ...(_stageAllTasks.map((e)=>e.name))}.toList()..sort();
     
-    if (m is AddTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateMod(m, AddTask(task: v!)));
-    if (m is RemoveTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateMod(m, RemoveTask(task: v!)));
-    if (m is AddToRandom) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateMod(m, AddToRandom(task: v!)));
-    if (m is SetMax) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateMod(m, SetMax(ressource: v!, newMax: m.newMax)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Max', TextEditingController(text: m.newMax.toString()), (v)=>_updateMod(m, SetMax(ressource: m.workOn, newMax: double.tryParse(v)??0)), isNumber: true))]);
-    if (m is SetMin) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateMod(m, SetMin(ressource: v!, newMin: m.newMin)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Min', TextEditingController(text: m.newMin.toString()), (v)=>_updateMod(m, SetMin(ressource: m.workOn, newMin: double.tryParse(v)??0)), isNumber: true))]);
+    if (m is AddTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(parentList, m, AddTask(task: v!)));
+    if (m is RemoveTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(parentList, m, RemoveTask(task: v!)));
+    if (m is AddToRandom) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(parentList, m, AddToRandom(task: v!)));
+    if (m is SetMax) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateModInList(parentList, m, SetMax(ressource: v!, newMax: m.newMax)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Max', TextEditingController(text: m.newMax.toString()), (v)=>_updateModInList(parentList, m, SetMax(ressource: m.workOn, newMax: double.tryParse(v)??0)), isNumber: true))]);
+    if (m is SetMin) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateModInList(parentList, m, SetMin(ressource: v!, newMin: m.newMin)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Min', TextEditingController(text: m.newMin.toString()), (v)=>_updateModInList(parentList, m, SetMin(ressource: m.workOn, newMin: double.tryParse(v)??0)), isNumber: true))]);
     if (m is AutoExecuteModifier) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => _updateMod(m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000)), isNumber: true),
+          _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => _updateModInList(parentList, m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000)), isNumber: true),
           const SizedBox(height: 8),
           ElevatedButton.icon(
             icon: const Icon(Icons.edit_note, size: 14),
-            label: Text("Verschachtelte Modifier verwalten (${m.modifiers.length})"),
+            label: Text("Modifier verwalten (${m.modifiers.length})"),
             onPressed: () => _showNestedModifierDialog(m),
           ),
         ],
       );
     }
-    if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => _updateMod(m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
-    if (m is MessageModifier) return _buildDraftTextField('Text', TextEditingController(text: m.message), (v) => _updateMod(m, MessageModifier(message: v)));
+    if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => _updateModInList(parentList, m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
+    if (m is MessageModifier) return _buildDraftTextField('Text', TextEditingController(text: m.message), (v) => _updateModInList(parentList, m, MessageModifier(message: v)));
     
     return Text(m.description, style: const TextStyle(fontSize: 10));
   }
@@ -442,34 +441,28 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text('Verschachtelte Modifier'),
+          title: const Text('⚙️ AutoExecute: Verschachtelte Modifier'),
           content: SizedBox(
-            width: 400,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ...parent.modifiers.map((nm) => ListTile(
-                  title: Text(nm.name, style: const TextStyle(fontSize: 12)),
-                  trailing: IconButton(icon: const Icon(Icons.delete, size: 14), onPressed: () { setDialogState(() => parent.modifiers.remove(nm)); setState(() {}); }),
-                )),
-                TextButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: const Text("AddTask hinzufügen"),
-                  onPressed: () { setDialogState(() => parent.modifiers.add(AddTask(task: ""))); setState(() {}); },
-                ),
-              ],
+            width: 500,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildModifierListWidget(parent.modifiers, "UNTER-MODIFIER"),
+                ],
+              ),
             ),
           ),
           actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Fertig"))],
         ),
       ),
-    );
+    ).then((_) => setState(() {}));
   }
 
-  void _updateMod(Modifier old, Modifier newMod) {
+  void _updateModInList(List<Modifier> list, Modifier old, Modifier newMod) {
     setState(() {
-      final index = _selectedTask!.myModifier.indexOf(old);
-      _selectedTask!.myModifier[index] = newMod;
+      final index = list.indexOf(old);
+      list[index] = newMod;
     });
   }
 
@@ -481,16 +474,16 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     return DropdownButtonFormField<String>(isDense: true, value: _resourceTypes.contains(current) ? current : null, decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.all(8), border: OutlineInputBorder()), items: _resourceTypes.map((n) => DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 11)))).toList(), onChanged: onChanged);
   }
 
-  void _showAddModDialog() {
+  void _showAddModDialog(List<Modifier> list) {
     showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Modifier Typ'), content: Column(mainAxisSize: MainAxisSize.min, children: [
-      ListTile(title: const Text('AddTask'), onTap: () { setState(() => _selectedTask!.myModifier.add(AddTask(task: ""))); Navigator.pop(context); }),
-      ListTile(title: const Text('RemoveTask'), onTap: () { setState(() => _selectedTask!.myModifier.add(RemoveTask(task: ""))); Navigator.pop(context); }),
-      ListTile(title: const Text('AddToRandom'), onTap: () { setState(() => _selectedTask!.myModifier.add(AddToRandom(task: ""))); Navigator.pop(context); }),
-      ListTile(title: const Text('SetMax'), onTap: () { setState(() => _selectedTask!.myModifier.add(SetMax(ressource: "Member", newMax: 100))); Navigator.pop(context); }),
-      ListTile(title: const Text('SetMin'), onTap: () { setState(() => _selectedTask!.myModifier.add(SetMin(ressource: "Member", newMin: 0))); Navigator.pop(context); }),
-      ListTile(title: const Text('AutoExecute'), onTap: () { setState(() => _selectedTask!.myModifier.add(AutoExecuteModifier(modifiers: [], intervalMs: 5000))); Navigator.pop(context); }),
-      ListTile(title: const Text('RemoveModifer'), onTap: () { setState(() => _selectedTask!.myModifier.add(RemoveModifer(nameOfTask: "", modifier: []))); Navigator.pop(context); }),
-      ListTile(title: const Text('Message'), onTap: () { setState(() => _selectedTask!.myModifier.add(MessageModifier(message: ""))); Navigator.pop(context); }),
+      ListTile(title: const Text('AddTask'), onTap: () { setState(() => list.add(AddTask(task: ""))); Navigator.pop(context); }),
+      ListTile(title: const Text('RemoveTask'), onTap: () { setState(() => list.add(RemoveTask(task: ""))); Navigator.pop(context); }),
+      ListTile(title: const Text('AddToRandom'), onTap: () { setState(() => list.add(AddToRandom(task: ""))); Navigator.pop(context); }),
+      ListTile(title: const Text('SetMax'), onTap: () { setState(() => list.add(SetMax(ressource: "Member", newMax: 100))); Navigator.pop(context); }),
+      ListTile(title: const Text('SetMin'), onTap: () { setState(() => list.add(SetMin(ressource: "Member", newMin: 0))); Navigator.pop(context); }),
+      ListTile(title: const Text('AutoExecute'), onTap: () { setState(() => list.add(AutoExecuteModifier(modifiers: [], intervalMs: 5000))); Navigator.pop(context); }),
+      ListTile(title: const Text('RemoveModifer'), onTap: () { setState(() => list.add(RemoveModifer(nameOfTask: "", modifier: []))); Navigator.pop(context); }),
+      ListTile(title: const Text('Message'), onTap: () { setState(() => list.add(MessageModifier(message: ""))); Navigator.pop(context); }),
     ])));
   }
 
@@ -520,7 +513,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _addNewTask() {
     setState(() {
-      // FIX: Leere, veränderbare Listen für neue Tasks
       final t = Task(name: 'New Task ${_stageAllTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: []);
       _stageAllTasks.add(t);
       _selectTask(t);
@@ -529,7 +521,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportLibrary() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED LIBRARY EXPORT ---');
+    buffer.writeln('// --- COMMON TASKS DART CODE ---');
     for (var t in _libraryTasks) {
       buffer.writeln('final Task ${t.name.replaceAll(" ", "")} = Task(');
       buffer.writeln('  name: "${t.name}",');
@@ -540,12 +532,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       buffer.writeln(');');
       buffer.writeln('');
     }
-    _showCodeDialog('Common Tasks Export', buffer.toString());
+    _showCodeDialog('Library Export', buffer.toString());
   }
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- STAGE EXPORT V4.0 ---');
+    buffer.writeln('// --- STAGE EXPORT V4.1 ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -565,7 +557,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     }
     buffer.writeln('  ],');
     buffer.writeln(');');
-    _showCodeDialog('Stage Dart Code', buffer.toString());
+    _showCodeDialog('Stage Export', buffer.toString());
   }
 
   void _showCodeDialog(String title, String code) {
