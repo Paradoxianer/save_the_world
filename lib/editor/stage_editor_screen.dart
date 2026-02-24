@@ -32,6 +32,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Stage? _currentStage;
   Task? _selectedTask;
   
+  // EDITIERBARE LISTEN (Fix für Unmodifiable List Error)
   List<Task> _stageAllTasks = [];
   List<String> _stageActiveTasks = [];
   List<String> _stageRandomTasks = [];
@@ -99,7 +100,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.6'),
+        title: const Text('🛡️ Stage Architect V3.7 (Logic Board)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -141,11 +142,11 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           DropdownButton<Stage>(
             value: _currentStage,
             dropdownColor: const Color(0xFF1E1E1E),
-            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level} - ${s.description.split(" ").take(2).join(" ")}...'))).toList(),
+            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('${s.level} - ${s.description.split(" ").take(3).join(" ")}...'))).toList(),
             onChanged: (s) => _loadStage(s!),
           ),
           const Spacer(),
-          Text("${_stageAllTasks.length} Tasks", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+          Text("${_stageAllTasks.length} Tasks insgesamt", style: const TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );
@@ -153,7 +154,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildVisualBoard() {
     return Container(
-      width: 1050,
+      width: 1100,
       padding: const EdgeInsets.all(8),
       color: Colors.black12,
       child: Row(
@@ -176,7 +177,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(12),
-              child: Row(children: [Icon(icon, size: 16, color: Colors.amber), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9))]),
+              child: Row(children: [Icon(icon, size: 16, color: Colors.amber), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))]),
             ),
             Expanded(
               child: DragTarget<String>(
@@ -184,6 +185,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   setState(() {
                     if (isLibrary) return;
                     if (isMaster) {
+                       // Import aus Library in die Stage
                        if (_libraryTasks.any((t) => t.name == data) && !_stageAllTasks.any((t) => t.name == data)) {
                           final template = _libraryTasks.firstWhere((t) => t.name == data);
                           _stageAllTasks.add(template);
@@ -293,7 +295,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       case "Faith": return Icons.auto_awesome;
       case "Member": return Icons.people;
       case "Time": return Icons.access_time;
-      case "Wisdom": return Icons.psychology;
       default: return Icons.help_outline;
     }
   }
@@ -487,7 +488,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.6) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.7) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
