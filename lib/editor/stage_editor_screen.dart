@@ -90,9 +90,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.9 (Pro Flow)'),
+        title: const Text('🛡️ Stage Architect V4.0 (Visual Logic)'),
         actions: [
-          IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
+          IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
       ),
       body: Column(
@@ -170,7 +170,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   Icon(icon, size: 16, color: Colors.amber),
                   const SizedBox(width: 8),
                   Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))),
-                  if (isLibrary) IconButton(icon: const Icon(Icons.ios_share, size: 14), tooltip: 'Export Library', onPressed: _exportLibrary),
+                  if (isLibrary) IconButton(icon: const Icon(Icons.ios_share, size: 14), tooltip: 'Library Code generieren', onPressed: _exportLibrary),
                 ],
               ),
             ),
@@ -179,9 +179,10 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 onAccept: (data) {
                   setState(() {
                     if (isLibrary) {
+                      // Hinzufügen zur Library aus einer Stage (Kopie erstellen)
                       if (!_libraryTasks.any((t) => t.name == data)) {
-                        final task = _stageAllTasks.firstWhere((t) => t.name == data);
-                        _libraryTasks.add(task);
+                        final original = _stageAllTasks.firstWhere((t) => t.name == data);
+                        _libraryTasks.add(original);
                       }
                       return;
                     }
@@ -210,7 +211,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                       final task = isLibrary 
                           ? _libraryTasks.firstWhere((t) => t.name == name)
                           : _stageAllTasks.firstWhere((t) => t.name == name, orElse: () => Task(name: name));
-                      return _buildDraggableTaskWrapper(task!, list, isLibrary || isMaster, title, ValueKey("${title}_$name"));
+                      return _buildDraggableWrapper(task!, list, isLibrary || isMaster, title, ValueKey("${title}_$name"));
                     }).toList(),
                   );
                 },
@@ -222,36 +223,35 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildDraggableTaskWrapper(Task task, List<String> list, bool isProtected, String columnTitle, Key key) {
+  Widget _buildDraggableWrapper(Task task, List<String> list, bool isProtected, String colTitle, Key key) {
     return Draggable<String>(
       key: key,
       data: task.name,
       feedback: Material(color: Colors.transparent, child: _buildCompactCard(task, width: 250, isDragging: true)),
-      child: ReorderableDragStartListener( // SOFORTIGER DRAG START
+      child: ReorderableDragStartListener(
         index: list.indexOf(task.name),
-        child: _buildTaskCard(task, isProtected: isProtected, onDelete: isProtected ? null : () => setState(() => list.remove(task.name))),
+        child: _buildTaskListItem(task, isProtected: isProtected, onDelete: isProtected ? null : () => setState(() => list.remove(task.name))),
       ),
     );
   }
 
-  Widget _buildTaskCard(Task t, {bool isProtected = false, VoidCallback? onDelete}) {
+  Widget _buildTaskListItem(Task t, {bool isProtected = false, VoidCallback? onDelete}) {
     final isSelected = _selectedTask == t;
     return GestureDetector(
       onTap: () => _selectTask(t),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.amber.withOpacity(0.15) : const Color(0xFF1E1E1E),
+          color: isSelected ? Colors.amber.withOpacity(0.15) : (t.isMilestone ? Colors.amber.withOpacity(0.05) : const Color(0xFF1E1E1E)),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isSelected ? Colors.amber : Colors.white10),
+          border: Border.all(color: isSelected ? Colors.amber : (t.isMilestone ? Colors.amber.withOpacity(0.5) : Colors.white10)),
         ),
         child: Stack(
           children: [
             _buildCompactCard(t),
             if (onDelete != null)
               Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete)),
-            // Drag Handle
-            Positioned(left: 4, top: 12, child: Icon(Icons.drag_indicator, size: 16, color: isSelected ? Colors.amber : Colors.white10)),
+            Positioned(left: 4, top: 12, child: Icon(Icons.drag_indicator, size: 16, color: t.isMilestone ? Colors.amber : Colors.white10)),
           ],
         ),
       ),
@@ -269,7 +269,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             children: [
               _buildMiniResList(t.cost, Colors.redAccent),
               const SizedBox(width: 8),
-              Expanded(child: Text(t.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDragging ? Colors.amber : Colors.white), overflow: TextOverflow.ellipsis)),
+              Expanded(child: Text(t.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: t.isMilestone ? Colors.amber : Colors.white), overflow: TextOverflow.ellipsis)),
               const SizedBox(width: 8),
               _buildMiniResList(t.award, Colors.greenAccent),
             ],
@@ -294,12 +294,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     if (m is RemoveTask) txt = "- ${m.nameOfTask.split(" ").first}";
     if (m is AddToRandom) txt = "🎲 ${m.nameOfTask.split(" ").first}";
     if (m is AutoExecuteModifier) txt = "⚙️ Auto";
-    
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-      decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(4)),
-      child: Text(txt, style: const TextStyle(fontSize: 8, color: Colors.blueGrey)),
-    );
+    return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: const TextStyle(fontSize: 8, color: Colors.blueGrey)));
   }
 
   IconData _getResIcon(String name) {
@@ -314,7 +309,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const Center(child: Text("Task wählen zum Editieren", style: TextStyle(color: Colors.white24)));
+    return const Center(child: Text("Wähle einen Task zum Editieren", style: TextStyle(color: Colors.white24)));
   }
 
   Widget _buildTaskEditor() {
@@ -332,14 +327,14 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             children: [
               Expanded(child: _buildDraftTextField('Dauer (ms)', _durationController, (v) {}, isNumber: true)),
               const SizedBox(width: 16),
-              const Text('Milestone?'),
-              Switch(value: _selectedTask!.isMilestone, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
+              const Text('Goldene Aufgabe?'),
+              Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
             ],
           ),
           const Divider(height: 64),
-          _buildResEditorSection('INPUT / KOSTEN', _selectedTask!.cost, Colors.redAccent),
+          _buildResSection('INPUT / KOSTEN', _selectedTask!.cost, Colors.redAccent),
           const SizedBox(height: 32),
-          _buildResEditorSection('OUTPUT / BELOHNUNG', _selectedTask!.award, Colors.greenAccent),
+          _buildResSection('OUTPUT / BELOHNUNG', _selectedTask!.award, Colors.greenAccent),
           const Divider(height: 64),
           _buildModifierList(),
         ],
@@ -347,7 +342,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildResEditorSection(String title, List<Ressource> list, Color color) {
+  Widget _buildResSection(String title, List<Ressource> list, Color color) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(title, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)), IconButton(icon: const Icon(Icons.add_circle, color: Colors.amber), onPressed: () => _showAddResDialog(list))]),
       Wrap(spacing: 12, runSpacing: 12, children: list.map((res) => _buildResCard(res, list)).toList()),
@@ -430,7 +425,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           const SizedBox(height: 8),
           ElevatedButton.icon(
             icon: const Icon(Icons.edit_note, size: 14),
-            label: Text("Modifier verwalten (${m.modifiers.length})"),
+            label: Text("Verschachtelte Modifier verwalten (${m.modifiers.length})"),
             onPressed: () => _showNestedModifierDialog(m),
           ),
         ],
@@ -459,11 +454,8 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 )),
                 TextButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text("Hinzufügen"),
-                  onPressed: () {
-                    setDialogState(() => parent.modifiers.add(AddTask(task: "")));
-                    setState(() {});
-                  },
+                  label: const Text("AddTask hinzufügen"),
+                  onPressed: () { setDialogState(() => parent.modifiers.add(AddTask(task: ""))); setState(() {}); },
                 ),
               ],
             ),
@@ -528,7 +520,8 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _addNewTask() {
     setState(() {
-      final t = Task(name: 'New Task ${_stageAllTasks.length}', description: '...', duration: 5000);
+      // FIX: Leere, veränderbare Listen für neue Tasks
+      final t = Task(name: 'New Task ${_stageAllTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: []);
       _stageAllTasks.add(t);
       _selectTask(t);
     });
@@ -552,7 +545,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- STAGE EXPORT V3.9 ---');
+    buffer.writeln('// --- STAGE EXPORT V4.0 ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
