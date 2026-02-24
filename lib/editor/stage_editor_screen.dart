@@ -10,7 +10,7 @@ import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
-import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
+import 'package:save_the_world_flutter_app/models/removemodifier.model.dart'; 
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -80,6 +80,11 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   void _selectTask(Task t) {
     setState(() {
       _selectedTask = t;
+      // Sicherstellen, dass Listen mutierbar sind
+      _selectedTask!.modifier ??= [];
+      _selectedTask!.online ??= [];
+      _selectedTask!.missed ??= [];
+      
       _nameController.text = t.name;
       _descController.text = t.description;
       _durationController.text = t.duration.toString();
@@ -90,7 +95,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.1'),
+        title: const Text('🛡️ Stage Architect V4.2'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
         ],
@@ -273,10 +278,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
               _buildMiniResList(t.award, Colors.greenAccent),
             ],
           ),
-          if (t.myModifier.isNotEmpty)
+          if (t.myModifier.isNotEmpty || (t.online?.isNotEmpty ?? false))
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Wrap(spacing: 4, runSpacing: 2, children: t.myModifier.map((m) => _buildModBadge(m)).toList()),
+              child: Wrap(spacing: 4, runSpacing: 2, children: [
+                ...t.myModifier.map((m) => _buildModBadge(m, Colors.blueGrey)),
+                ...(t.online ?? []).map((m) => _buildModBadge(m, Colors.purpleAccent.withOpacity(0.5))),
+              ]),
             ),
         ],
       ),
@@ -287,13 +295,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     return Row(mainAxisSize: MainAxisSize.min, children: list.map((r) => Icon(_getResIcon(r.name), size: 10, color: color)).toList());
   }
 
-  Widget _buildModBadge(Modifier m) {
+  Widget _buildModBadge(Modifier m, Color color) {
     String txt = m.name.substring(0, 3);
     if (m is AddTask) txt = "+ ${m.nameOfTask.split(" ").first}";
     if (m is RemoveTask) txt = "- ${m.nameOfTask.split(" ").first}";
     if (m is AddToRandom) txt = "🎲 ${m.nameOfTask.split(" ").first}";
     if (m is AutoExecuteModifier) txt = "⚙️ Auto";
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: const TextStyle(fontSize: 8, color: Colors.blueGrey)));
+    return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: TextStyle(fontSize: 8, color: color)));
   }
 
   IconData _getResIcon(String name) {
@@ -326,7 +334,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             children: [
               Expanded(child: _buildDraftTextField('Dauer (ms)', _durationController, (v) {}, isNumber: true)),
               const SizedBox(width: 16),
-              const Text('Goldene Aufgabe?'),
+              const Text('Milestone?'),
               Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
             ],
           ),
@@ -335,7 +343,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           const SizedBox(height: 32),
           _buildResSection('OUTPUT / BELOHNUNG', _selectedTask!.award, Colors.greenAccent),
           const Divider(height: 64),
-          _buildModifierListWidget(_selectedTask!.myModifier, "LOGIK MODIFIER"),
+          _buildModifierListWidget(_selectedTask!.online ?? [], "ONLINE MODIFIER (BEIM AKTIVIEREN)", Colors.purpleAccent),
+          const SizedBox(height: 32),
+          _buildModifierListWidget(_selectedTask!.myModifier, "FINISHED MODIFIER (BEI ABSCHLUSS)", Colors.blueAccent),
         ],
       ),
     );
@@ -383,15 +393,15 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildModifierListWidget(List<Modifier> list, String title) {
+  Widget _buildModifierListWidget(List<Modifier> list, String title, Color accentColor) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.add_box), onPressed: () => _showAddModDialog(list)),
+            Text(title, style: TextStyle(color: accentColor, fontWeight: FontWeight.bold)),
+            IconButton(icon: const Icon(Icons.add_box, color: Colors.amber), onPressed: () => _showAddModDialog(list)),
           ],
         ),
         const SizedBox(height: 12),
@@ -399,7 +409,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           margin: const EdgeInsets.symmetric(vertical: 4),
           child: ListTile(
             dense: true,
-            title: Text(m.name, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 11)),
+            title: Text(m.name, style: TextStyle(color: accentColor, fontWeight: FontWeight.bold, fontSize: 11)),
             subtitle: _buildModInput(m, list),
             trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () => setState(() => list.remove(m))),
           ),
@@ -448,7 +458,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildModifierListWidget(parent.modifiers, "UNTER-MODIFIER"),
+                  _buildModifierListWidget(parent.modifiers, "UNTER-MODIFIER", Colors.orangeAccent),
                 ],
               ),
             ),
@@ -537,7 +547,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- STAGE EXPORT V4.1 ---');
+    buffer.writeln('// --- STAGE EXPORT V4.2 ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -552,7 +562,8 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       buffer.writeln('      isMilestone: ${t.isMilestone},');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
       buffer.writeln('      award: [${_exportResources(t.award)}],');
-      if (t.myModifier.isNotEmpty) buffer.writeln('      modifier: [${_exportModifiers(t.myModifier)}],');
+      if ((t.modifier?.isNotEmpty ?? false) || t.myModifier.isNotEmpty) buffer.writeln('      modifier: [${_exportModifiers(t.myModifier)}],');
+      if (t.online?.isNotEmpty ?? false) buffer.writeln('      online: [${_exportModifiers(t.online!)}],');
       buffer.writeln('    ),');
     }
     buffer.writeln('  ],');
