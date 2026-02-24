@@ -32,7 +32,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Stage? _currentStage;
   Task? _selectedTask;
   
-  // EDITIERBARE LISTEN (Fix für Unmodifiable List Error)
   List<Task> _stageAllTasks = [];
   List<String> _stageActiveTasks = [];
   List<String> _stageRandomTasks = [];
@@ -100,7 +99,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.7 (Logic Board)'),
+        title: const Text('🛡️ Stage Architect V3.4 (Stable Flow)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -142,11 +141,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           DropdownButton<Stage>(
             value: _currentStage,
             dropdownColor: const Color(0xFF1E1E1E),
-            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('${s.level} - ${s.description.split(" ").take(3).join(" ")}...'))).toList(),
+            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level}'))).toList(),
             onChanged: (s) => _loadStage(s!),
           ),
-          const Spacer(),
-          Text("${_stageAllTasks.length} Tasks insgesamt", style: const TextStyle(color: Colors.grey, fontSize: 12)),
         ],
       ),
     );
@@ -177,7 +174,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.all(12),
-              child: Row(children: [Icon(icon, size: 16, color: Colors.amber), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))]),
+              child: Row(children: [Icon(icon, size: 16, color: Colors.amber), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9))]),
             ),
             Expanded(
               child: DragTarget<String>(
@@ -185,7 +182,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   setState(() {
                     if (isLibrary) return;
                     if (isMaster) {
-                       // Import aus Library in die Stage
                        if (_libraryTasks.any((t) => t.name == data) && !_stageAllTasks.any((t) => t.name == data)) {
                           final template = _libraryTasks.firstWhere((t) => t.name == data);
                           _stageAllTasks.add(template);
@@ -230,55 +226,30 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     final isSelected = _selectedTask == t;
     return LongPressDraggable<String>(
       data: t.name,
-      feedback: Material(color: Colors.transparent, child: _buildCompactCard(t, width: 250, isDragging: true)),
+      feedback: Material(color: Colors.transparent, child: _buildCompactCard(t, width: 250)),
       child: GestureDetector(
         onTap: () => _selectTask(t),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.amber.withOpacity(0.15) : const Color(0xFF1E1E1E),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: isSelected ? Colors.amber : Colors.white10),
-          ),
-          child: Stack(
-            children: [
-              _buildCompactCard(t),
-              if (onDelete != null)
-                Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete)),
-            ],
-          ),
+          decoration: BoxDecoration(color: isSelected ? Colors.amber.withOpacity(0.1) : const Color(0xFF1E1E1E), borderRadius: BorderRadius.circular(8), border: Border.all(color: isSelected ? Colors.amber : Colors.white10)),
+          child: Stack(children: [_buildCompactCard(t), if (onDelete != null) Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete))]),
         ),
       ),
     );
   }
 
-  Widget _buildCompactCard(Task t, {double? width, bool isDragging = false}) {
+  Widget _buildCompactCard(Task t, {double? width}) {
     return Container(
       width: width, padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              _buildMiniResList(t.cost, Colors.redAccent),
-              const SizedBox(width: 8),
-              Expanded(child: Text(t.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isDragging ? Colors.amber : Colors.white), overflow: TextOverflow.ellipsis)),
-              const SizedBox(width: 8),
-              _buildMiniResList(t.award, Colors.greenAccent),
-            ],
-          ),
-          if (t.myModifier.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Wrap(spacing: 4, children: t.myModifier.map((m) => _buildModTag(m)).toList()),
-            ),
-        ],
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [_buildMiniResList(t.cost, Colors.redAccent), const SizedBox(width: 8), Expanded(child: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))), const SizedBox(width: 8), _buildMiniResList(t.award, Colors.greenAccent)]),
+        if (t.myModifier.isNotEmpty) Padding(padding: const EdgeInsets.only(top: 4), child: Wrap(spacing: 4, children: t.myModifier.map((m) => _buildModTag(m)).toList())),
+      ]),
     );
   }
 
   Widget _buildMiniResList(List<Ressource> list, Color color) {
-    return Row(mainAxisSize: MainAxisSize.min, children: list.map((r) => Icon(_getResIcon(r.name), size: 10, color: color)).toList());
+    return Row(mainAxisSize: MainAxisSize.min, children: list.map((r) => Icon(_getIcon(r.name), size: 10, color: color)).toList());
   }
 
   Widget _buildModTag(Modifier m) {
@@ -289,46 +260,34 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black38, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: const TextStyle(fontSize: 8, color: Colors.blueGrey)));
   }
 
-  IconData _getResIcon(String name) {
+  IconData _getIcon(String name) {
     switch (name) {
       case "Money": return Icons.attach_money;
       case "Faith": return Icons.auto_awesome;
       case "Member": return Icons.people;
       case "Time": return Icons.access_time;
-      default: return Icons.help_outline;
+      default: return Icons.help;
     }
   }
 
-  Widget _buildEmptyState() {
-    return const Center(child: Text("Task wählen zum Editieren", style: TextStyle(color: Colors.white24)));
-  }
+  Widget _buildEmptyState() { return const Center(child: Text("Task wählen zum Editieren", style: TextStyle(color: Colors.white24))); }
 
   Widget _buildTaskEditor() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionHeader('TASK: ${_selectedTask!.name}'),
-          _buildDraftTextField('Name', _nameController, (v) => setState(() {})),
-          const SizedBox(height: 16),
-          _buildDraftTextField('Beschreibung', _descController, (v) {}, maxLines: 2),
-          Row(
-            children: [
-              Expanded(child: _buildDraftTextField('Dauer (ms)', _durationController, (v) {}, isNumber: true)),
-              const SizedBox(width: 16),
-              const Text('Milestone?'),
-              Switch(value: _selectedTask!.isMilestone, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
-            ],
-          ),
-          const Divider(height: 64),
-          _buildResEditorSection('KOSTEN (INPUT)', _selectedTask!.cost, Colors.redAccent),
-          const SizedBox(height: 32),
-          _buildResEditorSection('BELOHNUNG (OUTPUT)', _selectedTask!.award, Colors.greenAccent),
-          const Divider(height: 64),
-          _buildModifierSection(),
-        ],
-      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        _buildSectionHeader('TASK: ${_selectedTask!.name}'),
+        _buildDraftTextField('Name', _nameController, (v) => setState(() {})),
+        const SizedBox(height: 16),
+        _buildDraftTextField('Beschreibung', _descController, (v) {}, maxLines: 2),
+        Row(children: [Expanded(child: _buildDraftTextField('Dauer (ms)', _durationController, (v) {}, isNumber: true)), const SizedBox(width: 16), const Text("Milestone?"), Switch(value: _selectedTask!.isMilestone, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v))]),
+        const Divider(height: 48),
+        _buildResEditorSection('KOSTEN', _selectedTask!.cost, Colors.redAccent),
+        const SizedBox(height: 24),
+        _buildResEditorSection('BELOHNUNG', _selectedTask!.award, Colors.greenAccent),
+        const Divider(height: 48),
+        _buildModifierList(),
+      ]),
     );
   }
 
@@ -341,62 +300,19 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildResCard(Ressource res, List<Ressource> list) {
     final hasMult = res.multiplierResourceName != null;
-    return Card(
-      color: Colors.white.withOpacity(0.03),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        width: 200,
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(res.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                IconButton(icon: const Icon(Icons.delete, size: 14), onPressed: () => setState(() => list.remove(res))),
-              ],
-            ),
-            _buildDraftTextField('Wert', TextEditingController(text: res.value.toString()), (v) => res.value = double.tryParse(v) ?? 0, isNumber: true),
-            if (hasMult) ...[
-              const SizedBox(height: 8),
-              _buildResourceDropdown(res.multiplierResourceName!, (v) => setState(() => res.multiplierResourceName = v)),
-              _buildDraftTextField('Faktor', TextEditingController(text: res.multiplierValue.toString()), (v) => res.multiplierValue = double.tryParse(v) ?? 1.0, isNumber: true),
-            ],
-            TextButton(
-              onPressed: () => setState(() {
-                if (res.multiplierResourceName == null) { res.multiplierResourceName = "Member"; res.multiplierValue = 1.0; }
-                else { res.multiplierResourceName = null; res.multiplierValue = null; }
-              }),
-              child: Text(hasMult ? 'Fix' : 'Abhängigkeit +', style: const TextStyle(fontSize: 10)),
-            ),
-          ],
-        ),
-      ),
-    );
+    return Card(color: Colors.white.withOpacity(0.03), child: Container(padding: const EdgeInsets.all(12), width: 200, child: Column(children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [Text(res.name, style: const TextStyle(fontWeight: FontWeight.bold)), IconButton(icon: const Icon(Icons.delete, size: 14), onPressed: () => setState(() => list.remove(res)))]),
+      _buildDraftTextField('Basiswert', TextEditingController(text: res.value.toString()), (v) => res.value = double.tryParse(v) ?? 0, isNumber: true),
+      if (hasMult) ...[const SizedBox(height: 8), _buildResourceDropdown(res.multiplierResourceName!, (v) => setState(() => res.multiplierResourceName = v))],
+      TextButton(onPressed: () => setState(() { if (res.multiplierResourceName == null) { res.multiplierResourceName = "Member"; res.multiplierValue = 1.0; } else { res.multiplierResourceName = null; res.multiplierValue = null; } }), child: Text(hasMult ? 'Fixwert' : 'Abhängigkeit +', style: const TextStyle(fontSize: 10))),
+    ])));
   }
 
-  Widget _buildModifierSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text("MODIFIER (CHAIN LOGIC)", style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)),
-            IconButton(icon: const Icon(Icons.add_box), onPressed: _showAddModDialog),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ...(_selectedTask!.myModifier).map((m) => Card(
-          margin: const EdgeInsets.symmetric(vertical: 4),
-          child: ListTile(
-            dense: true,
-            title: Text(m.name, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 11)),
-            subtitle: _buildModInput(m),
-            trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () => setState(() => _selectedTask!.myModifier.remove(m))),
-          ),
-        )),
-      ],
-    );
+  Widget _buildModifierList() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [const Text("MODIFIER (CHAIN LOGIC)", style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)), IconButton(icon: const Icon(Icons.add_box), onPressed: _showAddModDialog)]),
+      ...(_selectedTask!.myModifier).map((m) => Card(margin: const EdgeInsets.symmetric(vertical: 4), child: ListTile(dense: true, title: Text(m.name, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 11)), subtitle: _buildModInput(m), trailing: IconButton(icon: const Icon(Icons.delete, size: 16), onPressed: () => setState(() => _selectedTask!.myModifier.remove(m)))))),
+    ]);
   }
 
   Widget _buildModInput(Modifier m) {
@@ -411,7 +327,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => _updateMod(m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
     if (m is MessageModifier) return _buildDraftTextField('Text', TextEditingController(text: m.message), (v) => _updateMod(m, MessageModifier(message: v)));
     
-    return Text(m.description, style: const TextStyle(fontSize: 10));
+    return Text(m.description, style: const TextStyle(fontSize: 10, color: Colors.grey));
   }
 
   void _updateMod(Modifier old, Modifier newMod) {
@@ -488,7 +404,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.7) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.6) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
