@@ -8,6 +8,7 @@ import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 
 class ModifierListWidget extends StatelessWidget {
   final List<Modifier> list;
@@ -18,7 +19,7 @@ class ModifierListWidget extends StatelessWidget {
   final Function(Modifier old, Modifier newMod) onUpdate;
   final Function(Modifier m) onRemove;
   final Function(Modifier m) onAdd;
-  final VoidCallback onOpenNested; // Für AutoExecute
+  final VoidCallback onOpenNested;
 
   const ModifierListWidget({
     super.key,
@@ -91,11 +92,12 @@ class ModifierListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildNumberField(m.intervalMs.toString(), (v) => onUpdate(m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000))),
-          TextButton.icon(onPressed: onOpenNested, icon: const Icon(Icons.edit_note, size: 14), label: const Text("Unter-Modifier", style: TextStyle(fontSize: 10))),
+          TextButton.icon(onPressed: onOpenNested, icon: const Icon(Icons.edit_note, size: 14), label: const Text("Unter-Modifier verwalten", style: TextStyle(fontSize: 10))),
         ],
       );
     }
     if (m is RemoveModifer) return _buildTaskDropdown(m.nameOfTask ?? "", (v) => onUpdate(m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
+    if (m is SubtractRes) return Text("${m.ressources.length} Ressourcen werden abgezogen (Export-Support aktiv)");
 
     return Text(m.description, style: const TextStyle(fontSize: 10));
   }
@@ -141,16 +143,23 @@ class ModifierListWidget extends StatelessWidget {
 
   void _showAddDialog(BuildContext context) {
     showDialog(context: context, builder: (context) => AlertDialog(
-      title: const Text("Modifier Typ"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _typeTile(context, "AddTask", () => AddTask(task: "")),
-          _typeTile(context, "RemoveTask", () => RemoveTask(task: "")),
-          _typeTile(context, "SetMax", () => SetMax(ressource: "Member", newMax: 100)),
-          _typeTile(context, "Message", () => MessageModifier(message: "")),
-          _typeTile(context, "AutoExecute", () => AutoExecuteModifier(modifiers: [], intervalMs: 5000)),
-        ],
+      title: const Text("Modifier Typ wählen"),
+      content: SizedBox(
+        width: 300,
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            _typeTile(context, "AddTask", () => AddTask(task: "")),
+            _typeTile(context, "RemoveTask", () => RemoveTask(task: "")),
+            _typeTile(context, "AddToRandom", () => AddToRandom(task: "")),
+            _typeTile(context, "SetMax", () => SetMax(ressource: "Member", newMax: 100)),
+            _typeTile(context, "SetMin", () => SetMin(ressource: "Member", newMin: 0)),
+            _typeTile(context, "SubtractRes", () => SubtractRes(ressources: [])),
+            _typeTile(context, "Message", () => MessageModifier(message: "")),
+            _typeTile(context, "AutoExecute", () => AutoExecuteModifier(modifiers: [], intervalMs: 5000)),
+            _typeTile(context, "RemoveModifer", () => RemoveModifer(nameOfTask: "", modifier: [])),
+          ],
+        ),
       ),
     ));
   }
