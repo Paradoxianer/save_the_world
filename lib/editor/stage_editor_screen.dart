@@ -147,7 +147,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.7 (Global Library)'),
+        title: const Text('🛡️ Stage Architect V4.8 (Logic Synchronization)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -226,6 +226,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
               _libraryTasks.insert(newI, item);
             }),
             onAdd: _addNewLibraryTask,
+            onDelete: (name) => setState(() {
+              _libraryTasks.removeWhere((t) => t.name == name);
+              _stageAllTasks.removeWhere((t) => t.name == name);
+              _stageActiveTasks.remove(name);
+              _stageRandomTasks.remove(name);
+              if (_selectedTask?.name == name) _selectedTask = null;
+            }),
           ),
           LogicBoardColumn(
             title: "START SETUP", 
@@ -296,6 +303,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
               _stageAllTasks.removeWhere((t) => t.name == name);
               _stageActiveTasks.remove(name);
               _stageRandomTasks.remove(name);
+              if (_selectedTask?.name == name) _selectedTask = null;
             }),
           ),
         ],
@@ -538,19 +546,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     });
   }
 
-  IconData _getResIcon(String name) {
-    switch (name) {
-      case "Money": return Icons.attach_money;
-      case "Faith": return Icons.auto_awesome;
-      case "Member": return Icons.people;
-      case "Time": return Icons.access_time;
-      default: return Icons.help_outline;
-    }
-  }
-
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.7) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.8) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
