@@ -16,21 +16,7 @@ class StageExportUtils {
   static String exportLibrary(List<Task> libraryTasks) {
     final buffer = StringBuffer();
     buffer.writeln("import 'package:save_the_world_flutter_app/models/addtask.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/message.modifier.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/removetask.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/subtractres.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/task.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/setmax.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/setmin.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';");
-    buffer.writeln();
+    // ... (rest of the imports)
     buffer.writeln('// --- AUTO-GENERATED LIBRARY EXPORT ---');
     for (var t in libraryTasks) {
       String varName = t.name.replaceAll(" ", "").replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
@@ -40,7 +26,9 @@ class StageExportUtils {
       buffer.writeln('  name: "${t.name}",');
       buffer.writeln('  description: "${t.description}",');
       buffer.writeln('  duration: ${t.duration},');
-      buffer.writeln('  timeToSolve: ${t.timeToSolve == double.infinity ? 'double.infinity' : t.timeToSolve},');
+      if (t.timeToSolve != double.infinity) {
+        buffer.writeln('  timeToSolve: ${t.timeToSolve},');
+      }
       buffer.writeln('  isMilestone: ${t.isMilestone},');
       buffer.writeln('  cost: [${_exportResources(t.cost)}],');
       buffer.writeln('  award: [${_exportResources(t.award)}], ');
@@ -74,7 +62,9 @@ class StageExportUtils {
       buffer.writeln('      name: "${t.name}",');
       buffer.writeln('      description: "${t.description}",');
       buffer.writeln('      duration: ${t.duration},');
-      buffer.writeln('      timeToSolve: ${t.timeToSolve == double.infinity ? 'double.infinity' : t.timeToSolve},');
+      if (t.timeToSolve != double.infinity) {
+        buffer.writeln('      timeToSolve: ${t.timeToSolve},');
+      }
       buffer.writeln('      isMilestone: ${t.isMilestone},');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
       buffer.writeln('      award: [${_exportResources(t.award)}],');

@@ -97,7 +97,6 @@ class LogicBoardColumn extends StatelessWidget {
   Widget _buildDraggableItem(Task task, String name) {
     final isSelected = selectedTask?.name == task.name;
 
-    // Das Äußere Widget ist der ReorderableDragStartListener für sofortiges Sortieren
     return ReorderableDragStartListener(
       key: ValueKey("${title}_$name"),
       index: taskNames.indexOf(name),
@@ -119,15 +118,14 @@ class LogicBoardColumn extends StatelessWidget {
             ),
           ),
         ),
-        // Die Karte selbst
         child: TaskBoardCard(
           task: task,
           isPrimarySelection: isSelected,
           isSecondarySelection: !isSelected && selectedTask?.name == task.name,
-          isProtected: isLibrary || isMaster,
+          // FIX: isProtected entfernt, damit onDelete Button überall angezeigt werden kann, wo ein Callback existiert
+          isProtected: false, 
           onTap: () => onTaskSelected(task.name),
           onDelete: onDelete != null ? () => onDelete!(name) : null,
-          // Der Griff dient hier als visueller Trigger für das spaltenübergreifende Ziehen
           dragHandle: const Icon(Icons.drag_indicator, size: 20, color: Colors.white12),
         ),
       ),
