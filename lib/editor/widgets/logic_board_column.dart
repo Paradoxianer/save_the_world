@@ -17,10 +17,6 @@ class LogicBoardColumn extends StatelessWidget {
   final Function(int, int) onReorder;
   final Function(String)? onDelete;
   final VoidCallback? onAdd;
-  
-  final Function(String)? onMoveToStart;
-  final Function(String)? onMoveToRandom;
-  final Function(String)? onRemoveFromLists;
 
   const LogicBoardColumn({
     super.key,
@@ -38,9 +34,6 @@ class LogicBoardColumn extends StatelessWidget {
     required this.onReorder,
     this.onDelete,
     this.onAdd,
-    this.onMoveToStart,
-    this.onMoveToRandom,
-    this.onRemoveFromLists,
   });
 
   @override
@@ -62,7 +55,7 @@ class LogicBoardColumn extends StatelessWidget {
                 onAccept: onAccept,
                 builder: (context, candidates, rejects) {
                   return ReorderableListView(
-                    buildDefaultDragHandles: false,
+                    buildDefaultDragHandles: false, // Wir nutzen den Handle in der Karte!
                     onReorder: onReorder,
                     children: taskNames.map((name) {
                       final task = isLibrary 
@@ -126,18 +119,17 @@ class LogicBoardColumn extends StatelessWidget {
           ),
         ),
       ),
-      child: ReorderableDragStartListener(
-        index: taskNames.indexOf(name),
-        child: TaskBoardCard(
-          task: task,
-          isPrimarySelection: isSelected,
-          isSecondarySelection: !isSelected && selectedTask?.name == task.name,
-          isProtected: isLibrary || isMaster,
-          onTap: () => onTaskSelected(task.name),
-          onDelete: onDelete != null ? () => onDelete!(name) : null,
-          onMoveToStart: onMoveToStart,
-          onMoveToRandom: onMoveToRandom,
-          onRemoveFromLists: onRemoveFromLists,
+      child: TaskBoardCard(
+        task: task,
+        isPrimarySelection: isSelected,
+        isSecondarySelection: !isSelected && selectedTask?.name == task.name,
+        isProtected: isLibrary || isMaster,
+        onTap: () => onTaskSelected(task.name),
+        onDelete: onDelete != null ? () => onDelete!(name) : null,
+        // Hier ist der Handle für das Reordering innerhalb der Liste
+        dragHandle: ReorderableDragStartListener(
+          index: taskNames.indexOf(name),
+          child: const Icon(Icons.drag_indicator, size: 20, color: Colors.white12),
         ),
       ),
     );
