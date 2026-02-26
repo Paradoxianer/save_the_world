@@ -17,6 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart' as com
 // Specialized editor widgets
 import 'package:save_the_world_flutter_app/editor/widgets/resource_editor_section.dart';
 import 'package:save_the_world_flutter_app/editor/widgets/modifier_list_widget.dart';
+import 'package:save_the_world_flutter_app/editor/widgets/logic_board_column.dart';
 
 class StageEditorScreen extends StatefulWidget {
   const StageEditorScreen({super.key});
@@ -132,10 +133,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
 
     setState(() {
-      final index = _stageAllTasks.indexWhere((t) => t.name == _selectedTask!.name);
-      if (index != -1) {
-        _stageAllTasks[index] = newTask;
-      }
+      final libIndex = _libraryTasks.indexWhere((t) => t.name == _selectedTask!.name);
+      if (libIndex != -1) _libraryTasks[libIndex] = newTask;
+
+      final stageIndex = _stageAllTasks.indexWhere((t) => t.name == _selectedTask!.name);
+      if (stageIndex != -1) _stageAllTasks[stageIndex] = newTask;
+      
       _selectedTask = newTask;
     });
   }
@@ -144,7 +147,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.6 (Sync Patch)'),
+        title: const Text('🛡️ Stage Architect V4.7 (Global Library)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -168,7 +171,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addNewTask,
+        onPressed: _addNewStageTask,
         backgroundColor: Colors.amber,
         child: const Icon(Icons.add, color: Colors.black),
       ),
@@ -201,189 +204,103 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       color: Colors.black12,
       child: Row(
         children: [
-          _buildDropColumn("LIBRARY", _libraryTasks.map((e) => e.name).toList(), Colors.blue.withOpacity(0.05), Icons.library_books, isLibrary: true),
-          _buildDropColumn("START SETUP", _stageActiveTasks, Colors.green.withOpacity(0.05), Icons.play_circle_fill),
-          _buildDropColumn("RANDOM EVENTS", _stageRandomTasks, Colors.orange.withOpacity(0.05), Icons.shuffle),
-          _buildDropColumn("ALL STAGE TASKS", _stageAllTasks.map((e) => e.name).toList(), Colors.white.withOpacity(0.05), Icons.list, isMaster: true),
+          LogicBoardColumn(
+            title: "LIBRARY (GLOBAL)", 
+            taskNames: _libraryTasks.map((e) => e.name).toList(), 
+            allStageTasks: _stageAllTasks, 
+            libraryTasks: _libraryTasks, 
+            color: Colors.blue.withOpacity(0.05), 
+            icon: Icons.library_books, 
+            isLibrary: true,
+            selectedTask: _selectedTask,
+            onTaskSelected: _selectTask,
+            onAccept: (data) {
+               if (!_libraryTasks.any((t) => t.name == data)) {
+                  final template = _stageAllTasks.firstWhere((t) => t.name == data);
+                  setState(() => _libraryTasks.add(template));
+               }
+            },
+            onReorder: (oldI, newI) => setState(() {
+              if (newI > oldI) newI -= 1;
+              final item = _libraryTasks.removeAt(oldI);
+              _libraryTasks.insert(newI, item);
+            }),
+            onAdd: _addNewLibraryTask,
+          ),
+          LogicBoardColumn(
+            title: "START SETUP", 
+            taskNames: _stageActiveTasks, 
+            allStageTasks: _stageAllTasks, 
+            libraryTasks: _libraryTasks, 
+            color: Colors.green.withOpacity(0.05), 
+            icon: Icons.play_circle_fill,
+            selectedTask: _selectedTask,
+            onTaskSelected: _selectTask,
+            onAccept: (data) => setState(() {
+              if (!_stageActiveTasks.contains(data)) {
+                _stageActiveTasks.add(data);
+                _stageRandomTasks.remove(data);
+              }
+            }),
+            onReorder: (oldI, newI) => setState(() {
+              if (newI > oldI) newI -= 1;
+              final item = _stageActiveTasks.removeAt(oldI);
+              _stageActiveTasks.insert(newI, item);
+            }),
+            onDelete: (name) => setState(() => _stageActiveTasks.remove(name)),
+          ),
+          LogicBoardColumn(
+            title: "RANDOM EVENTS", 
+            taskNames: _stageRandomTasks, 
+            allStageTasks: _stageAllTasks, 
+            libraryTasks: _libraryTasks, 
+            color: Colors.orange.withOpacity(0.05), 
+            icon: Icons.shuffle,
+            selectedTask: _selectedTask,
+            onTaskSelected: _selectTask,
+            onAccept: (data) => setState(() {
+              if (!_stageRandomTasks.contains(data)) {
+                _stageRandomTasks.add(data);
+                _stageActiveTasks.remove(data);
+              }
+            }),
+            onReorder: (oldI, newI) => setState(() {
+              if (newI > oldI) newI -= 1;
+              final item = _stageRandomTasks.removeAt(oldI);
+              _stageRandomTasks.insert(newI, item);
+            }),
+            onDelete: (name) => setState(() => _stageRandomTasks.remove(name)),
+          ),
+          LogicBoardColumn(
+            title: "ALL STAGE TASKS", 
+            taskNames: _stageAllTasks.map((e) => e.name).toList(), 
+            allStageTasks: _stageAllTasks, 
+            libraryTasks: _libraryTasks, 
+            color: Colors.white.withOpacity(0.05), 
+            icon: Icons.list,
+            isMaster: true,
+            selectedTask: _selectedTask,
+            onTaskSelected: _selectTask,
+            onAccept: (data) {
+               if (_libraryTasks.any((t) => t.name == data) && !_stageAllTasks.any((t) => t.name == data)) {
+                  final template = _libraryTasks.firstWhere((t) => t.name == data);
+                  setState(() => _stageAllTasks.add(template));
+               }
+            },
+            onReorder: (oldI, newI) => setState(() {
+              if (newI > oldI) newI -= 1;
+              final item = _stageAllTasks.removeAt(oldI);
+              _stageAllTasks.insert(newI, item);
+            }),
+            onDelete: (name) => setState(() {
+              _stageAllTasks.removeWhere((t) => t.name == name);
+              _stageActiveTasks.remove(name);
+              _stageRandomTasks.remove(name);
+            }),
+          ),
         ],
       ),
     );
-  }
-
-  Widget _buildDropColumn(String title, List<String> list, Color color, IconData icon, {bool isMaster = false, bool isLibrary = false}) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.all(4),
-        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white10)),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(children: [Icon(icon, size: 16, color: Colors.amber), const SizedBox(width: 8), Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9))]),
-            ),
-            Expanded(
-              child: DragTarget<String>(
-                onAccept: (data) {
-                  setState(() {
-                    if (isLibrary) return;
-                    if (isMaster) {
-                       if (_libraryTasks.any((t) => t.name == data) && !_stageAllTasks.any((t) => t.name == data)) {
-                          final template = _libraryTasks.firstWhere((t) => t.name == data);
-                          _stageAllTasks.add(template);
-                       }
-                       return;
-                    }
-                    if (!list.contains(data)) {
-                      list.add(data);
-                      if (title == "START SETUP") _stageRandomTasks.remove(data);
-                      if (title == "RANDOM EVENTS") _stageActiveTasks.remove(data);
-                    }
-                  });
-                },
-                builder: (context, candidates, rejects) {
-                  return ReorderableListView(
-                    buildDefaultDragHandles: false,
-                    onReorder: (oldIndex, newIndex) { 
-                      if (isLibrary) return;
-                      setState(() { if (newIndex > oldIndex) newIndex -= 1; final item = list.removeAt(oldIndex); list.insert(newIndex, item); }); 
-                    },
-                    children: list.map((name) {
-                      final task = isLibrary 
-                          ? _libraryTasks.firstWhere((t) => t.name == name)
-                          : _stageAllTasks.firstWhere((t) => t.name == name, orElse: () => Task(name: name));
-                      return ReorderableDelayedDragStartListener(
-                        index: list.indexOf(name),
-                        key: ValueKey("${title}_$name"),
-                        child: _buildTaskCard(task!, isMaster: isMaster || isLibrary, onDelete: (isMaster || isLibrary) ? null : () => setState(() => list.remove(name))),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTaskCard(Task t, {bool isMaster = false, VoidCallback? onDelete}) {
-    final isSelected = _selectedTask?.name == t.name;
-    final isSameName = _selectedTask?.name == t.name;
-    final isCrisis = t.timeToSolve != double.infinity;
-    
-    const Color selectionColor = Colors.cyanAccent;
-    const Color milestoneColor = Colors.amber;
-    const Color crisisColor = Colors.redAccent;
-
-    return LongPressDraggable<String>(
-      data: t.name,
-      feedback: Material(
-        color: Colors.transparent,
-        child: Opacity(
-          opacity: 0.9,
-          child: Container(
-            width: 250,
-            decoration: BoxDecoration(
-              color: const Color(0xFF2A2A2A),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: isCrisis ? crisisColor : (t.isMilestone ? milestoneColor : Colors.white24), width: 2),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))],
-            ),
-            child: _buildCompactCard(t),
-          ),
-        ),
-      ),
-      child: GestureDetector(
-        onTap: () => _selectTask(t.name),
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: isSelected 
-                ? selectionColor.withOpacity(0.2) 
-                : (isSameName ? selectionColor.withOpacity(0.08) : (isCrisis ? crisisColor.withOpacity(0.05) : (t.isMilestone ? milestoneColor.withOpacity(0.05) : const Color(0xFF1E1E1E)))),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected 
-                  ? selectionColor 
-                  : (isSameName ? selectionColor.withOpacity(0.4) : (isCrisis ? crisisColor.withOpacity(0.6) : (t.isMilestone ? milestoneColor.withOpacity(0.5) : Colors.white10)))
-            ),
-            boxShadow: isSelected ? [BoxShadow(color: selectionColor.withOpacity(0.2), blurRadius: 8)] : null,
-          ),
-          child: Stack(
-            children: [
-              _buildCompactCard(t),
-              if (onDelete != null)
-                Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete)),
-              Positioned(
-                left: 4, 
-                top: 12, 
-                child: Icon(
-                  isCrisis ? Icons.warning_amber_rounded : Icons.drag_indicator, 
-                  size: 16, 
-                  color: isSelected ? selectionColor : (isCrisis ? crisisColor : (t.isMilestone ? milestoneColor : Colors.white10))
-                )
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompactCard(Task t) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              _buildCompactMiniResList(t.cost ?? [], Colors.redAccent),
-              const SizedBox(width: 8),
-              Expanded(child: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis)),
-              const SizedBox(width: 8),
-              _buildCompactMiniResList(t.award ?? [], Colors.greenAccent),
-            ],
-          ),
-          if ((t.myModifier?.isNotEmpty ?? false) || (t.online?.isNotEmpty ?? false) || (t.missed?.isNotEmpty ?? false))
-            Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Wrap(
-                spacing: 4, 
-                runSpacing: 2, 
-                children: [
-                  ...(t.myModifier ?? []).map((m) => _buildCompactModTag(m, Colors.blueGrey)),
-                  ...(t.online ?? []).map((m) => _buildCompactModTag(m, Colors.cyan.withOpacity(0.5))),
-                  ...(t.missed ?? []).map((m) => _buildCompactModTag(m, Colors.redAccent.withOpacity(0.5))),
-                ]
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCompactMiniResList(List<Ressource> list, Color color) {
-    return Row(mainAxisSize: MainAxisSize.min, children: list.map((r) => Icon(_getResIcon(r.name), size: 10, color: color)).toList());
-  }
-
-  Widget _buildCompactModTag(Modifier m, Color color) {
-    String txt = m.name.substring(0, 3);
-    if (m is AddTask) txt = "+ ${m.nameOfTask.split(" ").first}";
-    if (m is RemoveTask) txt = "- ${m.nameOfTask.split(" ").first}";
-    if (m is AutoExecuteModifier) txt = "⚙️ Auto";
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black38, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: TextStyle(fontSize: 8, color: color)));
-  }
-
-  IconData _getResIcon(String name) {
-    switch (name) {
-      case "Money": return Icons.attach_money;
-      case "Faith": return Icons.auto_awesome;
-      case "Member": return Icons.people;
-      case "Time": return Icons.access_time;
-      default: return Icons.help_outline;
-    }
   }
 
   Widget _buildEmptyState() {
@@ -586,10 +503,10 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     return Padding(padding: const EdgeInsets.only(bottom: 12), child: Text(title, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 18)));
   }
 
-  void _addNewTask() {
+  void _addNewStageTask() {
     setState(() {
       final t = Task(
-        name: 'New Task ${_stageAllTasks.length}', 
+        name: 'New Stage Task ${_stageAllTasks.length}', 
         description: '...', 
         duration: 5000, 
         cost: [], 
@@ -604,9 +521,36 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     });
   }
 
+  void _addNewLibraryTask() {
+    setState(() {
+      final t = Task(
+        name: 'Global Task ${_libraryTasks.length}', 
+        description: '...', 
+        duration: 5000, 
+        cost: [], 
+        award: [], 
+        modifier: [],
+        online: [],
+        missed: [],
+      );
+      _libraryTasks.add(t); 
+      _selectTask(t.name);
+    });
+  }
+
+  IconData _getResIcon(String name) {
+    switch (name) {
+      case "Money": return Icons.attach_money;
+      case "Faith": return Icons.auto_awesome;
+      case "Member": return Icons.people;
+      case "Time": return Icons.access_time;
+      default: return Icons.help_outline;
+    }
+  }
+
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.6) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.7) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -637,7 +581,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   String _exportResources(List<Ressource> list) => list.map((res) => '${res.name}(value: ${res.value}${res.multiplierResourceName != null ? ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}' : ''})').join(', ');
   String _exportModifiers(List<Modifier> list) {
     return list.map((m) {
-      final String taskName = (m is AddTask) ? m.nameOfTask : ((m is RemoveTask) ? m.nameOfTask : ((m is AddToRandom) ? m.nameOfTask : ""));
+      final taskName = (m is AddTask) ? m.nameOfTask : ((m is RemoveTask) ? m.nameOfTask : ((m is AddToRandom) ? m.nameOfTask : ""));
       if (m is AddTask) return 'AddTask(task: "$taskName")';
       if (m is RemoveTask) return 'RemoveTask(task: "$taskName")';
       if (m is AddToRandom) return 'AddToRandom(task: "$taskName")';

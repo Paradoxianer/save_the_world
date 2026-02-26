@@ -16,9 +16,8 @@ class LogicBoardColumn extends StatelessWidget {
   final Function(String) onAccept;
   final Function(int, int) onReorder;
   final Function(String)? onDelete;
-  final VoidCallback? onExportLibrary;
+  final VoidCallback? onAdd; // Neuer Add-Button Callback
   
-  // Callbacks für die neuen Kontext-Aktionen
   final Function(String)? onMoveToStart;
   final Function(String)? onMoveToRandom;
   final Function(String)? onRemoveFromLists;
@@ -38,7 +37,7 @@ class LogicBoardColumn extends StatelessWidget {
     required this.onAccept,
     required this.onReorder,
     this.onDelete,
-    this.onExportLibrary,
+    this.onAdd,
     this.onMoveToStart,
     this.onMoveToRandom,
     this.onRemoveFromLists,
@@ -67,7 +66,7 @@ class LogicBoardColumn extends StatelessWidget {
                     onReorder: onReorder,
                     children: taskNames.map((name) {
                       final task = isLibrary 
-                          ? libraryTasks.firstWhere((t) => t.name == name)
+                          ? libraryTasks.firstWhere((t) => t.name == name, orElse: () => Task(name: name))
                           : allStageTasks.firstWhere((t) => t.name == name, orElse: () => Task(name: name));
                       
                       return _buildDraggableItem(task!, name);
@@ -90,10 +89,10 @@ class LogicBoardColumn extends StatelessWidget {
           Icon(icon, size: 16, color: Colors.amber),
           const SizedBox(width: 8),
           Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))),
-          if (isLibrary && onExportLibrary != null)
+          if (onAdd != null)
             IconButton(
-              icon: const Icon(Icons.ios_share, size: 14, color: Colors.amber),
-              onPressed: onExportLibrary,
+              icon: const Icon(Icons.add_box_outlined, size: 16, color: Colors.amber),
+              onPressed: onAdd,
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
@@ -103,25 +102,27 @@ class LogicBoardColumn extends StatelessWidget {
   }
 
   Widget _buildDraggableItem(Task task, String name) {
-    return Draggable<String>(
+    final isSelected = selectedTask?.name == task.name;
+
+    return LongPressDraggable<String>(
       key: ValueKey("${title}_$name"),
       data: name,
       feedback: Material(
         color: Colors.transparent,
         child: SizedBox(
           width: 250,
-          child: TaskBoardCard(task: task, isSelected: true),
+          child: TaskBoardCard(
+            task: task, 
+            isPrimarySelection: true,
+          ),
         ),
-      ),
-      childWhenDragging: Opacity(
-        opacity: 0.3,
-        child: TaskBoardCard(task: task),
       ),
       child: ReorderableDragStartListener(
         index: taskNames.indexOf(name),
         child: TaskBoardCard(
           task: task,
-          isSelected: selectedTask == task,
+          isPrimarySelection: isSelected,
+          isSecondarySelection: !isSelected && selectedTask?.name == task.name,
           isProtected: isLibrary || isMaster,
           onTap: () => onTaskSelected(task.name),
           onDelete: onDelete != null ? () => onDelete!(name) : null,
