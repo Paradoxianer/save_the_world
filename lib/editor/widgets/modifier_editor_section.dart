@@ -43,10 +43,9 @@ class ModifierEditorSection extends StatelessWidget {
         modifiers.add(m);
         onUpdate();
       },
-      onOpenNested: () {
-        final autoMod = modifiers.whereType<AutoExecuteModifier>().firstOrNull;
-        if (autoMod != null) {
-          AutoExecuteDialog.show(context, autoMod, allTaskNames, resourceTypes, onUpdate);
+      onOpenNested: (m) {
+        if (m is AutoExecuteModifier) {
+          AutoExecuteDialog.show(context, m, allTaskNames, resourceTypes, onUpdate);
         }
       },
     );
