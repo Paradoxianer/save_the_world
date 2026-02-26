@@ -112,7 +112,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.7 (Crisis Management)'),
+        title: const Text('🛡️ Stage Architect V3.8 (Logic Flow Optimized)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -424,9 +424,11 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           const SizedBox(height: 32),
           _buildResEditorSection('BELOHNUNG (OUTPUT)', _selectedTask!.award, Colors.greenAccent),
           const Divider(height: 64),
-          _buildModifierSection('MODIFIER (ON FINISHED)', _selectedTask!.myModifier, Colors.amber),
-          const SizedBox(height: 32),
+          
+          // Chronological Modifier Order
           _buildModifierSection('ONLINE MODIFIER (ON START)', _selectedTask!.online!, Colors.cyanAccent),
+          const SizedBox(height: 32),
+          _buildModifierSection('MODIFIER (ON FINISHED)', _selectedTask!.myModifier, Colors.amber),
           const SizedBox(height: 32),
           _buildModifierSection('MISSED MODIFIER (ON FAIL)', _selectedTask!.missed!, Colors.redAccent),
         ],
@@ -590,7 +592,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.7) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.8) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
