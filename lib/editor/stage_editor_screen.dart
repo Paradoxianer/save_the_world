@@ -147,7 +147,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.9.8 (Final Drag Fix)'),
+        title: const Text('🛡️ Stage Architect V5.0 (Clean Export)'),
         actions: [
           IconButton(icon: const Icon(Icons.library_add_check), tooltip: 'Export Common Tasks', onPressed: _exportLibrary),
           IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
@@ -549,24 +549,50 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportLibrary() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- LIBRARY EXPORT ---');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/faith.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/member.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/message.modifier.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/money.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/publicity.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/subtractres.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/task.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/time.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/AddToRandom.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/setmax.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/setmin.model.dart\';');
+    buffer.writeln('import \'package:save_the_world_flutter_app/models/autoexecute.model.dart\';');
+    buffer.writeln();
+    buffer.writeln('// --- AUTO-GENERATED LIBRARY EXPORT ---');
     for (var t in _libraryTasks) {
-      buffer.writeln('final Task ${t.name.replaceAll(" ", "")} = Task(');
+      String varName = t.name.replaceAll(" ", "").replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
+      varName = varName.replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
+      
+      buffer.writeln('final Task $varName = Task(');
       buffer.writeln('  name: "${t.name}",');
       buffer.writeln('  description: "${t.description}",');
       buffer.writeln('  duration: ${t.duration},');
-      buffer.writeln('  timeToSolve: ${t.timeToSolve},');
+      buffer.writeln('  timeToSolve: ${t.timeToSolve == double.infinity ? 'double.infinity' : t.timeToSolve},');
       buffer.writeln('  isMilestone: ${t.isMilestone},');
       buffer.writeln('  cost: [${_exportResources(t.cost)}],');
-      buffer.writeln('  award: [${_exportResources(t.award)}],');
-      if (t.myModifier.isNotEmpty) buffer.writeln('  modifier: [${_exportModifiers(t.myModifier)}],');
-      if (t.online != null && t.online!.isNotEmpty) buffer.writeln('  online: [${_exportModifiers(t.online!)}],');
-      if (t.missed != null && t.missed!.isNotEmpty) buffer.writeln('  missed: [${_exportModifiers(t.missed!)}],');
+      buffer.writeln('  award: [${_exportResources(t.award)}], ');
+      
+      final modStr = _exportModifiers(t.myModifier);
+      if (modStr.isNotEmpty) buffer.writeln('  modifier: [$modStr], ');
+      
+      final onStr = _exportModifiers(t.online ?? []);
+      if (onStr.isNotEmpty) buffer.writeln('  online: [$onStr], ');
+      
+      final missStr = _exportModifiers(t.missed ?? []);
+      if (missStr.isNotEmpty) buffer.writeln('  missed: [$missStr], ');
+      
       buffer.writeln(');');
       buffer.writeln();
     }
 
-    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Library Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
+    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Export Library Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
   }
 
   void _exportStage() {
@@ -583,22 +609,25 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       buffer.writeln('      name: "${t.name}",');
       buffer.writeln('      description: "${t.description}",');
       buffer.writeln('      duration: ${t.duration},');
-      buffer.writeln('      timeToSolve: ${t.timeToSolve},');
+      buffer.writeln('      timeToSolve: ${t.timeToSolve == double.infinity ? 'double.infinity' : t.timeToSolve},');
       buffer.writeln('      isMilestone: ${t.isMilestone},');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
       buffer.writeln('      award: [${_exportResources(t.award)}],');
-      if (t.myModifier != null && t.myModifier!.isNotEmpty) buffer.writeln('      modifier: [${_exportModifiers(t.myModifier!)}],');
-      if (t.online != null && t.online!.isNotEmpty) buffer.writeln('      online: [${_exportModifiers(t.online!)}],');
-      if (t.missed != null && t.missed!.isNotEmpty) buffer.writeln('      missed: [${_exportModifiers(t.missed!)}],');
+      final modStr = _exportModifiers(t.myModifier ?? []);
+      if (modStr.isNotEmpty) buffer.writeln('      modifier: [$modStr], ');
+      final onStr = _exportModifiers(t.online ?? []);
+      if (onStr.isNotEmpty) buffer.writeln('      online: [$onStr], ');
+      final missStr = _exportModifiers(t.missed ?? []);
+      if (missStr.isNotEmpty) buffer.writeln('      missed: [$missStr], ');
       buffer.writeln('    ),');
     }
     buffer.writeln('  ],');
     buffer.writeln(');');
 
-    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Stage Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
+    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Export Dart Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
   }
 
-  String _formatStringList(List<String>? l) => (l == null || l.isEmpty) ? '[]' : '[${l.map((e) => '"$e"').join(', ')}]';
+  String _formatStringList(List<String>? l) => (l == null || l.isEmpty) ? '[]' : '[${l.map((e) => "\"$e\"").join(', ')}]';
   String _exportResources(List<Ressource> list) => list.map((res) => '${res.name}(value: ${res.value}${res.multiplierResourceName != null ? ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}' : ''})').join(', ');
   String _exportModifiers(List<Modifier> list) {
     return list.map((m) {
@@ -611,7 +640,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
       if (m is RemoveModifer) return 'RemoveModifer(nameOfTask: "$taskName", modifier: [])';
       if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [${_exportModifiers(m.modifiers)}], intervalMs: ${m.intervalMs})';
-      return '// Unknown Modifier';
-    }).join(', ');
+      return null;
+    }).where((e) => e != null).join(', ');
   }
 }
