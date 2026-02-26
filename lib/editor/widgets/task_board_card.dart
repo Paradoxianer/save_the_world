@@ -98,23 +98,20 @@ class TaskBoardCard extends StatelessWidget {
             ],
           ),
         ),
-        // Handle links
+        // Der Reorder-Handle (Icon) wird hier positioniert, falls vorhanden
         if (dragHandle != null)
           Positioned(left: 4, top: 0, bottom: 0, child: dragHandle!),
         
-        // Delete oben rechts
+        // Lösch-Button oben rechts
         if (onDelete != null && !isProtected)
           Positioned(
             right: 4, 
-            top: 0, 
-            bottom: 0,
-            child: Center(
-              child: IconButton(
-                icon: const Icon(Icons.close, size: 16, color: Colors.white30),
-                onPressed: onDelete,
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
+            top: 4, 
+            child: IconButton(
+              icon: const Icon(Icons.close, size: 14, color: Colors.white30),
+              onPressed: onDelete,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
             ),
           ),
           

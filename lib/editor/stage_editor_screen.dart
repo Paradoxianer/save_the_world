@@ -147,9 +147,10 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.9 (Stability Patch)'),
+        title: const Text('🛡️ Stage Architect V4.9.8 (Final Drag Fix)'),
         actions: [
-          IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
+          IconButton(icon: const Icon(Icons.library_add_check), tooltip: 'Export Common Tasks', onPressed: _exportLibrary),
+          IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
         ],
       ),
       body: Column(
@@ -546,9 +547,31 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     });
   }
 
+  void _exportLibrary() {
+    final buffer = StringBuffer();
+    buffer.writeln('// --- LIBRARY EXPORT ---');
+    for (var t in _libraryTasks) {
+      buffer.writeln('final Task ${t.name.replaceAll(" ", "")} = Task(');
+      buffer.writeln('  name: "${t.name}",');
+      buffer.writeln('  description: "${t.description}",');
+      buffer.writeln('  duration: ${t.duration},');
+      buffer.writeln('  timeToSolve: ${t.timeToSolve},');
+      buffer.writeln('  isMilestone: ${t.isMilestone},');
+      buffer.writeln('  cost: [${_exportResources(t.cost)}],');
+      buffer.writeln('  award: [${_exportResources(t.award)}],');
+      if (t.myModifier.isNotEmpty) buffer.writeln('  modifier: [${_exportModifiers(t.myModifier)}],');
+      if (t.online != null && t.online!.isNotEmpty) buffer.writeln('  online: [${_exportModifiers(t.online!)}],');
+      if (t.missed != null && t.missed!.isNotEmpty) buffer.writeln('  missed: [${_exportModifiers(t.missed!)}],');
+      buffer.writeln(');');
+      buffer.writeln();
+    }
+
+    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Library Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
+  }
+
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.9) ---');
+    buffer.writeln('// --- STAGE EXPORT ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -572,7 +595,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     buffer.writeln('  ],');
     buffer.writeln(');');
 
-    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Export Dart Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
+    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Stage Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
   }
 
   String _formatStringList(List<String>? l) => (l == null || l.isEmpty) ? '[]' : '[${l.map((e) => '"$e"').join(', ')}]';

@@ -55,7 +55,7 @@ class LogicBoardColumn extends StatelessWidget {
                 onAccept: onAccept,
                 builder: (context, candidates, rejects) {
                   return ReorderableListView(
-                    buildDefaultDragHandles: false, // Wir nutzen den Handle in der Karte!
+                    buildDefaultDragHandles: false,
                     onReorder: onReorder,
                     children: taskNames.map((name) {
                       final task = isLibrary 
@@ -97,39 +97,38 @@ class LogicBoardColumn extends StatelessWidget {
   Widget _buildDraggableItem(Task task, String name) {
     final isSelected = selectedTask?.name == task.name;
 
-    return LongPressDraggable<String>(
+    // Das Äußere Widget ist der ReorderableDragStartListener für sofortiges Sortieren
+    return ReorderableDragStartListener(
       key: ValueKey("${title}_$name"),
-      data: name,
-      feedback: Material(
-        color: Colors.transparent,
-        child: Opacity(
-          opacity: 0.9,
-          child: Container(
-            width: 250,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))
-              ],
-            ),
-            child: TaskBoardCard(
-              task: task, 
-              isPrimarySelection: true,
+      index: taskNames.indexOf(name),
+      child: LongPressDraggable<String>(
+        data: name,
+        feedback: Material(
+          color: Colors.transparent,
+          child: Opacity(
+            opacity: 0.9,
+            child: Container(
+              width: 250,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))
+                ],
+              ),
+              child: TaskBoardCard(task: task, isPrimarySelection: true),
             ),
           ),
         ),
-      ),
-      child: TaskBoardCard(
-        task: task,
-        isPrimarySelection: isSelected,
-        isSecondarySelection: !isSelected && selectedTask?.name == task.name,
-        isProtected: isLibrary || isMaster,
-        onTap: () => onTaskSelected(task.name),
-        onDelete: onDelete != null ? () => onDelete!(name) : null,
-        // Hier ist der Handle für das Reordering innerhalb der Liste
-        dragHandle: ReorderableDragStartListener(
-          index: taskNames.indexOf(name),
-          child: const Icon(Icons.drag_indicator, size: 20, color: Colors.white12),
+        // Die Karte selbst
+        child: TaskBoardCard(
+          task: task,
+          isPrimarySelection: isSelected,
+          isSecondarySelection: !isSelected && selectedTask?.name == task.name,
+          isProtected: isLibrary || isMaster,
+          onTap: () => onTaskSelected(task.name),
+          onDelete: onDelete != null ? () => onDelete!(name) : null,
+          // Der Griff dient hier als visueller Trigger für das spaltenübergreifende Ziehen
+          dragHandle: const Icon(Icons.drag_indicator, size: 20, color: Colors.white12),
         ),
       ),
     );
