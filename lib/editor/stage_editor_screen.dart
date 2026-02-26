@@ -3,21 +3,17 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
-import 'package:save_the_world_flutter_app/models/addtask.model.dart';
-import 'package:save_the_world_flutter_app/models/removetask.model.dart';
-import 'package:save_the_world_flutter_app/models/setmax.model.dart';
-import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
-import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
-import 'package:save_the_world_flutter_app/models/message.modifier.dart';
-import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart' as common;
 
 // Specialized editor widgets
 import 'package:save_the_world_flutter_app/editor/widgets/resource_editor_section.dart';
 import 'package:save_the_world_flutter_app/editor/widgets/modifier_list_widget.dart';
-import 'package:save_the_world_flutter_app/editor/widgets/logic_board_column.dart';
+import 'package:save_the_world_flutter_app/editor/widgets/task_editor_sections.dart';
+import 'package:save_the_world_flutter_app/editor/widgets/visual_logic_board.dart';
+import 'package:save_the_world_flutter_app/editor/widgets/auto_execute_dialog.dart';
+import 'package:save_the_world_flutter_app/editor/utils/stage_export_utils.dart';
 
 class StageEditorScreen extends StatefulWidget {
   const StageEditorScreen({super.key});
@@ -147,10 +143,22 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V5.0 (Clean Export)'),
+        title: const Text('🛡️ Stage Architect V5.1 (Refactored)'),
         actions: [
-          IconButton(icon: const Icon(Icons.library_add_check), tooltip: 'Export Common Tasks', onPressed: _exportLibrary),
-          IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: _exportStage),
+          IconButton(
+            icon: const Icon(Icons.library_add_check), 
+            tooltip: 'Export Common Tasks', 
+            onPressed: () => _showExportDialog('Export Common Tasks', StageExportUtils.exportLibrary(_libraryTasks)),
+          ),
+          IconButton(
+            icon: const Icon(Icons.code), 
+            tooltip: 'Export Stage', 
+            onPressed: () {
+              if (_currentStage != null) {
+                _showExportDialog('Export Stage Code', StageExportUtils.exportStage(_currentStage!, _stageActiveTasks, _stageRandomTasks, _stageAllTasks));
+              }
+            },
+          ),
         ],
       ),
       body: Column(
@@ -159,7 +167,75 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           Expanded(
             child: Row(
               children: [
-                _buildVisualBoard(),
+                VisualLogicBoard(
+                  libraryTasks: _libraryTasks,
+                  stageAllTasks: _stageAllTasks,
+                  stageActiveTasks: _stageActiveTasks,
+                  stageRandomTasks: _stageRandomTasks,
+                  selectedTask: _selectedTask,
+                  onTaskSelected: _selectTask,
+                  onTaskChanged: () => setState(() {}),
+                  onLibraryAccept: (data) {
+                    if (!_libraryTasks.any((t) => t.name == data)) {
+                      final template = _stageAllTasks.firstWhere((t) => t.name == data);
+                      setState(() => _libraryTasks.add(template));
+                    }
+                  },
+                  onLibraryReorder: (oldI, newI) => setState(() {
+                    if (newI > oldI) newI -= 1;
+                    final item = _libraryTasks.removeAt(oldI);
+                    _libraryTasks.insert(newI, item);
+                  }),
+                  onLibraryAdd: _addNewLibraryTask,
+                  onLibraryDelete: (name) => setState(() {
+                    _libraryTasks.removeWhere((t) => t.name == name);
+                    _stageAllTasks.removeWhere((t) => t.name == name);
+                    _stageActiveTasks.remove(name);
+                    _stageRandomTasks.remove(name);
+                    if (_selectedTask?.name == name) _selectedTask = null;
+                  }),
+                  onActiveAccept: (data) => setState(() {
+                    if (!_stageActiveTasks.contains(data)) {
+                      _stageActiveTasks.add(data);
+                      _stageRandomTasks.remove(data);
+                    }
+                  }),
+                  onActiveReorder: (oldI, newI) => setState(() {
+                    if (newI > oldI) newI -= 1;
+                    final item = _stageActiveTasks.removeAt(oldI);
+                    _stageActiveTasks.insert(newI, item);
+                  }),
+                  onActiveDelete: (name) => setState(() => _stageActiveTasks.remove(name)),
+                  onRandomAccept: (data) => setState(() {
+                    if (!_stageRandomTasks.contains(data)) {
+                      _stageRandomTasks.add(data);
+                      _stageActiveTasks.remove(data);
+                    }
+                  }),
+                  onRandomReorder: (oldI, newI) => setState(() {
+                    if (newI > oldI) newI -= 1;
+                    final item = _stageRandomTasks.removeAt(oldI);
+                    _stageRandomTasks.insert(newI, item);
+                  }),
+                  onRandomDelete: (name) => setState(() => _stageRandomTasks.remove(name)),
+                  onAllTasksAccept: (data) {
+                    if (_libraryTasks.any((t) => t.name == data) && !_stageAllTasks.any((t) => t.name == data)) {
+                      final template = _libraryTasks.firstWhere((t) => t.name == data);
+                      setState(() => _stageAllTasks.add(template));
+                    }
+                  },
+                  onAllTasksReorder: (oldI, newI) => setState(() {
+                    if (newI > oldI) newI -= 1;
+                    final item = _stageAllTasks.removeAt(oldI);
+                    _stageAllTasks.insert(newI, item);
+                  }),
+                  onAllTasksDelete: (name) => setState(() {
+                    _stageAllTasks.removeWhere((t) => t.name == name);
+                    _stageActiveTasks.remove(name);
+                    _stageRandomTasks.remove(name);
+                    if (_selectedTask?.name == name) _selectedTask = null;
+                  }),
+                ),
                 const VerticalDivider(width: 1),
                 Expanded(
                   child: _selectedTask == null
@@ -175,6 +251,23 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         onPressed: _addNewStageTask,
         backgroundColor: Colors.amber,
         child: const Icon(Icons.add, color: Colors.black),
+      ),
+    );
+  }
+
+  void _showExportDialog(String title, String code) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: SizedBox(
+          width: 900,
+          height: 700,
+          child: SingleChildScrollView(
+            child: SelectableText(code, style: const TextStyle(fontFamily: 'monospace', fontSize: 11)),
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
       ),
     );
   }
@@ -198,120 +291,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildVisualBoard() {
-    return Container(
-      width: 1050,
-      padding: const EdgeInsets.all(8),
-      color: Colors.black12,
-      child: Row(
-        children: [
-          LogicBoardColumn(
-            title: "LIBRARY (GLOBAL)", 
-            taskNames: _libraryTasks.map((e) => e.name).toList(), 
-            allStageTasks: _stageAllTasks, 
-            libraryTasks: _libraryTasks, 
-            color: Colors.blue.withOpacity(0.05), 
-            icon: Icons.library_books, 
-            isLibrary: true,
-            selectedTask: _selectedTask,
-            onTaskSelected: _selectTask,
-            onAccept: (data) {
-               if (!_libraryTasks.any((t) => t.name == data)) {
-                  final template = _stageAllTasks.firstWhere((t) => t.name == data);
-                  setState(() => _libraryTasks.add(template));
-               }
-            },
-            onReorder: (oldI, newI) => setState(() {
-              if (newI > oldI) newI -= 1;
-              final item = _libraryTasks.removeAt(oldI);
-              _libraryTasks.insert(newI, item);
-            }),
-            onAdd: _addNewLibraryTask,
-            onDelete: (name) => setState(() {
-              _libraryTasks.removeWhere((t) => t.name == name);
-              _stageAllTasks.removeWhere((t) => t.name == name);
-              _stageActiveTasks.remove(name);
-              _stageRandomTasks.remove(name);
-              if (_selectedTask?.name == name) _selectedTask = null;
-            }),
-          ),
-          LogicBoardColumn(
-            title: "START SETUP", 
-            taskNames: _stageActiveTasks, 
-            allStageTasks: _stageAllTasks, 
-            libraryTasks: _libraryTasks, 
-            color: Colors.green.withOpacity(0.05), 
-            icon: Icons.play_circle_fill,
-            selectedTask: _selectedTask,
-            onTaskSelected: _selectTask,
-            onAccept: (data) => setState(() {
-              if (!_stageActiveTasks.contains(data)) {
-                _stageActiveTasks.add(data);
-                _stageRandomTasks.remove(data);
-              }
-            }),
-            onReorder: (oldI, newI) => setState(() {
-              if (newI > oldI) newI -= 1;
-              final item = _stageActiveTasks.removeAt(oldI);
-              _stageActiveTasks.insert(newI, item);
-            }),
-            onDelete: (name) => setState(() => _stageActiveTasks.remove(name)),
-          ),
-          LogicBoardColumn(
-            title: "RANDOM EVENTS", 
-            taskNames: _stageRandomTasks, 
-            allStageTasks: _stageAllTasks, 
-            libraryTasks: _libraryTasks, 
-            color: Colors.orange.withOpacity(0.05), 
-            icon: Icons.shuffle,
-            selectedTask: _selectedTask,
-            onTaskSelected: _selectTask,
-            onAccept: (data) => setState(() {
-              if (!_stageRandomTasks.contains(data)) {
-                _stageRandomTasks.add(data);
-                _stageActiveTasks.remove(data);
-              }
-            }),
-            onReorder: (oldI, newI) => setState(() {
-              if (newI > oldI) newI -= 1;
-              final item = _stageRandomTasks.removeAt(oldI);
-              _stageRandomTasks.insert(newI, item);
-            }),
-            onDelete: (name) => setState(() => _stageRandomTasks.remove(name)),
-          ),
-          LogicBoardColumn(
-            title: "ALL STAGE TASKS", 
-            taskNames: _stageAllTasks.map((e) => e.name).toList(), 
-            allStageTasks: _stageAllTasks, 
-            libraryTasks: _libraryTasks, 
-            color: Colors.white.withOpacity(0.05), 
-            icon: Icons.list,
-            isMaster: true,
-            selectedTask: _selectedTask,
-            onTaskSelected: _selectTask,
-            onAccept: (data) {
-               if (_libraryTasks.any((t) => t.name == data) && !_stageAllTasks.any((t) => t.name == data)) {
-                  final template = _libraryTasks.firstWhere((t) => t.name == data);
-                  setState(() => _stageAllTasks.add(template));
-               }
-            },
-            onReorder: (oldI, newI) => setState(() {
-              if (newI > oldI) newI -= 1;
-              final item = _stageAllTasks.removeAt(oldI);
-              _stageAllTasks.insert(newI, item);
-            }),
-            onDelete: (name) => setState(() {
-              _stageAllTasks.removeWhere((t) => t.name == name);
-              _stageActiveTasks.remove(name);
-              _stageRandomTasks.remove(name);
-              if (_selectedTask?.name == name) _selectedTask = null;
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildEmptyState() {
     return const Center(child: Text("Wähle einen Task wählen zum Editieren", style: TextStyle(color: Colors.white24)));
   }
@@ -325,15 +304,15 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('TASK: ${_selectedTask!.name}'),
-          _buildDraftTextField('Name', _nameController, (v) => _updateCurrentTask(name: v)),
+          SectionHeader(title: 'TASK: ${_selectedTask!.name}'),
+          EditorTextField(label: 'Name', controller: _nameController, onChanged: (v) => _updateCurrentTask(name: v)),
           const SizedBox(height: 16),
-          _buildDraftTextField('Beschreibung', _descController, (v) => _updateCurrentTask(description: v), maxLines: 2),
+          EditorTextField(label: 'Beschreibung', controller: _descController, onChanged: (v) => _updateCurrentTask(description: v), maxLines: 2),
           
           const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: _buildDraftTextField('Basis-Dauer (ms)', _durationController, (v) => _updateCurrentTask(duration: double.tryParse(v) ?? 5000), isNumber: true)),
+              Expanded(child: EditorTextField(label: 'Basis-Dauer (ms)', controller: _durationController, onChanged: (v) => _updateCurrentTask(duration: double.tryParse(v) ?? 5000), isNumber: true)),
               const SizedBox(width: 32),
               const Text('Milestone?'),
               Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => _updateCurrentTask(isMilestone: v)),
@@ -341,36 +320,14 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           ),
           
           const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: isCrisis ? Colors.red.withOpacity(0.05) : Colors.white.withOpacity(0.02),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: isCrisis ? Colors.redAccent.withOpacity(0.3) : Colors.white10),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('KRISEN-MODUS (COUNTDOWN)', style: TextStyle(color: isCrisis ? Colors.redAccent : Colors.white38, fontWeight: FontWeight.bold, fontSize: 12)),
-                    Switch(
-                      value: isCrisis, 
-                      activeColor: Colors.redAccent, 
-                      onChanged: (v) => setState(() {
-                        _updateCurrentTask(timeToSolve: v ? 10000.0 : double.infinity);
-                        _timeToSolveController.text = v ? "10000.0" : "";
-                      })
-                    ),
-                  ],
-                ),
-                if (isCrisis) ...[
-                  const SizedBox(height: 12),
-                  _buildDraftTextField('Zeit bis Fail (ms)', _timeToSolveController, (v) => _updateCurrentTask(timeToSolve: double.tryParse(v) ?? 10000.0), isNumber: true),
-                ],
-              ],
-            ),
+          CrisisEditorSection(
+            isCrisis: isCrisis, 
+            timeToSolveController: _timeToSolveController, 
+            onToggle: (v) => setState(() {
+              _updateCurrentTask(timeToSolve: v ? 10000.0 : double.infinity);
+              _timeToSolveController.text = v ? "10000.0" : "";
+            }), 
+            onTimeChanged: (v) => _updateCurrentTask(timeToSolve: double.tryParse(v) ?? 10000.0),
           ),
 
           const Divider(height: 64),
@@ -411,7 +368,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                final list = List<Modifier>.from(_selectedTask!.online ?? [])..remove(m);
                _updateCurrentTask(online: list);
             },
-            onOpenNested: () => _showAutoExecuteDialog(context, _selectedTask!.online ?? []),
+            onOpenNested: () => _openAutoModDialog(_selectedTask!.online ?? []),
           ),
           
           const SizedBox(height: 32),
@@ -436,7 +393,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                final list = List<Modifier>.from(_selectedTask!.myModifier ?? [])..remove(m);
                _updateCurrentTask(modifier: list);
             },
-            onOpenNested: () => _showAutoExecuteDialog(context, _selectedTask!.myModifier ?? []),
+            onOpenNested: () => _openAutoModDialog(_selectedTask!.myModifier ?? []),
           ),
           
           const SizedBox(height: 32),
@@ -461,55 +418,20 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                final list = List<Modifier>.from(_selectedTask!.missed ?? [])..remove(m);
                _updateCurrentTask(missed: list);
             },
-            onOpenNested: () => _showAutoExecuteDialog(context, _selectedTask!.missed ?? []),
+            onOpenNested: () => _openAutoModDialog(_selectedTask!.missed ?? []),
           ),
         ],
       ),
     );
   }
 
-  void _showAutoExecuteDialog(BuildContext context, List<Modifier> parentList) {
+  void _openAutoModDialog(List<Modifier> parentList) {
     final autoMod = parentList.whereType<AutoExecuteModifier>().firstOrNull;
     if (autoMod == null) return;
     
     final allTaskNames = {..._libraryTasks.map((e)=>e.name), ...(_stageAllTasks.map((e)=>e.name))}.toList()..sort();
-
-    showDialog(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: const Text('⚙️ AutoExecute: Unter-Modifier'),
-          content: SizedBox(
-            width: 550,
-            child: SingleChildScrollView(
-              child: ModifierListWidget(
-                list: autoMod.modifiers,
-                title: "UNTER-MODIFIER",
-                accentColor: Colors.orangeAccent,
-                allTaskNames: allTaskNames,
-                resourceTypes: _resourceTypes,
-                onUpdate: (old, nm) => setDialogState(() {
-                  final i = autoMod.modifiers.indexOf(old);
-                  if (i >= 0) autoMod.modifiers[i] = nm;
-                }),
-                onRemove: (m) => setDialogState(() => autoMod.modifiers.remove(m)),
-                onAdd: (m) => setDialogState(() => autoMod.modifiers.add(m)),
-                onOpenNested: () {}, 
-              ),
-            ),
-          ),
-          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Fertig"))],
-        ),
-      ),
-    ).then((_) => _updateCurrentTask());
-  }
-
-  Widget _buildDraftTextField(String label, TextEditingController controller, Function(String) onChanged, {bool isNumber = false, int maxLines = 1}) {
-    return TextFormField(controller: controller, style: const TextStyle(fontSize: 12), decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), isDense: true), keyboardType: isNumber ? TextInputType.number : TextInputType.text, maxLines: maxLines, onChanged: onChanged);
-  }
-
-  Widget _buildSectionHeader(String title) {
-    return Padding(padding: const EdgeInsets.only(bottom: 12), child: Text(title, style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 18)));
+    
+    AutoExecuteDialog.show(context, autoMod, allTaskNames, _resourceTypes, () => _updateCurrentTask());
   }
 
   void _addNewStageTask() {
@@ -545,102 +467,5 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       _libraryTasks.add(t); 
       _selectTask(t.name);
     });
-  }
-
-  void _exportLibrary() {
-    final buffer = StringBuffer();
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/addtask.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/faith.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/member.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/message.modifier.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/money.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/publicity.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/removetask.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/subtractres.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/task.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/time.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/AddToRandom.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/setmax.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/setmin.model.dart\';');
-    buffer.writeln('import \'package:save_the_world_flutter_app/models/autoexecute.model.dart\';');
-    buffer.writeln();
-    buffer.writeln('// --- AUTO-GENERATED LIBRARY EXPORT ---');
-    for (var t in _libraryTasks) {
-      String varName = t.name.replaceAll(" ", "").replaceAll(RegExp(r'[^a-zA-Z0-9]'), '');
-      varName = varName.replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
-      
-      buffer.writeln('final Task $varName = Task(');
-      buffer.writeln('  name: "${t.name}",');
-      buffer.writeln('  description: "${t.description}",');
-      buffer.writeln('  duration: ${t.duration},');
-      buffer.writeln('  timeToSolve: ${t.timeToSolve == double.infinity ? 'double.infinity' : t.timeToSolve},');
-      buffer.writeln('  isMilestone: ${t.isMilestone},');
-      buffer.writeln('  cost: [${_exportResources(t.cost)}],');
-      buffer.writeln('  award: [${_exportResources(t.award)}], ');
-      
-      final modStr = _exportModifiers(t.myModifier);
-      if (modStr.isNotEmpty) buffer.writeln('  modifier: [$modStr], ');
-      
-      final onStr = _exportModifiers(t.online ?? []);
-      if (onStr.isNotEmpty) buffer.writeln('  online: [$onStr], ');
-      
-      final missStr = _exportModifiers(t.missed ?? []);
-      if (missStr.isNotEmpty) buffer.writeln('  missed: [$missStr], ');
-      
-      buffer.writeln(');');
-      buffer.writeln();
-    }
-
-    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Export Library Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
-  }
-
-  void _exportStage() {
-    final buffer = StringBuffer();
-    buffer.writeln('// --- STAGE EXPORT ---');
-    buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
-    buffer.writeln('  level: ${_currentStage?.level},');
-    buffer.writeln('  description: "${_currentStage?.description}",');
-    buffer.writeln('  activeTasks: ${_formatStringList(_stageActiveTasks)},');
-    buffer.writeln('  randomTasks: ${_formatStringList(_stageRandomTasks)},');
-    buffer.writeln('  allTasks: [');
-    for (var t in _stageAllTasks) {
-      buffer.writeln('    Task( ');
-      buffer.writeln('      name: "${t.name}",');
-      buffer.writeln('      description: "${t.description}",');
-      buffer.writeln('      duration: ${t.duration},');
-      buffer.writeln('      timeToSolve: ${t.timeToSolve == double.infinity ? 'double.infinity' : t.timeToSolve},');
-      buffer.writeln('      isMilestone: ${t.isMilestone},');
-      buffer.writeln('      cost: [${_exportResources(t.cost)}],');
-      buffer.writeln('      award: [${_exportResources(t.award)}],');
-      final modStr = _exportModifiers(t.myModifier ?? []);
-      if (modStr.isNotEmpty) buffer.writeln('      modifier: [$modStr], ');
-      final onStr = _exportModifiers(t.online ?? []);
-      if (onStr.isNotEmpty) buffer.writeln('      online: [$onStr], ');
-      final missStr = _exportModifiers(t.missed ?? []);
-      if (missStr.isNotEmpty) buffer.writeln('      missed: [$missStr], ');
-      buffer.writeln('    ),');
-    }
-    buffer.writeln('  ],');
-    buffer.writeln(');');
-
-    showDialog(context: context, builder: (context) => AlertDialog(title: const Text('Export Dart Code'), content: SizedBox(width: 900, height: 700, child: SingleChildScrollView(child: SelectableText(buffer.toString(), style: const TextStyle(fontFamily: 'monospace', fontSize: 11)))), actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))]));
-  }
-
-  String _formatStringList(List<String>? l) => (l == null || l.isEmpty) ? '[]' : '[${l.map((e) => "\"$e\"").join(', ')}]';
-  String _exportResources(List<Ressource> list) => list.map((res) => '${res.name}(value: ${res.value}${res.multiplierResourceName != null ? ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}' : ''})').join(', ');
-  String _exportModifiers(List<Modifier> list) {
-    return list.map((m) {
-      final String taskName = (m is AddTask) ? m.nameOfTask : ((m is RemoveTask) ? m.nameOfTask : ((m is AddToRandom) ? m.nameOfTask : ""));
-      if (m is AddTask) return 'AddTask(task: "$taskName")';
-      if (m is RemoveTask) return 'RemoveTask(task: "$taskName")';
-      if (m is AddToRandom) return 'AddToRandom(task: "$taskName")';
-      if (m is SetMax) return 'SetMax(ressource: "${m.workOn}", newMax: ${m.newMax})';
-      if (m is SetMin) return 'SetMin(ressource: "${m.workOn}", newMin: ${m.newMin})';
-      if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
-      if (m is RemoveModifer) return 'RemoveModifer(nameOfTask: "$taskName", modifier: [])';
-      if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [${_exportModifiers(m.modifiers)}], intervalMs: ${m.intervalMs})';
-      return null;
-    }).where((e) => e != null).join(', ');
   }
 }
