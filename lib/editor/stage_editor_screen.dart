@@ -42,6 +42,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   late TextEditingController _nameController;
   late TextEditingController _descController;
   late TextEditingController _durationController;
+  late TextEditingController _timeToSolveController;
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     _nameController = TextEditingController();
     _descController = TextEditingController();
     _durationController = TextEditingController();
+    _timeToSolveController = TextEditingController();
     _loadInitialLibrary();
     _loadStage(allStages.first);
   }
@@ -58,6 +60,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     _nameController.dispose();
     _descController.dispose();
     _durationController.dispose();
+    _timeToSolveController.dispose();
     super.dispose();
   }
 
@@ -101,6 +104,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       _nameController.text = t.name;
       _descController.text = t.description;
       _durationController.text = t.duration.toString();
+      _timeToSolveController.text = t.timeToSolve == double.infinity ? "" : t.timeToSolve.toString();
     });
   }
 
@@ -108,7 +112,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.6 (Logic Flow)'),
+        title: const Text('🛡️ Stage Architect V3.7 (Crisis Management)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -234,10 +238,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget _buildTaskCard(Task t, {bool isMaster = false, VoidCallback? onDelete}) {
     final isSelected = _selectedTask == t;
     final isSameName = _selectedTask?.name == t.name;
+    final isCrisis = t.timeToSolve != double.infinity;
     
     // UI Logic Colors
     const Color selectionColor = Colors.cyanAccent;
     const Color milestoneColor = Colors.amber;
+    const Color crisisColor = Colors.redAccent;
 
     return LongPressDraggable<String>(
       data: t.name,
@@ -250,7 +256,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
             decoration: BoxDecoration(
               color: const Color(0xFF2A2A2A),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: t.isMilestone ? milestoneColor : Colors.white24, width: 2),
+              border: Border.all(color: isCrisis ? crisisColor : (t.isMilestone ? milestoneColor : Colors.white24), width: 2),
               boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))],
             ),
             child: _buildCompactCard(t),
@@ -264,12 +270,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           decoration: BoxDecoration(
             color: isSelected 
                 ? selectionColor.withOpacity(0.2) 
-                : (isSameName ? selectionColor.withOpacity(0.08) : (t.isMilestone ? milestoneColor.withOpacity(0.05) : const Color(0xFF1E1E1E))),
+                : (isSameName ? selectionColor.withOpacity(0.08) : (isCrisis ? crisisColor.withOpacity(0.05) : (t.isMilestone ? milestoneColor.withOpacity(0.05) : const Color(0xFF1E1E1E)))),
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: isSelected 
                   ? selectionColor 
-                  : (isSameName ? selectionColor.withOpacity(0.4) : (t.isMilestone ? milestoneColor.withOpacity(0.5) : Colors.white10))
+                  : (isSameName ? selectionColor.withOpacity(0.4) : (isCrisis ? crisisColor.withOpacity(0.6) : (t.isMilestone ? milestoneColor.withOpacity(0.5) : Colors.white10)))
             ),
             boxShadow: isSelected ? [BoxShadow(color: selectionColor.withOpacity(0.2), blurRadius: 8)] : null,
           ),
@@ -282,9 +288,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 left: 4, 
                 top: 12, 
                 child: Icon(
-                  Icons.drag_indicator, 
+                  isCrisis ? Icons.warning_amber_rounded : Icons.drag_indicator, 
                   size: 16, 
-                  color: isSelected ? selectionColor : (t.isMilestone ? milestoneColor : Colors.white10)
+                  color: isSelected ? selectionColor : (isCrisis ? crisisColor : (t.isMilestone ? milestoneColor : Colors.white10))
                 )
               ),
             ],
@@ -318,6 +324,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 children: [
                   ...t.myModifier.map((m) => _buildModTag(m, Colors.blueGrey)),
                   ...(t.online ?? []).map((m) => _buildModTag(m, Colors.cyan.withOpacity(0.5))),
+                  ...(t.missed ?? []).map((m) => _buildModTag(m, Colors.redAccent.withOpacity(0.5))),
                 ]
               ),
             ),
@@ -353,6 +360,8 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   Widget _buildTaskEditor() {
+    final isCrisis = _selectedTask!.timeToSolve != double.infinity;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(32),
       child: Column(
@@ -362,14 +371,54 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           _buildDraftTextField('Name', _nameController, (v) => setState(() {})),
           const SizedBox(height: 16),
           _buildDraftTextField('Beschreibung', _descController, (v) {}, maxLines: 2),
+          
+          const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: _buildDraftTextField('Dauer (ms)', _durationController, (v) {}, isNumber: true)),
-              const SizedBox(width: 16),
+              Expanded(child: _buildDraftTextField('Basis-Dauer (ms)', _durationController, (v) {}, isNumber: true)),
+              const SizedBox(width: 32),
               const Text('Milestone?'),
               Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
             ],
           ),
+          
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isCrisis ? Colors.red.withOpacity(0.05) : Colors.white.withOpacity(0.02),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: isCrisis ? Colors.redAccent.withOpacity(0.3) : Colors.white10),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('KRISEN-MODUS (COUNTDOWN)', style: TextStyle(color: isCrisis ? Colors.redAccent : Colors.white38, fontWeight: FontWeight.bold, fontSize: 12)),
+                    Switch(
+                      value: isCrisis, 
+                      activeColor: Colors.redAccent, 
+                      onChanged: (v) => setState(() {
+                        _selectedTask!.timeToSolve = v ? 10000.0 : double.infinity;
+                        _timeToSolveController.text = v ? "10000.0" : "";
+                      })
+                    ),
+                  ],
+                ),
+                if (isCrisis) ...[
+                  const SizedBox(height: 12),
+                  _buildDraftTextField('Zeit bis Fail (ms)', _timeToSolveController, (v) => setState(() => _selectedTask!.timeToSolve = double.tryParse(v) ?? 10000.0), isNumber: true),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text('Hinweis: Der Balken läuft rückwärts. Bei Ablauf triggern die MISSED MODIFIER.', style: TextStyle(fontSize: 10, color: Colors.white54, fontStyle: FontStyle.italic)),
+                  ),
+                ],
+              ],
+            ),
+          ),
+
           const Divider(height: 64),
           _buildResEditorSection('KOSTEN (INPUT)', _selectedTask!.cost, Colors.redAccent),
           const SizedBox(height: 32),
@@ -541,7 +590,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.6) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.7) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -553,6 +602,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       buffer.writeln('      name: "${t == _selectedTask ? _nameController.text : t.name}",');
       buffer.writeln('      description: "${t == _selectedTask ? _descController.text : t.description}",');
       buffer.writeln('      duration: ${t == _selectedTask ? _durationController.text : t.duration},');
+      buffer.writeln('      timeToSolve: ${t == _selectedTask ? (_timeToSolveController.text.isEmpty ? 'double.infinity' : _timeToSolveController.text) : t.timeToSolve},');
       buffer.writeln('      isMilestone: ${t.isMilestone},');
       buffer.writeln('      cost: [${_exportResources(t.cost)}],');
       buffer.writeln('      award: [${_exportResources(t.award)}],');
