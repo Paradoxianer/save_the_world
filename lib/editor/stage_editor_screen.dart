@@ -241,7 +241,29 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
     return LongPressDraggable<String>(
       data: t.name,
-      feedback: Material(color: Colors.transparent, child: _buildCompactCard(t, width: 250)),
+      feedback: Material(
+        color: Colors.transparent,
+        child: Opacity(
+          opacity: 0.9,
+          child: Container(
+            width: 250, // Fixe Breite für Feedback
+            decoration: BoxDecoration(
+              color: const Color(0xFF2A2A2A),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: t.isMilestone ? milestoneColor : Colors.white24, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 15,
+                  spreadRadius: 5,
+                  offset: const Offset(5, 5),
+                )
+              ],
+            ),
+            child: _buildCompactCard(t),
+          ),
+        ),
+      ),
       child: GestureDetector(
         onTap: () => _selectTask(t.name),
         child: Container(
