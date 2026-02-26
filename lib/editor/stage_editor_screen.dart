@@ -127,7 +127,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V5.2 (Using All Widgets)'),
+        title: const Text('🛡️ Stage Architect V5.3 (UX Polish)'),
         actions: [
           IconButton(icon: const Icon(Icons.library_add_check), tooltip: 'Export Library', onPressed: () => _showExportDialog('Library Code', StageExportUtils.exportLibrary(_libraryTasks))),
           IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: () => _currentStage != null ? _showExportDialog('Stage Code', StageExportUtils.exportStage(_currentStage!, _stageActiveTasks, _stageRandomTasks, _stageAllTasks)) : null),
@@ -203,6 +203,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           ModifierEditorSection(title: "MODIFIER (FINISHED)", modifiers: _selectedTask!.myModifier, accentColor: Colors.amber, allTaskNames: allTaskNames, resourceTypes: _resourceTypes, onUpdate: () => _updateCurrentTask()),
           const SizedBox(height: 32),
           ModifierEditorSection(title: "MISSED MODIFIER (FAIL)", modifiers: _selectedTask!.missed ?? [], accentColor: Colors.redAccent, allTaskNames: allTaskNames, resourceTypes: _resourceTypes, onUpdate: () => _updateCurrentTask()),
+          
+          // UX Padding am Ende, damit der FAB nichts verdeckt
+          const SizedBox(height: 120),
         ],
       ),
     );

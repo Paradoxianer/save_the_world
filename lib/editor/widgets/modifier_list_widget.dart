@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
-import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
+import 'package:save_the_world_flutter_app/models/addtorandom.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
@@ -119,20 +119,25 @@ class ModifierListWidget extends StatelessWidget {
   void _showSubtractResEditor(BuildContext context, SubtractRes m) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("SubtractRes Editor"),
-        content: SizedBox(
-          width: 500,
-          child: SingleChildScrollView(
-            child: ResourceEditorSection(
-              title: "ABZUZIEHENDE RESSOURCEN", 
-              resources: m.ressources, 
-              color: Colors.redAccent, 
-              onUpdate: () => onUpdate(m, m)
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("SubtractRes Editor"),
+          content: SizedBox(
+            width: 500,
+            child: SingleChildScrollView(
+              child: ResourceEditorSection(
+                title: "ABZUZIEHENDE RESSOURCEN", 
+                resources: m.ressources, 
+                color: Colors.redAccent, 
+                onUpdate: () {
+                  setDialogState(() {}); // Triggert Rebuild des Dialogs
+                  onUpdate(m, m); // Benachrichtigt den Hauptscreen
+                }
+              ),
             ),
           ),
+          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Fertig"))],
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Fertig"))],
       ),
     );
   }
