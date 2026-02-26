@@ -3,11 +3,18 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
+import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
+import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
+import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart' as common;
 
-// Import our specialized editor widgets
+// Specialized editor widgets
 import 'package:save_the_world_flutter_app/editor/widgets/resource_editor_section.dart';
 import 'package:save_the_world_flutter_app/editor/widgets/modifier_list_widget.dart';
 
@@ -97,7 +104,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     });
   }
 
-  // CENTRAL RE-INSTANTIATION LOGIC FOR IMMUTABILITY
   void _updateCurrentTask({
     String? name,
     String? description,
@@ -138,7 +144,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.5 (Modular Board)'),
+        title: const Text('🛡️ Stage Architect V4.6 (Sync Patch)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -266,7 +272,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     final isSameName = _selectedTask?.name == t.name;
     final isCrisis = t.timeToSolve != double.infinity;
     
-    // UI Logic Colors
     const Color selectionColor = Colors.cyanAccent;
     const Color milestoneColor = Colors.amber;
     const Color crisisColor = Colors.redAccent;
@@ -326,19 +331,19 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildCompactCard(Task t, {double? width}) {
+  Widget _buildCompactCard(Task t) {
     return Container(
-      width: width, padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              _buildMiniResList(t.cost ?? [], Colors.redAccent),
+              _buildCompactMiniResList(t.cost ?? [], Colors.redAccent),
               const SizedBox(width: 8),
               Expanded(child: Text(t.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), overflow: TextOverflow.ellipsis)),
               const SizedBox(width: 8),
-              _buildMiniResList(t.award ?? [], Colors.greenAccent),
+              _buildCompactMiniResList(t.award ?? [], Colors.greenAccent),
             ],
           ),
           if ((t.myModifier?.isNotEmpty ?? false) || (t.online?.isNotEmpty ?? false) || (t.missed?.isNotEmpty ?? false))
@@ -348,9 +353,9 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 spacing: 4, 
                 runSpacing: 2, 
                 children: [
-                  ...(t.myModifier ?? []).map((m) => _buildModTag(m, Colors.blueGrey)),
-                  ...(t.online ?? []).map((m) => _buildModTag(m, Colors.cyan.withOpacity(0.5))),
-                  ...(t.missed ?? []).map((m) => _buildModTag(m, Colors.redAccent.withOpacity(0.5))),
+                  ...(t.myModifier ?? []).map((m) => _buildCompactModTag(m, Colors.blueGrey)),
+                  ...(t.online ?? []).map((m) => _buildCompactModTag(m, Colors.cyan.withOpacity(0.5))),
+                  ...(t.missed ?? []).map((m) => _buildCompactModTag(m, Colors.redAccent.withOpacity(0.5))),
                 ]
               ),
             ),
@@ -359,11 +364,11 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
   }
 
-  Widget _buildMiniResList(List<Ressource> list, Color color) {
+  Widget _buildCompactMiniResList(List<Ressource> list, Color color) {
     return Row(mainAxisSize: MainAxisSize.min, children: list.map((r) => Icon(_getResIcon(r.name), size: 10, color: color)).toList());
   }
 
-  Widget _buildModTag(Modifier m, Color color) {
+  Widget _buildCompactModTag(Modifier m, Color color) {
     String txt = m.name.substring(0, 3);
     if (m is AddTask) txt = "+ ${m.nameOfTask.split(" ").first}";
     if (m is RemoveTask) txt = "- ${m.nameOfTask.split(" ").first}";
@@ -444,24 +449,22 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
           const Divider(height: 64),
           
-          // Modular Resource Sections
           ResourceEditorSection(
             title: "KOSTEN (INPUT)", 
-            list: _selectedTask!.cost, 
+            resources: _selectedTask!.cost, 
             color: Colors.redAccent, 
             onUpdate: () => _updateCurrentTask(cost: _selectedTask!.cost)
           ),
           const SizedBox(height: 32),
           ResourceEditorSection(
             title: "BELOHNUNG (OUTPUT)", 
-            list: _selectedTask!.award, 
+            resources: _selectedTask!.award, 
             color: Colors.greenAccent, 
             onUpdate: () => _updateCurrentTask(award: _selectedTask!.award)
           ),
           
           const Divider(height: 64),
           
-          // Chronological Modifier Order using ModifierListWidget
           ModifierListWidget(
             list: _selectedTask!.online ?? [],
             title: "ONLINE MODIFIER (ON START)",
@@ -575,28 +578,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     ).then((_) => _updateCurrentTask());
   }
 
-  Widget _buildMiniResList(List<Ressource> list, Color color) {
-    return Row(mainAxisSize: MainAxisSize.min, children: list.map((r) => Icon(_getResIcon(r.name), size: 10, color: color)).toList());
-  }
-
-  Widget _buildModTag(Modifier m, Color color) {
-    String txt = m.name.substring(0, 3);
-    if (m is AddTask) txt = "+ ${m.nameOfTask.split(" ").first}";
-    if (m is RemoveTask) txt = "- ${m.nameOfTask.split(" ").first}";
-    if (m is AutoExecuteModifier) txt = "⚙️ Auto";
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black38, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: TextStyle(fontSize: 8, color: color)));
-  }
-
-  IconData _getResIcon(String name) {
-    switch (name) {
-      case "Money": return Icons.attach_money;
-      case "Faith": return Icons.auto_awesome;
-      case "Member": return Icons.people;
-      case "Time": return Icons.access_time;
-      default: return Icons.help_outline;
-    }
-  }
-
   Widget _buildDraftTextField(String label, TextEditingController controller, Function(String) onChanged, {bool isNumber = false, int maxLines = 1}) {
     return TextFormField(controller: controller, style: const TextStyle(fontSize: 12), decoration: InputDecoration(labelText: label, border: const OutlineInputBorder(), isDense: true), keyboardType: isNumber ? TextInputType.number : TextInputType.text, maxLines: maxLines, onChanged: onChanged);
   }
@@ -625,7 +606,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.5) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.6) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -656,14 +637,14 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   String _exportResources(List<Ressource> list) => list.map((res) => '${res.name}(value: ${res.value}${res.multiplierResourceName != null ? ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}' : ''})').join(', ');
   String _exportModifiers(List<Modifier> list) {
     return list.map((m) {
-      final nameOfTask = m.nameOfTask;
-      if (m is AddTask) return 'AddTask(task: "$nameOfTask")';
-      if (m is RemoveTask) return 'RemoveTask(task: "$nameOfTask")';
-      if (m is AddToRandom) return 'AddToRandom(task: "$nameOfTask")';
+      final String taskName = (m is AddTask) ? m.nameOfTask : ((m is RemoveTask) ? m.nameOfTask : ((m is AddToRandom) ? m.nameOfTask : ""));
+      if (m is AddTask) return 'AddTask(task: "$taskName")';
+      if (m is RemoveTask) return 'RemoveTask(task: "$taskName")';
+      if (m is AddToRandom) return 'AddToRandom(task: "$taskName")';
       if (m is SetMax) return 'SetMax(ressource: "${m.workOn}", newMax: ${m.newMax})';
       if (m is SetMin) return 'SetMin(ressource: "${m.workOn}", newMin: ${m.newMin})';
       if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
-      if (m is RemoveModifer) return 'RemoveModifer(nameOfTask: "$nameOfTask", modifier: [])';
+      if (m is RemoveModifer) return 'RemoveModifer(nameOfTask: "$taskName", modifier: [])';
       if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [${_exportModifiers(m.modifiers)}], intervalMs: ${m.intervalMs})';
       return '// Unknown Modifier';
     }).join(', ');
