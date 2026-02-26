@@ -8,6 +8,7 @@ class AutoExecuteDialog extends StatelessWidget {
   final List<String> allTaskNames;
   final List<String> resourceTypes;
   final VoidCallback onUpdate;
+  final int depth;
 
   const AutoExecuteDialog({
     super.key,
@@ -15,6 +16,7 @@ class AutoExecuteDialog extends StatelessWidget {
     required this.allTaskNames,
     required this.resourceTypes,
     required this.onUpdate,
+    this.depth = 1,
   });
 
   static Future<void> show(
@@ -22,8 +24,9 @@ class AutoExecuteDialog extends StatelessWidget {
     AutoExecuteModifier autoMod, 
     List<String> allTaskNames, 
     List<String> resourceTypes,
-    VoidCallback onUpdate,
-  ) {
+    VoidCallback onUpdate, {
+    int depth = 1,
+  }) {
     return showDialog(
       context: context,
       builder: (context) => AutoExecuteDialog(
@@ -31,6 +34,7 @@ class AutoExecuteDialog extends StatelessWidget {
         allTaskNames: allTaskNames,
         resourceTypes: resourceTypes,
         onUpdate: onUpdate,
+        depth: depth,
       ),
     );
   }
@@ -39,7 +43,7 @@ class AutoExecuteDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (context, setDialogState) => AlertDialog(
-        title: const Text('⚙️ AutoExecute: Unter-Modifier'),
+        title: Text('⚙️ AutoExecute: Unter-Modifier (Ebene $depth)'),
         content: SizedBox(
           width: 550,
           child: SingleChildScrollView(
@@ -62,7 +66,21 @@ class AutoExecuteDialog extends StatelessWidget {
                 autoMod.modifiers.add(m);
                 onUpdate();
               }),
-              onOpenNested: () {}, // No deeper nesting supported for now to keep it simple
+              onOpenNested: (m) {
+                if (m is AutoExecuteModifier) {
+                  AutoExecuteDialog.show(
+                    context, 
+                    m, 
+                    allTaskNames, 
+                    resourceTypes, 
+                    () {
+                      setDialogState(() {});
+                      onUpdate();
+                    },
+                    depth: depth + 1,
+                  );
+                }
+              },
             ),
           ),
         ),

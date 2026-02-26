@@ -10,6 +10,7 @@ import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 
 class StageExportUtils {
   static String exportLibrary(List<Task> libraryTasks) {
@@ -112,6 +113,7 @@ class StageExportUtils {
       if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
       if (m is RemoveModifer) return 'RemoveModifer(nameOfTask: "$taskName", modifier: [])';
       if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [${_exportModifiers(m.modifiers)}], intervalMs: ${m.intervalMs})';
+      if (m is SubtractRes) return 'SubtractRes(ressources: [${_exportResources(m.ressources)}])';
       return null;
     }).where((e) => e != null).join(', ');
   }

@@ -9,6 +9,8 @@ import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
+import 'package:save_the_world_flutter_app/models/ressource.model.dart';
+import 'package:save_the_world_flutter_app/editor/widgets/resource_editor_section.dart';
 
 class ModifierListWidget extends StatelessWidget {
   final List<Modifier> list;
@@ -19,7 +21,7 @@ class ModifierListWidget extends StatelessWidget {
   final Function(Modifier old, Modifier newMod) onUpdate;
   final Function(Modifier m) onRemove;
   final Function(Modifier m) onAdd;
-  final VoidCallback onOpenNested;
+  final Function(Modifier m) onOpenNested;
 
   const ModifierListWidget({
     super.key,
@@ -92,14 +94,47 @@ class ModifierListWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildNumberField(m.intervalMs.toString(), (v) => onUpdate(m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000))),
-          TextButton.icon(onPressed: onOpenNested, icon: const Icon(Icons.edit_note, size: 14), label: const Text("Unter-Modifier verwalten", style: TextStyle(fontSize: 10))),
+          TextButton.icon(onPressed: () => onOpenNested(m), icon: const Icon(Icons.edit_note, size: 14), label: const Text("Unter-Modifier verwalten", style: TextStyle(fontSize: 10))),
         ],
       );
     }
     if (m is RemoveModifer) return _buildTaskDropdown(m.nameOfTask ?? "", (v) => onUpdate(m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
-    if (m is SubtractRes) return Text("${m.ressources.length} Ressourcen werden abgezogen (Export-Support aktiv)");
+    if (m is SubtractRes) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text("${m.ressources.length} Ressourcen definiert", style: const TextStyle(fontSize: 10)),
+          TextButton.icon(
+            onPressed: () => _showSubtractResEditor(context, m), 
+            icon: const Icon(Icons.edit, size: 14), 
+            label: const Text("Ressourcen bearbeiten", style: TextStyle(fontSize: 10))
+          ),
+        ],
+      );
+    }
 
     return Text(m.description, style: const TextStyle(fontSize: 10));
+  }
+
+  void _showSubtractResEditor(BuildContext context, SubtractRes m) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("SubtractRes Editor"),
+        content: SizedBox(
+          width: 500,
+          child: SingleChildScrollView(
+            child: ResourceEditorSection(
+              title: "ABZUZIEHENDE RESSOURCEN", 
+              resources: m.ressources, 
+              color: Colors.redAccent, 
+              onUpdate: () => onUpdate(m, m)
+            ),
+          ),
+        ),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text("Fertig"))],
+      ),
+    );
   }
 
   Widget _buildTaskDropdown(String current, Function(String?) onChanged) {
