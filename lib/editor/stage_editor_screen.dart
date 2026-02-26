@@ -89,26 +89,28 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   void _selectTask(String taskName) {
-    Task t;
+    Task? t;
     if (_libraryTasks.any((task) => task.name == taskName)) {
       t = _libraryTasks.firstWhere((task) => task.name == taskName);
-    } else {
-      t = _stageAllTasks.firstWhere((task) => task.name == taskName, orElse: () => _stageAllTasks.first);
+    } else if (_stageAllTasks.any((task) => task.name == taskName)) {
+      t = _stageAllTasks.firstWhere((task) => task.name == taskName);
     }
+
+    if (t == null) return;
 
     setState(() {
       _selectedTask = t;
-      // Ensure all lists exist to prevent UI crashes
-      _selectedTask!.cost ??= [];
-      _selectedTask!.award ??= [];
-      _selectedTask!.myModifier ??= [];
-      _selectedTask!.online ??= [];
-      _selectedTask!.missed ??= [];
+      // CRITICAL: Ensure lists are mutable (not const)
+      _selectedTask!.cost = List.from(_selectedTask!.cost);
+      _selectedTask!.award = List.from(_selectedTask!.award);
+      _selectedTask!.myModifier = List.from(_selectedTask!.myModifier ?? []);
+      _selectedTask!.online = List.from(_selectedTask!.online ?? []);
+      _selectedTask!.missed = List.from(_selectedTask!.missed ?? []);
       
-      _nameController.text = t.name;
-      _descController.text = t.description;
-      _durationController.text = t.duration.toString();
-      _timeToSolveController.text = t.timeToSolve == double.infinity ? "" : t.timeToSolve.toString();
+      _nameController.text = t!.name;
+      _descController.text = t!.description;
+      _durationController.text = t!.duration.toString();
+      _timeToSolveController.text = t!.timeToSolve == double.infinity ? "" : t!.timeToSolve.toString();
     });
   }
 
@@ -116,7 +118,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.9 (Stability Patch)'),
+        title: const Text('🛡️ Stage Architect V4.0 (Pro Logic)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -372,14 +374,14 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader('TASK: ${_selectedTask!.name}'),
-          _buildDraftTextField('Name', _nameController, (v) => setState(() {})),
+          _buildDraftTextField('Name', _nameController, (v) => setState(() => _selectedTask!.name = v)),
           const SizedBox(height: 16),
-          _buildDraftTextField('Beschreibung', _descController, (v) {}, maxLines: 2),
+          _buildDraftTextField('Beschreibung', _descController, (v) => _selectedTask!.description = v, maxLines: 2),
           
           const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: _buildDraftTextField('Basis-Dauer (ms)', _durationController, (v) {}, isNumber: true)),
+              Expanded(child: _buildDraftTextField('Basis-Dauer (ms)', _durationController, (v) => _selectedTask!.duration = double.tryParse(v) ?? 5000, isNumber: true)),
               const SizedBox(width: 32),
               const Text('Milestone?'),
               Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
@@ -424,17 +426,16 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           ),
 
           const Divider(height: 64),
-          _buildResEditorSection('KOSTEN (INPUT)', _selectedTask!.cost ?? [], Colors.redAccent),
+          _buildResEditorSection('KOSTEN (INPUT)', _selectedTask!.cost, Colors.redAccent),
           const SizedBox(height: 32),
-          _buildResEditorSection('BELOHNUNG (OUTPUT)', _selectedTask!.award ?? [], Colors.greenAccent),
+          _buildResEditorSection('BELOHNUNG (OUTPUT)', _selectedTask!.award, Colors.greenAccent),
           const Divider(height: 64),
           
-          // Chronological Modifier Order
-          _buildModifierSection('ONLINE MODIFIER (ON START)', _selectedTask!.online ?? [], Colors.cyanAccent),
+          _buildModifierSection('ONLINE MODIFIER (ON START)', _selectedTask!.online!, Colors.cyanAccent),
           const SizedBox(height: 32),
-          _buildModifierSection('MODIFIER (ON FINISHED)', _selectedTask!.myModifier ?? [], Colors.amber),
+          _buildModifierSection('MODIFIER (ON FINISHED)', _selectedTask!.myModifier!, Colors.amber),
           const SizedBox(height: 32),
-          _buildModifierSection('MISSED MODIFIER (ON FAIL)', _selectedTask!.missed ?? [], Colors.redAccent),
+          _buildModifierSection('MISSED MODIFIER (ON FAIL)', _selectedTask!.missed!, Colors.redAccent),
         ],
       ),
     );
@@ -508,14 +509,20 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   Widget _buildModInput(Modifier m, List<Modifier> list) {
-    final allTaskNames = {..._libraryTasks.map((e)=>e.name), ...(_currentStage?.allTasks.map((e)=>e.name) ?? [])}.toList()..sort();
+    final allTaskNames = {..._libraryTasks.map((e)=>e.name), ...(_stageAllTasks.map((e)=>e.name))}.toList()..sort();
     
     if (m is AddTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(list, m, AddTask(task: v!)));
     if (m is RemoveTask) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(list, m, RemoveTask(task: v!)));
     if (m is AddToRandom) return _buildSearchDropdown(allTaskNames, m.nameOfTask, (v) => _updateModInList(list, m, AddToRandom(task: v!)));
     if (m is SetMax) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateModInList(list, m, SetMax(ressource: v!, newMax: m.newMax)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Max', TextEditingController(text: m.newMax.toString()), (v)=>_updateModInList(list, m, SetMax(ressource: m.workOn, newMax: double.tryParse(v)??0)), isNumber: true))]);
     if (m is SetMin) return Row(children: [Expanded(child: _buildResourceDropdown(m.workOn, (v)=>_updateModInList(list, m, SetMin(ressource: v!, newMin: m.newMin)))), const SizedBox(width: 8), Expanded(child: _buildDraftTextField('Neu Min', TextEditingController(text: m.newMin.toString()), (v)=>_updateModInList(list, m, SetMin(ressource: m.workOn, newMin: double.tryParse(v)??0)), isNumber: true))]);
-    if (m is AutoExecuteModifier) return Row(children: [Expanded(child: _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => _updateModInList(list, m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000)), isNumber: true)), const SizedBox(width: 8), const Text("Auto-Run", style: TextStyle(color: Colors.greenAccent, fontSize: 10))]);
+    if (m is AutoExecuteModifier) {
+      return Row(children: [
+        Expanded(child: _buildDraftTextField('Intervall (ms)', TextEditingController(text: m.intervalMs.toString()), (v) => _updateModInList(list, m, AutoExecuteModifier(modifiers: m.modifiers, intervalMs: int.tryParse(v) ?? 5000)), isNumber: true)),
+        IconButton(icon: const Icon(Icons.playlist_add, size: 18, color: Colors.blueAccent), onPressed: () => _showAddModDialog(m.modifiers)),
+        Text("${m.modifiers.length} Chain", style: const TextStyle(fontSize: 10, color: Colors.blueGrey)),
+      ]);
+    }
     if (m is RemoveModifer) return _buildSearchDropdown(allTaskNames, m.nameOfTask ?? "", (v) => _updateModInList(list, m, RemoveModifer(nameOfTask: v, modifier: m.mymodifer)));
     if (m is MessageModifier) return _buildDraftTextField('Text', TextEditingController(text: m.message), (v) => _updateModInList(list, m, MessageModifier(message: v)));
     
@@ -589,7 +596,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   void _addNewTask() {
     setState(() {
       final t = Task(
-        name: 'New Task ${_currentStage?.allTasks.length}', 
+        name: 'New Task ${_stageAllTasks.length}', 
         description: '...', 
         duration: 5000, 
         cost: [], 
@@ -599,13 +606,14 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         missed: [],
       );
       _currentStage?.allTasks.add(t);
+      _stageAllTasks.add(t); // Update local master list
       _selectTask(t.name);
     });
   }
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.9) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.0) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
@@ -614,13 +622,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     buffer.writeln('  allTasks: [');
     for (var t in _stageAllTasks) {
       buffer.writeln('    Task( ');
-      buffer.writeln('      name: "${t == _selectedTask ? _nameController.text : t.name}",');
-      buffer.writeln('      description: "${t == _selectedTask ? _descController.text : t.description}",');
-      buffer.writeln('      duration: ${t == _selectedTask ? _durationController.text : t.duration},');
-      buffer.writeln('      timeToSolve: ${t == _selectedTask ? (_timeToSolveController.text.isEmpty ? 'double.infinity' : _timeToSolveController.text) : t.timeToSolve},');
+      buffer.writeln('      name: "${t.name}",');
+      buffer.writeln('      description: "${t.description}",');
+      buffer.writeln('      duration: ${t.duration},');
+      buffer.writeln('      timeToSolve: ${t.timeToSolve},');
       buffer.writeln('      isMilestone: ${t.isMilestone},');
-      buffer.writeln('      cost: [${_exportResources(t.cost ?? [])}],');
-      buffer.writeln('      award: [${_exportResources(t.award ?? [])}],');
+      buffer.writeln('      cost: [${_exportResources(t.cost)}],');
+      buffer.writeln('      award: [${_exportResources(t.award)}],');
       if (t.myModifier != null && t.myModifier!.isNotEmpty) buffer.writeln('      modifier: [${_exportModifiers(t.myModifier!)}],');
       if (t.online != null && t.online!.isNotEmpty) buffer.writeln('      online: [${_exportModifiers(t.online!)}],');
       if (t.missed != null && t.missed!.isNotEmpty) buffer.writeln('      missed: [${_exportModifiers(t.missed!)}],');
@@ -643,7 +651,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       if (m is SetMin) return 'SetMin(ressource: "${m.workOn}", newMin: ${m.newMin})';
       if (m is MessageModifier) return 'MessageModifier(message: "${m.message}")';
       if (m is RemoveModifer) return 'RemoveModifer(nameOfTask: "${m.nameOfTask}", modifier: [])';
-      if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [], intervalMs: ${m.intervalMs})';
+      if (m is AutoExecuteModifier) return 'AutoExecuteModifier(modifiers: [${_exportModifiers(m.modifiers)}], intervalMs: ${m.intervalMs})';
       return '// Unknown Modifier';
     }).join(', ');
   }
