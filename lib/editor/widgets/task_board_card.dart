@@ -8,7 +8,8 @@ import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 
 class TaskBoardCard extends StatelessWidget {
   final Task task;
-  final bool isSelected;
+  final bool isPrimarySelection;   // Das exakt angeklickte Item
+  final bool isSecondarySelection; // Ein Item mit gleichem Namen woanders
   final bool isProtected;
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
@@ -19,7 +20,8 @@ class TaskBoardCard extends StatelessWidget {
   const TaskBoardCard({
     super.key,
     required this.task,
-    this.isSelected = false,
+    this.isPrimarySelection = false,
+    this.isSecondarySelection = false,
     this.isProtected = false,
     this.onTap,
     this.onDelete,
@@ -32,25 +34,38 @@ class TaskBoardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isMilestone = task.isMilestone;
     
+    // Farbwahl: Blau/Indigo für Selektion statt Amber
+    final Color selectionColor = Colors.cyanAccent;
+    final Color syncColor = Colors.cyanAccent.withOpacity(0.15);
+
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? Colors.amber.withOpacity(0.2) 
-              : (isMilestone ? Colors.amber.withOpacity(0.08) : const Color(0xFF1E1E1E)),
+          color: isPrimarySelection 
+              ? selectionColor.withOpacity(0.2) 
+              : (isSecondarySelection 
+                  ? syncColor 
+                  : (isMilestone ? Colors.amber.withOpacity(0.08) : const Color(0xFF1E1E1E))),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected 
-                ? Colors.amber 
-                : (isMilestone ? Colors.amber.withOpacity(0.6) : Colors.white10),
+            color: isPrimarySelection 
+                ? selectionColor 
+                : (isSecondarySelection 
+                    ? selectionColor.withOpacity(0.4)
+                    : (isMilestone ? Colors.amber.withOpacity(0.6) : Colors.white10)),
+            width: isPrimarySelection ? 2.0 : 1.0,
           ),
+          boxShadow: isPrimarySelection 
+              ? [BoxShadow(color: selectionColor.withOpacity(0.3), blurRadius: 12)] 
+              : (isMilestone ? [BoxShadow(color: Colors.amber.withOpacity(0.1), blurRadius: 4)] : []),
         ),
         child: Column(
           children: [
             _buildHeader(isMilestone),
-            if (isSelected && !isProtected) _buildActionToolbar(),
+            if (isPrimarySelection && !isProtected) _buildActionToolbar(),
           ],
         ),
       ),
@@ -69,7 +84,17 @@ class TaskBoardCard extends StatelessWidget {
                 children: [
                   _buildMiniResList(task.cost, Colors.redAccent),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(task.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: isMilestone ? Colors.amber : Colors.white), overflow: TextOverflow.ellipsis)),
+                  Expanded(
+                    child: Text(
+                      task.name, 
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold, 
+                        fontSize: 12, 
+                        color: isPrimarySelection ? Colors.cyanAccent : (isMilestone ? Colors.amber : Colors.white)
+                      ), 
+                      overflow: TextOverflow.ellipsis
+                    )
+                  ),
                   const SizedBox(width: 8),
                   _buildMiniResList(task.award, Colors.greenAccent),
                 ],
@@ -90,7 +115,10 @@ class TaskBoardCard extends StatelessWidget {
 
   Widget _buildActionToolbar() {
     return Container(
-      decoration: const BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.vertical(bottom: Radius.circular(8))),
+      decoration: const BoxDecoration(
+        color: Colors.black26, 
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(8))
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -110,7 +138,11 @@ class TaskBoardCard extends StatelessWidget {
     String txt = m.name.substring(0, 3);
     if (m is AddTask) txt = "+ ${m.nameOfTask.split(" ").first}";
     if (m is RemoveTask) txt = "- ${m.nameOfTask.split(" ").first}";
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(4)), child: Text(txt, style: const TextStyle(fontSize: 8, color: Colors.blueGrey)));
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1), 
+      decoration: BoxDecoration(color: Colors.black45, borderRadius: BorderRadius.circular(4)), 
+      child: Text(txt, style: const TextStyle(fontSize: 8, color: Colors.blueGrey))
+    );
   }
 
   IconData _getResIcon(String name) {

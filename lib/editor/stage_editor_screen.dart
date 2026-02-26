@@ -108,7 +108,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V3.4 (Visual Board)'),
+        title: const Text('🛡️ Stage Architect V3.5 (Logic Visualizer)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -233,6 +233,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   Widget _buildTaskCard(Task t, {bool isMaster = false, VoidCallback? onDelete}) {
     final isSelected = _selectedTask == t;
+    final isSameName = _selectedTask?.name == t.name;
+    
+    // UI Logic Colors
+    const Color selectionColor = Colors.cyanAccent;
+    const Color milestoneColor = Colors.amber;
+
     return LongPressDraggable<String>(
       data: t.name,
       feedback: Material(color: Colors.transparent, child: _buildCompactCard(t, width: 250)),
@@ -241,16 +247,31 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: isSelected ? Colors.amber.withOpacity(0.15) : (t.isMilestone ? Colors.amber.withOpacity(0.05) : const Color(0xFF1E1E1E)),
+            color: isSelected 
+                ? selectionColor.withOpacity(0.2) 
+                : (isSameName ? selectionColor.withOpacity(0.08) : (t.isMilestone ? milestoneColor.withOpacity(0.05) : const Color(0xFF1E1E1E))),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: isSelected ? Colors.amber : (t.isMilestone ? Colors.amber.withOpacity(0.5) : Colors.white10)),
+            border: Border.all(
+              color: isSelected 
+                  ? selectionColor 
+                  : (isSameName ? selectionColor.withOpacity(0.4) : (t.isMilestone ? milestoneColor.withOpacity(0.5) : Colors.white10))
+            ),
+            boxShadow: isSelected ? [BoxShadow(color: selectionColor.withOpacity(0.2), blurRadius: 8)] : null,
           ),
           child: Stack(
             children: [
               _buildCompactCard(t),
               if (onDelete != null)
                 Positioned(right: 0, top: 0, child: IconButton(icon: const Icon(Icons.close, size: 14, color: Colors.white30), onPressed: onDelete)),
-              Positioned(left: 4, top: 12, child: Icon(Icons.drag_indicator, size: 16, color: t.isMilestone ? Colors.amber : Colors.white10)),
+              Positioned(
+                left: 4, 
+                top: 12, 
+                child: Icon(
+                  Icons.drag_indicator, 
+                  size: 16, 
+                  color: isSelected ? selectionColor : (t.isMilestone ? milestoneColor : Colors.white10)
+                )
+              ),
             ],
           ),
         ),
@@ -494,7 +515,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.4) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V3.5) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
