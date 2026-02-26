@@ -100,13 +100,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
     setState(() {
       _selectedTask = t;
-      // CRITICAL: Ensure lists are mutable (not const)
-      _selectedTask!.cost = List.from(_selectedTask!.cost);
-      _selectedTask!.award = List.from(_selectedTask!.award);
-      _selectedTask!.myModifier = List.from(_selectedTask!.myModifier ?? []);
-      _selectedTask!.online = List.from(_selectedTask!.online ?? []);
-      _selectedTask!.missed = List.from(_selectedTask!.missed ?? []);
-      
       _nameController.text = t!.name;
       _descController.text = t!.description;
       _durationController.text = t!.duration.toString();
@@ -114,11 +107,43 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     });
   }
 
+  // REPLACEMENT LOGIC FOR FINAL FIELDS
+  void _updateCurrentTask({
+    String? name,
+    String? description,
+    double? duration,
+    double? timeToSolve,
+    bool? isMilestone,
+  }) {
+    if (_selectedTask == null) return;
+
+    final newTask = Task(
+      name: name ?? _selectedTask!.name,
+      description: description ?? _selectedTask!.description,
+      duration: duration ?? _selectedTask!.duration,
+      timeToSolve: timeToSolve ?? _selectedTask!.timeToSolve,
+      isMilestone: isMilestone ?? _selectedTask!.isMilestone,
+      cost: List.from(_selectedTask!.cost),
+      award: List.from(_selectedTask!.award),
+      modifier: List.from(_selectedTask!.myModifier ?? []),
+      online: List.from(_selectedTask!.online ?? []),
+      missed: List.from(_selectedTask!.missed ?? []),
+    );
+
+    setState(() {
+      final index = _stageAllTasks.indexWhere((t) => t.name == _selectedTask!.name);
+      if (index != -1) {
+        _stageAllTasks[index] = newTask;
+      }
+      _selectedTask = newTask;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V4.0 (Pro Logic)'),
+        title: const Text('🛡️ Stage Architect V4.1 (Stability Patch)'),
         actions: [
           IconButton(icon: const Icon(Icons.code), tooltip: 'Vollständiger Export', onPressed: _exportStage),
         ],
@@ -242,7 +267,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   Widget _buildTaskCard(Task t, {bool isMaster = false, VoidCallback? onDelete}) {
-    final isSelected = _selectedTask == t;
+    final isSelected = _selectedTask?.name == t.name;
     final isSameName = _selectedTask?.name == t.name;
     final isCrisis = t.timeToSolve != double.infinity;
     
@@ -374,17 +399,17 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSectionHeader('TASK: ${_selectedTask!.name}'),
-          _buildDraftTextField('Name', _nameController, (v) => setState(() => _selectedTask!.name = v)),
+          _buildDraftTextField('Name', _nameController, (v) => _updateCurrentTask(name: v)),
           const SizedBox(height: 16),
-          _buildDraftTextField('Beschreibung', _descController, (v) => _selectedTask!.description = v, maxLines: 2),
+          _buildDraftTextField('Beschreibung', _descController, (v) => _updateCurrentTask(description: v), maxLines: 2),
           
           const SizedBox(height: 24),
           Row(
             children: [
-              Expanded(child: _buildDraftTextField('Basis-Dauer (ms)', _durationController, (v) => _selectedTask!.duration = double.tryParse(v) ?? 5000, isNumber: true)),
+              Expanded(child: _buildDraftTextField('Basis-Dauer (ms)', _durationController, (v) => _updateCurrentTask(duration: double.tryParse(v) ?? 5000), isNumber: true)),
               const SizedBox(width: 32),
               const Text('Milestone?'),
-              Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => setState(() => _selectedTask!.isMilestone = v)),
+              Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => _updateCurrentTask(isMilestone: v)),
             ],
           ),
           
@@ -407,7 +432,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                       value: isCrisis, 
                       activeColor: Colors.redAccent, 
                       onChanged: (v) => setState(() {
-                        _selectedTask!.timeToSolve = v ? 10000.0 : double.infinity;
+                        _updateCurrentTask(timeToSolve: v ? 10000.0 : double.infinity);
                         _timeToSolveController.text = v ? "10000.0" : "";
                       })
                     ),
@@ -415,7 +440,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                 ),
                 if (isCrisis) ...[
                   const SizedBox(height: 12),
-                  _buildDraftTextField('Zeit bis Fail (ms)', _timeToSolveController, (v) => setState(() => _selectedTask!.timeToSolve = double.tryParse(v) ?? 10000.0), isNumber: true),
+                  _buildDraftTextField('Zeit bis Fail (ms)', _timeToSolveController, (v) => _updateCurrentTask(timeToSolve: double.tryParse(v) ?? 10000.0), isNumber: true),
                   const Padding(
                     padding: EdgeInsets.only(top: 8),
                     child: Text('Hinweis: Der Balken läuft rückwärts. Bei Ablauf triggern die MISSED MODIFIER.', style: TextStyle(fontSize: 10, color: Colors.white54, fontStyle: FontStyle.italic)),
@@ -426,16 +451,16 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           ),
 
           const Divider(height: 64),
-          _buildResEditorSection('KOSTEN (INPUT)', _selectedTask!.cost, Colors.redAccent),
+          _buildResEditorSection('KOSTEN (INPUT)', _selectedTask!.cost ?? [], Colors.redAccent),
           const SizedBox(height: 32),
-          _buildResEditorSection('BELOHNUNG (OUTPUT)', _selectedTask!.award, Colors.greenAccent),
+          _buildResEditorSection('BELOHNUNG (OUTPUT)', _selectedTask!.award ?? [], Colors.greenAccent),
           const Divider(height: 64),
           
-          _buildModifierSection('ONLINE MODIFIER (ON START)', _selectedTask!.online!, Colors.cyanAccent),
+          _buildModifierSection('ONLINE MODIFIER (ON START)', _selectedTask!.online ?? [], Colors.cyanAccent),
           const SizedBox(height: 32),
-          _buildModifierSection('MODIFIER (ON FINISHED)', _selectedTask!.myModifier!, Colors.amber),
+          _buildModifierSection('MODIFIER (ON FINISHED)', _selectedTask!.myModifier ?? [], Colors.amber),
           const SizedBox(height: 32),
-          _buildModifierSection('MISSED MODIFIER (ON FAIL)', _selectedTask!.missed!, Colors.redAccent),
+          _buildModifierSection('MISSED MODIFIER (ON FAIL)', _selectedTask!.missed ?? [], Colors.redAccent),
         ],
       ),
     );
@@ -613,7 +638,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   void _exportStage() {
     final buffer = StringBuffer();
-    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.0) ---');
+    buffer.writeln('// --- AUTO-GENERATED STAGE EXPORT (V4.1) ---');
     buffer.writeln('final Stage stage${_currentStage?.level} = Stage(');
     buffer.writeln('  level: ${_currentStage?.level},');
     buffer.writeln('  description: "${_currentStage?.description}",');
