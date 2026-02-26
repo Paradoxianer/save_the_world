@@ -579,7 +579,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   String _exportResources(List<Ressource> list) => list.map((res) => '${res.name}(value: ${res.value}${res.multiplierResourceName != null ? ', multiplierResourceName: "${res.multiplierResourceName}", multiplierValue: ${res.multiplierValue}' : ''})').join(', ');
   String _exportModifiers(List<Modifier> list) {
     return list.map((m) {
-      final taskName = (m is AddTask) ? m.nameOfTask : ((m is RemoveTask) ? m.nameOfTask : ((m is AddToRandom) ? m.nameOfTask : ""));
+      final String taskName = (m is AddTask) ? m.nameOfTask : ((m is RemoveTask) ? m.nameOfTask : ((m is AddToRandom) ? m.nameOfTask : ""));
       if (m is AddTask) return 'AddTask(task: "$taskName")';
       if (m is RemoveTask) return 'RemoveTask(task: "$taskName")';
       if (m is AddToRandom) return 'AddToRandom(task: "$taskName")';

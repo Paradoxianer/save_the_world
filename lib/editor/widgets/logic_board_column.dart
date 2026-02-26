@@ -16,7 +16,7 @@ class LogicBoardColumn extends StatelessWidget {
   final Function(String) onAccept;
   final Function(int, int) onReorder;
   final Function(String)? onDelete;
-  final VoidCallback? onAdd; // Neuer Add-Button Callback
+  final VoidCallback? onAdd;
   
   final Function(String)? onMoveToStart;
   final Function(String)? onMoveToRandom;
@@ -46,22 +46,22 @@ class LogicBoardColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: DragTarget<String>(
-        onWillAccept: (data) => data != null,
-        onAccept: onAccept,
-        builder: (context, candidates, rejects) {
-          return Container(
-            margin: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: candidates.isNotEmpty ? color.withOpacity(0.2) : color,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: candidates.isNotEmpty ? Colors.amber : Colors.white10),
-            ),
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: ReorderableListView(
+      child: Container(
+        margin: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: color,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Column(
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: DragTarget<String>(
+                onWillAccept: (data) => true,
+                onAccept: onAccept,
+                builder: (context, candidates, rejects) {
+                  return ReorderableListView(
                     buildDefaultDragHandles: false,
                     onReorder: onReorder,
                     children: taskNames.map((name) {
@@ -71,12 +71,12 @@ class LogicBoardColumn extends StatelessWidget {
                       
                       return _buildDraggableItem(task!, name);
                     }).toList(),
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -88,7 +88,7 @@ class LogicBoardColumn extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: Colors.amber),
           const SizedBox(width: 8),
-          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10))),
+          Expanded(child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 9))),
           if (onAdd != null)
             IconButton(
               icon: const Icon(Icons.add_box_outlined, size: 16, color: Colors.amber),
@@ -109,11 +109,20 @@ class LogicBoardColumn extends StatelessWidget {
       data: name,
       feedback: Material(
         color: Colors.transparent,
-        child: SizedBox(
-          width: 250,
-          child: TaskBoardCard(
-            task: task, 
-            isPrimarySelection: true,
+        child: Opacity(
+          opacity: 0.9,
+          child: Container(
+            width: 250,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))
+              ],
+            ),
+            child: TaskBoardCard(
+              task: task, 
+              isPrimarySelection: true,
+            ),
           ),
         ),
       ),
