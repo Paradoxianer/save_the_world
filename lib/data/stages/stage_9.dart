@@ -24,11 +24,7 @@ final Stage stage9 = Stage(
     baseBible,
     baseSleep,
     collectMoney,
-    someoneWantsToMarry,
     holySpiritWorking,
-    weddingPhase1,
-    weddingPhase2,
-    actualWedding,
     Task(
       name: "FSJler einstellen",
       description: "DELEGATION: Administrative Entlastung schaltet den 32-Stunden-Tag frei.",

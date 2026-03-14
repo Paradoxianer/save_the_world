@@ -1,3 +1,4 @@
+import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -77,16 +78,7 @@ final Stage stage0 = Stage(
       cost: [Time(value: 3.0)],
       award: [Member(value: 0.9)], // Etwas effizienter, da Routine
     ),
-    Task(
-      name: "Schlafen",
-      description: "Regeneriert 'Zeit'. WICHTIG: Ohne Zeit kannst du keine Aufgaben starten!",
-      duration: 8000.0,
-      cost: [Time(value: 8.0)],
-      award: [Time(value: 16.0)],
-      modifier: [
-        MessageModifier(message: "REGENERATION: Wenn dir die Zeit ausgeht, ist 'Schlafen' deine wichtigste Aufgabe."),
-      ],
-    ),
+    baseSleep,
     Task(
       name: "Freizeit",
       description: "Kleine Pause zum Durchatmen. Kostet nichts, regeneriert langsam Zeit.",

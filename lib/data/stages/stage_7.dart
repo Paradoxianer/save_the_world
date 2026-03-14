@@ -23,11 +23,7 @@ final Stage stage7 = Stage(
     baseBible,
     baseSleep,
     collectMoney,
-    someoneWantsToMarry,
     holySpiritWorking,
-    weddingPhase1,
-    weddingPhase2,
-    actualWedding,
     Task(
       name: "Geistesgaben entdecken",
       description: "Findet heraus, wie man sich am besten einbringen kann.",

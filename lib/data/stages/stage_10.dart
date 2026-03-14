@@ -35,12 +35,7 @@ final Stage stage10 = Stage(
     baseBible,
     baseSleep,
     collectMoney,
-    someoneWantsToMarry,
     holySpiritWorking,
-    weddingPhase1,
-    weddingPhase2,
-    actualWedding,
-    funeralGeneral,
     Task(
       name: "Generalsekretär berufen",
       description: "DELEGATION: Ein erfahrener Administrator übernimmt die operativen Systeme.",

@@ -23,11 +23,7 @@ final Stage stage6 = Stage(
     baseBible,
     baseSleep,
     collectMoney,
-    someoneWantsToMarry,
     holySpiritWorking,
-    weddingPhase1,
-    weddingPhase2,
-    actualWedding,
     Task(
       name: "Kinderprogramm",
       description: "Wie ein Hauskreis, nur viel anstrengender.",

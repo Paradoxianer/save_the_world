@@ -53,7 +53,7 @@ final Task collectMoney = Task(
 // --- KRISEN & SPIRITUALITÄT ---
 final Task holySpiritWorking = Task(
   name: "Der Heilige Geist möchte wirken",
-  description: "KRITISCH: Gottes Wirken hat Vorrang!",
+  description: "Gottes Wirken hat Vorrang!",
   duration: 1000.0,
   timeToSolve: 8000.0,
   award: [Faith(value: 50.0), Wisdom(value: 5.0)],
@@ -62,42 +62,6 @@ final Task holySpiritWorking = Task(
     SubtractRes(ressources: [Faith(value: 20.0)]),
     MessageModifier(message: "Das Wirken Gottes wurde im Alltagsstress übersehen."),
   ],
-);
-
-// --- HOCHZEITS-QUESTREIHE (ZENTRAL) ---
-final Task weddingPhase1 = Task(
-  name: "Heiratsvorbereitung 1",
-  description: "In einer Beziehung muss man richtig streiten und versöhnen lernen.",
-  duration: 10000.0,
-  cost: [Time(value: 1.5), Faith(value: 50.0), Wisdom(value: 50.0)],
-  award: [Faith(value: 60.0), Wisdom(value: 60.0)],
-  modifier: [AddTask(task: "Heiratsvorbereitung 2")],
-);
-
-final Task weddingPhase2 = Task(
-  name: "Heiratsvorbereitung 2",
-  description: "Ihr müsst verstehen, man tickt unterschiedlich in einer Beziehung.",
-  duration: 10000.0,
-  cost: [Time(value: 1.5), Faith(value: 50.0), Wisdom(value: 50.0)],
-  modifier: [AddTask(task: "Hochzeit")],
-);
-
-final Task actualWedding = Task(
-  name: "Hochzeit",
-  description: "Sie dürfen die Braut jetzt küssen!",
-  duration: 10000.0,
-  cost: [Time(value: 3.0), Faith(value: 50.0), Wisdom(value: 50.0)],
-  award: [Member(value: 0.5), Faith(value: 100.0), Wisdom(value: 60.0), Money(value: 200.0)],
-);
-
-final Task someoneWantsToMarry = Task(
-  name: "Jemand möchte heiraten",
-  description: "Zwei Mitglieder kommen zu dir: Wir möchten heiraten!",
-  duration: 5000.0,
-  timeToSolve: 20000.0,
-  cost: [Time(value: 0.5), Wisdom(value: 20.0)],
-  online: [MessageModifier(message: "FREUDE: Ein Paar aus der Gemeinde möchte heiraten!")],
-  modifier: [AddTask(task: "Heiratsvorbereitung 1")],
 );
 
 // --- TODESFALL-QUESTREIHE ---
