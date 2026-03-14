@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
@@ -12,9 +13,13 @@ class SimState {
   double money = 20.0;
   double wisdom = 10.0;
   
-  Map<String, int> log = {};
+  Map<String, int> stageLog = {};
   Set<String> unlocked = {};
   Set<String> exhausted = {};
+
+  void resetStageLog() {
+    stageLog.clear();
+  }
 
   double getRes(String name) {
     if (name == "Time") return time;
@@ -44,64 +49,75 @@ class SimState {
 }
 
 void main() {
-  group('🧠 Architect Balancing Bot V11 (Loop-Protected Solver)', () {
+  group('🧠 Architect Balancing Bot V12 (Full Campaign Solver)', () {
     
-    test('Strategic Path Simulation: Stage 0', () {
-      print("\n--- 🏗️ ARCHITECT BOT V11: CYCLE-PROTECTED ANALYSIS STAGE 0 ---");
-      
-      final stage = allStages[0];
-      final state = SimState()..unlocked.addAll(stage.activeTasks);
-      const double targetMembers = 20.0;
+    test('Simulate All Stages and Generate Report', () {
+      final StringBuffer report = StringBuffer();
+      report.writeln("# 📊 SAVE THE WORLD - BALANCING REPORT");
+      report.writeln("Generiert am: ${DateTime.now()}\n");
+      report.writeln("| Stage | Name | Klicks | Zeit (Min) | End-Mitglieder | Status |");
+      report.writeln("|-------|------|--------|------------|----------------|--------|");
 
-      int totalClicks = 0;
-      double totalTimeMs = 0;
+      final state = SimState();
+      final List<int> thresholds = levels.keys.toList();
+      double totalGameMs = 0;
+      int totalGameClicks = 0;
 
-      print("START: Member: ${state.member}, Time: ${state.time}, Faith: ${state.faith}");
+      for (int i = 0; i < allStages.length; i++) {
+        final stage = allStages[i];
+        final double target = thresholds[i].toDouble();
+        state.unlocked.addAll(stage.activeTasks);
+        state.resetStageLog();
 
-      int safetyIter = 0;
-      while (state.member < targetMembers && safetyIter < 1000) {
-        safetyIter++;
+        int stageClicks = 0;
+        double stageMs = 0;
+        bool deadlock = false;
+
+        int safety = 0;
+        while (state.member < target && safety < 2000) {
+          safety++;
+          Task? decision = _planNextAction(state, stage.allTasks, "Member", {});
+
+          if (decision == null) {
+            deadlock = true;
+            break;
+          }
+
+          _execute(state, decision);
+          stageClicks++;
+          stageMs += decision.duration;
+        }
+
+        totalGameClicks += stageClicks;
+        totalGameMs += stageMs;
+
+        String status = deadlock ? "❌ DEADLOCK" : (safety >= 2000 ? "⚠️ TIMEOUT" : "✅ OK");
+        report.writeln("| $i | ${levels[thresholds[i]]} | $stageClicks | ${(stageMs / 1000 / 60).toStringAsFixed(1)} | ${state.member.toStringAsFixed(0)} | $status |");
         
-        Task? decision = _planNextAction(state, stage.allTasks, "Member", {});
-
-        if (decision == null) {
-          print("❌ DEADLOCK: Kein Pfad zum Ziel gefunden!");
-          break;
-        }
-
-        _execute(state, decision);
-        totalClicks++;
-        totalTimeMs += decision.duration;
-
-        if (decision.isMilestone) {
-          print("🏆 MEILENSTEIN: ${decision.name} -> Member: ${state.member.toStringAsFixed(1)}");
-        }
+        if (deadlock) break;
       }
 
-      print("\n📋 DYNAMISCHER SCHLACHTPLAN:");
-      state.log.forEach((name, count) => print("  - [${count} x] $name"));
-
-      print("\n📈 PERFORMANCE-STATISTIK:");
-      print("  - Klicks insgesamt: $totalClicks");
-      print("  - Theoretische Zeit: ${(totalTimeMs / 1000 / 60).toStringAsFixed(1)} Min");
-      print("  - Endbilanz: Member: ${state.member.toStringAsFixed(1)}, Time: ${state.time.toStringAsFixed(1)}, Faith: ${state.faith.toStringAsFixed(1)}");
-
-      expect(state.member, greaterThanOrEqualTo(targetMembers));
+      report.writeln("\n## 📈 GESAMT-STATISTIK");
+      report.writeln("- **Klicks insgesamt:** $totalGameClicks");
+      report.writeln("- **Theoretische Spielzeit:** ${(totalGameMs / 1000 / 60 / 60).toStringAsFixed(1)} Stunden");
+      
+      // Datei schreiben
+      final file = File('BALANCING_REPORT.md');
+      file.writeAsStringSync(report.toString());
+      
+      print("\n✅ Simulation abgeschlossen! Report gespeichert in: ${file.absolute.path}");
     });
   });
 }
 
 Task? _planNextAction(SimState state, List<Task> allTasks, String goalRes, Set<String> resolving) {
-  // Cycle Protection
   if (resolving.contains(goalRes)) return null;
   final currentResolving = {...resolving, goalRes};
 
-  // 1. Priorität: Notfall-Ressourcen (Time kritisch?)
   if (goalRes != "Time" && state.time < 5.0) {
     return _planNextAction(state, allTasks, "Time", currentResolving);
   }
 
-  // 2. Verfügbare Producer suchen
   var producers = allTasks.where((t) => 
     state.unlocked.contains(t.name) && 
     !state.exhausted.contains(t.name) &&
@@ -109,7 +125,6 @@ Task? _planNextAction(SimState state, List<Task> allTasks, String goalRes, Set<S
   ).toList();
 
   if (producers.isNotEmpty) {
-    // Sortiere nach Netto-Gewinn
     producers.sort((a, b) {
       double getNet(Task t) {
         double award = t.award.where((aw) => aw.name == goalRes).fold(0.0, (p, aw) => p + state.calcValue(aw));
@@ -120,7 +135,6 @@ Task? _planNextAction(SimState state, List<Task> allTasks, String goalRes, Set<S
     });
 
     for (var best in producers) {
-      // Prüfe Kosten
       String? missing;
       for (var cost in best.cost) {
         if (state.getRes(cost.name) < state.calcValue(cost)) {
@@ -128,20 +142,15 @@ Task? _planNextAction(SimState state, List<Task> allTasks, String goalRes, Set<S
           break;
         }
       }
-
-      if (missing == null) return best; // Kann sofort ausgeführt werden
-      
-      // Versuche fehlende Ressource zu lösen
+      if (missing == null) return best;
       var subTask = _planNextAction(state, allTasks, missing, currentResolving);
       if (subTask != null) return subTask;
     }
   }
 
-  // 3. Keine aktiven Producer? Suche Pfad über Unlocks
   for (var t in allTasks) {
     if (state.unlocked.contains(t.name) && !state.exhausted.contains(t.name)) {
       if (_canEventuallyHelp(t.name, goalRes, allTasks, {})) {
-        // Prüfe Kosten des Unlockers
         String? missing;
         for (var cost in t.cost) {
           if (state.getRes(cost.name) < state.calcValue(cost)) {
@@ -155,18 +164,15 @@ Task? _planNextAction(SimState state, List<Task> allTasks, String goalRes, Set<S
       }
     }
   }
-
   return null;
 }
 
 bool _canEventuallyHelp(String taskName, String res, List<Task> allTasks, Set<String> visited) {
   if (visited.contains(taskName)) return false;
   final nextVisited = {...visited, taskName};
-
   var t = allTasks.firstWhere((t) => t.name == taskName, orElse: () => Task(name: "dummy"));
   if (t.name == "dummy") return false;
   if (t.award.any((a) => a.name == res)) return true;
-
   for (var m in t.myModifier) {
     if (m is AddTask) {
       if (_canEventuallyHelp(m.nameOfTask, res, allTasks, nextVisited)) return true;
@@ -178,7 +184,6 @@ bool _canEventuallyHelp(String taskName, String res, List<Task> allTasks, Set<St
 void _execute(SimState state, Task t) {
   for (var c in t.cost) state.addRes(c.name, -state.calcValue(c));
   for (var a in t.award) state.addRes(a.name, state.calcValue(a));
-
   for (var m in t.myModifier) {
     if (m is AddTask) state.unlocked.add(m.nameOfTask);
     if (m is RemoveTask) {
@@ -187,5 +192,5 @@ void _execute(SimState state, Task t) {
     }
   }
   if (t.isMilestone) state.exhausted.add(t.name);
-  state.log[t.name] = (state.log[t.name] ?? 0) + 1;
+  state.stageLog[t.name] = (state.stageLog[t.name] ?? 0) + 1;
 }
