@@ -33,6 +33,8 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
 
   late TextEditingController _nameController;
   late TextEditingController _descController;
+  late TextEditingController _stageDescController;
+  late TextEditingController _memberController;
   late TextEditingController _durationController;
   late TextEditingController _timeToSolveController;
 
@@ -41,16 +43,23 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     super.initState();
     _nameController = TextEditingController();
     _descController = TextEditingController();
+    _stageDescController = TextEditingController();
+    _memberController = TextEditingController();
     _durationController = TextEditingController();
     _timeToSolveController = TextEditingController();
     _loadInitialLibrary();
-    _loadStage(allStages.first);
+    
+    // Sicherstellen, dass die Stages korrekt geladen werden (Level 0 als Default)
+    final initialStage = allStages.firstWhere((s) => s.level == 0, orElse: () => allStages.first);
+    _loadStage(initialStage);
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descController.dispose();
+    _stageDescController.dispose();
+    _memberController.dispose();
     _durationController.dispose();
     _timeToSolveController.dispose();
     super.dispose();
@@ -62,7 +71,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
         common.baseSleep, common.baseFreeTime, common.baseBible,
         common.collectMoney, common.holySpiritWorking,
         common.funeralGeneral,
-        // Neue Questreihe
         common.Jemandmchteheiraten,
         common.Ehevorbereitung1, common.Ehevorbereitung2, common.Ehevorbereitung3,
         common.Ehevorbereitung4, common.Ehevorbereitung5,
@@ -78,12 +86,15 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       _stageAllTasks = List.from(stage.allTasks);
       _stageActiveTasks = List.from(stage.activeTasks);
       _stageRandomTasks = List.from(stage.randomTasks);
+      _stageDescController.text = stage.description;
+      _memberController.text = stage.member.toString();
     });
   }
 
   void _selectTask(String taskName) {
-    Task? t = _libraryTasks.cast<Task?>().firstWhere((task) => task?.name == taskName, orElse: () => null) ??
-             _stageAllTasks.cast<Task?>().firstWhere((task) => task?.name == taskName, orElse: () => null);
+    // Wichtig: Suche ERST in den Stage-spezifischen Tasks, dann in der Library
+    Task? t = _stageAllTasks.cast<Task?>().firstWhere((task) => task?.name == taskName, orElse: () => null) ??
+             _libraryTasks.cast<Task?>().firstWhere((task) => task?.name == taskName, orElse: () => null);
 
     if (t == null) return;
 
@@ -118,12 +129,13 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
     );
 
     setState(() {
-      final libIndex = _libraryTasks.indexWhere((t) => t.name == _selectedTask!.name);
-      if (libIndex != -1) _libraryTasks[libIndex] = newTask;
-
       final stageIndex = _stageAllTasks.indexWhere((t) => t.name == _selectedTask!.name);
-      if (stageIndex != -1) _stageAllTasks[stageIndex] = newTask;
-      
+      if (stageIndex != -1) {
+        _stageAllTasks[stageIndex] = newTask;
+      } else {
+        final libIndex = _libraryTasks.indexWhere((t) => t.name == _selectedTask!.name);
+        if (libIndex != -1) _libraryTasks[libIndex] = newTask;
+      }
       _selectedTask = newTask;
     });
   }
@@ -132,10 +144,10 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('🛡️ Stage Architect V5.3 (UX Polish)'),
+        title: const Text('🛡️ Stage Architect V5.5 (Fix Export)'),
         actions: [
           IconButton(icon: const Icon(Icons.library_add_check), tooltip: 'Export Library', onPressed: () => _showExportDialog('Library Code', StageExportUtils.exportLibrary(_libraryTasks))),
-          IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: () => _currentStage != null ? _showExportDialog('Stage Code', StageExportUtils.exportStage(_currentStage!, _stageActiveTasks, _stageRandomTasks, _stageAllTasks)) : null),
+          IconButton(icon: const Icon(Icons.code), tooltip: 'Export Stage', onPressed: () => _currentStage != null ? _showExportDialog('Stage Code', StageExportUtils.exportStage(_currentStage!, _stageActiveTasks, _stageRandomTasks, _stageAllTasks, libraryTasks: _libraryTasks, description: _stageDescController.text, member: int.tryParse(_memberController.text) ?? 0)) : null),
         ],
       ),
       body: Column(
@@ -150,7 +162,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
                   onLibraryAccept: (data) => !_libraryTasks.any((t) => t.name == data) ? setState(() => _libraryTasks.add(_stageAllTasks.firstWhere((t) => t.name == data))) : null,
                   onLibraryReorder: (old, newI) => setState(() { if (newI > old) newI -= 1; _libraryTasks.insert(newI, _libraryTasks.removeAt(old)); }),
                   onLibraryAdd: _addNewLibraryTask,
-                  onLibraryDelete: (name) => setState(() { _libraryTasks.removeWhere((t) => t.name == name); _stageAllTasks.removeWhere((t) => t.name == name); _stageActiveTasks.remove(name); _stageRandomTasks.remove(name); if (_selectedTask?.name == name) _selectedTask = null; }),
+                  onLibraryDelete: (name) => setState(() { _libraryTasks.removeWhere((t) => t.name == name); if (_selectedTask?.name == name) _selectedTask = null; }),
                   onActiveAccept: (data) => setState(() { if (!_stageActiveTasks.contains(data)) { _stageActiveTasks.add(data); _stageRandomTasks.remove(data); } }),
                   onActiveReorder: (old, newI) => setState(() { if (newI > old) newI -= 1; _stageActiveTasks.insert(newI, _stageActiveTasks.removeAt(old)); }),
                   onActiveDelete: (name) => setState(() => _stageActiveTasks.remove(name)),
@@ -208,8 +220,6 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
           ModifierEditorSection(title: "MODIFIER (FINISHED)", modifiers: _selectedTask!.myModifier, accentColor: Colors.amber, allTaskNames: allTaskNames, resourceTypes: _resourceTypes, onUpdate: () => _updateCurrentTask()),
           const SizedBox(height: 32),
           ModifierEditorSection(title: "MISSED MODIFIER (FAIL)", modifiers: _selectedTask!.missed ?? [], accentColor: Colors.redAccent, allTaskNames: allTaskNames, resourceTypes: _resourceTypes, onUpdate: () => _updateCurrentTask()),
-          
-          // UX Padding am Ende, damit der FAB nichts verdeckt
           const SizedBox(height: 120),
         ],
       ),
@@ -221,9 +231,28 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
   }
 
   Widget _buildStageHeader() {
-    return Container(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), color: Colors.black45, child: Row(children: [const Text("STAGE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber)), const SizedBox(width: 12), DropdownButton<Stage>(value: _currentStage, dropdownColor: const Color(0xFF1E1E1E), items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level} - ${s.description.split(" ").take(2).join(" ")}...'))).toList(), onChanged: (s) => _loadStage(s!))]));
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12), 
+      color: Colors.black45, 
+      child: Row(
+        children: [
+          const Text("STAGE: ", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber)), 
+          const SizedBox(width: 12), 
+          DropdownButton<Stage>(
+            value: allStages.firstWhere((s) => s.level == _currentStage?.level, orElse: () => allStages.first), 
+            dropdownColor: const Color(0xFF1E1E1E), 
+            items: allStages.map((s) => DropdownMenuItem(value: s, child: Text('Stage ${s.level} - ${s.description.split(" ").take(2).join(" ")}...'))).toList(), 
+            onChanged: (s) => _loadStage(s!)
+          ),
+          const SizedBox(width: 32),
+          Expanded(child: EditorTextField(label: 'Stage Info', controller: _stageDescController, onChanged: (v) => setState(() {}))),
+          const SizedBox(width: 16),
+          SizedBox(width: 100, child: EditorTextField(label: 'Members', controller: _memberController, isNumber: true, onChanged: (v) => setState(() {}))),
+        ]
+      )
+    );
   }
 
-  void _addNewStageTask() { setState(() { final t = Task(name: 'New Stage Task ${_stageAllTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: [], online: [], missed: []); _currentStage?.allTasks.add(t); _stageAllTasks.add(t); _selectTask(t.name); }); }
+  void _addNewStageTask() { setState(() { final t = Task(name: 'New Stage Task ${_stageAllTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: [], online: [], missed: []); _stageAllTasks.add(t); _selectTask(t.name); }); }
   void _addNewLibraryTask() { setState(() { final t = Task(name: 'Global Task ${_libraryTasks.length}', description: '...', duration: 5000, cost: [], award: [], modifier: [], online: [], missed: []); _libraryTasks.add(t); _selectTask(t.name); }); }
 }

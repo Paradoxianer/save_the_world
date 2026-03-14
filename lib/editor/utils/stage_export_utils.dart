@@ -13,20 +13,20 @@ import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 
 class StageExportUtils {
-  // Mapping von Anzeigenamen zu den ursprünglichen Variablennamen in common_tasks.dart
+  // Mapping für stabile Variablennamen in der common_tasks.dart
   static const Map<String, String> _libraryNameMapping = {
     "Schlafen": "baseSleep",
     "Freizeit": "baseFreeTime",
     "Bibellesen": "baseBible",
     "Kollekte": "collectMoney",
     "Der Heilige Geist möchte wirken": "holySpiritWorking",
+    "Beerdigung eines Generals": "funeralGeneral",
     "Heiratsvorbereitung 1": "weddingPhase1",
     "Heiratsvorbereitung 2": "weddingPhase2",
     "Hochzeit": "actualWedding",
     "Jemand möchte heiraten": "someoneWantsToMarry",
-    "Beerdigung eines Generals": "funeralGeneral",
     
-    // Neue Questreihe Mapping (Priorität falls Namen identisch)
+    // Neue Questreihe (Editor-Export Namen beibehalten)
     "Ehevorbereitung 1": "Ehevorbereitung1",
     "Ehevorbereitung 2": "Ehevorbereitung2",
     "Ehevorbereitung 3": "Ehevorbereitung3",
@@ -37,23 +37,7 @@ class StageExportUtils {
 
   static String exportLibrary(List<Task> libraryTasks) {
     final buffer = StringBuffer();
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/addtask.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/removetask.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/setmax.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/setmin.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/message.modifier.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/subtractres.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/task.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';");
-    buffer.writeln("import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';");
-    buffer.writeln();
+    _writeImports(buffer);
     buffer.writeln('// --- AUTO-GENERATED LIBRARY EXPORT ---');
     for (var t in libraryTasks) {
       String varName = _libraryNameMapping[t.name] ?? 
@@ -64,63 +48,77 @@ class StageExportUtils {
       buffer.writeln('  name: "${t.name}",');
       buffer.writeln('  description: "${t.description}",');
       buffer.writeln('  duration: ${t.duration},');
-      if (t.timeToSolve != double.infinity) {
-        buffer.writeln('  timeToSolve: ${t.timeToSolve},');
-      }
+      if (t.timeToSolve != double.infinity) buffer.writeln('  timeToSolve: ${t.timeToSolve},');
       buffer.writeln('  isMilestone: ${t.isMilestone},');
       buffer.writeln('  cost: [${_exportResources(t.cost)}],');
       buffer.writeln('  award: [${_exportResources(t.award)}], ');
-      
-      final modStr = _exportModifiers(t.myModifier ?? []);
-      if (modStr.isNotEmpty) buffer.writeln('  modifier: [$modStr], ');
-      
-      final onStr = _exportModifiers(t.online ?? []);
-      if (onStr.isNotEmpty) buffer.writeln('  online: [$onStr], ');
-      
-      final missStr = _exportModifiers(t.missed ?? []);
-      if (missStr.isNotEmpty) buffer.writeln('  missed: [$missStr], ');
-      
+      _writeModifiers(buffer, t);
       buffer.writeln(');');
       buffer.writeln();
     }
     return buffer.toString();
   }
 
-  static String exportStage(Stage currentStage, List<String> activeTasks, List<String> randomTasks, List<Task> allStageTasks) {
+  static String exportStage(Stage currentStage, List<String> activeTasks, List<String> randomTasks, List<Task> allStageTasks, {required List<Task> libraryTasks, String? description, int? member}) {
     final buffer = StringBuffer();
     buffer.writeln('// --- STAGE EXPORT ---');
     buffer.writeln('final Stage stage${currentStage.level} = Stage(');
     buffer.writeln('  level: ${currentStage.level},');
-    buffer.writeln('  description: "${currentStage.description}",');
+    buffer.writeln('  member: ${member ?? currentStage.member},');
+    buffer.writeln('  description: "${description ?? currentStage.description}",');
     buffer.writeln('  activeTasks: ${_formatStringList(activeTasks)},');
     buffer.writeln('  randomTasks: ${_formatStringList(randomTasks)},');
     buffer.writeln('  allTasks: [');
     for (var t in allStageTasks) {
-      if (_libraryNameMapping.containsKey(t.name)) {
+      // Prüfe ob der Task EXAKT so in der Library existiert (Referenz-Check)
+      bool isLibraryRef = libraryTasks.any((libTask) => 
+        libTask.name == t.name && 
+        libTask.description == t.description &&
+        libTask.duration == t.duration &&
+        _exportModifiers(libTask.myModifier) == _exportModifiers(t.myModifier)
+      );
+
+      if (isLibraryRef && _libraryNameMapping.containsKey(t.name)) {
         buffer.writeln('    ${_libraryNameMapping[t.name]},');
       } else {
         buffer.writeln('    Task( ');
         buffer.writeln('      name: "${t.name}",');
         buffer.writeln('      description: "${t.description}",');
         buffer.writeln('      duration: ${t.duration},');
-        if (t.timeToSolve != double.infinity) {
-          buffer.writeln('      timeToSolve: ${t.timeToSolve},');
-        }
+        if (t.timeToSolve != double.infinity) buffer.writeln('      timeToSolve: ${t.timeToSolve},');
         buffer.writeln('      isMilestone: ${t.isMilestone},');
         buffer.writeln('      cost: [${_exportResources(t.cost)}],');
         buffer.writeln('      award: [${_exportResources(t.award)}],');
-        final modStr = _exportModifiers(t.myModifier ?? []);
-        if (modStr.isNotEmpty) buffer.writeln('      modifier: [$modStr], ');
-        final onStr = _exportModifiers(t.online ?? []);
-        if (onStr.isNotEmpty) buffer.writeln('      online: [$onStr], ');
-        final missStr = _exportModifiers(t.missed ?? []);
-        if (missStr.isNotEmpty) buffer.writeln('      missed: [$missStr], ');
+        _writeModifiers(buffer, t, indent: '      ');
         buffer.writeln('    ),');
       }
     }
     buffer.writeln('  ],');
     buffer.writeln(');');
     return buffer.toString();
+  }
+
+  static void _writeImports(StringBuffer buffer) {
+    const imports = [
+      'addtask.model.dart', 'removetask.model.dart', 'setmax.model.dart', 'setmin.model.dart',
+      'autoexecute.model.dart', 'AddToRandom.model.dart', 'message.modifier.dart',
+      'removemodifier.model.dart', 'subtractres.model.dart', 'task.model.dart',
+      'faith.ressource.model.dart', 'member.ressource.model.dart', 'money.ressource.model.dart',
+      'publicity.ressource.model.dart', 'time.ressource.model.dart', 'wisdome.ressource.model.dart'
+    ];
+    for (var imp in imports) {
+      buffer.writeln("import 'package:save_the_world_flutter_app/models/$imp';");
+    }
+    buffer.writeln();
+  }
+
+  static void _writeModifiers(StringBuffer buffer, Task t, {String indent = '  '}) {
+    final modStr = _exportModifiers(t.myModifier ?? []);
+    if (modStr.isNotEmpty) buffer.writeln('${indent}modifier: [$modStr], ');
+    final onStr = _exportModifiers(t.online ?? []);
+    if (onStr.isNotEmpty) buffer.writeln('${indent}online: [$onStr], ');
+    final missStr = _exportModifiers(t.missed ?? []);
+    if (missStr.isNotEmpty) buffer.writeln('${indent}missed: [$missStr], ');
   }
 
   static String _formatStringList(List<String>? l) => (l == null || l.isEmpty) ? '[]' : '[${l.map((e) => "\"$e\"").join(', ')}]';
