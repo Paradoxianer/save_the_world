@@ -61,7 +61,12 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
       _libraryTasks = [
         common.baseSleep, common.baseFreeTime, common.baseBible,
         common.collectMoney, common.holySpiritWorking,
-        common.someoneWantsToMarry, common.funeralGeneral,
+        common.funeralGeneral,
+        // Neue Questreihe
+        common.Jemandmchteheiraten,
+        common.Ehevorbereitung1, common.Ehevorbereitung2, common.Ehevorbereitung3,
+        common.Ehevorbereitung4, common.Ehevorbereitung5,
+        common.Hochzeitsvorbereitung, common.Hochzeit,
       ];
     });
   }

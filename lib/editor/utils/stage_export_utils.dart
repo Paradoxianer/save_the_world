@@ -25,6 +25,14 @@ class StageExportUtils {
     "Hochzeit": "actualWedding",
     "Jemand möchte heiraten": "someoneWantsToMarry",
     "Beerdigung eines Generals": "funeralGeneral",
+    
+    // Neue Questreihe Mapping (Priorität falls Namen identisch)
+    "Ehevorbereitung 1": "Ehevorbereitung1",
+    "Ehevorbereitung 2": "Ehevorbereitung2",
+    "Ehevorbereitung 3": "Ehevorbereitung3",
+    "Ehevorbereitung 4": "Ehevorbereitung4",
+    "Ehevorbereitung 5": "Ehevorbereitung5",
+    "Hochzeitsvorbereitung": "Hochzeitsvorbereitung",
   };
 
   static String exportLibrary(List<Task> libraryTasks) {
@@ -48,7 +56,6 @@ class StageExportUtils {
     buffer.writeln();
     buffer.writeln('// --- AUTO-GENERATED LIBRARY EXPORT ---');
     for (var t in libraryTasks) {
-      // Prüfe erst im Mapping, sonst generiere einen Namen
       String varName = _libraryNameMapping[t.name] ?? 
                        t.name.replaceAll(" ", "").replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')
                              .replaceAll('ä', 'ae').replaceAll('ö', 'oe').replaceAll('ü', 'ue').replaceAll('ß', 'ss');
@@ -89,7 +96,6 @@ class StageExportUtils {
     buffer.writeln('  randomTasks: ${_formatStringList(randomTasks)},');
     buffer.writeln('  allTasks: [');
     for (var t in allStageTasks) {
-      // Prüfe ob der Task aus der Library kommt
       if (_libraryNameMapping.containsKey(t.name)) {
         buffer.writeln('    ${_libraryNameMapping[t.name]},');
       } else {
