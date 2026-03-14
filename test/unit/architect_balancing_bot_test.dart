@@ -1,103 +1,159 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
-class StepAnalysis {
+class TaskPlan {
   final Task task;
-  final int count;
-  final Map<String, double> totalCost;
-  final Map<String, double> totalAward;
+  int count = 0;
+  TaskPlan(this.task);
+}
 
-  StepAnalysis({
-    required this.task,
-    required this.count,
-    required this.totalCost,
-    required this.totalAward,
-  });
+class StrategicPlanner {
+  final Map<String, double> balance = {};
+  final Map<String, TaskPlan> executionPlan = {};
+  final List<Task> allAvailable;
+  final Set<String> unlocked;
+
+  StrategicPlanner(this.allAvailable, List<String> active) 
+      : unlocked = Set.from(active) {
+    // Start-Ressourcen (Durchschnittlicher Spielstart)
+    balance["Time"] = 24.0;
+    balance["Faith"] = 100.0;
+    balance["Member"] = 2.0;
+    balance["Money"] = 20.0;
+    balance["Wisdom"] = 10.0;
+  }
+
+  /// Kern-Logik: Fordere eine Ressource an. Der Planner berechnet die Kette.
+  void require(String res, double amount) {
+    if (amount <= 0 || res == "Stage") return;
+
+    // 1. Prüfe aktuellen Bestand
+    double current = balance[res] ?? 0;
+    if (current >= amount) {
+      balance[res] = current - amount;
+      return;
+    }
+
+    // 2. Wir brauchen Produktion
+    double stillNeeded = amount - current;
+    Task producer = _findBestProducer(res);
+    
+    // Berechne Netto-Gewinn pro Klick
+    double award = producer.award.firstWhere((a) => a.name == res).value;
+    double costSameRes = producer.cost.where((c) => c.name == res).fold(0.0, (p, c) => p + c.value);
+    double netGain = award - costSameRes;
+
+    if (netGain <= 0) {
+      print("⚠️ SACKGASSE: '${producer.name}' ist kein Netto-Produzent für $res!");
+      return;
+    }
+
+    int clicks = (stillNeeded / netGain).ceil();
+
+    // 3. Bevor dieser Task läuft, müssen wir SEINE Kosten decken (Rekursion!)
+    for (var c in producer.cost) {
+      if (c.name != res) { // Verhindere Zirkelbezug bei Zeitkosten für Zeitaufgaben
+        require(c.name, c.value * clicks);
+      }
+    }
+
+    // 4. Task ausführen und awards verbuchen
+    _execute(producer, clicks);
+    
+    // Den ursprünglich angeforderten Betrag vom Konto abziehen (jetzt ist genug da)
+    balance[res] = (balance[res] ?? 0) - amount;
+  }
+
+  void _execute(Task t, int count) {
+    // Muss der Task erst freigeschaltet werden?
+    if (!unlocked.contains(t.name)) {
+      _unlock(t);
+    }
+
+    // Einmalige Tasks (Milestones)
+    bool isOneTime = t.isMilestone || t.myModifier.any((m) => m is RemoveTask && m.nameOfTask == t.name);
+    int actualCount = isOneTime ? 1 : count;
+
+    if (!executionPlan.containsKey(t.name)) executionPlan[t.name] = TaskPlan(t);
+    executionPlan[t.name]!.count += actualCount;
+
+    // Ressourcen auf Konto buchen
+    for (var a in t.award) balance[a.name] = (balance[a.name] ?? 0) + (a.value * actualCount);
+    for (var c in t.cost) balance[c.name] = (balance[c.name] ?? 0) - (c.value * actualCount);
+
+    // Modifier anwenden (Unlocks)
+    for (var m in t.myModifier) {
+      if (m is AddTask) unlocked.add(m.nameOfTask);
+    }
+  }
+
+  void _unlock(Task target) {
+    for (var t in allAvailable) {
+      if (t.myModifier.any((m) => m is AddTask && m.nameOfTask == target.name)) {
+        if (!unlocked.contains(t.name)) _unlock(t);
+        _execute(t, 1);
+        return;
+      }
+    }
+  }
+
+  Task _findBestProducer(String res) {
+    var candidates = allAvailable.where((t) => t.award.any((a) => a.name == res)).toList();
+    
+    // Priorisiere Aufgaben, die bereits freigeschaltet sind oder einfacher freizuschalten sind
+    candidates.sort((a, b) {
+      double getNet(Task t) => t.award.firstWhere((aw) => aw.name == res).value - t.cost.where((c) => c.name == res).fold(0.0, (p, c) => p + c.value);
+      return getNet(b).compareTo(getNet(a));
+    });
+
+    return candidates.first;
+  }
+
+  void printSummary() {
+    print("\n📋 STRATEGISCHER WIRTSCHAFTSPLAN:");
+    int totalClicks = 0;
+    double totalTimeMs = 0;
+
+    executionPlan.forEach((name, p) {
+      print("  - [${p.count} x] $name");
+      totalClicks += p.count;
+      totalTimeMs += p.task.duration * p.count;
+    });
+
+    print("\n📈 PERFORMANCE-STATISTIK:");
+    print("  - Klicks insgesamt: $totalClicks");
+    print("  - Theoretische Zeit: ${(totalTimeMs / 1000 / 60).toStringAsFixed(1)} Min");
+    
+    print("\n🔋 ENDBILANZ (RESERVEN):");
+    balance.forEach((res, val) {
+      print("  - $res: ${val >= 0 ? "🟢" : "🔴"} ${val.toStringAsFixed(1)}");
+    });
+  }
 }
 
 void main() {
-  group('🧠 Architect Balancing Bot (Reverse Solver)', () {
+  group('🧠 Architect Balancing Bot V6 (Economy Solver)', () {
     
-    test('Strategic Backwards Analysis: Stage 0', () {
-      print("\n--- 🏗️ ARCHITECT BOT: ANALYSIS STAGE 0 ---");
+    test('Analyze Optimal Strategy: Stage 0', () {
+      print("\n--- 🏗️ ARCHITECT BOT V6: STRATEGIC-ANALYSIS STAGE 0 ---");
       
       final stage = allStages[0];
-      const double startMembers = 2.0;
-      const double targetMembers = 20.0;
-      
-      // 1. Finde den entscheidenden Meilenstein und berechne den Netto-Bedarf
-      Task milestone = stage.allTasks.firstWhere((t) => t.isMilestone);
-      double memberCostForMilestone = milestone.cost
-          .where((c) => c.name == "Member")
-          .fold(0, (p, c) => p + c.value);
+      final planner = StrategicPlanner(stage.allTasks, stage.activeTasks);
 
-      double totalNeededMembers = (targetMembers - startMembers) + memberCostForMilestone;
+      // ZIEL: 20 Mitglieder erreichen
+      // Wir fordern die Mitglieder an - der Planner berechnet die gesamte Kette zurück bis Schlafen/Bibellesen
+      planner.require("Member", 20.0);
 
-      print("Ziel: $targetMembers Mitglieder");
-      print("Meilenstein-Kosten ('${milestone.name}'): $memberCostForMilestone Members");
-      print("Gesamt-Wachstumsbedarf: $totalNeededMembers Members");
+      // Finaler Zeit-Check (Schlafen erzwingen falls im Minus)
+      if (planner.balance["Time"]! < 0) {
+        planner.require("Time", -planner.balance["Time"]!);
+      }
 
-      // 2. Rekursives Lösen der Abhängigkeiten
-      Map<String, int> totalExecutions = {};
-      Map<String, double> accumulatedResources = {"Member": -totalNeededMembers};
-      
-      _solveRequirement("Member", totalNeededMembers, stage.allTasks, totalExecutions, accumulatedResources);
-
-      print("\n📋 OPTIMALER SCHLACHTPLAN:");
-      int totalClicks = 0;
-      double totalTimeSeconds = 0;
-
-      totalExecutions.forEach((taskName, count) {
-        final task = stage.allTasks.firstWhere((t) => t.name == taskName);
-        print("  - [$count x] ${task.name}");
-        totalClicks += count;
-        totalTimeSeconds += (task.duration * count) / 1000;
-      });
-
-      print("\n📈 STATISTIK STAGE 0:");
-      print("  - Klicks insgesamt: $totalClicks");
-      print("  - Theoretische Zeit: ${totalTimeSeconds.toStringAsFixed(1)}s");
-      
-      print("\n🔋 RESSOURCEN-ENPÄSSE (Nach Plan):");
-      accumulatedResources.forEach((res, val) {
-        if (val < 0) print("  - 🔴 $res: ${val.toStringAsFixed(2)} FEHLT NOCH!");
-        else if (res != "Time") print("  - 🟢 $res: +${val.toStringAsFixed(2)} Überschuss");
-      });
+      planner.printSummary();
     });
   });
-}
-
-void _solveRequirement(String resName, double amount, List<Task> tasks, Map<String, int> executions, Map<String, double> balance) {
-  if (resName == "Time" || amount <= 0) return;
-
-  // Finde alle Provider für diese Ressource
-  var providers = tasks.where((t) => t.award.any((a) => a.name == resName)).toList();
-  if (providers.isEmpty) return;
-
-  // Wähle den effizientesten (Award pro Klick)
-  providers.sort((a, b) {
-    double yA = a.award.firstWhere((aw) => aw.name == resName).value;
-    double yB = b.award.firstWhere((aw) => aw.name == resName).value;
-    return yB.compareTo(yA);
-  });
-
-  Task best = providers.first;
-  double yieldPerClick = best.award.firstWhere((a) => a.name == resName).value;
-  int clicks = (amount / yieldPerClick).ceil();
-
-  executions[best.name] = (executions[best.name] ?? 0) + clicks;
-  
-  // Ressourcen-Impact verbuchen
-  for (var a in best.award) {
-    balance[a.name] = (balance[a.name] ?? 0) + (a.value * clicks);
-  }
-  for (var c in best.cost) {
-    balance[c.name] = (balance[c.name] ?? 0) - (c.value * clicks);
-    // REKURSION: Wenn Kosten entstehen, müssen diese auch wieder gedeckt werden
-    if (balance[c.name]! < 0) {
-      _solveRequirement(c.name, -balance[c.name]!, tasks, executions, balance);
-    }
-  }
 }
