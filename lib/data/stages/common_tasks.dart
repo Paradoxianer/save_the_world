@@ -4,6 +4,7 @@ import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
@@ -112,4 +113,88 @@ final Task funeralGeneral = Task(
     SubtractRes(ressources: [Faith(value: 100.0)]),
     MessageModifier(message: "Die Bewegung ist verunsichert. Der Glaube sinkt massiv."),
   ],
+);
+
+// --- HOCHZEITS-QUESTREIHE ---
+
+final Task Jemandmchteheiraten = Task(
+  name: "Jemand möchte heiraten",
+  description: "Zwei Mitglieder kommen zu dir: Wir möchten heiraten!",
+  duration: 5000.0,
+  timeToSolve: 20000.0,
+  isMilestone: false,
+  cost: [Time(value: 0.5), Wisdom(value: 20.0)],
+  award: [],
+  modifier: [AddTask(task: "Ehevorbereitung 1"), RemoveTask(task: "Jemand möchte heiraten")],
+  online: [MessageModifier(message: "FREUDE: Ein Paar aus der Gemeinde möchte heiraten!")],
+);
+
+final Task Ehevorbereitung1 = Task(
+  name: "Ehevorbereitung 1",
+  description: "Lass uns über Kommunikaton zwischen Mann und Frau in der Ehe reden.",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 2.0)],
+  award: [Wisdom(value: 2.0)],
+  modifier: [AddTask(task: "Ehevorbereitung 2"), RemoveTask(task: "Ehevorbereitung 1")],
+);
+
+final Task Ehevorbereitung2 = Task(
+  name: "Ehevorbereitung 2",
+  description: "Lass uns über Konflikte in der Ehe reden",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 2.0)],
+  award: [Wisdom(value: 2.0)],
+  modifier: [AddTask(task: "Ehevorbereitung 3"), RemoveTask(task: "Ehevorbereitung 2")],
+);
+
+final Task Ehevorbereitung3 = Task(
+  name: "Ehevorbereitung 3",
+  description: "Lass uns über Verbindlichkeit reden",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 2.0)],
+  award: [Wisdom(value: 2.0)],
+  modifier: [AddTask(task: "Ehevorbereitung 4"), RemoveTask(task: "Ehevorbereitung 3")],
+);
+
+final Task Ehevorbereitung4 = Task(
+  name: "Ehevorbereitung 4",
+  description: "Lass uns über Verbundenheit reden",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 2.0)],
+  award: [Wisdom(value: 2.0)],
+  modifier: [AddTask(task: "Ehevorbereitung 5"), RemoveTask(task: "Ehevorbereitung 4")],
+);
+
+final Task Ehevorbereitung5 = Task(
+  name: "Ehevorbereitung 5",
+  description: "Lass uns über Abenteuer in der Ehe sprechen",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 2.0)],
+  award: [Wisdom(value: 2.0)],
+  modifier: [AddTask(task: "Hochzeitsvorbereitung"), RemoveTask(task: "Ehevorbereitung 5")],
+);
+
+final Task Hochzeitsvorbereitung = Task(
+  name: "Hochzeitsvorbereitung",
+  description: "Lass uns über die Hochzeitszeremoine sprechen",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 2.0)],
+  award: [Wisdom(value: 2.0)],
+  modifier: [AddTask(task: "Hochzeit"), RemoveTask(task: "Hochzeitsvorbereitung")],
+);
+
+final Task Hochzeit = Task(
+  name: "Hochzeit",
+  description: "Endlich ist es soweit",
+  duration: 5000.0,
+  isMilestone: false,
+  cost: [Time(value: 4.0), Faith(value: 2.0, multiplierResourceName: "Member", multiplierValue: 1.0)],
+  award: [Money(value: 0.0, multiplierResourceName: "Member", multiplierValue: 2.0), Publicity(value: 0.0, multiplierResourceName: "Member", multiplierValue: 2.0), Member(value: 0.0, multiplierResourceName: "Member", multiplierValue: 0.05)],
+  modifier: [RemoveTask(task: "Hochzeit")],
 );
