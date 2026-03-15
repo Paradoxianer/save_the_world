@@ -76,9 +76,9 @@ class SimState {
 }
 
 void main() {
-  group('🧠 Architect Balancing Bot V20 (Full Resource Diagnostics)', () {
+  group('🧠 Architect Balancing Bot V21 (Deep Resource Diagnostics)', () {
     
-    test('Simulate Campaign with Enhanced Logging', () {
+    test('Simulate Campaign with Full Resource Trace', () {
       final StringBuffer report = StringBuffer();
       final StringBuffer debugLog = StringBuffer();
       
@@ -95,11 +95,11 @@ void main() {
         final double target = (i < thresholds.length) ? thresholds[i].toDouble() : 7600000000.0;
         state.resetForStage(stage);
         
-        debugLog.writeln("\n" + "="*110);
+        debugLog.writeln("\n" + "="*115);
         debugLog.writeln(">>> START STAGE $i: ${levels[target.toInt()] ?? 'Endgame'} (Target: $target)");
-        debugLog.writeln("="*110);
+        debugLog.writeln("="*115);
         debugLog.writeln(" Step | Task Name                | " + "Resources (Mem | Time | Faith | Money | Wis | Pub)");
-        debugLog.writeln("-" * 110);
+        debugLog.writeln("-" * 115);
 
         int clicks = 0;
         double ms = 0;
@@ -110,7 +110,7 @@ void main() {
         while (state.member < target && safety < 5000) {
           safety++;
           
-          Task? decision = _plan(state, stage.allTasks, "Member", {}, debugLog);
+          Task? decision = _plan(state, stage.allTasks, "Member", {});
 
           if (decision == null) {
             finalBottleneck = "Broken Logic Chain";
@@ -124,7 +124,7 @@ void main() {
 
           if (missing != null) {
             state.logPressure(missing);
-            Task? recovery = _plan(state, stage.allTasks, missing, {"Member"}, debugLog);
+            Task? recovery = _plan(state, stage.allTasks, missing, {"Member"});
             if (recovery == null) {
               finalBottleneck = missing;
               break;
@@ -152,26 +152,26 @@ void main() {
         report.writeln("\n> **Klick-Pfad Stage $i (Auszug):** ${state.sequence.take(15).join(' → ')} ...\n");
 
         if (!success) {
-          debugLog.writeln("\n❌ STAGE $i FAILED! Last State: ${state.fullStatusLine}");
+          debugLog.writeln("\n❌ STAGE $i FAILED! Final Bottleneck: $finalBottleneck");
           state.member = target; state.time = 24; state.faith = 100; state.wisdom = 20; 
         } else {
-          debugLog.writeln("\n✅ STAGE $i CLEARED! Final State: ${state.fullStatusLine}");
+          debugLog.writeln("\n✅ STAGE $i CLEARED! Klicks: $clicks");
         }
       }
 
       File('BALANCING_REPORT.md').writeAsStringSync(report.toString());
       File('DEBUG_STRATEGY.log').writeAsStringSync(debugLog.toString());
-      print("\n✅ Analyse abgeschlossen! Reports wurden aktualisiert.");
+      print("\n✅ Analyse beendet. Ergebnisse in BALANCING_REPORT.md und DEBUG_STRATEGY.log");
     });
   });
 }
 
-Task? _plan(SimState state, List<Task> all, String goalRes, Set<String> resolving, StringBuffer log) {
+Task? _plan(SimState state, List<Task> all, String goalRes, Set<String> resolving) {
   if (resolving.contains(goalRes)) return null;
   final currentResolving = {...resolving, goalRes};
 
   if (goalRes != "Time" && state.time < 8.0) {
-    return _plan(state, all, "Time", currentResolving, log);
+    return _plan(state, all, "Time", currentResolving);
   }
 
   var producers = all.where((t) => state.unlocked.contains(t.name) && !state.exhausted.contains(t.name) && t.award.any((a) => a.name == goalRes)).toList();
@@ -188,7 +188,7 @@ Task? _plan(SimState state, List<Task> all, String goalRes, Set<String> resolvin
         if (state.getRes(c.name) < state.calcValue(c)) { missing = c.name; break; }
       }
       if (missing == null) return t;
-      var sub = _plan(state, all, missing, currentResolving, log);
+      var sub = _plan(state, all, missing, currentResolving);
       if (sub != null) return sub;
     }
   }
@@ -201,16 +201,27 @@ Task? _plan(SimState state, List<Task> all, String goalRes, Set<String> resolvin
           if (state.getRes(c.name) < state.calcValue(c)) { missing = c.name; break; }
         }
         if (missing == null) return t;
-        var sub = _plan(state, all, missing, currentResolving, log);
+        var sub = _plan(state, all, missing, currentResolving);
         if (sub != null) return sub;
       }
     }
   }
 
   if (goalRes == "Time") {
-    return all.firstWhere((t) => t.name == "Schlafen" || t.name == "baseSleep", 
-           orElse: () => all.firstWhere((t) => t.name == "Freizeit" || t.name == "baseFreeTime",
-           orElse: () => all.firstWhere((t) => t.award.any((a) => a.name == "Time"), orElse: () => null)));
+    // Sicherere Suche nach Zeitquellen
+    try {
+      return all.firstWhere((t) => t.name == "Schlafen" || t.name == "baseSleep");
+    } catch (_) {
+      try {
+        return all.firstWhere((t) => t.name == "Freizeit" || t.name == "baseFreeTime");
+      } catch (_) {
+        try {
+          return all.firstWhere((t) => t.award.any((a) => a.name == "Time"));
+        } catch (_) {
+          return null;
+        }
+      }
+    }
   }
   return null;
 }
