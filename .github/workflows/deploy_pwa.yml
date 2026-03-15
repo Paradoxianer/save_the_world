@@ -4,14 +4,13 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: # Erlaubt manuelles Starten im Actions-Tab
 
-# Berechtigungen für das Deployment via GitHub Actions
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Verhindert, dass mehrere Deployments gleichzeitig laufen
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -26,14 +25,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          # Nutzt die aktuellste stabile Version
           flutter-version: '3.24.0'
 
       - name: Install dependencies
         run: flutter pub get
 
       - name: Build Web
-        # WICHTIG: Ersetze 'save_the_world' durch deinen Repository-Namen
+        # Falls dein Repository-Name anders ist, hier anpassen!
         run: flutter build web --release --base-href "/save_the_world/"
 
       - name: Upload artifact
