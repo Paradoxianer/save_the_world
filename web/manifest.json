@@ -1,11 +1,11 @@
 {
-    "name": "save_the_world",
-    "short_name": "save_the_world",
+    "name": "Save The World",
+    "short_name": "STW Mission",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
+    "background_color": "#F5F5F5",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Rette die Welt in dieser christlichen Strategie-Simulation.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

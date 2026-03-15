@@ -1,0 +1,32 @@
+name: Deploy PWA to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # Oder dein primärer Branch-Name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          flutter-version: '3.24.0' # Oder deine aktuelle Version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Web
+        # WICHTIG: Ersetze 'save_the_world' durch deinen tatsächlichen Repository-Namen, 
+        # wenn du keine eigene Domain nutzt!
+        run: flutter build web --release --base-href "/save_the_world/"
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
