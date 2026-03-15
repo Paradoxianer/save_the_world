@@ -27,12 +27,34 @@ class TaskListState extends State<TaskList> {
     
     final snackbarMessage = Game.getInstance().snackbarMessage;
     if (snackbarMessage != null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(snackbarMessage, style: const TextStyle(fontWeight: FontWeight.bold)),
-            backgroundColor: const Color.fromRGBO(180, 70, 70, 0.9),
-            behavior: SnackBarBehavior.floating, // Fits the cartoon look better
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            content: Row(
+              children: [
+                const Text("📢", style: TextStyle(fontSize: 24)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    snackbarMessage.toUpperCase(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w900, // w900 entspricht 'black' und ist kompatibler
+                      color: Colors.white,
+                      letterSpacing: 0.5,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.blueAccent,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 6),
+            margin: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+              side: const BorderSide(color: Colors.black, width: 2.5),
+            ),
           )
       );
       Game.getInstance().snackbarMessage = null;
