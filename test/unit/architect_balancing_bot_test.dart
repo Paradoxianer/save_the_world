@@ -64,16 +64,25 @@ class SimState {
   void logPressure(String res) {
     resourcePressure[res] = (resourcePressure[res] ?? 0) + 1;
   }
+
+  String get fullStatusLine {
+    return "Mem: ${member.toStringAsFixed(1).padLeft(6)} | "
+           "Time: ${time.toStringAsFixed(1).padLeft(5)} | "
+           "Faith: ${faith.toStringAsFixed(1).padLeft(6)} | "
+           "Money: ${money.toStringAsFixed(1).padLeft(6)} | "
+           "Wis: ${wisdom.toStringAsFixed(1).padLeft(5)} | "
+           "Pub: ${publicity.toStringAsFixed(1).padLeft(5)}";
+  }
 }
 
 void main() {
-  group('🧠 Architect Balancing Bot V18 (Full Campaign Diagnostics)', () {
+  group('🧠 Architect Balancing Bot V20 (Full Resource Diagnostics)', () {
     
-    test('Simulate Campaign and Generate Detailed Logs', () {
+    test('Simulate Campaign with Enhanced Logging', () {
       final StringBuffer report = StringBuffer();
       final StringBuffer debugLog = StringBuffer();
       
-      report.writeln("# 📊 SAVE THE WORLD - BALANCING REPORT");
+      report.writeln("# 📊 SAVE THE WORLD - DEEP BALANCING REPORT");
       report.writeln("Generiert am: ${DateTime.now()}\n");
       report.writeln("| Stage | Name | Klicks | Zeit (Min) | Top Engpass | Status |");
       report.writeln("|-------|------|--------|------------|-------------|--------|");
@@ -86,9 +95,11 @@ void main() {
         final double target = (i < thresholds.length) ? thresholds[i].toDouble() : 7600000000.0;
         state.resetForStage(stage);
         
-        debugLog.writeln("\n" + "="*50);
+        debugLog.writeln("\n" + "="*110);
         debugLog.writeln(">>> START STAGE $i: ${levels[target.toInt()] ?? 'Endgame'} (Target: $target)");
-        debugLog.writeln("="*50);
+        debugLog.writeln("="*110);
+        debugLog.writeln(" Step | Task Name                | " + "Resources (Mem | Time | Faith | Money | Wis | Pub)");
+        debugLog.writeln("-" * 110);
 
         int clicks = 0;
         double ms = 0;
@@ -99,14 +110,13 @@ void main() {
         while (state.member < target && safety < 5000) {
           safety++;
           
-          Task? decision = _solve(state, stage.allTasks, "Member", {}, debugLog);
+          Task? decision = _plan(state, stage.allTasks, "Member", {}, debugLog);
 
           if (decision == null) {
             finalBottleneck = "Broken Logic Chain";
             break;
           }
 
-          // Check for immediate resource need
           String? missing;
           for (var c in decision.cost) {
             if (state.getRes(c.name) < state.calcValue(c)) { missing = c.name; break; }
@@ -114,7 +124,7 @@ void main() {
 
           if (missing != null) {
             state.logPressure(missing);
-            Task? recovery = _solve(state, stage.allTasks, missing, {"Member"}, debugLog);
+            Task? recovery = _plan(state, stage.allTasks, missing, {"Member"}, debugLog);
             if (recovery == null) {
               finalBottleneck = missing;
               break;
@@ -127,46 +137,43 @@ void main() {
           ms += decision.duration;
           state.sequence.add(decision.name);
           
-          debugLog.writeln("  [$clicks] EXEC: ${decision.name.padRight(20)} | Mem: ${state.member.toStringAsFixed(1)} | Time: ${state.time.toStringAsFixed(1)} | Faith: ${state.faith.toStringAsFixed(1)}");
+          debugLog.writeln(" [${clicks.toString().padLeft(3)}] ${decision.name.padRight(25)} | ${state.fullStatusLine}");
         }
 
         success = state.member >= target;
         
-        // Find most frequent bottleneck
         if (finalBottleneck == "None" && state.resourcePressure.isNotEmpty) {
-          finalBottleneck = state.resourcePressure.entries.toList()
-            ..sort((a,b) => b.value.compareTo(a.value))
-            .first.key;
+          var sortedPressure = state.resourcePressure.entries.toList();
+          sortedPressure.sort((a, b) => b.value.compareTo(a.value));
+          finalBottleneck = sortedPressure.first.key;
         }
 
-        String status = success ? "✅ OK" : (safety >= 5000 ? "⚠️ TIMEOUT" : "❌ DEADLOCK");
-        report.writeln("| $i | ${levels[target.toInt()] ?? 'Endgame'} | $clicks | ${(ms / 1000 / 60).toStringAsFixed(1)} | $finalBottleneck | $status |");
-        
-        // Append sequence excerpt to report
-        report.writeln("\n> **Klick-Pfad Stage $i (Auszug):** ${state.sequence.take(20).join(' → ')} ...\n");
+        report.writeln("| $i | ${levels[target.toInt()] ?? 'Endgame'} | $clicks | ${(ms / 1000 / 60).toStringAsFixed(1)} | $finalBottleneck | ${success ? '✅ OK' : '❌ FAIL'} |");
+        report.writeln("\n> **Klick-Pfad Stage $i (Auszug):** ${state.sequence.take(15).join(' → ')} ...\n");
 
         if (!success) {
-          debugLog.writeln("❌ STAGE $i FAILED at ${state.member.toStringAsFixed(1)} members. Pressure: ${state.resourcePressure}");
-          state.member = target; state.time = 24; state.faith = 100; state.wisdom = 20; // Recovery
+          debugLog.writeln("\n❌ STAGE $i FAILED! Last State: ${state.fullStatusLine}");
+          state.member = target; state.time = 24; state.faith = 100; state.wisdom = 20; 
+        } else {
+          debugLog.writeln("\n✅ STAGE $i CLEARED! Final State: ${state.fullStatusLine}");
         }
       }
 
       File('BALANCING_REPORT.md').writeAsStringSync(report.toString());
       File('DEBUG_STRATEGY.log').writeAsStringSync(debugLog.toString());
-      print("\n✅ Simulation abgeschlossen! Berichte geschrieben.");
+      print("\n✅ Analyse abgeschlossen! Reports wurden aktualisiert.");
     });
   });
 }
 
-Task? _solve(SimState state, List<Task> all, String goalRes, Set<String> resolving, StringBuffer log) {
+Task? _plan(SimState state, List<Task> all, String goalRes, Set<String> resolving, StringBuffer log) {
   if (resolving.contains(goalRes)) return null;
   final currentResolving = {...resolving, goalRes};
 
   if (goalRes != "Time" && state.time < 8.0) {
-    return _solve(state, all, "Time", currentResolving, log);
+    return _plan(state, all, "Time", currentResolving, log);
   }
 
-  // Find producers
   var producers = all.where((t) => state.unlocked.contains(t.name) && !state.exhausted.contains(t.name) && t.award.any((a) => a.name == goalRes)).toList();
   if (producers.isNotEmpty) {
     producers.sort((a, b) {
@@ -181,12 +188,11 @@ Task? _solve(SimState state, List<Task> all, String goalRes, Set<String> resolvi
         if (state.getRes(c.name) < state.calcValue(c)) { missing = c.name; break; }
       }
       if (missing == null) return t;
-      var sub = _solve(state, all, missing, currentResolving, log);
+      var sub = _plan(state, all, missing, currentResolving, log);
       if (sub != null) return sub;
     }
   }
 
-  // Find unlockers
   for (var t in all) {
     if (state.unlocked.contains(t.name) && !state.exhausted.contains(t.name)) {
       if (_canLeadTo(t, goalRes, all, {})) {
@@ -195,7 +201,7 @@ Task? _solve(SimState state, List<Task> all, String goalRes, Set<String> resolvi
           if (state.getRes(c.name) < state.calcValue(c)) { missing = c.name; break; }
         }
         if (missing == null) return t;
-        var sub = _solve(state, all, missing, currentResolving, log);
+        var sub = _plan(state, all, missing, currentResolving, log);
         if (sub != null) return sub;
       }
     }
@@ -204,7 +210,7 @@ Task? _solve(SimState state, List<Task> all, String goalRes, Set<String> resolvi
   if (goalRes == "Time") {
     return all.firstWhere((t) => t.name == "Schlafen" || t.name == "baseSleep", 
            orElse: () => all.firstWhere((t) => t.name == "Freizeit" || t.name == "baseFreeTime",
-           orElse: () => all.firstWhere((t) => t.award.any((a) => a.name == "Time"))));
+           orElse: () => all.firstWhere((t) => t.award.any((a) => a.name == "Time"), orElse: () => null)));
   }
   return null;
 }
