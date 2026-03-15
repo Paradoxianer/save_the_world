@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # Erlaubt manuelles Starten im Actions-Tab
+      - master  # Zur Sicherheit, falls dein Hauptbranch master heißt
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -31,7 +32,7 @@ jobs:
         run: flutter pub get
 
       - name: Build Web
-        # Falls dein Repository-Name anders ist, hier anpassen!
+        # WICHTIG: Prüfe ob dein Repo save_the_world heißt
         run: flutter build web --release --base-href "/save_the_world/"
 
       - name: Upload artifact
