@@ -12,6 +12,12 @@ class Task extends GameElement {
   bool isMilestone;
   bool enabled; // NEW: Activation system (#54)
 
+  /// Einmal-Aufgaben (z.B. Gatekeeper/Meilensteine) verschwinden nach dem
+  /// ersten Abschluss dauerhaft: Sie entfernen sich selbst aus der aktiven
+  /// Liste und werden von AddTask, Random-Events und initStage nie wieder
+  /// eingeblendet. Default: true für Meilensteine, sonst false.
+  bool once;
+
   List<Ressource> cost;
   List<Ressource> award;
   List<Modifier> missed;
@@ -28,12 +34,14 @@ class Task extends GameElement {
     this.timeToSolve = double.infinity,
     this.isMilestone = false,
     this.enabled = true, // Default enabled
+    bool? once,
     List<Modifier>? modifier,
     this.missed = const [],
     this.online = const [],
     double? controllerValue,
     String? controllerStatus,
-  }) : super(myModifier: modifier) {
+  })  : once = once ?? isMilestone,
+        super(myModifier: modifier) {
     controller = AnimationController(
       vsync: Game.tick,
       duration: Duration(milliseconds: duration.toInt()),
@@ -81,6 +89,7 @@ class Task extends GameElement {
       timeToSolve: jsn['timeToSolve'] != null ? (double.tryParse(jsn['timeToSolve'].toString()) ?? double.infinity) : double.infinity,
       isMilestone: jsn['isMilestone'] as bool? ?? false,
       enabled: jsn['enabled'] as bool? ?? true,
+      once: jsn['once'] as bool?,
       cost: deserializeResources(jsn['cost']),
       award: deserializeResources(jsn['award']),
       modifier: deserializeModifiers(jsn['modifier']),
@@ -100,6 +109,7 @@ class Task extends GameElement {
       'timeToSolve': timeToSolve.toString(),
       'isMilestone': isMilestone,
       'enabled': enabled,
+      'once': once,
       'cost': json.encode(cost),
       'award': json.encode(award),
       'missed': json.encode(missed),
@@ -147,13 +157,24 @@ class Task extends GameElement {
   }
 
   void finished() {
-    modify(); 
-    
+    // Einmal-Aufgaben VOR den Modifiern als erledigt markieren, damit auch
+    // eine Chain, die diesen Task selbst wieder hinzufügen will, blockiert wird.
+    if (once) {
+      Game.getInstance().markOnceCompleted(name);
+    }
+
+    modify();
+
     for (var a in award) {
       Game.ressources[a.name]?.add(a);
     }
-    
+
     controller.reset();
+
+    // Einmal-Aufgaben räumen sich selbst auf - kein RemoveTask-Modifier nötig.
+    if (once) {
+      Game.getInstance().removeTask(this);
+    }
   }
 
   void goOnline() {

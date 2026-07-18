@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final Stage stage32 = Stage(
   level: 32,
-  member: 5120000000,
+  member: 7600000000,
   description: "Weltkirche Level 3 - Die Vollendung des Auftrags.",
   activeTasks: [
     "Schlafen",

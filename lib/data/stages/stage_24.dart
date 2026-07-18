@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage24 = Stage(
   level: 24,
-  member: 30000000,
+  member: 20000000,
   description: "Globaler Beeinflusser Level 1 - Die Geburt einer weltweiten Denomination.",
   activeTasks: [
     "Bibellesen", 
@@ -30,7 +30,6 @@ final Stage stage24 = Stage(
   allTasks: [
     baseBible,
     baseSleep,
-    collectMoney,
     holySpiritWorking,
     Task(
       name: "Kollekte",
@@ -67,14 +66,14 @@ final Stage stage24 = Stage(
     ),
     Task(
       name: "Globale Satzung verabschieden",
-      description: "MEILENSTEIN: Rechtliche Anerkennung als weltweite Konfession (Limit 60.000.000).",
+      description: "MEILENSTEIN: Rechtliche Anerkennung als weltweite Konfession (Limit 40.000.000).",
       duration: 250000.0,
       isMilestone: true,
       cost: [Wisdom(value: 60000.0), Time(value: 100.0), Faith(value: 30000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "ANERKENNUNG: Die Weltgemeinschaft akzeptiert eure Statuten. Limit 60.000.000!"),
-        SetMax(ressource: "Member", newMax: 60000000.0),
+        MessageModifier(message: "ANERKENNUNG: Die Weltgemeinschaft akzeptiert eure Statuten. Limit 40.000.000!"),
+        SetMax(ressource: "Member", newMax: 40000000.0),
         RemoveTask(task: "Globale Satzung verabschieden"),
         AddTask(task: "Satzung rechtlich wahren"),
       ],

@@ -153,6 +153,20 @@ final Task Hochzeitsvorbereitung = Task(
   modifier: [AddTask(task: "Hochzeit"), RemoveTask(task: "Hochzeitsvorbereitung")],
 );
 
+/// Komplette Hochzeits-Questreihe. Eine Stage, die "Jemand möchte heiraten"
+/// in randomTasks führt, MUSS diese Liste per Spread in allTasks aufnehmen,
+/// sonst bricht die Chain ab: `...weddingQuestline,`
+final List<Task> weddingQuestline = [
+  Jemandmchteheiraten,
+  Ehevorbereitung1,
+  Ehevorbereitung2,
+  Ehevorbereitung3,
+  Ehevorbereitung4,
+  Ehevorbereitung5,
+  Hochzeitsvorbereitung,
+  Hochzeit,
+];
+
 final Task Hochzeit = Task(
   name: "Hochzeit",
   description: "Endlich ist es soweit",

@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage25 = Stage(
   level: 25,
-  member: 60000000,
+  member: 40000000,
   description: "Eine Bewegung Level 3 - Die globale Durchdringung beginnt.",
   activeTasks: [
     "Bibellesen", 
@@ -30,7 +30,6 @@ final Stage stage25 = Stage(
   allTasks: [
     baseBible,
     baseSleep,
-    collectMoney,
     holySpiritWorking,
     Task(
       name: "Kollekte",
@@ -67,14 +66,14 @@ final Stage stage25 = Stage(
     ),
     Task(
       name: "Weltweite Allianz festigen",
-      description: "MEILENSTEIN: Offizieller Zusammenschluss aller kontinentalen Verbände (Limit 100.000.000).",
+      description: "MEILENSTEIN: Offizieller Zusammenschluss aller kontinentalen Verbände (Limit 80.000.000).",
       duration: 250000.0,
       isMilestone: true,
       cost: [Money(value: 50000000.0), Wisdom(value: 100000.0), Publicity(value: 50000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "DURCHBRUCH: Die globale Allianz ist unerschütterlich. Limit 100.000.000!"),
-        SetMax(ressource: "Member", newMax: 100000000.0),
+        MessageModifier(message: "DURCHBRUCH: Die globale Allianz ist unerschütterlich. Limit 80.000.000!"),
+        SetMax(ressource: "Member", newMax: 80000000.0),
         RemoveTask(task: "Weltweite Allianz festigen"),
         AddTask(task: "Allianz operativ führen"),
       ],

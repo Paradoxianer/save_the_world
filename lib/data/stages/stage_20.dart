@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final Stage stage20 = Stage(
   level: 20,
-  member: 1000000,
+  member: 2500000,
   description: "Globale Bewegung Level 3 - Koordination weltweiter Netzwerke.",
   activeTasks: [
     "Bibellesen", 
@@ -51,14 +51,14 @@ final Stage stage20 = Stage(
     ),
     Task(
       name: "Globale Allianz gründen",
-      description: "MEILENSTEIN: Formierung einer Allianz über alle Kontinente (Limit 2.500.000).",
+      description: "MEILENSTEIN: Formierung einer Allianz über alle Kontinente (Limit 5.000.000).",
       duration: 80000.0,
       isMilestone: true,
       cost: [Money(value: 5000000.0), Wisdom(value: 10000.0), Publicity(value: 5000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "WACHSTUM: Die Allianz steht! Limit auf 2.500.000 erhöht."),
-        SetMax(ressource: "Member", newMax: 2500000.0),
+        MessageModifier(message: "WACHSTUM: Die Allianz steht! Limit auf 5.000.000 erhöht."),
+        SetMax(ressource: "Member", newMax: 5000000.0),
         RemoveTask(task: "Globale Allianz gründen"),
         AddTask(task: "Allianz koordinieren"),
       ],

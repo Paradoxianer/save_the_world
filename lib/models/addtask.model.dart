@@ -34,6 +34,11 @@ class AddTask extends Modifier {
     if (!taskAlreadyActive) {
       Task? found = Game.getInstance().getTask(nameOfTask);
       if (found != null) {
+        // Erledigte Einmal-Aufgaben (Gatekeeper) werden nie wieder eingeblendet.
+        if (found.once && Game.getInstance().completedOnceTasks.contains(found.name)) {
+          debugPrint("AddTask: '$nameOfTask' ist eine erledigte Einmal-Aufgabe. Skipping.");
+          return;
+        }
         if (workOnList != null) {
           workOnList!.add(found);
         } else {

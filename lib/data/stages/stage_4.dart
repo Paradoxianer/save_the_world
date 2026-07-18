@@ -9,6 +9,7 @@ import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage4 = Stage(
@@ -36,6 +37,14 @@ final Stage stage4 = Stage(
       cost: [Time(value: 1.0)],
       award: [Wisdom(value: 5.0)],
       modifier: [AddTask(task: "Korps fegen und putzen")],
+    ),
+    Task(
+      name: "Korps fegen und putzen",
+      description: "Hier muss mal gewischt werden - ein gepflegtes Haus lädt ein.",
+      duration: 15000.0,
+      cost: [Time(value: 1.0)],
+      award: [Publicity(value: 2.0), Member(value: 0.1)],
+      modifier: [RemoveTask(task: "Korps fegen und putzen")],
     ),
     Task(
       name: "Leiter-Mentoring",

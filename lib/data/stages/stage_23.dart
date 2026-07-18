@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage23 = Stage(
   level: 23,
-  member: 15000000,
+  member: 10000000,
   description: "Globale Bewegung Level 7 - Kulturelle Prägung durch Multiplikation.",
   activeTasks: [
     "Bibellesen", 
@@ -30,7 +30,6 @@ final Stage stage23 = Stage(
   allTasks: [
     baseBible,
     baseSleep,
-    collectMoney,
     holySpiritWorking,
     Task(
       name: "Kollekte",
@@ -66,14 +65,14 @@ final Stage stage23 = Stage(
     ),
     Task(
       name: "Vom Einfluss zur Prägung",
-      description: "MEILENSTEIN: Die Bewegung wird zum moralischen Kompass der Weltgemeinschaft (Limit 30.000.000).",
+      description: "MEILENSTEIN: Die Bewegung wird zum moralischen Kompass der Weltgemeinschaft (Limit 20.000.000).",
       duration: 200000.0,
       isMilestone: true,
       cost: [Wisdom(value: 50000.0), Time(value: 100.0), Faith(value: 40000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "GLOBAL: Eure Stimme prägt nun die Weltwerte. Limit 30.000.000!"),
-        SetMax(ressource: "Member", newMax: 30000000.0),
+        MessageModifier(message: "GLOBAL: Eure Stimme prägt nun die Weltwerte. Limit 20.000.000!"),
+        SetMax(ressource: "Member", newMax: 20000000.0),
         RemoveTask(task: "Vom Einfluss zur Prägung"),
         AddTask(task: "Globalen moralischen Kompass halten"),
       ],

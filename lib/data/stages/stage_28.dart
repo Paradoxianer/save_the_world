@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage28 = Stage(
   level: 28,
-  member: 500000000,
+  member: 320000000,
   description: "Denomination Level 3 - Globales technologisches Zeugnis.",
   activeTasks: [
     "Bibellesen", 

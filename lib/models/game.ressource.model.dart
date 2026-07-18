@@ -57,6 +57,11 @@ class Game {
   Map<int, int> stageBestTimesMs = {};
   Map<int, int> stageBestClicks = {};
 
+  /// Namen aller abgeschlossenen Einmal-Aufgaben (Task.once == true).
+  /// Zentrale Sperre: addTask() blendet diese Tasks nie wieder ein -
+  /// egal ob AddTask-Modifier, Random-Event oder initStage sie anfordert.
+  final Set<String> completedOnceTasks = {};
+
   late List<Task> allTasks;
   late List<String> randomTasks;
   late Duration saveCalled;
@@ -148,6 +153,7 @@ class Game {
     isLoading = true;
     stage = 0;
     tasks.clear();
+    completedOnceTasks.clear();
     initRes();
     initStage(0);
     _accumulatedStageTime = Duration.zero;
@@ -174,6 +180,7 @@ class Game {
   void jumpToStage(int targetStage) {
     isLoading = true;
     tasks.clear();
+    completedOnceTasks.clear();
     initRes();
     stage = targetStage;
     ressources["Stage"]?.setValue(stage.toDouble());
@@ -218,15 +225,25 @@ class Game {
       'accumulatedStageTime': _accumulatedStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
       'stageHighscores': json.encode(stageHighscores.map((k, v) => MapEntry(k.toString(), v))),
+      'completedOnceTasks': completedOnceTasks.toList(),
     };
   }
 
   void addTask(Task task, {bool needInit = true}) {
+    // Einmal-Aufgaben, die bereits erledigt wurden, kommen nie wieder ins Spiel.
+    if (task.once && completedOnceTasks.contains(task.name)) {
+      debugPrint("addTask: '${task.name}' ist eine erledigte Einmal-Aufgabe. Skipping.");
+      return;
+    }
     if (needInit) tasks.removeWhere((t) => t.name == task.name);
     tasks.add(task);
     if (needInit) task.init();
     notifier.notifyListeners();
     task.goOnline();
+  }
+
+  void markOnceCompleted(String taskName) {
+    completedOnceTasks.add(taskName);
   }
 
   void removeTask(Task task) {
@@ -276,6 +293,7 @@ class Game {
       'accumulatedStageTime': currentActiveStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
       'stageHighscores': stageHighscores.map((k, v) => MapEntry(k.toString(), v)),
+      'completedOnceTasks': completedOnceTasks.toList(),
     }));
   }
 
@@ -342,6 +360,12 @@ class Game {
           final Map<String, dynamic> scores = gameData['stageHighscores'];
           stageHighscores = scores.map((k, v) => MapEntry(int.parse(k), v as int));
         }
+        if (gameData['completedOnceTasks'] != null) {
+          final List<dynamic> completed = gameData['completedOnceTasks'];
+          completedOnceTasks
+            ..clear()
+            ..addAll(completed.cast<String>());
+        }
         
         ressources["Stage"]?.setValue(stage.toDouble());
         _lastStartTime = DateTime.now();
@@ -386,11 +410,18 @@ class Game {
     final memberRes = ressources[Member().name];
     if (memberRes == null) return;
     double members = memberRes.value;
+    // BUGFIX: Nach vielen kleinen Belohnungen (0.5, 0.75, 0.9, ...) akkumulieren
+    // Gleitkomma-Rundungsfehler. Der Spieler sieht z.B. "21" (gerundet für die
+    // Anzeige), members ist intern aber 20.999999999999996 - members.floor()
+    // ergäbe dann fälschlich 20 und der Stufenaufstieg würde nie auslösen.
+    // Epsilon VOR dem floor() gleicht das aus, ohne echte Zwischenwerte wie
+    // 20.5 zu verfälschen (20.5 + Epsilon floort weiterhin zu 20).
+    final int memberFloor = (members + 1e-6).floor();
     int? found;
     int levelLength = levels.length;
     List<int> levelList = levels.keys.toList();
     for (int i = 0; i < levelLength; i++) {
-      if ((levelList[i] + 1) > members.floor()) {
+      if ((levelList[i] + 1) > memberFloor) {
         found = i;
         break;
       }
