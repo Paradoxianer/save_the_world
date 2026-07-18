@@ -24,12 +24,14 @@ final Stage stage7 = Stage(
     baseSleep,
     collectMoney,
     holySpiritWorking,
+    ...weddingQuestline,
     Task(
       name: "Geistesgaben entdecken",
       description: "Findet heraus, wie man sich am besten einbringen kann.",
       duration: 5000.0,
       cost: [Time(value: 5.0), Faith(value: 20.0)],
-      award: [Faith(value: 40.0), Wisdom(value: 10.0), Member(value: 0.2)], 
+      award: [Faith(value: 40.0), Wisdom(value: 10.0), Member(value: 0.2)],
+      modifier: [AddTask(task: "Campus-Modell planen")],
     ),
     Task(
       name: "Pressearbeit",

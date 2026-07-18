@@ -15,7 +15,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final Stage stage21 = Stage(
   level: 21,
-  member: 2500000,
+  member: 5000000,
   description: "Globale Größe Level 1 - Die Bewegung wird zum diplomatischen Akteur.",
   activeTasks: [
     "Schlafen",
@@ -57,14 +57,14 @@ final Stage stage21 = Stage(
     ),
     Task(
       name: "Internationale Allianz gründen",
-      description: "MEILENSTEIN: Offizieller Status als globale Körperschaft (Limit 5.000.000).",
+      description: "MEILENSTEIN: Offizieller Status als globale Körperschaft (Limit 7.500.000).",
       duration: 150000.0,
       isMilestone: true,
       cost: [Money(value: 10000000.0), Wisdom(value: 20000.0), Publicity(value: 15000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "ANERKENNUNG: Die Bewegung ist nun völkerrechtlich relevant. Limit 5.000.000!"),
-        SetMax(ressource: "Member", newMax: 5000000.0),
+        MessageModifier(message: "ANERKENNUNG: Die Bewegung ist nun völkerrechtlich relevant. Limit 7.500.000!"),
+        SetMax(ressource: "Member", newMax: 7500000.0),
         RemoveTask(task: "Internationale Allianz gründen"),
         AddTask(task: "Allianz diplomatisch führen"),
       ],

@@ -28,7 +28,6 @@ final Stage stage10 = Stage(
   ],
   randomTasks: [
     "Der Heilige Geist möchte wirken", 
-    "Beerdigung eines Generals",
     "Medien-Skandal" // Neue, schnellere Krise
   ],
   allTasks: [

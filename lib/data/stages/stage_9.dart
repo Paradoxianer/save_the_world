@@ -7,6 +7,7 @@ import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
@@ -25,6 +26,31 @@ final Stage stage9 = Stage(
     baseSleep,
     collectMoney,
     holySpiritWorking,
+    ...weddingQuestline,
+    Task(
+      name: "FSJler bezahlen",
+      description: "VERPFLICHTUNG: Dein Stab will regelmäßig bezahlt werden.",
+      duration: 8000.0,
+      cost: [Money(value: 300.0)],
+      award: [Publicity(value: 20.0), Wisdom(value: 10.0)],
+    ),
+    Task(
+      name: "Streit in der Bewegung",
+      description: "KRISE: Zwei Campus-Teams streiten über die Ausrichtung.",
+      duration: 12000.0,
+      timeToSolve: 80000.0,
+      cost: [Wisdom(value: 200.0), Faith(value: 100.0)],
+      modifier: [
+        MessageModifier(message: "VERSÖHNT: Die Einheit der Bewegung wurde bewahrt."),
+        RemoveTask(task: "Streit in der Bewegung"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Member(value: 50.0), Faith(value: 200.0)]),
+        MessageModifier(message: "ESKALIERT: Der Streit hat Mitglieder und Vertrauen gekostet."),
+        RemoveTask(task: "Streit in der Bewegung"),
+        AddTask(task: "Streit in der Bewegung"),
+      ],
+    ),
     Task(
       name: "FSJler einstellen",
       description: "DELEGATION: Administrative Entlastung schaltet den 32-Stunden-Tag frei.",

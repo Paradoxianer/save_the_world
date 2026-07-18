@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage26 = Stage(
   level: 26,
-  member: 120000000,
+  member: 80000000,
   description: "Denomination Level 1 - Globale Infrastruktur und theologische Einheit.",
   activeTasks: [
     "Bibellesen", 
@@ -45,14 +45,14 @@ final Stage stage26 = Stage(
     ),
     Task(
       name: "Globale Konzils-Beschlüsse",
-      description: "MEILENSTEIN: Formelle Einigung über alle Kontinente hinweg (Limit 250.000.000).",
+      description: "MEILENSTEIN: Formelle Einigung über alle Kontinente hinweg (Limit 160.000.000).",
       duration: 300000.0,
       isMilestone: true,
       cost: [Wisdom(value: 100000.0), Time(value: 100.0), Faith(value: 60000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "EINHEIT: Das Konzil hat gesprochen. Die Weltkirche ist gefestigt. Limit 250.000.000!"),
-        SetMax(ressource: "Member", newMax: 250000000.0),
+        MessageModifier(message: "EINHEIT: Das Konzil hat gesprochen. Die Weltkirche ist gefestigt. Limit 160.000.000!"),
+        SetMax(ressource: "Member", newMax: 160000000.0),
         RemoveTask(task: "Globale Konzils-Beschlüsse"),
         AddTask(task: "Konzils-Entscheidungen wahren"),
       ],

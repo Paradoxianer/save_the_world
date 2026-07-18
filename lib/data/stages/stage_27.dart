@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final Stage stage27 = Stage(
   level: 27,
-  member: 250000000,
+  member: 160000000,
   description: "Denomination Level 2 - Ökumenische Einheit und globale Verantwortung.",
   activeTasks: [
     "Schlafen",
@@ -49,14 +49,14 @@ final Stage stage27 = Stage(
     ),
     Task(
       name: "Weltweite Ökumene-Charta",
-      description: "MEILENSTEIN: Historische Einigung der Weltreligionen (Limit 500.000.000).",
+      description: "MEILENSTEIN: Historische Einigung der Weltreligionen (Limit 320.000.000).",
       duration: 500000.0,
       isMilestone: true,
       cost: [Money(value: 500000000.0), Faith(value: 100000.0), Wisdom(value: 150000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "FRIEDEN: Ein historischer Moment für die Menschheit! Limit 500.000.000."),
-        SetMax(ressource: "Member", newMax: 500000000.0),
+        MessageModifier(message: "FRIEDEN: Ein historischer Moment für die Menschheit! Limit 320.000.000."),
+        SetMax(ressource: "Member", newMax: 320000000.0),
         RemoveTask(task: "Weltweite Ökumene-Charta"),
         AddTask(task: "Interreligiösen Dialog fördern"),
       ],

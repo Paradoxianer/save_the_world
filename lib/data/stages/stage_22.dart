@@ -15,7 +15,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 
 final Stage stage22 = Stage(
   level: 22,
-  member: 5000000,
+  member: 7500000,
   description: "Globale Größe Level 2 - Koordination interkontinentaler Projekte.",
   activeTasks: [
     "Schlafen",
@@ -43,14 +43,14 @@ final Stage stage22 = Stage(
     ),
     Task(
       name: "Weltweiten Bildungsfonds gründen",
-      description: "MEILENSTEIN: Stipendien für zukünftige Leiter weltweit (Limit 7.500.000).",
+      description: "MEILENSTEIN: Stipendien für zukünftige Leiter weltweit (Limit 10.000.000).",
       duration: 120000.0,
       isMilestone: true,
       cost: [Money(value: 15000000.0), Wisdom(value: 30000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "BILDUNG: Die nächste Generation Leiter ist gesichert. Limit 7.500.000!"),
-        SetMax(ressource: "Member", newMax: 7500000.0),
+        MessageModifier(message: "BILDUNG: Die nächste Generation Leiter ist gesichert. Limit 10.000.000!"),
+        SetMax(ressource: "Member", newMax: 10000000.0),
         RemoveTask(task: "Weltweiten Bildungsfonds gründen"),
         AddTask(task: "Bildungsfonds verwalten"),
       ],

@@ -24,12 +24,14 @@ final Stage stage6 = Stage(
     baseSleep,
     collectMoney,
     holySpiritWorking,
+    ...weddingQuestline,
     Task(
       name: "Kinderprogramm",
       description: "Wie ein Hauskreis, nur viel anstrengender.",
       duration: 8000.0,
       cost: [Money(value: 4.0), Time(value: 4.0), Faith(value: 10.0)],
-      award: [Faith(value: 30.0), Member(value: 0.5)], 
+      award: [Faith(value: 30.0), Member(value: 0.5)],
+      modifier: [AddTask(task: "Hauptamtliche einstellen")],
     ),
     Task(
       name: "Einsatzwagen anschaffen",
