@@ -17,7 +17,7 @@ final Stage stage22 = Stage(
   level: 22,
   member: 7500000,
   description: "Globale Größe Level 2 - Koordination interkontinentaler Projekte.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Allianz diplomatisch führen",
     "Projekt 'Sauberes Wasser' global",
@@ -25,6 +25,8 @@ final Stage stage22 = Stage(
   ],
   randomTasks: ["Logistik-Blockade (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

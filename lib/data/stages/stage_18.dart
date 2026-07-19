@@ -18,7 +18,7 @@ final Stage stage18 = Stage(
   member: 1000000,
   description: "Globale Bewegung Level 2 - Institutionalisierung der Nächstenliebe.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Machbarkeitsstudie Hilfsprojekt", 
@@ -27,6 +27,7 @@ final Stage stage18 = Stage(
   randomTasks: ["Humanitäre Krise", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

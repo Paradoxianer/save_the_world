@@ -20,7 +20,7 @@ final Stage stage25 = Stage(
   member: 40000000,
   description: "Eine Bewegung Level 3 - Die globale Durchdringung beginnt.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Globales Jüngerschafts-Netzwerk", 
@@ -29,6 +29,7 @@ final Stage stage25 = Stage(
   randomTasks: ["Währungskrise (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

@@ -16,10 +16,11 @@ final Stage stage4 = Stage(
   level: 4,
   member: 200,
   description: "Kleine Gemeinde - Wachstum durch persönliche Begleitung.",
-  activeTasks: ["Bibellesen", "Schlafen", "Mentoring", "Korps aufräumen"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Mentoring", "Korps aufräumen"],
   randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     Task(
       name: "Mentoring",

@@ -20,7 +20,7 @@ final Stage stage28 = Stage(
   member: 320000000,
   description: "Denomination Level 3 - Globales technologisches Zeugnis.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "AI-Seelsorge-Netzwerk", 
@@ -29,6 +29,7 @@ final Stage stage28 = Stage(
   randomTasks: ["Satelliten-Hack (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

@@ -1,8 +1,10 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
@@ -20,11 +22,12 @@ final Stage stage2 = Stage(
   level: 2,
   member: 80,
   description: "Kleine Gemeinde - Es wird eng im Wohnzimmer.",
-  activeTasks: ["Bibellesen", "Schlafen", "Kollekte", "Gottesdienst in der Wohnung"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Kollekte", "Gottesdienst in der Wohnung"],
   randomTasks: ["Rechnung nicht bezahlt"],
   allTasks: [
     Task(name: "Schlafen", duration: 8000.0, cost: [Time(value: 8.0)], award: [Time(value: 16.0)]),
     Task(name: "Bibellesen", duration: 3000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
+    Task(name: "Beten", duration: 4000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(
       name: "Kollekte",
       description: "Regelmäßige Spenden der Mitglieder.",
@@ -66,6 +69,7 @@ final Stage stage2 = Stage(
         SetMax(ressource: "Member", newMax: 140.0),
         RemoveTask(task: "Saal mieten"),
         AddTask(task: "Saal instand halten"),
+        AddTask(task: "Hauskreisleiter einsetzen"),
       ],
     ),
     Task(
@@ -74,6 +78,43 @@ final Stage stage2 = Stage(
       duration: 10000.0,
       cost: [Time(value: 2.0), Money(value: 10.0)],
       award: [Wisdom(value: 2.0)],
+    ),
+    Task(
+      name: "Hauskreisleiter einsetzen",
+      description: "DELEGATION: Du gibst persönliche Kontakte ab und vertraust ehrenamtlichen Leitern eigene "
+          "Kleingruppen an. Das entlastet dich strukturell - kostet dich aber automatisch etwas eigene Zeit mit "
+          "Gott, solange die Leiter noch unerfahren sind. Der Abzug skaliert mit der Größe deiner Bewegung.",
+      duration: 12000.0,
+      once: true,
+      cost: [Time(value: 4.0), Wisdom(value: 15.0), Faith(value: 10.0)],
+      award: [Wisdom(value: 10.0), Member(value: 0.5)],
+      modifier: [
+        MessageModifier(
+          message: "DELEGATION: Deine Kleingruppenleiter übernehmen jetzt eigenständig Verantwortung - aber "
+              "unerfahren zieht das automatisch etwas Glauben ab. Schule sie, um das umzukehren!",
+        ),
+        AddTask(task: "Hauskreisleiter schulen"),
+        AutoExecuteModifier(
+          intervalMs: 25000,
+          modifiers: [
+            MultiplyRes(targetResName: "Member", factorResName: "Member", multiplier: 0.01),
+            SubtractRes(ressources: [Faith(value: 1.0, multiplierResourceName: "Member", multiplierValue: 0.015)]),
+          ],
+        ),
+      ],
+    ),
+    Task(
+      name: "Hauskreisleiter schulen",
+      description: "DELEGATION: Investiere immer wieder in die Ausbildung deiner Kleingruppenleiter. Gut "
+          "geschulte Leiter geben selbst geistlich weiter - das bringt bei jeder Schulung einen kleinen "
+          "Glaubenszufluss, der den automatischen Delegationsabzug teilweise ausgleicht. Anders als der Abzug "
+          "läuft dieser Zufluss NICHT von selbst weiter - du musst aktiv dranbleiben.",
+      duration: 14000.0,
+      cost: [Time(value: 3.0), Wisdom(value: 10.0)],
+      award: [
+        Wisdom(value: 8.0),
+        Faith(value: 1.0, multiplierResourceName: "Member", multiplierValue: 0.01),
+      ],
     ),
     Task(
       name: "Rechnung nicht bezahlt",

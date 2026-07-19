@@ -17,13 +17,15 @@ final Stage stage29 = Stage(
   level: 29,
   member: 1280000000,
   description: "Weltkirche Level 1 - Finale globale Strukturen.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Milliarden-Bewegung stabilisieren",
     "Verfassungs-Konvent einberufen"
   ],
   randomTasks: ["Globale Pandemie (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

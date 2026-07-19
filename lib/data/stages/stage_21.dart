@@ -17,7 +17,7 @@ final Stage stage21 = Stage(
   level: 21,
   member: 5000000,
   description: "Globale Größe Level 1 - Die Bewegung wird zum diplomatischen Akteur.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Globalen Dienst aufrechterhalten",
     "Diplomatische Kanäle öffnen",
@@ -25,6 +25,8 @@ final Stage stage21 = Stage(
   ],
   randomTasks: ["Cyber-Angriff (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

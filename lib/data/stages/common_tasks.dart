@@ -35,6 +35,19 @@ final Task baseBible = Task(
   award: [Faith(value: 20.0), Wisdom(value: 10.0)],
 );
 
+/// Gehört wie baseBible in JEDE Stage als aktive Kernaufgabe. Organisation
+/// (Delegation, Hauptamtliche, Automatisierung) zieht automatisch Glauben ab
+/// - Bibellesen und Beten sind der einzige manuelle Gegen-Hebel, den der
+/// Spieler dafür in der Hand hat. Ohne beide in jeder Stage wäre der
+/// automatische Glaubensabzug nicht gegensteuerbar.
+final Task basePrayer = Task(
+  name: "Beten",
+  description: "Im Gebet für die Bewegung eintreten - das geistliche Fundament, das keine Organisation ersetzt.",
+  duration: 4000.0,
+  cost: [Time(value: 1.0)],
+  award: [Faith(value: 15.0)],
+);
+
 // --- FINANZEN ---
 final Task collectMoney = Task(
   name: "Kollekte",

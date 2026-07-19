@@ -21,13 +21,14 @@ final Stage stage32 = Stage(
   description: "Weltkirche Level 3 - Die Vollendung des Auftrags.",
   activeTasks: [
     "Schlafen",
-    "Bibellesen",
+    "Bibellesen", "Beten",
     "Globale Einheit wahren",
     "Das Finale Evangelium vorbereiten"
   ],
   randomTasks: ["Finale theologische Anfechtung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

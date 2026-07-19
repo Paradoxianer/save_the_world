@@ -21,13 +21,14 @@ final Stage stage30 = Stage(
   description: "Weltkirche Level 2 - Geistliche Kraft in Zeiten der Bedrängnis.",
   activeTasks: [
     "Schlafen",
-    "Bibellesen",
+    "Bibellesen", "Beten",
     "Dienst der Heilung",
     "Geistliche Rüstung anlegen"
   ],
   randomTasks: ["Globale Christenverfolgung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

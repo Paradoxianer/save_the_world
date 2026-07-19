@@ -17,10 +17,11 @@ final Stage stage7 = Stage(
   level: 7,
   member: 800,
   description: "Sehr große Gemeinde - Fokus auf Außenwirkung und Gaben.",
-  activeTasks: ["Bibellesen", "Schlafen", "Geistesgaben entdecken", "Pressearbeit"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Geistesgaben entdecken", "Pressearbeit"],
   randomTasks: ["Jemand möchte heiraten", "Der Heilige Geist möchte wirken", "Rechnung nicht bezahlt"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,
