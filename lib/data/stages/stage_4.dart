@@ -17,7 +17,7 @@ final Stage stage4 = Stage(
   member: 200,
   description: "Kleine Gemeinde - Wachstum durch persönliche Begleitung.",
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Mentoring", "Korps aufräumen"],
-  randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde"],
+  randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde", "Problematische Lehrerschaft"],
   allTasks: [
     baseBible,
     basePrayer,
@@ -99,6 +99,25 @@ final Stage stage4 = Stage(
         SubtractRes(ressources: [Member(value: 10.0), Faith(value: 50.0)]),
         RemoveTask(task: "Streit in der Gemeinde"),
         AddTask(task: "Streit in der Gemeinde"),
+      ],
+    ),
+    Task(
+      name: "Problematische Lehrerschaft",
+      description: "KRISE: Ein einflussreicher Lehrer verbreitet fragwürdige Lehre. Bei dieser Größe wirkt das "
+          "schnell und weit - unadressiert kann das in kurzer Zeit viele Mitglieder kosten.",
+      duration: 8000.0,
+      timeToSolve: 45000.0,
+      cost: [Wisdom(value: 80.0), Faith(value: 20.0)],
+      award: [Wisdom(value: 20.0)],
+      modifier: [
+        MessageModifier(message: "KORRIGIERT: Die Lehre wurde richtiggestellt, die Einheit im Glauben bewahrt."),
+        RemoveTask(task: "Problematische Lehrerschaft"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Member(value: 25.0), Faith(value: 40.0)]),
+        MessageModifier(message: "ABWANDERUNG: Viele Mitglieder haben die Gemeinde wegen der Irrlehre verlassen."),
+        RemoveTask(task: "Problematische Lehrerschaft"),
+        AddTask(task: "Problematische Lehrerschaft"),
       ],
     ),
   ],
