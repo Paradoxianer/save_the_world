@@ -19,7 +19,7 @@ final Stage stage19 = Stage(
   level: 19,
   member: 1500000,
   description: "Globale Bewegung Level 2 - Mediale Macht und Multiplikation.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Globalen Dienst aufrechterhalten",
     "Kampagnen-Logistik planen",
@@ -27,6 +27,8 @@ final Stage stage19 = Stage(
   ],
   randomTasks: ["Globaler PR-Shitstorm (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

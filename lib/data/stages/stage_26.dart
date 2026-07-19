@@ -20,7 +20,7 @@ final Stage stage26 = Stage(
   member: 80000000,
   description: "Denomination Level 1 - Globale Infrastruktur und theologische Einheit.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Weltweites Logistik-Netzwerk", 
@@ -29,6 +29,7 @@ final Stage stage26 = Stage(
   randomTasks: ["Infrastruktur-Ausfall (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

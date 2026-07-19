@@ -17,13 +17,15 @@ final Stage stage31 = Stage(
   level: 31,
   member: 5120000000,
   description: "Weltkirche Level 3 - Die finale Erweckung.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Märtyrer-Gedenken",
     "Weltweiter Gebetsaufruf"
   ],
   randomTasks: ["Globale Apathie (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

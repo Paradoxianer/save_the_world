@@ -20,7 +20,7 @@ final Stage stage10 = Stage(
   member: 2800,
   description: "Internationale Multiplikation und globale Reichweite.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Leadership Summit", 
     "Internationale Vision",
@@ -32,6 +32,7 @@ final Stage stage10 = Stage(
   ],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

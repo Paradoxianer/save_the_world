@@ -19,7 +19,7 @@ final Stage stage27 = Stage(
   level: 27,
   member: 160000000,
   description: "Denomination Level 2 - Ökumenische Einheit und globale Verantwortung.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Konzils-Entscheidungen wahren",
     "Ökumenische Dialoge führen",
@@ -27,6 +27,8 @@ final Stage stage27 = Stage(
   ],
   randomTasks: ["Internationales Spaltungsrisiko (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

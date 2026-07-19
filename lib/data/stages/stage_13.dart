@@ -18,7 +18,7 @@ final Stage stage13 = Stage(
   member: 20000,
   description: "Bewegung Level 2 - DNA-Transfer und internationale Identität.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "DNA-Transfer Workshop", 
@@ -27,6 +27,7 @@ final Stage stage13 = Stage(
   randomTasks: ["Theologische Grundsatzfrage (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

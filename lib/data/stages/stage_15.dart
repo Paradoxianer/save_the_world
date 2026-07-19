@@ -18,7 +18,7 @@ final Stage stage15 = Stage(
   member: 100000,
   description: "Globale Bewegung Level 1 - Die Stimme in der Weltgesellschaft.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Weltweite Kampagne planen"
@@ -26,6 +26,7 @@ final Stage stage15 = Stage(
   randomTasks: ["Politischer Druck (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

@@ -20,7 +20,7 @@ final Stage stage20 = Stage(
   member: 2500000,
   description: "Globale Bewegung Level 3 - Koordination weltweiter Netzwerke.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Strategischer Stab berufen",
@@ -29,6 +29,7 @@ final Stage stage20 = Stage(
   randomTasks: ["Öffentlicher Widerspruch (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

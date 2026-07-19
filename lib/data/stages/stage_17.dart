@@ -18,7 +18,7 @@ final Stage stage17 = Stage(
   member: 500000,
   description: "Globale Bewegung Level 1 - Wissenschaftliche DNA-Wahrung und Logistik.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Logistik-Infrastruktur planen", 
     "Theologische Fakultät gründen"
@@ -26,6 +26,7 @@ final Stage stage17 = Stage(
   randomTasks: ["Wirtschaftsprüfung (Audit)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

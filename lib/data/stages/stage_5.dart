@@ -16,10 +16,11 @@ final Stage stage5 = Stage(
     level: 5,
     member: 400,
     description: "Große Gemeinde - Delegation wird zur Notwendigkeit.",
-    activeTasks: ["Bibellesen", "Schlafen", "Leiter-Mentoring"],
+    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Leiter-Mentoring"],
     randomTasks: ["Ein zwischenmenschliches Problem klären"],
     allTasks: [
       baseBible,
+      basePrayer,
       baseSleep,
       Task(
         name: "Leiter-Mentoring",

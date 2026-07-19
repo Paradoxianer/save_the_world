@@ -20,11 +20,12 @@ final Stage stage2 = Stage(
   level: 2,
   member: 80,
   description: "Kleine Gemeinde - Es wird eng im Wohnzimmer.",
-  activeTasks: ["Bibellesen", "Schlafen", "Kollekte", "Gottesdienst in der Wohnung"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Kollekte", "Gottesdienst in der Wohnung"],
   randomTasks: ["Rechnung nicht bezahlt"],
   allTasks: [
     Task(name: "Schlafen", duration: 8000.0, cost: [Time(value: 8.0)], award: [Time(value: 16.0)]),
     Task(name: "Bibellesen", duration: 3000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
+    Task(name: "Beten", duration: 4000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(
       name: "Kollekte",
       description: "Regelmäßige Spenden der Mitglieder.",
@@ -66,6 +67,7 @@ final Stage stage2 = Stage(
         SetMax(ressource: "Member", newMax: 140.0),
         RemoveTask(task: "Saal mieten"),
         AddTask(task: "Saal instand halten"),
+        AddTask(task: "Hauskreisleiter einsetzen"),
       ],
     ),
     Task(
@@ -74,6 +76,14 @@ final Stage stage2 = Stage(
       duration: 10000.0,
       cost: [Time(value: 2.0), Money(value: 10.0)],
       award: [Wisdom(value: 2.0)],
+    ),
+    Task(
+      name: "Hauskreisleiter einsetzen",
+      description: "Du gibst den ersten Kleingruppen eigene ehrenamtliche Leiter - bei dieser Größe kennst du "
+          "noch jeden persönlich, das kostet dich nichts außer der Berufung selbst.",
+      duration: 10000.0,
+      cost: [Time(value: 3.0), Wisdom(value: 10.0)],
+      award: [Wisdom(value: 8.0), Member(value: 0.5)],
     ),
     Task(
       name: "Rechnung nicht bezahlt",

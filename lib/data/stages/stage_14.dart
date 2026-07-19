@@ -18,7 +18,7 @@ final Stage stage14 = Stage(
   member: 50000,
   description: "Eine Bewegung Level 3 - Fokus auf regionale Infrastruktur und Großevangelisation.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Logistik-Planung", 
@@ -27,6 +27,7 @@ final Stage stage14 = Stage(
   randomTasks: ["Finanzprüfung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

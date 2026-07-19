@@ -20,7 +20,7 @@ final Stage stage24 = Stage(
   member: 20000000,
   description: "Globaler Beeinflusser Level 1 - Die Geburt einer weltweiten Denomination.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Regional-Präsidien einsetzen", 
@@ -29,6 +29,7 @@ final Stage stage24 = Stage(
   randomTasks: ["Theologische Grundsatzfrage (Krise)", "Finanzprüfung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

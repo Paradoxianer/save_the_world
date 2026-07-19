@@ -19,7 +19,7 @@ final Stage stage12 = Stage(
   level: 12,
   member: 10000,
   description: "Beeinflussende Kirche Lvl. 2 - Dein Wirken prägt das Land.",
-  activeTasks: [
+  activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Konferenz-Netzwerk pflegen",
     "Strategische Allianzen bilden",
@@ -27,6 +27,8 @@ final Stage stage12 = Stage(
   ],
   randomTasks: ["Medien-Skandal", "Politischer Druck", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(

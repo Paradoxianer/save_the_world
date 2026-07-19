@@ -19,10 +19,11 @@ final Stage stage9 = Stage(
   level: 9,
   member: 1800,
   description: "MegaChurch Level 2 - Management von Systemen statt Menschen.",
-  activeTasks: ["Bibellesen", "Schlafen", "Kollekte", "FSJler einstellen", "Campus-Pastoren einsetzen"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Kollekte", "FSJler einstellen", "Campus-Pastoren einsetzen"],
   randomTasks: ["Jemand möchte heiraten", "Der Heilige Geist möchte wirken", "Streit in der Bewegung"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

@@ -17,10 +17,11 @@ final Stage stage8 = Stage(
   level: 8,
   member: 1100,
   description: "MegaChurch Level 1 - Die Leitung durch Vision wird zentral.",
-  activeTasks: ["Bibellesen", "Schlafen", "Budget erstellen", "Vision-Casting"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Budget erstellen", "Vision-Casting"],
   randomTasks: ["Kassendifferenz finden", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     collectMoney,
     holySpiritWorking,

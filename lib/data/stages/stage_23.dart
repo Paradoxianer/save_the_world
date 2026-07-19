@@ -20,7 +20,7 @@ final Stage stage23 = Stage(
   member: 10000000,
   description: "Globale Bewegung Level 7 - Kulturelle Prägung durch Multiplikation.",
   activeTasks: [
-    "Bibellesen", 
+    "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
     "Globales Mentoring-Netzwerk", 
@@ -29,6 +29,7 @@ final Stage stage23 = Stage(
   randomTasks: ["Theologische Grundsatzfrage (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
+    basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(
