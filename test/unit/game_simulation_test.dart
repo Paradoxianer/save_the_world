@@ -121,14 +121,19 @@ Task? _decideNextTaskStrict(List<Task> available, Game game) {
   _isRegeneratingTime = false;
 
   // --- PRIO 2: GOLDENER PFAD (Meilensteine) ---
+  // WICHTIG: Bereits erledigte once-Aufgaben (siehe #76) bleiben strukturell
+  // isMilestone:true, feuern aber nie wieder. Ohne den completedOnceTasks-Check
+  // haelt der Bot einen toten Pfad fuer den "goldenen Pfad" und rennt ewig ins
+  // Leere (siehe #77) statt auf Ressourcen-Ausgleich (Prio 3/4) umzuschwenken.
+  final completedOnce = Game.getInstance().completedOnceTasks;
   Task? goldenGoal;
-  var milestones = available.where((t) => t.isMilestone).toList();
+  var milestones = available.where((t) => t.isMilestone && !completedOnce.contains(t.name)).toList();
   if (milestones.isNotEmpty) {
     goldenGoal = milestones.first;
   } else {
-    // Suche Tasks, die Milestones freischalten (AddTask Modifier)
-    // FIX: m.nameOfTask statt m.task
-    var unlockers = available.where((t) => t.myModifier.any((m) => m is AddTask && 
+    // Suche Tasks, die noch offene Milestones freischalten (AddTask Modifier)
+    var unlockers = available.where((t) => t.myModifier.any((m) => m is AddTask &&
+        !completedOnce.contains(m.nameOfTask) &&
         (game.allTasks.any((at) => at.name == m.nameOfTask && at.isMilestone)))).toList();
     if (unlockers.isNotEmpty) goldenGoal = unlockers.first;
   }
