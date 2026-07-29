@@ -16,15 +16,31 @@ final Task baseSleep = Task(
   description: "Erholung für den Visionär.",
   duration: 8000.0,
   cost: [Time(value: 8.0)],
-  award: [Time(value: 16.0)],
+  award: [Time(value: 24.0)],
 );
 
 final Task baseFreeTime = Task(
   name: "Freizeit",
   description: "Kleine Pause zum Durchatmen.",
   duration: 20000.0,
-  cost: [], 
+  cost: [],
   award: [Time(value: 1.0)],
+);
+
+/// Sicherheitsnetz ab Stage 2 (siehe Issue #82): Schlafen bleibt bewusst
+/// riskant (kostet 8 Zeit) - wer nicht selbst aufpasst, kann unter diese
+/// Schwelle fallen und sich nicht mehr freischlafen. Diese Aufgabe ist der
+/// Ausweg: kostenlos, aber quälend langsam, damit Zeit-Mismanagement echte
+/// Konsequenzen (Stress/Zeitverlust) hat statt risikofrei zu sein. Wird nur
+/// EINMAL in Stage 2 aktiv eingeführt und vererbt sich von da an automatisch
+/// in jede folgende Stufe weiter (siehe initStage()-Vererbungsprinzip).
+/// Spätere Erweiterung: per Rewarded-Ad Zeit dazukaufen (siehe Issue #59).
+final Task burnoutRecovery = Task(
+  name: "Vom Burnout erholen",
+  description: "Du hast dich komplett verausgabt. Es dauert quälend lange, aber ganz langsam kehrt etwas Kraft zurück.",
+  duration: 60000.0,
+  cost: [],
+  award: [Time(value: 4.0)],
 );
 
 final Task baseBible = Task(

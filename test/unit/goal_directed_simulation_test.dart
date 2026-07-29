@@ -55,10 +55,18 @@ void main() {
         game.isLoading = true;
         Game.tasks.clear();
         game.completedOnceTasks.clear();
-        game.allTasks = stage.allTasks;
         _seedResourcesForStage(stageIndex, thresholds);
 
         final optimalSim = GameSimulator(game);
+        // Kumulativ wie Game.jumpToStage(): Tasks aus FRÜHEREN Stages (z.B.
+        // "Vom Burnout erholen" ab Stage 2) bleiben in echten Spielverläufen
+        // aktiv, weil Game.tasks nie zwischen Stufen geleert wird - nur beim
+        // isolierten Pro-Stage-Test hier muss das manuell nachgebildet werden.
+        for (int i = 0; i < stageIndex; i++) {
+          game.allTasks = allStages[i].allTasks;
+          optimalSim.seedActiveTasks(allStages[i].activeTasks);
+        }
+        game.allTasks = stage.allTasks;
         final optimalPolicy = OptimalPolicy();
         final optimalResult = optimalSim.runStage(
           stageIndex: stageIndex,
@@ -75,10 +83,14 @@ void main() {
         game.isLoading = true;
         Game.tasks.clear();
         game.completedOnceTasks.clear();
-        game.allTasks = stage.allTasks;
         _seedResourcesForStage(stageIndex, thresholds);
 
         final normalSim = GameSimulator(game, random: Random(42));
+        for (int i = 0; i < stageIndex; i++) {
+          game.allTasks = allStages[i].allTasks;
+          normalSim.seedActiveTasks(allStages[i].activeTasks);
+        }
+        game.allTasks = stage.allTasks;
         final normalPolicy = NormalPolicy();
         final normalResult = normalSim.runStage(
           stageIndex: stageIndex,

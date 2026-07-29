@@ -159,13 +159,23 @@ class OptimalPolicy {
 
     final time = Game.ressources["Time"]?.value ?? 0.0;
 
-    // PRIO 1: Zeit - ohne Zeit läuft nichts, auch nicht optimal.
+    // PRIO 1: Zeit - ohne Zeit läuft nichts, auch nicht optimal. Schlafen
+    // zuerst (bester Ertrag), aber wenn selbst das nicht mehr leistbar ist
+    // (Time < 8), auf den kostenlosen Fallback ausweichen (Freizeit /
+    // Vom Burnout erholen ab Stage 2) statt untätig zu bleiben.
     if (time < 8.0) {
-      final sleep = idle.where((t) => t.name == "Schlafen");
-      for (final t in sleep) {
-        if (sim.canAfford(t)) sim.startTask(t);
+      bool started = false;
+      for (final name in ["Schlafen", "Freizeit", "Vom Burnout erholen"]) {
+        final matches = idle.where((x) => x.name == name);
+        if (matches.isEmpty) continue;
+        final t = matches.first;
+        if (sim.canAfford(t)) {
+          sim.startTask(t);
+          started = true;
+          break;
+        }
       }
-      if (sleep.isNotEmpty) return;
+      if (started) return;
     }
 
     final milestone = sim.game.allTasks
@@ -219,9 +229,14 @@ class OptimalPolicy {
 
     final time = Game.ressources["Time"]?.value ?? 0.0;
     if (time < 16.0) {
-      final sleep = idle.where((t) => t.name == "Schlafen");
-      for (final t in sleep) {
-        if (sim.canAfford(t)) sim.startTask(t);
+      for (final name in ["Schlafen", "Freizeit", "Vom Burnout erholen"]) {
+        final matches = idle.where((x) => x.name == name);
+        if (matches.isEmpty) continue;
+        final t = matches.first;
+        if (sim.canAfford(t)) {
+          sim.startTask(t);
+          break;
+        }
       }
     }
 

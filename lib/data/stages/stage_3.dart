@@ -20,7 +20,7 @@ final Stage stage3 = Stage(
   description: "Mittlere Gemeinde - Vom Clan zur Organisation.",
   activeTasks: ["Bibellesen", "Beten", "Kollekte", "Schlafen", "Öffentlicher Gottesdienst"],
   allTasks: [
-    Task(name: "Schlafen", duration: 8000.0, cost: [Time(value: 8.0)], award: [Time(value: 16.0)]),
+    Task(name: "Schlafen", duration: 8000.0, cost: [Time(value: 8.0)], award: [Time(value: 24.0)]),
     Task(name: "Bibellesen", duration: 3000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(name: "Beten", duration: 4000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(
