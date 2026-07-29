@@ -1,5 +1,7 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
@@ -55,10 +57,21 @@ final Stage stage4 = Stage(
       cost: [Time(value: 10.0), Wisdom(value: 200.0), Faith(value: 50.0)],
       award: [Wisdom(value: 100.0), Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "WACHSTUMSSCHWELLE: Du hast die erste Jüngerschafts-Ebene etabliert. Limit 400!"),
+        MessageModifier(
+          message: "WACHSTUMSSCHWELLE: Du hast die erste Jüngerschafts-Ebene etabliert. Limit 400! Deine "
+              "Leiter von Leitern gewinnen jetzt von selbst neue Menschen - unabhängig von deinem eigenen Klicken.",
+        ),
         SetMax(ressource: "Member", newMax: 400.0),
         RemoveTask(task: "Leiter-Mentoring"),
         AddTask(task: "Mentoring-Programm leiten"),
+        // Der Sinn von Delegation: Wachstum entkoppelt sich vom eigenen Zutun.
+        // Skaliert mit der Mitgliederzahl, damit es mit der Bewegung mitwaechst.
+        AutoExecuteModifier(
+          intervalMs: 20000,
+          modifiers: [
+            MultiplyRes(targetResName: "Member", factorResName: "Member", multiplier: 0.006),
+          ],
+        ),
       ],
     ),
     Task(
