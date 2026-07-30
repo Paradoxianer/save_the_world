@@ -92,7 +92,9 @@ class Game {
     randCalled = const Duration(seconds: 0);
     
     initStage(this.stage);
-    ressources[Member().name]?.addListener(levelListener);
+    // initRes() (oben) haengt levelListener bereits an - kein zweites
+    // addListener hier, sonst wuerde der Listener doppelt registriert und
+    // bei jeder Aenderung zweimal feuern.
     loadState();
     
     resumeStageTimer();
@@ -144,9 +146,20 @@ class Game {
     ressources[Publicity().name] = Publicity(value: 1.0);
     ressources[Wisdom().name] = Wisdom(value: 10.0);
     ressources["Stage"] = StageRes(value: stage.toDouble());
-    
+
     ressources[Member().name]?.max = 20.0;
     ressources[Member().name]?.min = 0.0;
+
+    // BUGFIX: initRes() ERSETZT das Member-Ressourcen-Objekt komplett durch
+    // eine neue Instanz. resetGame() und jumpToStage() rufen initRes() nach
+    // der Konstruktion erneut auf - der levelListener, der nur EINMAL im
+    // Konstruktor an das damalige Objekt angehängt wurde, haengt danach an
+    // einem verworfenen Objekt und feuert nie wieder. Der Spieler bleibt
+    // dann dauerhaft in Stage/LVL 0 haengen, egal wie hoch Member steigt.
+    // Deshalb hier bei JEDEM initRes()-Aufruf neu anhängen (removeListener
+    // ist ein No-Op, falls der Listener am neuen Objekt noch nicht existiert).
+    ressources[Member().name]?.removeListener(levelListener);
+    ressources[Member().name]?.addListener(levelListener);
   }
 
   void resetGame() {
@@ -297,18 +310,30 @@ class Game {
     }));
   }
 
-  void loadState() async {
+  Future<void> loadState() async {
     isLoading = true;
     final resJsn = await dataManager.readData("gameRes");
     loadRes(resJsn);
-    
+
     final allTasksJsn = await dataManager.readData("allTasks");
     await loadAllTasks(allTasksJsn);
-    
+
     final gameJsn = await dataManager.readData("Game");
     loadGame(gameJsn);
-    
+
     isLoading = false;
+
+    // BUGFIX: levelListener() haengt als Listener am Member-Ressourcen-Objekt
+    // und wird deshalb schon WAEHREND loadRes() ausgeloest (setValue() ruft
+    // notifyListeners() auf) - zu diesem Zeitpunkt ist isLoading aber noch
+    // true, also bricht levelListener() sofort ab. Ein gespeicherter Stand,
+    // der (z.B. durch einen frueheren Bug) bereits eine zur Mitgliederzahl
+    // nicht mehr passende Stage enthaelt, wuerde dadurch NIE nachtraeglich
+    // korrigiert - der Spieler bliebe dauerhaft in der falschen Stage
+    // haengen, obwohl der Stufenaufstieg-Fix fuer NEUE Faelle laengst greift.
+    // Expliziter Nachtrag hier holt das nach, sobald isLoading wieder false ist.
+    levelListener();
+
     notifier.notifyListeners();
     stagenNotifier.notifyListeners();
   }
