@@ -13,6 +13,7 @@ import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/weighted_random_event.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
 
@@ -61,6 +62,12 @@ class Game {
   /// Zentrale Sperre: addTask() blendet diese Tasks nie wieder ein -
   /// egal ob AddTask-Modifier, Random-Event oder initStage sie anfordert.
   final Set<String> completedOnceTasks = {};
+
+  /// Ressourcenabhängige Zufallsevents (siehe AddToRandom), taskName ->
+  /// Gewichtungs-Konfiguration. Stage-scoped, wird bei jedem initStage()
+  /// geleert - genau wie randomTasks nur zur Laufzeit durch Task-Modifier
+  /// befüllt, nicht Teil der statischen Stage-Definition.
+  final Map<String, WeightedRandomEvent> weightedRandomEvents = {};
 
   late List<Task> allTasks;
   late List<String> randomTasks;
@@ -402,6 +409,23 @@ class Game {
           }
         }
       }
+
+      // Ressourcengewichtete Events (siehe AddToRandom): eigener Roll pro
+      // Event statt Gleichverteilung ueber den Pool - die Chance ergibt sich
+      // direkt aus dem aktuellen Ressourcenwert relativ zur Schwelle.
+      for (final entry in weightedRandomEvents.entries) {
+        if (tasks.any((t) => t.name == entry.key)) continue;
+        final double resVal = ressources[entry.value.resourceName]?.value ?? 0.0;
+        final double chance = (resVal / entry.value.threshold).clamp(0.0, 1.0);
+        if (Random().nextDouble() < chance) {
+          Task? thisHappens = getTask(entry.key);
+          if (thisHappens != null) {
+            snackbarMessage = "Achtung neue Aufgabe: ${thisHappens.name}";
+            addTask(thisHappens);
+          }
+        }
+      }
+
       randCalled = elapse;
     }
   }
@@ -454,6 +478,7 @@ class Game {
     // Kopie statt Referenz: AddToRandom darf zur Laufzeit ergaenzen, ohne
     // die statische Stage-Definition selbst zu veraendern.
     randomTasks = List<String>.from(allStages[stg].randomTasks);
+    weightedRandomEvents.clear();
     for (var taskName in allStages[stg].activeTasks) {
       Task? found = getTask(taskName);
       if (found != null) {

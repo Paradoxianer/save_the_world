@@ -18,7 +18,7 @@ final Stage stage5 = Stage(
     member: 400,
     description: "Große Gemeinde - Delegation wird zur Notwendigkeit.",
     activeTasks: ["Bibellesen", "Beten", "Schlafen", "Koordinatoren ausbilden"],
-    randomTasks: ["Ein zwischenmenschliches Problem klären", "Der Heilige Geist möchte wirken"],
+    randomTasks: ["Ein zwischenmenschliches Problem klären"],
     allTasks: [
       baseBible,
       basePrayer,
@@ -41,7 +41,14 @@ final Stage stage5 = Stage(
         award: [Faith(value: 80.0), Wisdom(value: 20.0)],
         modifier: [
           AddTask(task: "Offizier berufen"),
-          AddToRandom(task: "Der Heilige Geist möchte wirken"),
+          // Je mehr Glauben, desto wahrscheinlicher greift Gott sichtbar ein:
+          // ab 400 Glauben ist "Der Heilige Geist möchte wirken" pro Roll
+          // (alle ~10s) fast garantiert, darunter proportional seltener.
+          AddToRandom(
+            task: "Der Heilige Geist möchte wirken",
+            resourceName: "Faith",
+            resourceThreshold: 400.0,
+          ),
         ],
       ),
       Task(
