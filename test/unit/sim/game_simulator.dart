@@ -4,6 +4,7 @@ import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
+import 'package:save_the_world_flutter_app/models/weighted_random_event.model.dart';
 
 /// Ein Balancing-Simulator mit virtueller Uhr statt echtem Flutter-Ticker.
 ///
@@ -45,6 +46,11 @@ class GameSimulator {
   final List<String> log = [];
   bool deadlock = false;
   String? deadlockReason;
+
+  /// Zeitstempel (virtuelle ms), zu denen ein ressourcengewichtetes Event
+  /// (siehe AddToRandom mit resourceName/resourceThreshold) tatsächlich
+  /// gefeuert hat - fürs Balancing/Probing der Schwellenwerte.
+  final Map<String, List<double>> weightedEventFireLog = {};
 
   GameSimulator(this.game, {this.random});
 
@@ -164,6 +170,33 @@ class GameSimulator {
     _schedule(nowMs + randDurationMs, roll);
   }
 
+  /// Bildet die ressourcengewichtete Roll-Logik aus Game.updateGame() nach
+  /// (siehe AddToRandom mit resourceName/resourceThreshold): eigener,
+  /// unabhängiger Wurf pro registriertem Event, Chance = Ressourcenwert /
+  /// Schwelle (gedeckelt auf 1.0), gleiche Tick-Kadenz wie der Krisen-Roll.
+  void _scheduleWeightedRandomRoll() {
+    const double randDurationMs = 10000.0;
+    void roll() {
+      for (final entry in game.weightedRandomEvents.entries) {
+        if (Game.tasks.any((t) => t.name == entry.key)) continue;
+        final WeightedRandomEvent w = entry.value;
+        final double resVal = Game.ressources[w.resourceName]?.value ?? 0.0;
+        final double chance = (resVal / w.threshold).clamp(0.0, 1.0);
+        if ((random ?? Random()).nextDouble() < chance) {
+          final found = game.getTask(entry.key);
+          if (found != null && !(found.once && game.completedOnceTasks.contains(found.name))) {
+            game.addTask(found, needInit: false);
+            weightedEventFireLog.putIfAbsent(entry.key, () => []).add(nowMs);
+            _reconcileTimeToSolve();
+          }
+        }
+      }
+      _schedule(nowMs + randDurationMs, roll);
+    }
+
+    _schedule(nowMs + randDurationMs, roll);
+  }
+
   /// Führt die Simulation für EINE Stage aus, bis das Ziel (Member-Schwelle
   /// überschritten) erreicht ist, ein Deadlock erkannt wird, oder die
   /// virtuelle Zeit-Obergrenze überschritten wird.
@@ -185,6 +218,7 @@ class GameSimulator {
     seedActiveTasks(activeTaskNames);
     if (includeRandomEvents) {
       _scheduleRandomRoll(randomTaskNames, stageIndex);
+      _scheduleWeightedRandomRoll();
     }
 
     int steps = 0;
