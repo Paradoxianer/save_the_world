@@ -38,7 +38,7 @@ final Task baseFreeTime = Task(
 final Task burnoutRecovery = Task(
   name: "Vom Burnout erholen",
   description: "Du hast dich komplett verausgabt. Es dauert quälend lange, aber ganz langsam kehrt etwas Kraft zurück.",
-  duration: 60000.0,
+  duration: 600000.0,
   cost: [],
   award: [Time(value: 4.0)],
 );
