@@ -13,14 +13,16 @@ import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
+import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 
 final Stage stage3 = Stage(
   level: 3,
   member: 140,
   description: "Mittlere Gemeinde - Vom Clan zur Organisation.",
-  activeTasks: ["Bibellesen", "Beten", "Kollekte", "Schlafen", "Öffentlicher Gottesdienst"],
+  activeTasks: ["Bibellesen", "Beten", "Kollekte", "Schlafen", "Öffentlicher Gottesdienst", "Vom Burnout erholen"],
   allTasks: [
     Task(name: "Schlafen", duration: 8000.0, cost: [Time(value: 8.0)], award: [Time(value: 24.0)]),
+    burnoutRecovery,
     Task(name: "Bibellesen", duration: 3000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(name: "Beten", duration: 4000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(
