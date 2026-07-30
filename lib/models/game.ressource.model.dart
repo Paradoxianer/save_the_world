@@ -84,8 +84,7 @@ class Game {
     initRes();
     
     allTasks = allStages[this.stage].allTasks;
-    randomTasks = allStages[this.stage].randomTasks;
-    
+
     saveDuration = const Duration(seconds: 5);
     saveCalled = const Duration(seconds: 0);
     randDuration = const Duration(seconds: 10);
@@ -390,7 +389,10 @@ class Game {
       int prob = (stage == 1) ? 15 : 5; 
       int rand = Random().nextInt(prob);
       if (rand == 1) {
-        List<String> currentRandomTasks = allStages[stage].randomTasks;
+        // Instanz-Liste statt allStages[stage].randomTasks: AddToRandom
+        // (z.B. "Fasten und Beten") haengt Tasks zur Laufzeit hier an - die
+        // statische Stage-Definition bekommt davon nie etwas mit.
+        List<String> currentRandomTasks = randomTasks;
         if (currentRandomTasks.isNotEmpty) {
           String randomTaskName = currentRandomTasks[Random().nextInt(currentRandomTasks.length)];
           Task? thisHappens = getTask(randomTaskName);
@@ -449,6 +451,9 @@ class Game {
 
   void initStage(int stg) {
     allTasks = allStages[stg].allTasks;
+    // Kopie statt Referenz: AddToRandom darf zur Laufzeit ergaenzen, ohne
+    // die statische Stage-Definition selbst zu veraendern.
+    randomTasks = List<String>.from(allStages[stg].randomTasks);
     for (var taskName in allStages[stg].activeTasks) {
       Task? found = getTask(taskName);
       if (found != null) {

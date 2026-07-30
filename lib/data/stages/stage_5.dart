@@ -1,5 +1,6 @@
 import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
@@ -16,37 +17,50 @@ final Stage stage5 = Stage(
     level: 5,
     member: 400,
     description: "Große Gemeinde - Delegation wird zur Notwendigkeit.",
-    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Leiter-Mentoring"],
-    randomTasks: ["Ein zwischenmenschliches Problem klären"],
+    activeTasks: ["Bibellesen", "Beten", "Schlafen", "Koordinatoren ausbilden"],
+    randomTasks: ["Ein zwischenmenschliches Problem klären", "Der Heilige Geist möchte wirken"],
     allTasks: [
       baseBible,
       basePrayer,
       baseSleep,
+      holySpiritWorking,
       Task(
-        name: "Leiter-Mentoring",
+        name: "Koordinatoren ausbilden",
         description: "Fördere Leiter, die wiederum andere fördern.",
         duration: 15000.0,
         cost: [Time(value: 8.0), Wisdom(value: 100.0)],
         award: [Wisdom(value: 120.0)],
-        modifier: [AddTask(task: "Pastoralreferent einstellen")],
+        modifier: [AddTask(task: "Fasten und Beten")],
       ),
       Task(
-        name: "Pastoralreferent einstellen",
-        description: "MEILENSTEIN: Eine professionelle Kraft für die Seelsorge (Limit 600).",
+        name: "Fasten und Beten",
+        description: "Bevor ein Offizier berufen wird, sucht die Bewegung im Fasten und Gebet gemeinsam Gottes "
+            "Führung für diesen Schritt.",
+        duration: 15000.0,
+        cost: [Time(value: 10.0)],
+        award: [Faith(value: 80.0), Wisdom(value: 20.0)],
+        modifier: [
+          AddTask(task: "Offizier berufen"),
+          AddToRandom(task: "Der Heilige Geist möchte wirken"),
+        ],
+      ),
+      Task(
+        name: "Offizier berufen",
+        description: "MEILENSTEIN: Ein hauptamtlicher Offizier für die Seelsorge (Limit 600).",
         duration: 25000.0,
         isMilestone: true,
         cost: [Time(value: 10.0), Money(value: 500.0), Wisdom(value: 200.0)],
         award: [Member(value: 1.0)], // Pacing: Reduziert auf 1.0
         modifier: [
-          MessageModifier(message: "PROFESSIONALISIERUNG: Mit einem Pastoralreferenten seid ihr bereit für die nächste Stufe (Limit 600)."),
+          MessageModifier(message: "PROFESSIONALISIERUNG: Mit einem Offizier seid ihr bereit für die nächste Stufe (Limit 600)."),
           SetMax(ressource: "Member", newMax: 600.0),
-          RemoveTask(task: "Pastoralreferent einstellen"),
-          AddTask(task: "Pastorale Arbeit koordinieren"),
+          RemoveTask(task: "Offizier berufen"),
+          AddTask(task: "Offiziersarbeit koordinieren"),
         ],
       ),
       Task(
-        name: "Pastorale Arbeit koordinieren",
-        description: "WARTUNG: Unterstützung des Pastoralteams bei der Begleitung der Gemeinde.",
+        name: "Offiziersarbeit koordinieren",
+        description: "WARTUNG: Unterstützung des Offiziers bei der Begleitung der Gemeinde.",
         duration: 20000.0,
         cost: [Time(value: 4.0), Wisdom(value: 100.0)],
         award: [Faith(value: 50.0), Wisdom(value: 50.0)],
