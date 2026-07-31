@@ -18,7 +18,7 @@ final Stage stage5 = Stage(
     member: 400,
     description: "Große Gemeinde - Delegation wird zur Notwendigkeit.",
     activeTasks: ["Bibellesen", "Beten", "Schlafen", "Koordinatoren ausbilden"],
-    randomTasks: ["Ein zwischenmenschliches Problem klären", "Verlorene Schafe"],
+    randomTasks: ["Ein zwischenmenschliches Problem klären", "Mitglieder wollen austreten"],
     allTasks: [
       baseBible,
       basePrayer,
@@ -42,53 +42,67 @@ final Stage stage5 = Stage(
         duration: 12000.0,
         cost: [Time(value: 5.0), Wisdom(value: 20.0)],
         award: [Member(value: 2.0), Faith(value: 15.0)],
+        modifier: [
+          // Räumt eine gerade laufende Austritts-Welle mit auf, egal in
+          // welcher Eskalationsstufe sie gerade steckt - RemoveTask ist ein
+          // No-Op, wenn der Task gar nicht aktiv ist. Wer regelmäßig in
+          // Jüngerschaftsgruppen investiert, bekommt das Problem dadurch
+          // faktisch in den Griff, ohne dass es einen harten "für immer
+          // gelöst"-Schalter braucht.
+          RemoveTask(task: "Mitglieder wollen austreten"),
+          RemoveTask(task: "Kurz vor dem Austritt"),
+        ],
       ),
       Task(
-        name: "Verlorene Schafe",
-        description: "KRISE: Ein Gemeindemitglied fehlt seit Wochen - kaum jemandem ist es aufgefallen. Bei "
-            "dieser Größe geht niemand mehr von selbst nach, wenn sich ein Schaf verirrt.",
+        name: "Mitglieder wollen austreten",
+        description: "KRISE: Mehrere Mitglieder überlegen, die Gemeinde zu verlassen. Auf Nachfrage sagen sie: "
+            "'Es ist mir hier einfach zu anonym geworden.'",
         duration: 8000.0,
         timeToSolve: 60000.0,
         cost: [Time(value: 5.0), Wisdom(value: 20.0)],
         award: [Faith(value: 10.0)],
         modifier: [
+          // Bewusst KEIN dauerhaftes RemoveTask ohne Nachfolger: einzelne
+          // Gespräche lösen das strukturelle Problem nicht, die Krise kommt
+          // wieder - bis Jüngerschaftsgruppen sie oben aktiv wegräumt.
           MessageModifier(
-            message: "NACHGEGANGEN: Persönlich gefunden - und Jüngerschaftsgruppen werden jetzt bewusst "
-                "gefördert, damit niemand mehr unbemerkt verloren geht.",
+            message: "AUFGEFANGEN: Die Gespräche haben geholfen - aber ohne echte Struktur wird das nicht der "
+                "letzte Fall bleiben.",
           ),
-          RemoveTask(task: "Verlorene Schafe"),
+          RemoveTask(task: "Mitglieder wollen austreten"),
+          AddTask(task: "Mitglieder wollen austreten"),
+          // Sicherheitsnetz für Erreichbarkeit: falls die Krise zufällig
+          // auftritt, bevor "Koordinatoren ausbilden" gestartet wurde, wird
+          // die eigentliche Lösung trotzdem sichtbar.
           AddTask(task: "Jüngerschaftsgruppen einführen"),
         ],
         missed: [
-          MessageModifier(message: "UNBEMERKT: Noch hat es niemand gemerkt - aber die Zeit läuft ihm davon."),
-          RemoveTask(task: "Verlorene Schafe"),
-          AddTask(task: "Ein Schaf verirrt sich weiter"),
+          MessageModifier(message: "IGNORIERT: Die Unzufriedenheit wächst weiter."),
+          RemoveTask(task: "Mitglieder wollen austreten"),
+          AddTask(task: "Kurz vor dem Austritt"),
+          AddTask(task: "Jüngerschaftsgruppen einführen"),
         ],
       ),
       Task(
-        name: "Ein Schaf verirrt sich weiter",
-        description: "LETZTE CHANCE: Das vermisste Mitglied steht kurz davor, sich ganz abzuwenden. Ein "
-            "persönliches, geduldiges Gespräch könnte es noch erreichen.",
+        name: "Kurz vor dem Austritt",
+        description: "LETZTE CHANCE: Einige Mitglieder haben ihren Austritt schon angekündigt. Ein "
+            "persönliches, geduldiges Gespräch könnte sie noch umstimmen.",
         duration: 10000.0,
         timeToSolve: 40000.0,
         cost: [Time(value: 8.0), Faith(value: 20.0)],
         award: [Faith(value: 20.0), Member(value: 0.5)],
         modifier: [
-          MessageModifier(
-            message: "HEIMGEHOLT: Das verlorene Schaf ist zurück - Jüngerschaftsgruppen werden jetzt bewusst "
-                "gefördert, damit so etwas seltener passiert.",
-          ),
-          RemoveTask(task: "Ein Schaf verirrt sich weiter"),
+          MessageModifier(message: "UMGESTIMMT: Sie bleiben - fürs Erste."),
+          RemoveTask(task: "Kurz vor dem Austritt"),
+          AddTask(task: "Mitglieder wollen austreten"),
           AddTask(task: "Jüngerschaftsgruppen einführen"),
         ],
         missed: [
           SubtractRes(ressources: [Member(value: 20.0), Faith(value: 15.0)]),
-          MessageModifier(
-            message: "VERLOREN: Das Schaf ist gegangen, ohne dass es jemand bemerkt hätte. Andere könnten "
-                "unbemerkt folgen.",
-          ),
-          RemoveTask(task: "Ein Schaf verirrt sich weiter"),
-          AddTask(task: "Verlorene Schafe"),
+          MessageModifier(message: "AUSGETRETEN: Sie sind gegangen, ohne dass es jemand aufhalten konnte."),
+          RemoveTask(task: "Kurz vor dem Austritt"),
+          AddTask(task: "Mitglieder wollen austreten"),
+          AddTask(task: "Jüngerschaftsgruppen einführen"),
         ],
       ),
       Task(
