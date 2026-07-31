@@ -18,7 +18,7 @@ final Stage stage5 = Stage(
     member: 400,
     description: "Große Gemeinde - Delegation wird zur Notwendigkeit.",
     activeTasks: ["Bibellesen", "Beten", "Schlafen", "Koordinatoren ausbilden"],
-    randomTasks: ["Ein zwischenmenschliches Problem klären", "Die Gemeinde wird anonym"],
+    randomTasks: ["Ein zwischenmenschliches Problem klären", "Verlorene Schafe"],
     allTasks: [
       baseBible,
       basePrayer,
@@ -44,23 +44,51 @@ final Stage stage5 = Stage(
         award: [Member(value: 2.0), Faith(value: 15.0)],
       ),
       Task(
-        name: "Die Gemeinde wird anonym",
-        description: "KRISE: Bei dieser Größe fühlen sich immer mehr Mitglieder nur noch als Nummer statt als "
-            "gekannte Person. Ohne echte Jüngerschaft in kleinen Gruppen verlierst du die Bewegung von innen.",
+        name: "Verlorene Schafe",
+        description: "KRISE: Ein Gemeindemitglied fehlt seit Wochen - kaum jemandem ist es aufgefallen. Bei "
+            "dieser Größe geht niemand mehr von selbst nach, wenn sich ein Schaf verirrt.",
         duration: 8000.0,
         timeToSolve: 60000.0,
         cost: [Time(value: 5.0), Wisdom(value: 20.0)],
         award: [Faith(value: 10.0)],
         modifier: [
-          MessageModifier(message: "ERKANNT: Jüngerschaftsgruppen werden bewusst gefördert, damit niemand verloren geht."),
-          RemoveTask(task: "Die Gemeinde wird anonym"),
+          MessageModifier(
+            message: "NACHGEGANGEN: Persönlich gefunden - und Jüngerschaftsgruppen werden jetzt bewusst "
+                "gefördert, damit niemand mehr unbemerkt verloren geht.",
+          ),
+          RemoveTask(task: "Verlorene Schafe"),
+          AddTask(task: "Jüngerschaftsgruppen einführen"),
+        ],
+        missed: [
+          MessageModifier(message: "UNBEMERKT: Noch hat es niemand gemerkt - aber die Zeit läuft ihm davon."),
+          RemoveTask(task: "Verlorene Schafe"),
+          AddTask(task: "Ein Schaf verirrt sich weiter"),
+        ],
+      ),
+      Task(
+        name: "Ein Schaf verirrt sich weiter",
+        description: "LETZTE CHANCE: Das vermisste Mitglied steht kurz davor, sich ganz abzuwenden. Ein "
+            "persönliches, geduldiges Gespräch könnte es noch erreichen.",
+        duration: 10000.0,
+        timeToSolve: 40000.0,
+        cost: [Time(value: 8.0), Faith(value: 20.0)],
+        award: [Faith(value: 20.0), Member(value: 0.5)],
+        modifier: [
+          MessageModifier(
+            message: "HEIMGEHOLT: Das verlorene Schaf ist zurück - Jüngerschaftsgruppen werden jetzt bewusst "
+                "gefördert, damit so etwas seltener passiert.",
+          ),
+          RemoveTask(task: "Ein Schaf verirrt sich weiter"),
           AddTask(task: "Jüngerschaftsgruppen einführen"),
         ],
         missed: [
           SubtractRes(ressources: [Member(value: 20.0), Faith(value: 15.0)]),
-          MessageModifier(message: "ABWANDERUNG: Mitglieder fühlen sich übersehen und wenden sich ab."),
-          RemoveTask(task: "Die Gemeinde wird anonym"),
-          AddTask(task: "Die Gemeinde wird anonym"),
+          MessageModifier(
+            message: "VERLOREN: Das Schaf ist gegangen, ohne dass es jemand bemerkt hätte. Andere könnten "
+                "unbemerkt folgen.",
+          ),
+          RemoveTask(task: "Ein Schaf verirrt sich weiter"),
+          AddTask(task: "Verlorene Schafe"),
         ],
       ),
       Task(
