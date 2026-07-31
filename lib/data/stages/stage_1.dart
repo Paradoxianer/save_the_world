@@ -53,7 +53,7 @@ final Stage stage1 = Stage(
       description: "Auch ein Leiter braucht Ruhe, um weise Entscheidungen zu treffen.",
       duration: 8000.0,
       cost: [Time(value: 8.0)],
-      award: [Time(value: 16.0)],
+      award: [Time(value: 24.0)],
     ),
     Task(
       name: "Gottesdienst vorbereiten",

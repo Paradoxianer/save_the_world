@@ -1,5 +1,7 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
+import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
@@ -17,7 +19,7 @@ final Stage stage4 = Stage(
   member: 200,
   description: "Kleine Gemeinde - Wachstum durch persönliche Begleitung.",
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Mentoring", "Korps aufräumen"],
-  randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde"],
+  randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde", "Problematische Lehrerschaft"],
   allTasks: [
     baseBible,
     basePrayer,
@@ -55,10 +57,21 @@ final Stage stage4 = Stage(
       cost: [Time(value: 10.0), Wisdom(value: 200.0), Faith(value: 50.0)],
       award: [Wisdom(value: 100.0), Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "WACHSTUMSSCHWELLE: Du hast die erste Jüngerschafts-Ebene etabliert. Limit 400!"),
+        MessageModifier(
+          message: "WACHSTUMSSCHWELLE: Du hast die erste Jüngerschafts-Ebene etabliert. Limit 400! Deine "
+              "Leiter von Leitern gewinnen jetzt von selbst neue Menschen - unabhängig von deinem eigenen Klicken.",
+        ),
         SetMax(ressource: "Member", newMax: 400.0),
         RemoveTask(task: "Leiter-Mentoring"),
         AddTask(task: "Mentoring-Programm leiten"),
+        // Der Sinn von Delegation: Wachstum entkoppelt sich vom eigenen Zutun.
+        // Skaliert mit der Mitgliederzahl, damit es mit der Bewegung mitwaechst.
+        AutoExecuteModifier(
+          intervalMs: 20000,
+          modifiers: [
+            MultiplyRes(targetResName: "Member", factorResName: "Member", multiplier: 0.006),
+          ],
+        ),
       ],
     ),
     Task(
@@ -99,6 +112,25 @@ final Stage stage4 = Stage(
         SubtractRes(ressources: [Member(value: 10.0), Faith(value: 50.0)]),
         RemoveTask(task: "Streit in der Gemeinde"),
         AddTask(task: "Streit in der Gemeinde"),
+      ],
+    ),
+    Task(
+      name: "Problematische Lehrerschaft",
+      description: "KRISE: Ein einflussreicher Lehrer verbreitet fragwürdige Lehre. Bei dieser Größe wirkt das "
+          "schnell und weit - unadressiert kann das in kurzer Zeit viele Mitglieder kosten.",
+      duration: 8000.0,
+      timeToSolve: 45000.0,
+      cost: [Wisdom(value: 80.0), Faith(value: 20.0)],
+      award: [Wisdom(value: 20.0)],
+      modifier: [
+        MessageModifier(message: "KORRIGIERT: Die Lehre wurde richtiggestellt, die Einheit im Glauben bewahrt."),
+        RemoveTask(task: "Problematische Lehrerschaft"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Member(value: 25.0), Faith(value: 40.0)]),
+        MessageModifier(message: "ABWANDERUNG: Viele Mitglieder haben die Gemeinde wegen der Irrlehre verlassen."),
+        RemoveTask(task: "Problematische Lehrerschaft"),
+        AddTask(task: "Problematische Lehrerschaft"),
       ],
     ),
   ],
