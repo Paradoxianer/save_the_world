@@ -18,7 +18,7 @@ final Stage stage5 = Stage(
     member: 400,
     description: "Große Gemeinde - Delegation wird zur Notwendigkeit.",
     activeTasks: ["Bibellesen", "Beten", "Schlafen", "Koordinatoren ausbilden"],
-    randomTasks: ["Ein zwischenmenschliches Problem klären"],
+    randomTasks: ["Ein zwischenmenschliches Problem klären", "Die Gemeinde wird anonym"],
     allTasks: [
       baseBible,
       basePrayer,
@@ -30,7 +30,38 @@ final Stage stage5 = Stage(
         duration: 15000.0,
         cost: [Time(value: 8.0), Wisdom(value: 100.0)],
         award: [Wisdom(value: 120.0)],
-        modifier: [AddTask(task: "Fasten und Beten")],
+        modifier: [
+          AddTask(task: "Fasten und Beten"),
+          AddTask(task: "Jüngerschaftsgruppen einführen"),
+        ],
+      ),
+      Task(
+        name: "Jüngerschaftsgruppen einführen",
+        description: "Aus den Hauskreisen werden bewusst multiplizierende Jüngerschaftsgruppen - kleine Kreise, "
+            "die gezielt neue Leiter heranbilden, damit bei dieser Größe niemand zur Nummer wird.",
+        duration: 12000.0,
+        cost: [Time(value: 5.0), Wisdom(value: 20.0)],
+        award: [Member(value: 2.0), Faith(value: 15.0)],
+      ),
+      Task(
+        name: "Die Gemeinde wird anonym",
+        description: "KRISE: Bei dieser Größe fühlen sich immer mehr Mitglieder nur noch als Nummer statt als "
+            "gekannte Person. Ohne echte Jüngerschaft in kleinen Gruppen verlierst du die Bewegung von innen.",
+        duration: 8000.0,
+        timeToSolve: 60000.0,
+        cost: [Time(value: 5.0), Wisdom(value: 20.0)],
+        award: [Faith(value: 10.0)],
+        modifier: [
+          MessageModifier(message: "ERKANNT: Jüngerschaftsgruppen werden bewusst gefördert, damit niemand verloren geht."),
+          RemoveTask(task: "Die Gemeinde wird anonym"),
+          AddTask(task: "Jüngerschaftsgruppen einführen"),
+        ],
+        missed: [
+          SubtractRes(ressources: [Member(value: 20.0), Faith(value: 15.0)]),
+          MessageModifier(message: "ABWANDERUNG: Mitglieder fühlen sich übersehen und wenden sich ab."),
+          RemoveTask(task: "Die Gemeinde wird anonym"),
+          AddTask(task: "Die Gemeinde wird anonym"),
+        ],
       ),
       Task(
         name: "Fasten und Beten",
