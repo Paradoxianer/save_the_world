@@ -18,7 +18,13 @@ final Stage stage8 = Stage(
   member: 1100,
   description: "MegaChurch Level 1 - Die Leitung durch Vision wird zentral.",
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Vision-Casting", "Budget erstellen"],
-  randomTasks: ["Kassendifferenz finden", "Standorte kriseln", "Der Heilige Geist möchte wirken"],
+  randomTasks: [
+    "Kassendifferenz finden",
+    "Standorte kriseln",
+    "Isolation an der Spitze",
+    "Ein großer Spender springt ab",
+    "Der Heilige Geist möchte wirken",
+  ],
   allTasks: [
     baseBible,
     basePrayer,
@@ -109,6 +115,48 @@ final Stage stage8 = Stage(
         MessageModifier(message: "ZERFALL: Ein Standort verliert an Substanz - Mitglieder und Ruf gehen verloren."),
         RemoveTask(task: "Standorte kriseln"),
         AddTask(task: "Standorte kriseln"),
+      ],
+    ),
+    Task(
+      name: "Isolation an der Spitze",
+      description: "KRISE: Trotz äußerem Erfolg spürst du selbst kaum noch Nähe zu Gott - zu viele Termine, "
+          "zu wenig echte geistliche Begleitung für dich persönlich. Niemand fragt den Leiter, wie es IHM geht.",
+      duration: 15000.0,
+      timeToSolve: 60000.0,
+      cost: [Time(value: 12.0)],
+      award: [Faith(value: 150.0)],
+      modifier: [
+        MessageModifier(
+          message: "AUFGETANKT: Eine bewusste Auszeit mit einem geistlichen Begleiter hat dich wieder verankert.",
+        ),
+        RemoveTask(task: "Isolation an der Spitze"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Faith(value: 300.0)]),
+        MessageModifier(message: "AUSGEBRANNT: Du funktionierst nur noch - die Nähe zu Gott ist fast verschwunden."),
+        RemoveTask(task: "Isolation an der Spitze"),
+        AddTask(task: "Isolation an der Spitze"),
+      ],
+    ),
+    Task(
+      name: "Ein großer Spender springt ab",
+      description: "KRISE: Einer eurer größten Geldgeber zieht sich unerwartet zurück - ein großer Teil des "
+          "Budgets steht plötzlich infrage.",
+      duration: 10000.0,
+      timeToSolve: 50000.0,
+      cost: [Time(value: 6.0), Wisdom(value: 60.0)],
+      award: [Money(value: 500.0)],
+      modifier: [
+        MessageModifier(
+          message: "AUFGEFANGEN: Neue, breiter gestreute Unterstützer gefunden - weniger abhängig von Einzelnen.",
+        ),
+        RemoveTask(task: "Ein großer Spender springt ab"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Money(value: 3000.0)]),
+        MessageModifier(message: "LOCH IM BUDGET: Die Abhängigkeit von wenigen großen Gebern rächt sich."),
+        RemoveTask(task: "Ein großer Spender springt ab"),
+        AddTask(task: "Ein großer Spender springt ab"),
       ],
     ),
   ],
