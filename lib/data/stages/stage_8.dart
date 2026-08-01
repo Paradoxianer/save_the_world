@@ -17,8 +17,8 @@ final Stage stage8 = Stage(
   level: 8,
   member: 1100,
   description: "MegaChurch Level 1 - Die Leitung durch Vision wird zentral.",
-  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Budget erstellen", "Vision-Casting"],
-  randomTasks: ["Kassendifferenz finden", "Der Heilige Geist möchte wirken"],
+  activeTasks: ["Bibellesen", "Beten", "Schlafen", "Vision-Casting", "Budget erstellen"],
+  randomTasks: ["Kassendifferenz finden", "Standorte kriseln", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     basePrayer,
@@ -27,14 +27,16 @@ final Stage stage8 = Stage(
     holySpiritWorking,
     Task(
       name: "Vision-Casting",
-      description: "Begeistere die Massen für die Zukunft der Gemeinde.",
+      description: "Begeistere die Massen für eine gemeinsame Zukunft - die eine Vision, die alle Standorte "
+          "trägt, statt vieler einzelner Gemeinden unter einem Dach.",
       duration: 15000.0,
       cost: [Time(value: 4.0), Faith(value: 300.0)],
-      award: [Faith(value: 500.0), Publicity(value: 50.0), Member(value: 0.2)], 
+      award: [Faith(value: 500.0), Publicity(value: 50.0), Member(value: 0.2)],
+      modifier: [AddTask(task: "Filialnetzwerk unter einer Vision vereinen")],
     ),
     Task(
       name: "Budget erstellen",
-      description: "Die Finanzen einer MegaChurch erfordern Planung.",
+      description: "Auch eine gemeinsame Vision braucht Geld, um an jedem Standort umgesetzt zu werden.",
       duration: 15000.0,
       cost: [Time(value: 4.0), Wisdom(value: 100.0)],
       award: [Money(value: 500.0), Wisdom(value: 20.0)],
@@ -46,19 +48,20 @@ final Stage stage8 = Stage(
       duration: 10000.0,
       cost: [Time(value: 2.0), Faith(value: 50.0)],
       award: [Wisdom(value: 30.0), Money(value: 1000.0)],
-      modifier: [AddTask(task: "Filialgemeinde gründen")],
+      modifier: [AddTask(task: "Filialnetzwerk unter einer Vision vereinen")],
     ),
     Task(
-      name: "Filialgemeinde gründen",
-      description: "MEILENSTEIN: Erster Ableger in einer Nachbarstadt (Limit 1800).",
+      name: "Filialnetzwerk unter einer Vision vereinen",
+      description: "MEILENSTEIN: Nicht noch ein Standort - die bestehenden Standorte wachsen unter einer "
+          "gemeinsamen, zentral getragenen Vision zusammen statt auseinanderzudriften (Limit 1800).",
       duration: 35000.0,
       isMilestone: true,
       cost: [Money(value: 5000.0), Faith(value: 500.0)],
       award: [Publicity(value: 200.0), Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "MULTIPLIKATION: Der erste Campus ist eröffnet! Limit 1800!"),
+        MessageModifier(message: "EINHEIT: Eine Vision trägt jetzt das ganze Netzwerk. Limit 1800!"),
         SetMax(ressource: "Member", newMax: 1800.0),
-        RemoveTask(task: "Filialgemeinde gründen"),
+        RemoveTask(task: "Filialnetzwerk unter einer Vision vereinen"),
         AddTask(task: "Filialnetzwerk betreuen"),
       ],
     ),
@@ -84,6 +87,28 @@ final Stage stage8 = Stage(
         MessageModifier(message: "SCHADEN: Ungeklärte Finanzen kosten Ruf und Geld."),
         RemoveTask(task: "Kassendifferenz finden"),
         AddTask(task: "Kassendifferenz finden"),
+      ],
+    ),
+    Task(
+      name: "Standorte kriseln",
+      description: "KRISE: An mehreren Standorten sinkt die Beteiligung, die Leitung vor Ort ist überfordert, "
+          "Ehrenamtliche sind frustriert. Du kannst nicht überall gleichzeitig sein - ohne gezielte "
+          "Unterstützung drohen einzelne Standorte zu zerfallen.",
+      duration: 12000.0,
+      timeToSolve: 55000.0,
+      cost: [Time(value: 6.0), Wisdom(value: 80.0)],
+      award: [Faith(value: 30.0)],
+      modifier: [
+        MessageModifier(
+          message: "STABILISIERT: Gezielte Unterstützung und Coaching haben die Standorte wieder gefestigt.",
+        ),
+        RemoveTask(task: "Standorte kriseln"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Member(value: 40.0), Publicity(value: 80.0)]),
+        MessageModifier(message: "ZERFALL: Ein Standort verliert an Substanz - Mitglieder und Ruf gehen verloren."),
+        RemoveTask(task: "Standorte kriseln"),
+        AddTask(task: "Standorte kriseln"),
       ],
     ),
   ],
