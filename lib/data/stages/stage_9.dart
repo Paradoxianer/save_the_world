@@ -26,7 +26,7 @@ final Stage stage9 = Stage(
     "Schlafen",
     "Kollekte",
     "FSJler einstellen",
-    "Ein Betriebssystem für die Bewegung entwickeln",
+    "Bibelschule gründen",
   ],
   randomTasks: [
     "Jemand möchte heiraten",
@@ -78,28 +78,19 @@ final Stage stage9 = Stage(
       ],
     ),
     Task(
-      name: "Ein Betriebssystem für die Bewegung entwickeln",
-      description: "Damit die Bewegung weiterwächst, ohne dass du persönlich überall dabei sein musst, "
-          "braucht es verlässliche Systeme: Ausbildung, Berichtswege, Finanzen. Die Gefahr dabei: Systeme "
-          "sollen Menschen dienen - nicht umgekehrt.",
-      duration: 20000.0,
-      cost: [Time(value: 6.0), Wisdom(value: 300.0)],
-      award: [Wisdom(value: 150.0)],
-      modifier: [
-        AddTask(task: "Skalierbare Leitungsstruktur etablieren"),
-        AddTask(task: "Bibelschule gründen"),
-        AddTask(task: "Prophetenschule gründen"),
-        AddTask(task: "Lobpreisschule gründen"),
-      ],
-    ),
-    Task(
       name: "Bibelschule gründen",
-      description: "EINMALIG: Eine eigene Ausbildungsstätte für fundierte Lehre - statt einzelner Kurse ein "
-          "durchgehendes Programm, das neue Leiter mit Substanz statt nur mit Begeisterung ausstattet.",
+      description: "Eine eigene Ausbildungsstätte für fundierte Lehre - statt einzelner Kurse ein "
+          "durchgehendes Programm, das neue Leiter mit Substanz statt nur mit Begeisterung ausstattet. Der "
+          "erste Baustein einer neuen Generation von Leitern.",
       duration: 20000.0,
       once: true,
       cost: [Time(value: 6.0), Wisdom(value: 200.0), Money(value: 2000.0)],
       award: [Wisdom(value: 200.0)],
+      modifier: [
+        AddTask(task: "Eine neue Generation von Leitern ausbilden"),
+        AddTask(task: "Prophetenschule gründen"),
+        AddTask(task: "Lobpreisschule gründen"),
+      ],
     ),
     Task(
       name: "Prophetenschule gründen",
@@ -127,17 +118,19 @@ final Stage stage9 = Stage(
       award: [Publicity(value: 100.0), Faith(value: 50.0)],
     ),
     Task(
-      name: "Skalierbare Leitungsstruktur etablieren",
-      description: "MEILENSTEIN: Ausbildungspipeline, Berichtswege und Finanzsysteme tragen jetzt die ganze "
-          "Bewegung - unabhängig von dir persönlich (Limit 2800).",
+      name: "Eine neue Generation von Leitern ausbilden",
+      description: "MEILENSTEIN: Bibelschule, Prophetenschule und Lobpreisschule bilden gemeinsam eine neue "
+          "Generation von Leitern aus, die die Bewegung tragen - unabhängig von dir persönlich (Limit 2800). "
+          "\"Was du von mir gehört hast, vertraue es zuverlässigen Menschen an, die fähig sein werden, auch "
+          "andere zu lehren\" (2. Timotheus 2,2).",
       duration: 40000.0,
       isMilestone: true,
       cost: [Wisdom(value: 1000.0), Money(value: 10000.0), Member(value: 200.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "MULTIPLIKATION: Die Leitungsstruktur trägt sich selbst. Limit 2800!"),
+        MessageModifier(message: "MULTIPLIKATION: Eine neue Generation von Leitern trägt die Bewegung. Limit 2800!"),
         SetMax(ressource: "Member", newMax: 2800.0),
-        RemoveTask(task: "Skalierbare Leitungsstruktur etablieren"),
+        RemoveTask(task: "Eine neue Generation von Leitern ausbilden"),
         AddTask(task: "Netzwerk pflegen"),
       ],
     ),
