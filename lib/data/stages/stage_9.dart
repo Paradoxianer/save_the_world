@@ -1,4 +1,5 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -84,7 +85,46 @@ final Stage stage9 = Stage(
       duration: 20000.0,
       cost: [Time(value: 6.0), Wisdom(value: 300.0)],
       award: [Wisdom(value: 150.0)],
-      modifier: [AddTask(task: "Skalierbare Leitungsstruktur etablieren")],
+      modifier: [
+        AddTask(task: "Skalierbare Leitungsstruktur etablieren"),
+        AddTask(task: "Bibelschule gründen"),
+        AddTask(task: "Prophetenschule gründen"),
+        AddTask(task: "Lobpreisschule gründen"),
+      ],
+    ),
+    Task(
+      name: "Bibelschule gründen",
+      description: "EINMALIG: Eine eigene Ausbildungsstätte für fundierte Lehre - statt einzelner Kurse ein "
+          "durchgehendes Programm, das neue Leiter mit Substanz statt nur mit Begeisterung ausstattet.",
+      duration: 20000.0,
+      once: true,
+      cost: [Time(value: 6.0), Wisdom(value: 200.0), Money(value: 2000.0)],
+      award: [Wisdom(value: 200.0)],
+    ),
+    Task(
+      name: "Prophetenschule gründen",
+      description: "EINMALIG: Ausbildung im Hören auf Gott, in geistlichen Gaben und Unterscheidung - damit "
+          "das Wirken des Heiligen Geistes nicht dem Zufall überlassen bleibt, sondern bewusst kultiviert wird.",
+      duration: 20000.0,
+      once: true,
+      cost: [Time(value: 6.0), Faith(value: 300.0), Money(value: 2000.0)],
+      award: [Faith(value: 150.0)],
+      modifier: [
+        AddToRandom(
+          task: "Der Heilige Geist möchte wirken",
+          resourceName: "Faith",
+          resourceThreshold: 3000.0,
+        ),
+      ],
+    ),
+    Task(
+      name: "Lobpreisschule gründen",
+      description: "EINMALIG: Musiker und Anbetungsleiter werden gezielt ausgebildet, statt sich zufällig zu "
+          "finden - Anbetung, die trägt statt nur unterhält.",
+      duration: 20000.0,
+      once: true,
+      cost: [Time(value: 6.0), Wisdom(value: 150.0), Money(value: 2000.0)],
+      award: [Publicity(value: 100.0), Faith(value: 50.0)],
     ),
     Task(
       name: "Skalierbare Leitungsstruktur etablieren",
