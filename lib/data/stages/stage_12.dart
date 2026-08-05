@@ -78,6 +78,7 @@ final Stage stage12 = Stage(
         ),
         RemoveTask(task: "Ein Netzwerk aus Regionalleitern etablieren"),
         AddTask(task: "Regionalleiter regelmäßig besuchen"),
+        AddTask(task: "Für Regionalleiter beten"),
       ],
     ),
     Task(
@@ -87,6 +88,14 @@ final Stage stage12 = Stage(
       duration: 25000.0,
       cost: [Time(value: 6.0), Wisdom(value: 200.0)],
       award: [Faith(value: 100.0), Publicity(value: 50.0)],
+    ),
+    Task(
+      name: "Für Regionalleiter beten",
+      description: "WARTUNG: Besuche allein reichen nicht - im Gebet für die Regionalleiter einzustehen, "
+          "trägt sie auch dann, wenn du nicht selbst vor Ort sein kannst.",
+      duration: 10000.0,
+      cost: [Time(value: 2.0), Faith(value: 20.0)],
+      award: [Faith(value: 60.0), Wisdom(value: 20.0)],
     ),
     Task(
       name: "Politischer Druck",
