@@ -33,14 +33,18 @@ final Stage stage13 = Stage(
     holySpiritWorking,
     Task(
       name: "DNA-Transfer Workshop",
-      description: "Kernwerte in alle Regionen exportieren, um Einheit zu wahren.",
+      description: "Kernwerte in alle Regionen exportieren, um Einheit zu wahren - die eigentliche "
+          "Voraussetzung dafür, dass eine internationale Konferenz die Bewegung zusammenhält statt nur "
+          "Menschen physisch an einen Ort zu bringen.",
       duration: 25000.0,
       cost: [Time(value: 5.0), Wisdom(value: 500.0), Faith(value: 200.0)],
       award: [Faith(value: 300.0), Wisdom(value: 200.0)],
+      modifier: [AddTask(task: "Internationale Konferenz")],
     ),
     Task(
       name: "Drehbuch schreiben",
-      description: "BEFÄHIGUNG: Die Grundlage für eine mediale Reichweite legen.",
+      description: "NEBENSTRANG: Die Grundlage für eine mediale Reichweite legen - erhöht die Sichtbarkeit, "
+          "ersetzt aber keine echte Einheit in den Kernwerten.",
       duration: 15000.0,
       cost: [Wisdom(value: 200.0), Time(value: 4.0)],
       award: [Wisdom(value: 100.0)],
@@ -55,13 +59,11 @@ final Stage stage13 = Stage(
       duration: 30000.0,
       cost: [Money(value: 50000.0), Publicity(value: 500.0)],
       award: [Publicity(value: 1000.0), Member(value: 1.0)], // Pacing
-      modifier: [
-        AddTask(task: "Internationale Konferenz"),
-      ]
     ),
     Task(
       name: "Internationale Konferenz",
-      description: "MEILENSTEIN: Vernetzung über Landesgrenzen hinweg (Limit 50.000).",
+      description: "MEILENSTEIN: Nach erfolgreichem DNA-Transfer trägt eine internationale Konferenz die "
+          "gemeinsamen Kernwerte über Landesgrenzen hinweg (Limit 50.000).",
       duration: 60000.0,
       isMilestone: true,
       cost: [Money(value: 200000.0), Publicity(value: 1000.0), Wisdom(value: 2000.0)],
