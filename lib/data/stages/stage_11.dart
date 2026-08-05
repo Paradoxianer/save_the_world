@@ -21,19 +21,21 @@ final Stage stage11 = Stage(
   description: "Beeinflussende Kirche - Deine Stimme hat Gewicht in der Gesellschaft.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
-    "Globalen Dienst aufrechterhalten",
+    "Gesellschaftliche Präsenz zeigen",
     "Lobby-Arbeit aufbauen",
     "Regionale Konferenz veranstalten"
   ],
-  randomTasks: ["Medien-Skandal", "Der Heilige Geist möchte wirken"],
+  randomTasks: ["Vereinnahmt von der Politik", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(
-      name: "Globalen Dienst aufrechterhalten",
-      description: "WARTUNG: Koordiniere die weltweiten Aktivitäten.",
+      name: "Gesellschaftliche Präsenz zeigen",
+      description: "WARTUNG: Öffentliche Stellungnahmen, Community-Engagement, echte Präsenz im "
+          "gesellschaftlichen Diskurs - anders als Lobby-Arbeit geht es hier nicht um Zugang zu "
+          "Entscheidungsträgern, sondern um eine authentische, sichtbare Stimme für alle.",
       duration: 20000.0,
       cost: [Time(value: 2.0), Wisdom(value: 50.0)],
       award: [Faith(value: 20.0), Publicity(value: 10.0)],
@@ -76,16 +78,26 @@ final Stage stage11 = Stage(
       award: [Faith(value: 50.0), Publicity(value: 50.0)],
     ),
     Task(
-      name: "Medien-Skandal",
-      description: "KRISE: Falschinformationen verbreiten sich global. Eine schnelle, weise Reaktion ist nötig.",
-      duration: 8000.0,
-      timeToSolve: 35000.0, // Sehr schnell für eine globale Krise
-      cost: [Wisdom(value: 500.0), Publicity(value: 1500.0)],
-      award: [Wisdom(value: 100.0)],
+      name: "Vereinnahmt von der Politik",
+      description: "KRISE: Politische Kräfte wollen euren Einfluss für ihre eigenen Zwecke nutzen. Die "
+          "Versuchung ist groß - Zugang zu Macht, Schutz, Fördergelder - aber wer sich vereinnahmen lässt, "
+          "verliert die prophetische Distanz, die diese Stimme erst glaubwürdig macht.",
+      duration: 12000.0,
+      timeToSolve: 50000.0,
+      cost: [Wisdom(value: 400.0), Faith(value: 200.0)],
+      award: [Publicity(value: 100.0)],
+      modifier: [
+        MessageModifier(message: "UNABHÄNGIG GEBLIEBEN: Der Einfluss bleibt - aber nicht käuflich."),
+        RemoveTask(task: "Vereinnahmt von der Politik"),
+      ],
       missed: [
-        SubtractRes(ressources: [Publicity(value: 2500.0), Faith(value: 500.0)]),
-        MessageModifier(message: "REPUTATIONSCHADEN: Das Schweigen hat dem weltweiten Ansehen massiv geschadet."),
-        AddTask(task: "Medien-Skandal"),
+        SubtractRes(ressources: [Faith(value: 400.0), Member(value: 100.0)]),
+        MessageModifier(
+          message: "VEREINNAHMT: Die Bewegung wird als politisches Werkzeug wahrgenommen - Glaubwürdigkeit "
+              "und Vertrauen gehen verloren.",
+        ),
+        RemoveTask(task: "Vereinnahmt von der Politik"),
+        AddTask(task: "Vereinnahmt von der Politik"),
       ],
     ),
   ],
