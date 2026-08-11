@@ -1,8 +1,10 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
@@ -18,10 +20,11 @@ final Stage stage15 = Stage(
   member: 100000,
   description: "Globale Bewegung Level 1 - Die Stimme in der Weltgesellschaft.",
   activeTasks: [
-    "Bibellesen", "Beten", 
-    "Schlafen", 
-    "Kollekte", 
-    "Weltweite Kampagne planen"
+    "Bibellesen", "Beten",
+    "Schlafen",
+    "Kollekte",
+    "Weltweite Kampagne planen",
+    "Zur Aktivistenorganisation werden"
   ],
   randomTasks: ["Politischer Druck (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -53,6 +56,28 @@ final Stage stage15 = Stage(
         SetMax(ressource: "Member", newMax: 250000.0),
         RemoveTask(task: "Weltweite Kampagne starten"),
         AddTask(task: "Globale Anliegen vertreten"),
+      ],
+    ),
+    Task(
+      name: "Zur Aktivistenorganisation werden",
+      description: "VERSUCHUNG: Die Bewegung könnte sich als säkulare Aktivistenorganisation neu "
+          "aufstellen - Geld und Aufmerksamkeit strömen dann in einem Maß, das mit geistlicher Arbeit "
+          "kaum zu erreichen wäre. Der Preis läuft dauerhaft mit: Glaube blutet aus, solange diese "
+          "Ausrichtung besteht.",
+      duration: 30000.0,
+      cost: [Time(value: 6.0), Publicity(value: 500.0)],
+      award: [Money(value: 300000.0), Publicity(value: 2000.0)],
+      modifier: [
+        MessageModifier(message: "KURSWECHSEL: Die Bewegung tritt jetzt öffentlich als Aktivistenorganisation auf."),
+        AutoExecuteModifier(
+          intervalMs: 15000,
+          modifiers: [
+            MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 0.05),
+            MultiplyRes(targetResName: "Publicity", factorResName: "Member", multiplier: 0.02),
+            SubtractRes(ressources: [Faith(value: 500.0)]),
+          ],
+        ),
+        RemoveTask(task: "Zur Aktivistenorganisation werden"),
       ],
     ),
     Task(
