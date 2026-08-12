@@ -26,7 +26,11 @@ final Stage stage15 = Stage(
     "Weltweite Kampagne planen",
     "Zur Aktivistenorganisation werden"
   ],
-  randomTasks: ["Politischer Druck (Krise)", "Der Heilige Geist möchte wirken"],
+  randomTasks: [
+    "Korruption durch das große Geld",
+    "Wer sind wir eigentlich noch?",
+    "Der Heilige Geist möchte wirken"
+  ],
   allTasks: [
     baseBible,
     basePrayer,
@@ -88,30 +92,53 @@ final Stage stage15 = Stage(
       award: [Publicity(value: 200.0), Faith(value: 100.0)],
     ),
     Task(
-      name: "Politischer Druck (Krise)",
-      description: "KRISE: Regierungen stellen die Gemeinnützigkeit in Frage!",
+      name: "Korruption durch das große Geld",
+      description: "KRISE: Die automatisch fließenden Summen wecken Begehrlichkeiten - Vorwürfe, dass sich "
+          "Führungskräfte bereichern oder Mittel zweckentfremdet werden, machen die Runde. Nur echte "
+          "Transparenz kann das Vertrauen wiederherstellen.",
       duration: 20000.0,
       timeToSolve: 60000.0,
-      cost: [Wisdom(value: 1500.0), Money(value: 20000.0)],
+      cost: [Wisdom(value: 1500.0), Faith(value: 500.0)],
       award: [Wisdom(value: 200.0)],
       modifier: [
-        MessageModifier(message: "BESTANDEN: Die rechtliche Position wurde gefestigt."),
-        RemoveTask(task: "Politischer Druck (Krise)"),
+        MessageModifier(message: "OFFENGELEGT: Volle Transparenz über alle Mittel stellt das Vertrauen wieder her."),
+        RemoveTask(task: "Korruption durch das große Geld"),
       ],
       missed: [
-        SubtractRes(ressources: [Money(value: 100000.0), Publicity(value: 5000.0)]),
-        MessageModifier(message: "REPRESSION: Schwere finanzielle und rechtliche Folgen weltweit!"),
-        RemoveTask(task: "Politischer Druck (Krise)"),
-        AddTask(task: "Rechtlicher Beistand suchen"), // Folge-Task bei Misserfolg
+        SubtractRes(ressources: [Money(value: 100000.0), Publicity(value: 5000.0), Faith(value: 300.0)]),
+        MessageModifier(message: "SKANDAL: Berichte über Misswirtschaft schockieren Öffentlichkeit und eigene Leute."),
+        RemoveTask(task: "Korruption durch das große Geld"),
+        AddTask(task: "Finanzielle Transparenz schaffen"), // Folge-Task bei Misserfolg
       ],
     ),
     Task(
-      name: "Rechtlicher Beistand suchen",
-      description: "FOLGE-KRISE: Repariere den juristischen Schaden der Bewegung.",
+      name: "Finanzielle Transparenz schaffen",
+      description: "FOLGE-KRISE: Repariere den Vertrauensschaden mit offengelegten Finanzberichten und "
+          "unabhängiger Prüfung.",
       duration: 25000.0,
       cost: [Money(value: 50000.0), Wisdom(value: 1000.0)],
       modifier: [
-        RemoveTask(task: "Rechtlicher Beistand suchen"),
+        RemoveTask(task: "Finanzielle Transparenz schaffen"),
+      ],
+    ),
+    Task(
+      name: "Wer sind wir eigentlich noch?",
+      description: "KRISE: Mitglieder und die eigene Basis fragen offen, ob die Bewegung noch für Jesus "
+          "steht - oder nur noch eine gut vermarktete NGO mit Spiritualitäts-Anstrich ist. Nur geistliche "
+          "Klarheit, kein PR-Statement, kann diese Frage beantworten.",
+      duration: 18000.0,
+      timeToSolve: 55000.0,
+      cost: [Time(value: 10.0), Faith(value: 300.0)],
+      award: [Faith(value: 150.0)],
+      modifier: [
+        MessageModifier(message: "NEU AUSGERICHTET: Die Bewegung besinnt sich glaubwürdig auf ihren Ursprung."),
+        RemoveTask(task: "Wer sind wir eigentlich noch?"),
+      ],
+      missed: [
+        SubtractRes(ressources: [Faith(value: 800.0), Member(value: 5000.0)]),
+        MessageModifier(message: "ENTFREMDET: Enttäuschte Mitglieder wenden sich ab - die Bewegung hat ihre Mitte verloren."),
+        RemoveTask(task: "Wer sind wir eigentlich noch?"),
+        AddTask(task: "Wer sind wir eigentlich noch?"),
       ],
     ),
   ],
