@@ -1,4 +1,5 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
@@ -20,7 +21,7 @@ final Stage stage17 = Stage(
     "Bibellesen", "Beten",
     "Schlafen",
     "Lehrmaterial für die nächste Generation entwickeln",
-    "Theologische Fakultät gründen"
+    "Bibelschulen zur Theologischen Fakultät erheben"
   ],
   randomTasks: ["Lehrstreit gefährdet die Einheit (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -31,8 +32,9 @@ final Stage stage17 = Stage(
     holySpiritWorking,
     Task(
       name: "Lehrmaterial für die nächste Generation entwickeln",
-      description: "BEFÄHIGUNG: Bevor die Fakultät wachsen kann, muss die Kernlehre in vermittelbares "
-          "Material gefasst werden - verständlich für neue Kulturen, ohne den Kern zu verwässern.",
+      description: "BEFÄHIGUNG: Was in den Bibel-, Propheten- und Lobpreisschulen an Substanz gewachsen "
+          "ist, muss jetzt in vermittelbares Material gefasst werden - verständlich für neue Kulturen, "
+          "ohne den Kern zu verwässern.",
       duration: 30000.0,
       cost: [Wisdom(value: 800.0), Money(value: 150000.0)],
       award: [Wisdom(value: 300.0)],
@@ -55,17 +57,27 @@ final Stage stage17 = Stage(
       ],
     ),
     Task(
-      name: "Theologische Fakultät gründen",
-      description: "MEILENSTEIN: Wissenschaftliche Sicherung der Bewegung für Generationen (Limit 1.000.000).",
+      name: "Bibelschulen zur Theologischen Fakultät erheben",
+      description: "MEILENSTEIN: Aus den einzelnen Bibel-, Propheten- und Lobpreisschulen wird eine "
+          "wissenschaftlich anerkannte Theologische Fakultät - Absicherung der Lehre für Generationen "
+          "(Limit 1.000.000). Aber reines Kopfwissen erstarrt: eine Fakultät braucht immer wieder neue "
+          "geistliche Ausrichtung, sonst verliert sie genau das, was sie eigentlich bewahren soll.",
       duration: 95000.0,
       isMilestone: true,
-      cost: [Money(value: 3000000.0), Wisdom(value: 6000.0), Faith(value: 3000.0)],
+      cost: [Money(value: 5000000.0), Wisdom(value: 8000.0), Faith(value: 4000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "BILDUNG: Die nächste Generation von Leitern wird fundiert ausgebildet. Limit 1.000.000!"),
+        MessageModifier(message: "BILDUNG: Die Bibelschulen sind jetzt eine anerkannte Fakultät. Limit 1.000.000!"),
         SetMax(ressource: "Member", newMax: 1000000.0),
-        RemoveTask(task: "Theologische Fakultät gründen"),
+        AutoExecuteModifier(
+          intervalMs: 12000,
+          modifiers: [
+            SubtractRes(ressources: [Faith(value: 600.0)]),
+          ]
+        ),
+        RemoveTask(task: "Bibelschulen zur Theologischen Fakultät erheben"),
         AddTask(task: "Fakultät wissenschaftlich leiten"),
+        AddTask(task: "Die Fakultät geistlich neu ausrichten"),
       ],
     ),
     Task(
@@ -74,6 +86,15 @@ final Stage stage17 = Stage(
       duration: 40000.0,
       cost: [Time(value: 2.0), Wisdom(value: 1000.0)],
       award: [Wisdom(value: 500.0), Faith(value: 200.0)],
+    ),
+    Task(
+      name: "Die Fakultät geistlich neu ausrichten",
+      description: "WARTUNG: Wissenschaftliche Arbeit an der Lehre kann leicht zu reiner Kopfarbeit "
+          "erstarren - immer wieder braucht es bewusste Neuausrichtung auf Gott, sonst verliert die "
+          "Fakultät genau die geistliche Substanz, die sie eigentlich bewahren soll.",
+      duration: 25000.0,
+      cost: [Time(value: 5.0), Wisdom(value: 200.0)],
+      award: [Faith(value: 500.0)],
     ),
     Task(
       name: "Lehrstreit gefährdet die Einheit (Krise)",
