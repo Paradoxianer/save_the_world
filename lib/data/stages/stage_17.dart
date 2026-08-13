@@ -3,7 +3,6 @@ import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
 import 'package:save_the_world_flutter_app/models/stage.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
@@ -16,14 +15,14 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage17 = Stage(
   level: 17,
   member: 500000,
-  description: "Globale Bewegung Level 1 - Wissenschaftliche DNA-Wahrung und Logistik.",
+  description: "Globale Bewegung Level 3 - Wissenschaftliche Sicherung der Lehre für kommende Generationen.",
   activeTasks: [
-    "Bibellesen", "Beten", 
-    "Schlafen", 
-    "Logistik-Infrastruktur planen", 
+    "Bibellesen", "Beten",
+    "Schlafen",
+    "Lehrmaterial für die nächste Generation entwickeln",
     "Theologische Fakultät gründen"
   ],
-  randomTasks: ["Wirtschaftsprüfung (Audit)", "Der Heilige Geist möchte wirken"],
+  randomTasks: ["Lehrstreit gefährdet die Einheit (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     basePrayer,
@@ -31,35 +30,39 @@ final Stage stage17 = Stage(
     collectMoney,
     holySpiritWorking,
     Task(
-      name: "Logistik-Infrastruktur planen",
-      description: "BEFÄHIGUNG: Die Basis für globale Hilfsgüter-Verteilung.",
+      name: "Lehrmaterial für die nächste Generation entwickeln",
+      description: "BEFÄHIGUNG: Bevor die Fakultät wachsen kann, muss die Kernlehre in vermittelbares "
+          "Material gefasst werden - verständlich für neue Kulturen, ohne den Kern zu verwässern.",
       duration: 30000.0,
-      cost: [Wisdom(value: 500.0), Money(value: 100000.0)],
-      award: [Wisdom(value: 200.0)],
+      cost: [Wisdom(value: 800.0), Money(value: 150000.0)],
+      award: [Wisdom(value: 300.0)],
       modifier: [
-        AddTask(task: "Logistikzentrum Weltmission betreiben"),
-        RemoveTask(task: "Logistik-Infrastruktur planen"),
+        AddTask(task: "Das Glaubensfundament dokumentieren"),
+        RemoveTask(task: "Lehrmaterial für die nächste Generation entwickeln"),
       ],
     ),
     Task(
-      name: "Logistikzentrum Weltmission betreiben",
-      description: "SYSTEM: Verteilung von Hilfsgütern weltweit innerhalb von Stunden.",
+      name: "Das Glaubensfundament dokumentieren",
+      description: "SYSTEM: Die Kernlehre wird so dokumentiert, dass sie über Generationen und Kulturen "
+          "hinweg verständlich bleibt - das kostet nicht nur Geld und Wissen, sondern echte geistliche "
+          "Klarheit.",
       duration: 40000.0,
-      cost: [Money(value: 500000.0), Time(value: 5.0)],
-      award: [Publicity(value: 10000.0), Faith(value: 1000.0), Member(value: 1.0)],
+      cost: [Money(value: 400000.0), Wisdom(value: 1000.0), Faith(value: 500.0)],
+      award: [Wisdom(value: 500.0), Faith(value: 200.0)],
       modifier: [
-        AddTask(task: "Logistik-Infrastruktur planen"),
-      ]
+        MessageModifier(message: "FUNDAMENT GELEGT: Die Kernlehre ist jetzt tragfähig dokumentiert."),
+        RemoveTask(task: "Das Glaubensfundament dokumentieren"),
+      ],
     ),
     Task(
       name: "Theologische Fakultät gründen",
       description: "MEILENSTEIN: Wissenschaftliche Sicherung der Bewegung für Generationen (Limit 1.000.000).",
       duration: 95000.0,
       isMilestone: true,
-      cost: [Money(value: 1000000.0), Wisdom(value: 5000.0), Faith(value: 2000.0)],
+      cost: [Money(value: 3000000.0), Wisdom(value: 6000.0), Faith(value: 3000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "BILDUNG: Die Elite wird nun intern geschult. Limit 1.000.000!"),
+        MessageModifier(message: "BILDUNG: Die nächste Generation von Leitern wird fundiert ausgebildet. Limit 1.000.000!"),
         SetMax(ressource: "Member", newMax: 1000000.0),
         RemoveTask(task: "Theologische Fakultät gründen"),
         AddTask(task: "Fakultät wissenschaftlich leiten"),
@@ -73,38 +76,41 @@ final Stage stage17 = Stage(
       award: [Wisdom(value: 500.0), Faith(value: 200.0)],
     ),
     Task(
-      name: "Wirtschaftsprüfung (Audit)",
-      description: "KRISE: Unregelmäßigkeiten in einem Kontinent-Büro werden gemeldet. Volle Kooperation nötig!",
-      duration: 25000.0,
-      timeToSolve: 70000.0,
-      cost: [Wisdom(value: 1000.0), Money(value: 50000.0)],
-      award: [Wisdom(value: 500.0)],
+      name: "Lehrstreit gefährdet die Einheit (Krise)",
+      description: "KRISE: Unterschiedliche Auslegungen der Kernlehre drohen die Bewegung zu spalten - nur "
+          "eine gemeinsame, geistlich fundierte Klärung kann die Einheit bewahren.",
+      duration: 20000.0,
+      timeToSolve: 60000.0,
+      cost: [Wisdom(value: 1500.0), Faith(value: 800.0)],
+      award: [Wisdom(value: 300.0)],
       modifier: [
-        MessageModifier(message: "BESTANDEN: Die Transparenz hat die Integrität der Bewegung bestätigt."),
-        RemoveTask(task: "Wirtschaftsprüfung (Audit)"),
+        MessageModifier(message: "GEKLÄRT: Gemeinsames Verständnis der Kernlehre wiederhergestellt."),
+        RemoveTask(task: "Lehrstreit gefährdet die Einheit (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Publicity(value: 15000.0), Money(value: 200000.0)]),
-        MessageModifier(message: "KASKADE: Korruptionsverdacht! Die Presse stürzt sich auf das Thema."),
-        RemoveTask(task: "Wirtschaftsprüfung (Audit)"),
-        AddTask(task: "Internationaler Presse-Skandal"), // Kaskade
+        SubtractRes(ressources: [Member(value: 20000.0), Faith(value: 1500.0)]),
+        MessageModifier(message: "KASKADE: Ganze Gruppen ziehen mit eigener Lehrauslegung von dannen!"),
+        RemoveTask(task: "Lehrstreit gefährdet die Einheit (Krise)"),
+        AddTask(task: "Die Bewegung spaltet sich (Krise)"), // Kaskade
       ],
     ),
     Task(
-      name: "Internationaler Presse-Skandal",
-      description: "FOLGE-KRISE: Die Weltöffentlichkeit fordert Antworten auf den Korruptionsverdacht.",
-      duration: 20000.0,
-      timeToSolve: 50000.0,
-      cost: [Publicity(value: 10000.0), Wisdom(value: 2000.0)],
+      name: "Die Bewegung spaltet sich (Krise)",
+      description: "FOLGE-KRISE: Ganze Gruppen lösen sich mit eigener Lehrauslegung von der Bewegung - nur "
+          "klare, aber demütige theologische Führung kann größeren Schaden noch abwenden.",
+      duration: 30000.0,
+      timeToSolve: 70000.0,
+      cost: [Money(value: 500000.0), Wisdom(value: 3000.0), Faith(value: 1500.0)],
+      award: [Wisdom(value: 800.0)],
       modifier: [
-        MessageModifier(message: "GEKLÄRT: Mühsame Aufarbeitung hat den Ruf teilweise gerettet."),
-        RemoveTask(task: "Internationaler Presse-Skandal"),
+        MessageModifier(message: "BESTANDEN: Einheit trotz Vielfalt bewahrt."),
+        RemoveTask(task: "Die Bewegung spaltet sich (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 10000.0), Faith(value: 2000.0)]),
-        MessageModifier(message: "DESASTER: Ein massiver Vertrauensbruch führt zum Austritt ganzer Verbände."),
-        RemoveTask(task: "Internationaler Presse-Skandal"),
-        AddTask(task: "Internationaler Presse-Skandal"),
+        SubtractRes(ressources: [Member(value: 150000.0), Faith(value: 3000.0)]),
+        MessageModifier(message: "SCHISMA: Die Bewegung zerbricht in konkurrierende Lehrrichtungen."),
+        RemoveTask(task: "Die Bewegung spaltet sich (Krise)"),
+        AddTask(task: "Die Bewegung spaltet sich (Krise)"),
       ],
     ),
   ],
