@@ -21,7 +21,7 @@ final Stage stage17 = Stage(
     "Bibellesen", "Beten",
     "Schlafen",
     "Lehrmaterial für die nächste Generation entwickeln",
-    "Bibelschulen zur Theologischen Fakultät erheben"
+    "Bibelschulen zur Theologischen Fakultät umbauen"
   ],
   randomTasks: ["Lehrstreit gefährdet die Einheit (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -57,7 +57,7 @@ final Stage stage17 = Stage(
       ],
     ),
     Task(
-      name: "Bibelschulen zur Theologischen Fakultät erheben",
+      name: "Bibelschulen zur Theologischen Fakultät umbauen",
       description: "MEILENSTEIN: Aus den einzelnen Bibel-, Propheten- und Lobpreisschulen wird eine "
           "wissenschaftlich anerkannte Theologische Fakultät - Absicherung der Lehre für Generationen "
           "(Limit 1.000.000). Aber reines Kopfwissen erstarrt: eine Fakultät braucht immer wieder neue "
@@ -75,7 +75,7 @@ final Stage stage17 = Stage(
             SubtractRes(ressources: [Faith(value: 600.0)]),
           ]
         ),
-        RemoveTask(task: "Bibelschulen zur Theologischen Fakultät erheben"),
+        RemoveTask(task: "Bibelschulen zur Theologischen Fakultät umbauen"),
         AddTask(task: "Fakultät wissenschaftlich leiten"),
         AddTask(task: "Die Fakultät geistlich neu ausrichten"),
       ],
