@@ -21,8 +21,9 @@ final Stage stage18 = Stage(
     "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
-    "Machbarkeitsstudie Hilfsprojekt", 
-    "Internationales Hilfswerk gründen"
+    "Machbarkeitsstudie Hilfsprojekt",
+    "Internationales Hilfswerk gründen",
+    "Rückzug zur Quelle"
   ],
   randomTasks: ["Humanitäre Krise", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -54,6 +55,16 @@ final Stage stage18 = Stage(
       modifier: [
         AddTask(task: "Machbarkeitsstudie Hilfsprojekt"),
       ]
+    ),
+    Task(
+      name: "Rückzug zur Quelle",
+      description: "WARTUNG: Bewusst aus dem Betrieb der Hilfsorganisation heraustreten und sich neu an "
+          "der eigentlichen Quelle ausrichten - nicht das Trinkwasser der Großprojekte, sondern "
+          "\"lebendiges Wasser\" (Johannes 4,14). Kostet Zeit, die sonst ins nächste Projekt fließen "
+          "würde, aber ohne diese Rückbindung trägt die ganze Organisation irgendwann nicht mehr.",
+      duration: 20000.0,
+      cost: [Time(value: 8.0)],
+      award: [Faith(value: 400.0)],
     ),
     Task(
       name: "Internationales Hilfswerk gründen",
