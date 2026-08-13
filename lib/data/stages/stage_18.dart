@@ -16,7 +16,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage18 = Stage(
   level: 18,
   member: 1000000,
-  description: "Globale Bewegung Level 2 - Institutionalisierung der Nächstenliebe.",
+  description: "Globale Bewegung Level 4 - Institutionalisierung der Nächstenliebe.",
   activeTasks: [
     "Bibellesen", "Beten", 
     "Schlafen", 
@@ -44,10 +44,13 @@ final Stage stage18 = Stage(
     ),
     Task(
       name: "Großprojekt Wasserversorgung",
-      description: "SYSTEM: Nachhaltige Hilfe für ganze Regionen. Schafft massives Ansehen.",
+      description: "SYSTEM: Nachhaltige Hilfe für ganze Regionen schafft massives Ansehen und lässt die "
+          "Bewegung äußerlich enorm wachsen - wie bei der Heilsarmee ist es viel einfacher, ein weiteres "
+          "Hilfsprojekt zu betreiben, als sich wirklich auf das Geistliche zu konzentrieren. Die Zeit und "
+          "Energie, die hier hineinfließen, fehlen anderswo - der Glaube wächst kaum noch mit.",
       duration: 50000.0,
-      cost: [Money(value: 1000000.0), Member(value: 1000.0)],
-      award: [Publicity(value: 20000.0), Faith(value: 2000.0), Member(value: 1.0)],
+      cost: [Money(value: 1000000.0), Member(value: 1000.0), Time(value: 15.0)],
+      award: [Publicity(value: 4000.0), Faith(value: 50.0), Member(value: 1.0)],
       modifier: [
         AddTask(task: "Machbarkeitsstudie Hilfsprojekt"),
       ]
@@ -57,10 +60,10 @@ final Stage stage18 = Stage(
       description: "MEILENSTEIN: Gründung einer eigenen NGO zur Skalierung der Hilfe (Limit 1.500.000).",
       duration: 100000.0,
       isMilestone: true,
-      cost: [Money(value: 2000000.0), Wisdom(value: 8000.0), Publicity(value: 5000.0)],
+      cost: [Money(value: 7000000.0), Wisdom(value: 10000.0), Publicity(value: 5000.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: " NGO: Dein Hilfswerk ist nun eine anerkannte globale Macht. Limit 1.500.000!"),
+        MessageModifier(message: "NGO: Dein Hilfswerk ist nun eine anerkannte globale Macht. Limit 1.500.000!"),
         SetMax(ressource: "Member", newMax: 1500000.0),
         RemoveTask(task: "Internationales Hilfswerk gründen"),
         AddTask(task: "Hilfswerk operativ leiten"),
@@ -75,10 +78,11 @@ final Stage stage18 = Stage(
     ),
     Task(
       name: "Humanitäre Krise",
-      description: "KRISE: Eine Katastrophe erfordert sofortige Mobilisierung deiner NGO!",
+      description: "KRISE: Eine Katastrophe erfordert sofortige Mobilisierung deiner NGO - die Krise nimmt "
+          "dich mit Beschlag und lässt kaum Raum für etwas anderes.",
       duration: 20000.0,
       timeToSolve: 60000.0,
-      cost: [Money(value: 100000.0), Member(value: 2000.0)],
+      cost: [Money(value: 100000.0), Member(value: 2000.0), Time(value: 10.0)],
       award: [Publicity(value: 5000.0), Faith(value: 1000.0)],
       modifier: [
         MessageModifier(message: "HELDENHAFT: Deine Bewegung war zuerst vor Ort. Das Vertrauen wächst."),
