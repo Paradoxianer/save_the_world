@@ -18,10 +18,10 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage19 = Stage(
   level: 19,
   member: 1500000,
-  description: "Globale Bewegung Level 2 - Mediale Macht und Multiplikation.",
+  description: "Globale Bewegung Level 5 - Mediale Macht und Multiplikation.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
-    "Globalen Dienst aufrechterhalten",
+    "Das Feuer am Brennen halten",
     "Kampagnen-Logistik planen",
     "Internationales Medienhaus gründen"
   ],
@@ -32,11 +32,14 @@ final Stage stage19 = Stage(
     baseSleep,
     holySpiritWorking,
     Task(
-      name: "Globalen Dienst aufrechterhalten",
-      description: "WARTUNG: Koordination der weltweiten Allianzen.",
-      duration: 30000.0,
-      cost: [Time(value: 2.0), Wisdom(value: 500.0)],
-      award: [Faith(value: 100.0), Publicity(value: 100.0)],
+      name: "Das Feuer am Brennen halten",
+      description: "WARTUNG: \"Den Geist löscht nicht aus\" (1. Thessalonicher 5,19) - inmitten von "
+          "Sendeplänen und Reichweiten-Statistiken bewusst Raum für echte Anbetung und Gebet lassen, "
+          "damit die Botschaft, die gesendet wird, noch von echtem Feuer getragen ist und nicht nur von "
+          "Technik und Reichweite.",
+      duration: 18000.0,
+      cost: [Time(value: 6.0)],
+      award: [Faith(value: 350.0)],
     ),
     Task(
       name: "Kampagnen-Logistik planen",
@@ -51,9 +54,11 @@ final Stage stage19 = Stage(
     ),
     Task(
       name: "Weltweite Kampagne ausstrahlen",
-      description: "SYSTEM: Millionen von Menschen erreichen das Evangelium über alle Kanäle.",
+      description: "SYSTEM: Millionen von Menschen erreichen das Evangelium über alle Kanäle - Reichweite "
+          "wächst spürbar, aber Reichweite allein ist nicht dasselbe wie geistliche Tiefe. Die Produktion "
+          "kostet Zeit, die dann für echte Begegnung mit Gott fehlt.",
       duration: 60000.0,
-      cost: [Money(value: 1000000.0), Publicity(value: 5000.0)],
+      cost: [Money(value: 1000000.0), Publicity(value: 5000.0), Time(value: 10.0)],
       award: [Member(value: 1.0), Publicity(value: 2000.0)],
       modifier: [
         AddTask(task: "Kampagnen-Logistik planen"),
@@ -61,14 +66,23 @@ final Stage stage19 = Stage(
     ),
     Task(
       name: "Internationales Medienhaus gründen",
-      description: "MEILENSTEIN: Eigene Sendeanstalten zur Sicherung der globalen Botschaft (Limit 2.500.000).",
+      description: "MEILENSTEIN: Eigene Sendeanstalten zur Sicherung der globalen Botschaft (Limit "
+          "2.500.000). Ein Mediennetzwerk dieser Größe entwickelt eine eigene Schwerkraft - Sendequoten "
+          "und Formate drohen wichtiger zu werden als das, was eigentlich gesagt werden soll.",
       duration: 120000.0,
       isMilestone: true,
-      cost: [Money(value: 5000000.0), Wisdom(value: 15000.0), Publicity(value: 10000.0)],
+      cost: [Money(value: 9000000.0), Wisdom(value: 12000.0), Publicity(value: 8000.0), Faith(value: 4000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "MEDIENMACHT: Ihr seid nun ein globaler Informationslieferant. Limit 2.500.000!"),
         SetMax(ressource: "Member", newMax: 2500000.0),
+        AutoExecuteModifier(
+          intervalMs: 12000,
+          modifiers: [
+            MultiplyRes(targetResName: "Publicity", factorResName: "Member", multiplier: 0.05),
+            SubtractRes(ressources: [Faith(value: 600.0)]),
+          ]
+        ),
         RemoveTask(task: "Internationales Medienhaus gründen"),
         AddTask(task: "Mediale Reichweite sichern"),
       ],
