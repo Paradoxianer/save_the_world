@@ -23,7 +23,7 @@ final Stage stage18 = Stage(
     "Kollekte", 
     "Machbarkeitsstudie Hilfsprojekt",
     "Internationales Hilfswerk gründen",
-    "Rückzug zur Quelle"
+    "Zurück zur Wurzel des Glaubens"
   ],
   randomTasks: ["Humanitäre Krise", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -57,7 +57,7 @@ final Stage stage18 = Stage(
       ]
     ),
     Task(
-      name: "Rückzug zur Quelle",
+      name: "Zurück zur Wurzel des Glaubens",
       description: "WARTUNG: Bewusst aus dem Betrieb der Hilfsorganisation heraustreten und sich neu an "
           "der eigentlichen Quelle ausrichten - nicht das Trinkwasser der Großprojekte, sondern "
           "\"lebendiges Wasser\" (Johannes 4,14). Kostet Zeit, die sonst ins nächste Projekt fließen "
