@@ -19,36 +19,45 @@ final Stage stage22 = Stage(
   description: "Globale Größe Level 2 - Koordination interkontinentaler Projekte.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
-    "Allianz diplomatisch führen",
-    "Projekt 'Sauberes Wasser' global",
-    "Weltweiten Bildungsfonds gründen"
+    "Interkontinentale Projekte koordinieren",
+    "Schutzstrukturen für die nächste Generation einführen"
   ],
-  randomTasks: ["Logistik-Blockade (Krise)", "Der Heilige Geist möchte wirken"],
+  randomTasks: ["Stipendiengelder versickern (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     basePrayer,
     baseSleep,
     holySpiritWorking,
     Task(
-      name: "Allianz diplomatisch führen",
-      description: "WARTUNG: Tägliche Vertretung auf globaler Ebene.",
+      name: "Interkontinentale Projekte koordinieren",
+      description: "WARTUNG: Laufende Abstimmung der großen, über Kontinente verteilten Programme - "
+          "Allianz-Vertretung, Stipendien und Schutzstrukturen laufen jetzt parallel und wollen "
+          "koordiniert werden.",
       duration: 40000.0,
       cost: [Time(value: 2.0), Wisdom(value: 1500.0)],
       award: [Publicity(value: 500.0), Faith(value: 300.0)],
     ),
     Task(
-      name: "Projekt 'Sauberes Wasser' global",
-      description: "SYSTEM: Ein koordiniertes Hilfsprojekt auf drei Kontinenten.",
-      duration: 60000.0,
-      cost: [Money(value: 5000000.0), Member(value: 10000.0)],
-      award: [Publicity(value: 25000.0), Faith(value: 5000.0), Member(value: 1.0)],
+      name: "Schutzstrukturen für die nächste Generation einführen",
+      description: "BEFÄHIGUNG: Bevor Stipendien und Bildungsprogramme für eine ganze Generation "
+          "zukünftiger Leiter aufgesetzt werden, müssen wirksame Schutzstrukturen stehen - unabhängige "
+          "Meldestellen, Background-Checks, klare Konsequenzen. Nicht nachträglich reparieren, sondern "
+          "von Anfang an richtig machen.",
+      duration: 30000.0,
+      cost: [Money(value: 500000.0), Wisdom(value: 3000.0), Faith(value: 1000.0)],
+      award: [Wisdom(value: 500.0)],
+      modifier: [
+        MessageModifier(message: "SCHUTZ VERANKERT: Unabhängige Meldestellen und klare Regeln stehen, bevor das Programm startet."),
+        AddTask(task: "Weltweiten Bildungsfonds gründen"),
+        RemoveTask(task: "Schutzstrukturen für die nächste Generation einführen"),
+      ],
     ),
     Task(
       name: "Weltweiten Bildungsfonds gründen",
       description: "MEILENSTEIN: Stipendien für zukünftige Leiter weltweit (Limit 10.000.000).",
       duration: 120000.0,
       isMilestone: true,
-      cost: [Money(value: 15000000.0), Wisdom(value: 30000.0)],
+      cost: [Money(value: 18000000.0), Wisdom(value: 30000.0), Faith(value: 7000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "BILDUNG: Die nächste Generation Leiter ist gesichert. Limit 10.000.000!"),
@@ -65,37 +74,39 @@ final Stage stage22 = Stage(
       award: [Wisdom(value: 1000.0), Faith(value: 200.0)],
     ),
     Task(
-      name: "Logistik-Blockade (Krise)",
-      description: "KRISE: Politische Unruhen blockieren die globale Hilfsgüter-Verteilung!",
+      name: "Stipendiengelder versickern (Krise)",
+      description: "KRISE: In einzelnen Ländern erreichen die Stipendien nicht die vorgesehenen "
+          "Studierenden - Korruption oder schlicht mangelnde Kontrolle lässt Fördergelder versickern.",
       duration: 20000.0,
       timeToSolve: 50000.0,
-      cost: [Wisdom(value: 5000.0), Publicity(value: 5000.0)],
+      cost: [Wisdom(value: 5000.0), Money(value: 500000.0)],
       award: [Wisdom(value: 1000.0)],
       modifier: [
-        MessageModifier(message: "GELÖST: Die Korridore sind wieder offen."),
-        RemoveTask(task: "Logistik-Blockade (Krise)"),
+        MessageModifier(message: "KONTROLLIERT: Strengere Prüfung sorgt dafür, dass die Mittel ankommen."),
+        RemoveTask(task: "Stipendiengelder versickern (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Money(value: 1000000.0), Faith(value: 2000.0)]),
-        MessageModifier(message: "KASKADE: Die Blockade führt zu einem globalen Versorgungsengpass!"),
-        RemoveTask(task: "Logistik-Blockade (Krise)"),
-        AddTask(task: "Versorgungsengpass (Krise)"),
+        SubtractRes(ressources: [Money(value: 2000000.0), Faith(value: 2000.0)]),
+        MessageModifier(message: "KASKADE: Die Misswirtschaft wird öffentlich bekannt!"),
+        RemoveTask(task: "Stipendiengelder versickern (Krise)"),
+        AddTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
       ],
     ),
     Task(
-      name: "Versorgungsengpass (Krise)",
-      description: "FOLGE-KRISE: Mangelnde Güter gefährden die Glaubwürdigkeit der Allianz.",
+      name: "Vertrauen in den Bildungsfonds bricht weg (Krise)",
+      description: "FOLGE-KRISE: Öffentlich bekannt gewordene Misswirtschaft lässt Spender und Partner am "
+          "ganzen Fonds zweifeln.",
       duration: 30000.0,
       timeToSolve: 60000.0,
-      cost: [Money(value: 5000000.0), Wisdom(value: 8000.0)],
+      cost: [Money(value: 5000000.0), Wisdom(value: 8000.0), Publicity(value: 10000.0)],
       modifier: [
-        MessageModifier(message: "BEHOBEN: Alternative Routen wurden etabliert."),
-        RemoveTask(task: "Versorgungsengpass (Krise)"),
+        MessageModifier(message: "WIEDERHERGESTELLT: Transparente Aufarbeitung gewinnt das Vertrauen zurück."),
+        RemoveTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
       ],
       missed: [
         SubtractRes(ressources: [Member(value: 200000.0), Publicity(value: 50000.0)]),
-        RemoveTask(task: "Versorgungsengpass (Krise)"),
-        AddTask(task: "Versorgungsengpass (Krise)"),
+        RemoveTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
+        AddTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
       ],
     ),
   ],
