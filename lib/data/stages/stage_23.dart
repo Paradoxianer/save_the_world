@@ -23,7 +23,7 @@ final Stage stage23 = Stage(
     "Schlafen", 
     "Kollekte", 
     "Globales Mentoring-Netzwerk",
-    "Einzelne persönlich begleiten",
+    "Einen weltweiten Gebets- und Fastenrhythmus etablieren",
     "Globale Strategieklausur"
   ],
   randomTasks: ["Wer hat euch dazu ernannt? (Krise)", "Der Heilige Geist möchte wirken"],
@@ -54,10 +54,12 @@ final Stage stage23 = Stage(
       ],
     ),
     Task(
-      name: "Einzelne persönlich begleiten",
-      description: "WARTUNG: Bei Millionen Mitgliedern automatisiert das Netzwerk die "
-          "Leiterschaftsbegleitung - aber echte geistliche Vaterschaft und Mutterschaft lässt sich nicht "
-          "delegieren. Zeit für wenige, echte Beziehungen bleibt unersetzlich.",
+      name: "Einen weltweiten Gebets- und Fastenrhythmus etablieren",
+      description: "WARTUNG: Bei 20 Millionen Menschen kann niemand mehr persönlich erreicht werden - "
+          "aber ein gemeinsamer, weltweit synchronisierter Rhythmus aus Gebet und Fasten kann jede "
+          "einzelne Einheit selbst tragen, ohne dass die Spitze jeden Einzelnen begleitet. Nicht "
+          "persönliche Nähe, sondern geteilte geistliche Praxis hält das Feuer über die ganze Struktur "
+          "hinweg lebendig.",
       duration: 20000.0,
       cost: [Time(value: 8.0)],
       award: [Faith(value: 500.0)],
