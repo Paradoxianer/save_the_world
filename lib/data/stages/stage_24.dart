@@ -20,27 +20,25 @@ final Stage stage24 = Stage(
   member: 20000000,
   description: "Globaler Beeinflusser Level 1 - Die Geburt einer weltweiten Denomination.",
   activeTasks: [
-    "Bibellesen", "Beten", 
-    "Schlafen", 
-    "Kollekte", 
-    "Regional-Präsidien einsetzen", 
+    "Bibellesen", "Beten",
+    "Schlafen",
+    "Kollekte",
+    "Regional-Präsidien einsetzen",
+    "Ein Schritt im Vertrauen wagen",
     "Verfassungs-Entwurf"
   ],
-  randomTasks: ["Theologische Grundsatzfrage (Krise)", "Finanzprüfung (Krise)", "Der Heilige Geist möchte wirken"],
+  randomTasks: ["Der Glaube wird zur Herkunft (Krise)", "Finanzprüfung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     basePrayer,
     baseSleep,
     holySpiritWorking,
-    Task(
-      name: "Kollekte",
-      duration: 3000.0,
-      cost: [Time(value: 1.0)],
-      modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 60.0)],
-    ),
+    collectMoney,
     Task(
       name: "Regional-Präsidien einsetzen",
-      description: "DELEGATION: Dezentrale Verwaltungseinheiten stabilisieren die globalen Finanzen passiv.",
+      description: "DELEGATION: Dezentrale Verwaltungseinheiten stabilisieren die globalen Finanzen passiv "
+          "- effizient, aber rein administratives Wachstum ohne geistliche Rückbindung zehrt bei dieser "
+          "Größe schneller am Glauben, als es sich durch Verwaltung ersetzen lässt.",
       duration: 180000.0,
       cost: [Money(value: 25000000.0), Wisdom(value: 15000.0)],
       modifier: [
@@ -48,11 +46,22 @@ final Stage stage24 = Stage(
         AutoExecuteModifier(
           intervalMs: 60000,
           modifiers: [
-            MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 15.0),
+            MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 8.0),
+            SubtractRes(ressources: [Faith(value: 1500.0)]),
           ]
         ),
         RemoveTask(task: "Regional-Präsidien einsetzen"),
       ],
+    ),
+    Task(
+      name: "Ein Schritt im Vertrauen wagen",
+      description: "Eine Entscheidung, die sich wirtschaftlich nicht rechnet - kein sofortiger Ertrag "
+          "sichtbar, nur die Zusage, dass Gott mehrt, was im Vertrauen gesät wird: \"Der Same geht auf und "
+          "wächst - er weiß selbst nicht wie\" (Markus 4,26-29). Bei einer Größe, in der Effizienz und "
+          "Verwaltung alles zu bestimmen drohen, ist bewusstes Warten auf Gott selbst schon ein Statement.",
+      duration: 300000.0,
+      cost: [Faith(value: 2000.0)],
+      award: [Faith(value: 6000.0), Wisdom(value: 1500.0)],
     ),
     Task(
       name: "Verfassungs-Entwurf",
@@ -70,7 +79,7 @@ final Stage stage24 = Stage(
       description: "MEILENSTEIN: Rechtliche Anerkennung als weltweite Konfession (Limit 40.000.000).",
       duration: 250000.0,
       isMilestone: true,
-      cost: [Wisdom(value: 60000.0), Time(value: 100.0), Faith(value: 30000.0)],
+      cost: [Wisdom(value: 60000.0), Time(value: 100.0), Faith(value: 45000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "ANERKENNUNG: Die Weltgemeinschaft akzeptiert eure Statuten. Limit 40.000.000!"),
@@ -119,20 +128,22 @@ final Stage stage24 = Stage(
       ],
     ),
     Task(
-      name: "Theologische Grundsatzfrage (Krise)",
-      description: "KRISE: Ein Konflikt über die DNA der Bewegung droht alles zu spalten.",
+      name: "Der Glaube wird zur Herkunft (Krise)",
+      description: "KRISE: Für immer mehr Mitglieder ist der Glaube nicht mehr persönliche Entscheidung, "
+          "sondern einfach das, worin man hineingeboren wurde - Zugehörigkeit ohne echte Überzeugung "
+          "breitet sich aus. Die Zahlen wachsen weiter, die geistliche Substanz nicht.",
       duration: 30000.0,
       timeToSolve: 80000.0,
-      cost: [Wisdom(value: 10000.0), Faith(value: 10000.0)],
+      cost: [Faith(value: 10000.0), Wisdom(value: 5000.0)],
       modifier: [
-        MessageModifier(message: "GELÖST: Die Identität der Bewegung wurde erfolgreich verteidigt."),
-        RemoveTask(task: "Theologische Grundsatzfrage (Krise)"),
+        MessageModifier(message: "ERWECKT: Bewusste Entscheidung statt bloßer Herkunft wird neu betont - und gelebt."),
+        RemoveTask(task: "Der Glaube wird zur Herkunft (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 2000000.0), Faith(value: 5000.0)]),
-        MessageModifier(message: "SPALTUNG: Ungeklärte Fragen führten zu regionalen Abspaltungen."),
-        RemoveTask(task: "Theologische Grundsatzfrage (Krise)"),
-        AddTask(task: "Theologische Grundsatzfrage (Krise)"),
+        SubtractRes(ressources: [Faith(value: 15000.0)]),
+        MessageModifier(message: "AUSGEHÖHLT: Die Mitglieder bleiben - aber der Glaube dahinter ist zur leeren Hülle geworden."),
+        RemoveTask(task: "Der Glaube wird zur Herkunft (Krise)"),
+        AddTask(task: "Der Glaube wird zur Herkunft (Krise)"),
       ],
     ),
   ],
