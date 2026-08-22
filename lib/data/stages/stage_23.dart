@@ -3,7 +3,6 @@ import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
-import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/multiplyres.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
@@ -23,35 +22,45 @@ final Stage stage23 = Stage(
     "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
-    "Globales Mentoring-Netzwerk", 
+    "Globales Mentoring-Netzwerk",
+    "Einzelne persönlich begleiten",
     "Globale Strategieklausur"
   ],
-  randomTasks: ["Theologische Grundsatzfrage (Krise)", "Der Heilige Geist möchte wirken"],
+  randomTasks: ["Wer hat euch dazu ernannt? (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
     baseBible,
     basePrayer,
     baseSleep,
     holySpiritWorking,
-    Task(
-      name: "Kollekte",
-      duration: 3000.0,
-      cost: [Time(value: 1.0)],
-      modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 45.0)],
-    ),
+    collectMoney,
     Task(
       name: "Globales Mentoring-Netzwerk",
-      description: "DELEGATION: Sichert die geistliche Qualität durch dezentrale Leiterschaftsbegleitung.",
+      description: "DELEGATION: Sichert die geistliche Qualität durch dezentrale Leiterschaftsbegleitung - "
+          "aber ein automatisiertes Netzwerk kann echte geistliche Vaterschaft nicht ersetzen, nur "
+          "skalieren.",
       duration: 150000.0,
+      once: true,
       cost: [Wisdom(value: 25000.0), Faith(value: 10000.0)],
       modifier: [
+        MessageModifier(message: "SYSTEM: Das Mentoring-Netzwerk läuft jetzt dezentral über alle Regionen."),
         AutoExecuteModifier(
           intervalMs: 20000,
           modifiers: [
-            MultiplyRes(targetResName: "Faith", factorResName: "Member", multiplier: 0.0002),
             MultiplyRes(targetResName: "Wisdom", factorResName: "Member", multiplier: 0.0003),
+            SubtractRes(ressources: [Faith(value: 800.0)]),
           ]
         ),
+        RemoveTask(task: "Globales Mentoring-Netzwerk"),
       ],
+    ),
+    Task(
+      name: "Einzelne persönlich begleiten",
+      description: "WARTUNG: Bei Millionen Mitgliedern automatisiert das Netzwerk die "
+          "Leiterschaftsbegleitung - aber echte geistliche Vaterschaft und Mutterschaft lässt sich nicht "
+          "delegieren. Zeit für wenige, echte Beziehungen bleibt unersetzlich.",
+      duration: 20000.0,
+      cost: [Time(value: 8.0)],
+      award: [Faith(value: 500.0)],
     ),
     Task(
       name: "Globale Strategieklausur",
@@ -86,20 +95,22 @@ final Stage stage23 = Stage(
       award: [Faith(value: 1000.0), Publicity(value: 5000.0)],
     ),
     Task(
-      name: "Theologische Grundsatzfrage (Krise)",
-      description: "KRISE: Eine DNA-Kontroverse droht die globale Einheit zu spalten!",
+      name: "Wer hat euch dazu ernannt? (Krise)",
+      description: "KRISE: Kritiker fragen unbequem: Wer hat einer Bewegung von wenigen Millionen unter "
+          "acht Milliarden Menschen das Recht gegeben, sich zum moralischen Kompass der Welt "
+          "aufzuschwingen? Der Anspruch selbst steht infrage.",
       duration: 30000.0,
       timeToSolve: 80000.0,
       cost: [Wisdom(value: 10000.0), Faith(value: 5000.0)],
       modifier: [
-        MessageModifier(message: "GEKLÄRT: Die geistliche Identität wurde erfolgreich bewahrt."),
-        RemoveTask(task: "Theologische Grundsatzfrage (Krise)"),
+        MessageModifier(message: "DEMUT STATT ANSPRUCH: Dienst statt Status überzeugt mehr als jede Verteidigung."),
+        RemoveTask(task: "Wer hat euch dazu ernannt? (Krise)"),
       ],
       missed: [
         SubtractRes(ressources: [Member(value: 500000.0), Faith(value: 5000.0)]),
-        MessageModifier(message: "SPALTUNG: Der ungelöste Konflikt hat Millionen von Mitgliedern gekostet."),
-        RemoveTask(task: "Theologische Grundsatzfrage (Krise)"),
-        AddTask(task: "Theologische Grundsatzfrage (Krise)"),
+        MessageModifier(message: "ZURÜCKGEWIESEN: Der Anspruch wirkt überheblich - Millionen wenden sich ab."),
+        RemoveTask(task: "Wer hat euch dazu ernannt? (Krise)"),
+        AddTask(task: "Wer hat euch dazu ernannt? (Krise)"),
       ],
     ),
   ],
