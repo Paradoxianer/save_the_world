@@ -16,7 +16,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage14 = Stage(
   level: 14,
   member: 50000,
-  description: "Eine Bewegung Level 3 - Nicht in den Räumen bleiben, sondern aussenden.",
+  description: "Eine Bewegung Level 1 - Nicht in den Räumen bleiben, sondern aussenden.",
   activeTasks: [
     "Bibellesen", "Beten",
     "Schlafen",

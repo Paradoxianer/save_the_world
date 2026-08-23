@@ -16,7 +16,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage22 = Stage(
   level: 22,
   member: 7500000,
-  description: "Globale Größe Level 2 - Koordination interkontinentaler Projekte.",
+  description: "Globale Größe Level 3 - Koordination interkontinentaler Projekte.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Interkontinentale Projekte koordinieren",

@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage11 = Stage(
   level: 11,
   member: 4500,
-  description: "Beeinflussende Kirche - Deine Stimme hat Gewicht in der Gesellschaft.",
+  description: "Beeinflussende Kirche Level 1 - Deine Stimme hat Gewicht in der Gesellschaft.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Gesellschaftliche Präsenz zeigen",

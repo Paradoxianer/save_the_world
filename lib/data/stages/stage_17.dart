@@ -16,7 +16,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage17 = Stage(
   level: 17,
   member: 500000,
-  description: "Globale Bewegung Level 3 - Wissenschaftliche Sicherung der Lehre für kommende Generationen.",
+  description: "Globale Bewegung Level 1 - Wissenschaftliche Sicherung der Lehre für kommende Generationen.",
   activeTasks: [
     "Bibellesen", "Beten",
     "Schlafen",

@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage19 = Stage(
   level: 19,
   member: 1500000,
-  description: "Globale Bewegung Level 5 - Mediale Macht und Multiplikation.",
+  description: "Globale Bewegung Level 3 - Mediale Macht und Multiplikation.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Das Feuer am Brennen halten",

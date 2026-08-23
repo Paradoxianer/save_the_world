@@ -15,7 +15,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage7 = Stage(
   level: 7,
   member: 800,
-  description: "Sehr große Gemeinde - Fokus auf Außenwirkung und Lehre.",
+  description: "Fast eine MegaChurch - Fokus auf Außenwirkung und Lehre.",
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Lehre auf Balance prüfen", "Pressearbeit"],
   randomTasks: ["Jemand möchte heiraten", "Der Heilige Geist möchte wirken", "Die Lehre kippt"],
   allTasks: [

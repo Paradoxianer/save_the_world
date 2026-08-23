@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage21 = Stage(
   level: 21,
   member: 5000000,
-  description: "Globale Größe Level 1 - Die Bewegung wird zum diplomatischen Akteur.",
+  description: "Globale Größe Level 2 - Die Bewegung wird zum diplomatischen Akteur.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Prophetische Distanz bewahren",

@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage4 = Stage(
   level: 4,
   member: 200,
-  description: "Kleine Gemeinde - Wachstum durch persönliche Begleitung.",
+  description: "Mittelgroße Gemeinde - Wachstum durch persönliche Begleitung.",
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Mentoring", "Korps aufräumen"],
   randomTasks: ["Ein zwischenmenschliches Problem klären", "Streit in der Gemeinde", "Problematische Lehrerschaft"],
   allTasks: [

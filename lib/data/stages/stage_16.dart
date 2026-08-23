@@ -19,7 +19,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage16 = Stage(
   level: 16,
   member: 250000,
-  description: "Globale Bewegung Level 2 - Koordination kontinentaler Netzwerke.",
+  description: "Eine Bewegung Level 3 - Koordination kontinentaler Netzwerke.",
   activeTasks: [
     "Bibellesen", "Beten", 
     "Schlafen", 

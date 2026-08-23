@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage15 = Stage(
   level: 15,
   member: 100000,
-  description: "Globale Bewegung Level 1 - Die Stimme in der Weltgesellschaft.",
+  description: "Eine Bewegung Level 2 - Die Stimme in der Weltgesellschaft.",
   activeTasks: [
     "Bibellesen", "Beten",
     "Schlafen",

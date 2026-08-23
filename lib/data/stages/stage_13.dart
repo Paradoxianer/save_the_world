@@ -16,7 +16,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage13 = Stage(
   level: 13,
   member: 20000,
-  description: "Bewegung Level 2 - DNA-Transfer und internationale Identität.",
+  description: "Beeinflussende Kirche Level 3 - DNA-Transfer und internationale Identität.",
   activeTasks: [
     "Bibellesen", "Beten", 
     "Schlafen", 

@@ -17,7 +17,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage23 = Stage(
   level: 23,
   member: 10000000,
-  description: "Globale Bewegung Level 7 - Kulturelle Prägung durch Multiplikation.",
+  description: "Globaler Beeinflusser Level 1 - Kulturelle Prägung durch Multiplikation.",
   activeTasks: [
     "Bibellesen", "Beten", 
     "Schlafen", 

@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/models/wisdome.ressource.model.dart';
 final Stage stage12 = Stage(
   level: 12,
   member: 10000,
-  description: "Beeinflussende Kirche Lvl. 2 - Dein Wirken prägt das Land.",
+  description: "Beeinflussende Kirche Level 2 - Dein Wirken prägt das Land.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
     "Regionalleiter einsetzen",

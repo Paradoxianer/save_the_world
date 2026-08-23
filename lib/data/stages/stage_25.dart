@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage25 = Stage(
   level: 25,
   member: 40000000,
-  description: "Eine Bewegung Level 3 - Die globale Durchdringung beginnt.",
+  description: "Globaler Beeinflusser Level 3 - Die globale Durchdringung beginnt.",
   activeTasks: [
     "Bibellesen", "Beten", 
     "Schlafen", 

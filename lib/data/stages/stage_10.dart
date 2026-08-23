@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage10 = Stage(
   level: 10,
   member: 2800,
-  description: "Internationale Multiplikation und globale Reichweite.",
+  description: "MegaChurch Level 3 - Internationale Multiplikation und globale Reichweite.",
   activeTasks: [
     "Bibellesen", "Beten",
     "Schlafen",

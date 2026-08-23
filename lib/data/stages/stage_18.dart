@@ -16,7 +16,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage18 = Stage(
   level: 18,
   member: 1000000,
-  description: "Globale Bewegung Level 4 - Institutionalisierung der Nächstenliebe.",
+  description: "Globale Bewegung Level 2 - Institutionalisierung der Nächstenliebe.",
   activeTasks: [
     "Bibellesen", "Beten", 
     "Schlafen", 

@@ -18,7 +18,7 @@ import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 final Stage stage24 = Stage(
   level: 24,
   member: 20000000,
-  description: "Globaler Beeinflusser Level 1 - Die Geburt einer weltweiten Denomination.",
+  description: "Globaler Beeinflusser Level 2 - Die Geburt einer weltweiten Denomination.",
   activeTasks: [
     "Bibellesen", "Beten",
     "Schlafen",
