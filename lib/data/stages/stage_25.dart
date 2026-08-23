@@ -32,12 +32,7 @@ final Stage stage25 = Stage(
     basePrayer,
     baseSleep,
     holySpiritWorking,
-    Task(
-      name: "Kollekte",
-      duration: 3000.0,
-      cost: [Time(value: 1.0)],
-      modifier: [MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 100.0)],
-    ),
+    collectMoney,
     Task(
       name: "Globales Jüngerschafts-Netzwerk",
       description: "DELEGATION: Dezentrale Strukturen zur Begleitung von Millionen Gläubigen weltweit.",
@@ -70,7 +65,7 @@ final Stage stage25 = Stage(
       description: "MEILENSTEIN: Offizieller Zusammenschluss aller kontinentalen Verbände (Limit 80.000.000).",
       duration: 250000.0,
       isMilestone: true,
-      cost: [Money(value: 50000000.0), Wisdom(value: 100000.0), Publicity(value: 50000.0)],
+      cost: [Money(value: 50000000.0), Wisdom(value: 100000.0), Publicity(value: 50000.0), Faith(value: 60000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "DURCHBRUCH: Die globale Allianz ist unerschütterlich. Limit 80.000.000!"),
