@@ -23,7 +23,8 @@ final Stage stage30 = Stage(
     "Schlafen",
     "Bibellesen", "Beten",
     "Dienst der Heilung",
-    "Geistliche Rüstung anlegen"
+    "Geistliche Rüstung anlegen",
+    "Jeden zum Jünger-Macher mobilisieren"
   ],
   randomTasks: ["Globale Christenverfolgung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -62,6 +63,39 @@ final Stage stage30 = Stage(
       duration: 80000.0,
       cost: [Time(value: 10.0), Faith(value: 20000.0)],
       award: [Faith(value: 50000.0), Wisdom(value: 10000.0)],
+    ),
+    Task(
+      name: "Jeden zum Jünger-Macher mobilisieren",
+      description: "BEFÄHIGUNG: Jüngerschaft ist kein Spezialauftrag für wenige Missionare, sondern die "
+          "Berufung jedes Einzelnen - Milliarden Mitglieder werden sich bewusst, dass sie selbst dafür "
+          "verantwortlich sind, andere zu Jesus zu führen (vgl. Matthäus 28,19-20).",
+      duration: 100000.0,
+      cost: [Faith(value: 100000.0), Wisdom(value: 50000.0)],
+      award: [Wisdom(value: 20000.0)],
+      modifier: [
+        MessageModifier(message: "AUFGEWECKT: Nicht wenige Spezialisten, sondern Milliarden einzelne Jünger machen jetzt Jünger."),
+        AddTask(task: "Für die eigenen Feinde beten"),
+        AddTask(task: "Nächstenliebe überfließen lassen"),
+        RemoveTask(task: "Jeden zum Jünger-Macher mobilisieren"),
+      ],
+    ),
+    Task(
+      name: "Für die eigenen Feinde beten",
+      description: "\"Liebt eure Feinde und betet für die, die euch verfolgen\" (Matthäus 5,44) - gezielt "
+          "und beharrlich für die beten, die die Bewegung am heftigsten bekämpfen, in der Erwartung, dass "
+          "Jesus ihnen selbst begegnet, so wie einst dem Verfolger Saulus (Apostelgeschichte 9).",
+      duration: 30000.0,
+      cost: [Time(value: 10.0), Faith(value: 20000.0)],
+      award: [Faith(value: 30000.0), Member(value: 500000.0)],
+    ),
+    Task(
+      name: "Nächstenliebe überfließen lassen",
+      description: "Nicht Argumente, sondern gelebte, überfließende Nächstenliebe überzeugt dort, wo Worte "
+          "längst nicht mehr gehört werden - konkrete, aufopfernde Liebe im Alltag, die niemand ignorieren "
+          "kann.",
+      duration: 30000.0,
+      cost: [Time(value: 10.0), Faith(value: 15000.0)],
+      award: [Faith(value: 20000.0), Member(value: 700000.0)],
     ),
     Task(
       name: "Dienst der Heilung",
