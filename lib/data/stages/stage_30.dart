@@ -67,6 +67,7 @@ final Stage stage30 = Stage(
       name: "Dienst der Heilung",
       description: "SYSTEM: Gott tut Wunder weltweit. Zieht Suchende an und generiert Glauben.",
       duration: 150000.0,
+      once: true,
       cost: [Faith(value: 1000000.0), Time(value: 5.0)],
       modifier: [
         AutoExecuteModifier(
@@ -76,6 +77,7 @@ final Stage stage30 = Stage(
             MessageModifier(message: "WUNDER: Heilungen ereignen sich auf allen Kontinenten."),
           ]
         ),
+        RemoveTask(task: "Dienst der Heilung"),
       ],
     ),
     Task(
