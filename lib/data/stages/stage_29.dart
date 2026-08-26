@@ -76,20 +76,51 @@ final Stage stage29 = Stage(
     ),
     Task(
       name: "Globale Pandemie (Krise)",
-      description: "KRISE: Ein unbekanntes Virus legt die Welt lahm. Dein globales Netzwerk ist die letzte Hoffnung!",
+      description: "KRISE: Ein unbekanntes Virus legt die Welt lahm - und in der Bewegung bricht sofort "
+          "Streit aus: Sollen strikte Regeln gelten, oder ist Gottvertrauen die einzig richtige Antwort? "
+          "Wie du reagierst, entscheidet mehr als nur über die Pandemie.",
+      duration: 5000.0,
+      cost: [Time(value: 2.0)],
+      modifier: [
+        AddTask(task: "Zwischen den Lagern vermitteln"),
+        AddTask(task: "Zur Umkehr aufrufen"),
+        RemoveTask(task: "Globale Pandemie (Krise)"),
+      ],
+    ),
+    Task(
+      name: "Zwischen den Lagern vermitteln",
+      description: "KRISE: Manche fordern strikte Maßnahmen, andere sehen darin mangelndes Gottvertrauen - "
+          "die Lager driften auseinander. Praktische Vermittlung hält die Bewegung zusammen, auch wenn sie "
+          "die tiefere Frage nicht beantwortet.",
       duration: 80000.0,
       timeToSolve: 200000.0,
       cost: [Money(value: 1000000000.0), Member(value: 1000000.0)],
       award: [Publicity(value: 200000.0)],
       modifier: [
-        MessageModifier(message: "HELDENHAFT: Deine Bewegung hat Millionen Leben gerettet und die Welt stabilisiert."),
-        RemoveTask(task: "Globale Pandemie (Krise)"),
+        MessageModifier(message: "VERMITTELT: Die Lager halten notdürftig zusammen - die eigentliche Frage bleibt offen."),
+        RemoveTask(task: "Zwischen den Lagern vermitteln"),
+        RemoveTask(task: "Zur Umkehr aufrufen"),
       ],
       missed: [
         SubtractRes(ressources: [Member(value: 50000000.0), Faith(value: 100000.0)]),
         MessageModifier(message: "KASKADE: Die Pandemie hat zu einem globalen Wirtschafts-Kollaps geführt!"),
-        RemoveTask(task: "Globale Pandemie (Krise)"),
+        RemoveTask(task: "Zwischen den Lagern vermitteln"),
+        RemoveTask(task: "Zur Umkehr aufrufen"),
         AddTask(task: "Globaler Wirtschafts-Kollaps (Krise)"),
+      ],
+    ),
+    Task(
+      name: "Zur Umkehr aufrufen",
+      description: "Ist diese Krise vielleicht genau der Ruf Gottes zur Umkehr, den prophetische Stimmen "
+          "seit jeher in nationalen Katastrophen erkannt haben? Statt nur zu vermitteln, ruft die Bewegung "
+          "öffentlich zur echten Umkehr zu Gott auf - riskant, aber wenn es trägt, verändert es alles.",
+      duration: 80000.0,
+      cost: [Faith(value: 500000.0)],
+      award: [Faith(value: 2000000.0), Member(value: 50000000.0), Publicity(value: 500000.0)],
+      modifier: [
+        MessageModifier(message: "ERWECKUNG: Aus der Krise wird eine geistliche Erweckung - Millionen kehren um!"),
+        RemoveTask(task: "Zur Umkehr aufrufen"),
+        RemoveTask(task: "Zwischen den Lagern vermitteln"),
       ],
     ),
     Task(
