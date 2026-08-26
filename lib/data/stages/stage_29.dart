@@ -52,9 +52,8 @@ final Stage stage29 = Stage(
     ),
     Task(
       name: "Ein Leib aus allen Völkern und Sprachen",
-      description: "MEILENSTEIN: \"Eine große Schar, die niemand zählen konnte, aus allen Nationen und "
-          "Stämmen und Völkern und Sprachen\" (Offenbarung 7,9) - der Bund trägt jetzt wirklich die ganze "
-          "bewohnte Erde (Limit 2.560.000.000).",
+      description: "MEILENSTEIN: Aus allen Nationen, Stämmen, Völkern und Sprachen (vgl. Offenbarung 7,9) - "
+          "der Bund trägt jetzt wirklich die ganze bewohnte Erde (Limit 2.560.000.000).",
       duration: 800000.0,
       isMilestone: true,
       cost: [Faith(value: 600000.0), Wisdom(value: 400000.0), Time(value: 150.0)],
