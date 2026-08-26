@@ -19,8 +19,8 @@ final Stage stage29 = Stage(
   description: "Weltkirche Level 1 - Finale globale Strukturen.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
-    "Milliarden-Bewegung stabilisieren",
-    "Verfassungs-Konvent einberufen"
+    "Kontrolle loslassen, Gott vertrauen",
+    "Die neue Generation im Bund ausbilden"
   ],
   randomTasks: ["Globale Pandemie (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
@@ -29,40 +29,47 @@ final Stage stage29 = Stage(
     baseSleep,
     holySpiritWorking,
     Task(
-      name: "Milliarden-Bewegung stabilisieren",
-      description: "WARTUNG: Koordination der globalen Massenbewegung, um Chaos zu verhindern.",
-      duration: 80000.0,
-      cost: [Time(value: 10.0), Wisdom(value: 20000.0)],
-      award: [Faith(value: 10000.0), Publicity(value: 10000.0)],
+      name: "Kontrolle loslassen, Gott vertrauen",
+      description: "WARTUNG: Bei dieser Größe lässt sich nichts mehr zentral steuern oder \"stabilisieren\" "
+          "- nur das bewusste Loslassen der Kontrolle und das Vertrauen, dass Gott selbst trägt, was kein "
+          "Mensch mehr überblicken kann.",
+      duration: 20000.0,
+      cost: [Time(value: 10.0), Faith(value: 10000.0)],
+      award: [Faith(value: 15000.0)],
     ),
     Task(
-      name: "Verfassungs-Konvent einberufen",
-      description: "BEFÄHIGUNG: Einberufung aller globalen Leiter zur finalen Verfassungsgebung.",
+      name: "Die neue Generation im Bund ausbilden",
+      description: "BEFÄHIGUNG: Der Bund lebt nur weiter, wenn die neue Generation ihn nicht nur erbt, "
+          "sondern selbst durchlebt - Gebet, Fasten, Lehre und Jüngerschaft neu entdeckt, nicht nur "
+          "überliefert bekommt.",
       duration: 150000.0,
-      cost: [Publicity(value: 200000.0), Wisdom(value: 50000.0)],
+      cost: [Faith(value: 100000.0), Wisdom(value: 50000.0)],
       award: [Wisdom(value: 10000.0)],
       modifier: [
-        AddTask(task: "Weltweite Verfassung unterzeichnen"),
-        RemoveTask(task: "Verfassungs-Konvent einberufen"),
+        AddTask(task: "Ein Leib aus allen Völkern und Sprachen"),
+        RemoveTask(task: "Die neue Generation im Bund ausbilden"),
       ],
     ),
     Task(
-      name: "Weltweite Verfassung unterzeichnen",
-      description: "MEILENSTEIN: Finale rechtliche und geistliche Einheit der Weltkirche (Limit 2.560.000.000).",
+      name: "Ein Leib aus allen Völkern und Sprachen",
+      description: "MEILENSTEIN: \"Eine große Schar, die niemand zählen konnte, aus allen Nationen und "
+          "Stämmen und Völkern und Sprachen\" (Offenbarung 7,9) - der Bund trägt jetzt wirklich die ganze "
+          "bewohnte Erde (Limit 2.560.000.000).",
       duration: 800000.0,
       isMilestone: true,
-      cost: [Money(value: 1000000000.0), Faith(value: 500000.0), Wisdom(value: 500000.0)],
+      cost: [Faith(value: 600000.0), Wisdom(value: 400000.0), Time(value: 150.0)],
       award: [Member(value: 1.0)],
       modifier: [
-        MessageModifier(message: "GESCHAFFT: Die Weltkirche ist nun eine rechtlich geeinte Instanz. Limit 2,56 Mrd!"),
+        MessageModifier(message: "GESCHAFFT: Aus allen Nationen und Sprachen ein Leib in Jesus. Limit 2,56 Mrd!"),
         SetMax(ressource: "Member", newMax: 2560000000.0),
-        RemoveTask(task: "Weltweite Verfassung unterzeichnen"),
-        AddTask(task: "Globale Einheit wahren"),
+        RemoveTask(task: "Ein Leib aus allen Völkern und Sprachen"),
+        AddTask(task: "Den Bund über alle Generationen wahren"),
       ],
     ),
     Task(
-      name: "Globale Einheit wahren",
-      description: "WARTUNG: Tägliche diplomatische Arbeit zur Sicherung des globalen Friedens.",
+      name: "Den Bund über alle Generationen wahren",
+      description: "WARTUNG: Gebet, Fasten, Lehre und gelebte Jüngerschaft bleiben die tragenden Säulen - "
+          "über Generationen, Kulturen und Sprachen hinweg.",
       duration: 100000.0,
       cost: [Time(value: 20.0), Wisdom(value: 50000.0)],
       award: [Faith(value: 20000.0), Publicity(value: 20000.0)],
