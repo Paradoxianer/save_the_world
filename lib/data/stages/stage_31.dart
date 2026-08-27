@@ -19,7 +19,7 @@ final Stage stage31 = Stage(
   description: "Weltkirche Level 3 - Die finale Erweckung.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
-    "Märtyrer-Gedenken",
+    "Das Erbe der Märtyrer trägt Frucht",
     "Weltweiter Gebetsaufruf"
   ],
   randomTasks: ["Globale Apathie (Krise)", "Der Heilige Geist möchte wirken"],
@@ -29,8 +29,9 @@ final Stage stage31 = Stage(
     baseSleep,
     holySpiritWorking,
     Task(
-      name: "Märtyrer-Gedenken",
-      description: "WARTUNG: Bewahrung des geistlichen Erbes der Verfolgten.",
+      name: "Das Erbe der Märtyrer trägt Frucht",
+      description: "WARTUNG: Das Zeugnis der Verfolgten von gestern nährt die Erweckung von heute - "
+          "\"das Blut der Märtyrer ist der Same der Kirche\" (Tertullian).",
       duration: 80000.0,
       cost: [Time(value: 10.0), Faith(value: 20000.0)],
       award: [Faith(value: 50000.0), Wisdom(value: 10000.0)],
