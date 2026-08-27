@@ -4,6 +4,7 @@ import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
+import 'package:save_the_world_flutter_app/models/gamewon.modifier.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
@@ -52,6 +53,8 @@ class Modifier extends GameItem {
         return SetMax.fromJson(jsn);
       case "SetMin":
         return SetMin.fromJson(jsn);
+      case "GameWonModifier":
+        return GameWonModifier.fromJson(jsn);
       // NEW: Task Activation Modifiers
       case "EnableTask":
         return EnableTaskModifier.fromJson(jsn);

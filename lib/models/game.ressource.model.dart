@@ -27,6 +27,7 @@ class Game {
   static List<Task> tasks = [];
   static late ChangeNotifier notifier;
   static late ChangeNotifier stagenNotifier;
+  static late ChangeNotifier gameWonNotifier;
   static Game? mInstance;
   
   /// Der Taktgeber für alle Animationen und Timer im Spiel.
@@ -45,6 +46,13 @@ class Game {
   }
 
   bool isLoading = true;
+
+  /// Einmal true, sobald "Auf die Wiederkunft warten" abgeschlossen wurde.
+  /// Bleibt über resetGame() hinweg persistent false/true - steuert, ob beim
+  /// nächsten App-Start der ruhige Epilog statt des normalen Spiels gezeigt
+  /// wird. Der volle Win-Screen (Lauftext + Weißblende) läuft dagegen nur
+  /// genau einmal, direkt beim Übergang false -> true.
+  bool hasCompletedGame = false;
 
   DateTime? _lastStartTime;
   Duration _accumulatedStageTime = Duration.zero;
@@ -82,6 +90,7 @@ class Game {
     dataManager = DataManager();
     notifier = ChangeNotifier();
     stagenNotifier = ChangeNotifier();
+    gameWonNotifier = ChangeNotifier();
     
     _ticker = tick.createTicker(updateGame);
     _ticker!.start();
@@ -155,9 +164,30 @@ class Game {
     ressources[Member().name]?.min = 0.0;
   }
 
+  /// Löst den einmaligen Win-Screen aus (siehe GameWonModifier). Feuert
+  /// gameWonNotifier nur beim tatsächlichen Übergang false -> true, damit
+  /// die Zeremonie nicht bei jedem Rebuild erneut startet.
+  void markGameWon() {
+    if (!hasCompletedGame) {
+      hasCompletedGame = true;
+      saveState();
+      gameWonNotifier.notifyListeners();
+      notifier.notifyListeners();
+    }
+  }
+
+  void addGameWonListener(VoidCallback listener) {
+    gameWonNotifier.addListener(listener);
+  }
+
+  void removeGameWonListener(VoidCallback listener) {
+    gameWonNotifier.removeListener(listener);
+  }
+
   void resetGame() {
     isLoading = true;
     stage = 0;
+    hasCompletedGame = false;
     tasks.clear();
     completedOnceTasks.clear();
     initRes();
@@ -300,6 +330,7 @@ class Game {
       'stageClicks': _stageClicks,
       'stageHighscores': stageHighscores.map((k, v) => MapEntry(k.toString(), v)),
       'completedOnceTasks': completedOnceTasks.toList(),
+      'hasCompletedGame': hasCompletedGame,
     }));
   }
 
@@ -372,7 +403,8 @@ class Game {
             ..clear()
             ..addAll(completed.cast<String>());
         }
-        
+        hasCompletedGame = gameData['hasCompletedGame'] as bool? ?? false;
+
         ressources["Stage"]?.setValue(stage.toDouble());
         _lastStartTime = DateTime.now();
       } catch (e) {

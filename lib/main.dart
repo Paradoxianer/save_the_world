@@ -8,10 +8,12 @@ import 'package:save_the_world_flutter_app/about.dart';
 import 'package:save_the_world_flutter_app/controller/onboarding_controller.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/celebration_dialog.dart';
+import 'package:save_the_world_flutter_app/widgets/epilogue_screen.dart';
 import 'package:save_the_world_flutter_app/widgets/level.list.dart';
 import 'package:save_the_world_flutter_app/widgets/ressourcetable.item.dart';
 import 'package:save_the_world_flutter_app/widgets/stage.item.dart';
 import 'package:save_the_world_flutter_app/widgets/task.list.dart';
+import 'package:save_the_world_flutter_app/widgets/win_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:audio_session/audio_session.dart';
 
@@ -96,8 +98,9 @@ class _HomeState extends State<Home> {
     final game = Game.getInstance();
     _lastCelebratedStage = game.stage;
     game.addStageListener(_onStageChanged);
+    game.addGameWonListener(_onGameWon);
     Game.notifier.addListener(_rebuild);
-    
+
     // Auto-start onboarding on first run
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _triggerOnboarding(force: false);
@@ -127,6 +130,16 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void _onGameWon() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => const WinScreen(), fullscreenDialog: true),
+        );
+      }
+    });
+  }
+
   void _onStageChanged() {
     final game = Game.getInstance();
     if (_lastCelebratedStage != game.stage && game.lastStageDuration != null) {
@@ -146,6 +159,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    if (Game.getInstance().hasCompletedGame) {
+      return const EpilogueScreen();
+    }
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
