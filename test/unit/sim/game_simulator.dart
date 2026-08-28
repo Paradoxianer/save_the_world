@@ -52,6 +52,15 @@ class GameSimulator {
   /// gefeuert hat - fürs Balancing/Probing der Schwellenwerte.
   final Map<String, List<double>> weightedEventFireLog = {};
 
+  /// Für zusammenhängende Mehr-Stage-Läufe (runStage() mehrfach auf derselben
+  /// Instanz, siehe ContinuousPlaythrough): der Krisen-Roll wird NUR einmal
+  /// geplant und liest bei jedem Tick den AKTUELLEN Stand hier, statt bei
+  /// jedem runStage()-Aufruf einen weiteren, unabhängigen Roll-Timer auf die
+  /// alten (dann veralteten) Werte draufzupacken.
+  int _currentStageIndex = 0;
+  List<String> _currentRandomTaskNames = const [];
+  bool _rollsScheduled = false;
+
   GameSimulator(this.game, {this.random});
 
   bool isRunning(Task t) => runningTaskNames.contains(t.name);
@@ -147,15 +156,19 @@ class GameSimulator {
 
   /// Reale Zufalls-Logik aus Game.updateGame() nachgebildet, aber mit
   /// eigenem, optional geseedetem Random statt dart:math.Random() direkt -
-  /// fuer reproduzierbare "normale" Laeufe. Wird fuer den "optimalen" Lauf
-  /// gar nicht erst eingeplant (siehe GameSimulator.runStage).
-  void _scheduleRandomRoll(List<String> randomTaskNames, int stageIndex) {
+  /// fuer reproduzierbare "normale" Laeufe. Liest _currentStageIndex/
+  /// _currentRandomTaskNames LIVE statt eine Momentaufnahme zu erfassen -
+  /// bei zusammenhängenden Mehr-Stage-Läufen (runStage() mehrfach auf
+  /// derselben Instanz) würden sonst mehrere Roll-Timer mit je veralteten
+  /// Ständen parallel weiterlaufen.
+  void _rollRandomCrisis() {
     const double randDurationMs = 10000.0;
     void roll() {
-      final prob = stageIndex == 1 ? 15 : 5;
+      final pool = _currentRandomTaskNames;
+      final prob = _currentStageIndex == 1 ? 15 : 5;
       final r = (random ?? Random()).nextInt(prob);
-      if (r == 1 && randomTaskNames.isNotEmpty) {
-        final pick = randomTaskNames[(random ?? Random()).nextInt(randomTaskNames.length)];
+      if (r == 1 && pool.isNotEmpty) {
+        final pick = pool[(random ?? Random()).nextInt(pool.length)];
         final found = game.getTask(pick);
         if (found != null &&
             !(found.once && game.completedOnceTasks.contains(found.name)) &&
@@ -174,7 +187,7 @@ class GameSimulator {
   /// (siehe AddToRandom mit resourceName/resourceThreshold): eigener,
   /// unabhängiger Wurf pro registriertem Event, Chance = Ressourcenwert /
   /// Schwelle (gedeckelt auf 1.0), gleiche Tick-Kadenz wie der Krisen-Roll.
-  void _scheduleWeightedRandomRoll() {
+  void _rollWeightedEvents() {
     const double randDurationMs = 10000.0;
     void roll() {
       for (final entry in game.weightedRandomEvents.entries) {
@@ -215,10 +228,16 @@ class GameSimulator {
     int maxSteps = 200000,
     bool verbose = false,
   }) {
+    _currentStageIndex = stageIndex;
+    _currentRandomTaskNames = randomTaskNames;
+    // Stage-scoped wie in initStage(): Gewichtungen aus der vorigen Stage
+    // gelten nicht automatisch weiter in der neuen.
+    game.weightedRandomEvents.clear();
     seedActiveTasks(activeTaskNames);
-    if (includeRandomEvents) {
-      _scheduleRandomRoll(randomTaskNames, stageIndex);
-      _scheduleWeightedRandomRoll();
+    if (includeRandomEvents && !_rollsScheduled) {
+      _rollsScheduled = true;
+      _rollRandomCrisis();
+      _rollWeightedEvents();
     }
 
     int steps = 0;
