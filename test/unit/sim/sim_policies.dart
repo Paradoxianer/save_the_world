@@ -1,5 +1,7 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 
 import 'game_simulator.dart';
@@ -111,13 +113,41 @@ bool _respectsReservation(Task t, Set<String> reserved) {
   return !t.cost.any((c) => reserved.contains(c.name) && !_netPositiveFor(t, c.name));
 }
 
+/// True, wenn t (direkt oder über eine AutoExecuteModifier-Automation, die t
+/// beim Abschluss registriert) irgendeine der genannten Ressourcen dauerhaft
+/// drained - unabhängig vom einmaligen cost/award. Ein Task kann für seine
+/// Ziel-Ressource "netto positiv" sein und trotzdem einen späteren, ewig
+/// laufenden Drain auf eine ANDERE, für dasselbe Ziel benötigte Ressource
+/// auslösen (siehe Stage-15-Diagnose: "Zur Aktivistenorganisation werden" ist
+/// netto positiv für Publicity, registriert aber einen dauerhaften
+/// Faith-Drain, der das Faith-Ziel desselben Meilensteins unerreichbar
+/// macht). Der einmalige cost/award-Vergleich sieht diese Falle nie.
+bool _startsAutomationDraining(Task t, Set<String> resourceNames) {
+  for (final m in t.myModifier) {
+    if (m is AutoExecuteModifier) {
+      for (final inner in m.modifiers) {
+        if (inner is SubtractRes) {
+          for (final r in inner.ressources) {
+            if (resourceNames.contains(r.name)) return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
 /// Versucht, den nächsten Schritt Richtung Ziel zu starten. Fehlt eine
 /// Kosten-Ressource, wird gezielt der beste (soft-floor-leistbare) Erzeuger
 /// dieser Ressource gestartet, statt einfach abzuwarten.
-void _pursueGoal(GameSimulator sim, List<Task> idle, String goalName, Map<String, List<String>> graph) {
+///
+/// Gibt die Ressourcen zurück, die für den GERADE VERFOLGTEN Schritt aktuell
+/// zu knapp sind ("shortForGoal") - der Aufrufer nutzt das, um dieselben
+/// Ressourcen auch vor PRIO 3/4/5 zu schützen (siehe Stage-15-Diagnose unten).
+Set<String> _pursueGoal(GameSimulator sim, List<Task> idle, String goalName, Map<String, List<String>> graph) {
   final reachableNow = idle.map((t) => t.name).toSet();
   final nextName = nextStepToward(goalName, reachableNow, graph);
-  if (nextName == null) return;
+  if (nextName == null) return {};
 
   final matches = idle.where((t) => t.name == nextName);
   for (final t in matches) {
@@ -126,33 +156,68 @@ void _pursueGoal(GameSimulator sim, List<Task> idle, String goalName, Map<String
       continue;
     }
     // Nicht leistbar: fehlende Ressourcen gezielt auffüllen statt zu warten.
+    // Alle für DIESES Ziel aktuell knappen Ressourcen auf einmal ermitteln -
+    // ein Erzeuger, der eine davon kostet, während er eine andere liefert,
+    // frisst sich selbst ins Bein (siehe Stage-11-Diagnose: "Gesellschaftliche
+    // Präsenz zeigen" ist netto positiv für Publicity, kostet aber 50 Wisdom -
+    // genau die Ressource, die für denselben Meilenstein ebenfalls knapp war
+    // und nie über ~250 hinauswuchs, weil sie ständig wieder in Publicity
+    // umgewandelt wurde).
+    final shortForGoal = <String>{};
+    for (final c in t.cost) {
+      final res = Game.ressources[c.name];
+      final floor = _softFloor[c.name] ?? res?.min ?? 0.0;
+      if (res == null || (res.value - c.value) < floor) shortForGoal.add(c.name);
+    }
+
     for (final cost in t.cost) {
-      final res = Game.ressources[cost.name];
-      final floor = _softFloor[cost.name] ?? res?.min ?? 0.0;
-      if (res == null || (res.value - cost.value) < floor) {
-        // NUR echte Netto-Erzeuger dieser Ressource in Frage kommen lassen -
-        // sonst kann ein Task mit hohem Brutto-Award, aber noch höheren
-        // eigenen Kosten (z.B. "Offiziersarbeit koordinieren": kostet 100
-        // Wisdom, bringt nur 50 zurück) als "Erzeuger" gewählt werden und
-        // genau die Ressource weiter auffressen, die hier aufgebaut werden
-        // soll (siehe Stage-7-Diagnose: Wisdom pendelte ewig unter 500).
-        final generators = idle
-            .where((g) => g.award.any((a) => a.name == cost.name) && _netPositiveFor(g, cost.name))
-            .toList()
-          ..sort((a, b) {
-            final va = a.award.firstWhere((x) => x.name == cost.name).value;
-            final vb = b.award.firstWhere((x) => x.name == cost.name).value;
-            return vb.compareTo(va);
-          });
-        for (final g in generators) {
-          if (affordableWithSoftFloor(g)) {
-            sim.startTask(g);
-            break;
-          }
+      if (!shortForGoal.contains(cost.name)) continue;
+      // NUR echte Netto-Erzeuger dieser Ressource in Frage kommen lassen -
+      // sonst kann ein Task mit hohem Brutto-Award, aber noch höheren
+      // eigenen Kosten (z.B. "Offiziersarbeit koordinieren": kostet 100
+      // Wisdom, bringt nur 50 zurück) als "Erzeuger" gewählt werden und
+      // genau die Ressource weiter auffressen, die hier aufgebaut werden
+      // soll (siehe Stage-7-Diagnose: Wisdom pendelte ewig unter 500).
+      final generators = idle
+          .where((g) =>
+              g.award.any((a) => a.name == cost.name) &&
+              _netPositiveFor(g, cost.name) &&
+              !g.cost.any((gc) => gc.name != cost.name && shortForGoal.contains(gc.name)) &&
+              !_startsAutomationDraining(g, shortForGoal))
+          .toList()
+        ..sort((a, b) {
+          final va = a.award.firstWhere((x) => x.name == cost.name).value;
+          final vb = b.award.firstWhere((x) => x.name == cost.name).value;
+          return vb.compareTo(va);
+        });
+      bool started = false;
+      for (final g in generators) {
+        if (affordableWithSoftFloor(g)) {
+          sim.startTask(g);
+          started = true;
+          break;
+        }
+      }
+      // Keiner der Erzeuger war leistbar - meist weil eine WEITERE Ressource
+      // (typischerweise Time) gerade knapp ist. Auch die zusätzlich als knapp
+      // melden, sonst verhungert der Erzeuger selbst an genau dieser
+      // Ressource, weil PRIO 3/4/5 sie parallel für andere (oft geerbte
+      // WARTUNG-)Aufgaben verbrauchen, bevor der Erzeuger je an der Reihe war
+      // (siehe Stage-15-Diagnose: der beste Wisdom-Erzeuger scheiterte an
+      // Time, das dutzende geerbte Aufgaben aus früheren Stages jede Runde
+      // neu aufbrauchten).
+      if (!started && generators.isNotEmpty) {
+        final top = generators.first;
+        for (final gc in top.cost) {
+          final res = Game.ressources[gc.name];
+          final floor = _softFloor[gc.name] ?? res?.min ?? 0.0;
+          if (res == null || (res.value - gc.value) < floor) shortForGoal.add(gc.name);
         }
       }
     }
+    return shortForGoal;
   }
+  return {};
 }
 
 /// Einheitliche, ressourcen- und ketten-bewusste Spielpolitik. Ersetzt die
@@ -226,10 +291,18 @@ class SmartPolicy {
     final milestone =
         sim.game.allTasks.where((t) => t.isMilestone && !sim.game.completedOnceTasks.contains(t.name)).toList();
     final milestoneTask = milestone.isNotEmpty ? milestone.first : null;
-    if (milestoneTask != null) {
-      _pursueGoal(sim, idle, milestoneTask.name, _graphFor(sim));
-    }
     final reserved = _reservedResourcesFor(milestoneTask);
+    if (milestoneTask != null) {
+      // Ressourcen, die für den GERADE VERFOLGTEN Zwischenschritt knapp sind,
+      // zusätzlich reservieren - sonst räumt PRIO 5s "starte alles Leistbare"
+      // genau diese Ressourcen leer, bevor der eigentlich nötige Erzeuger an
+      // der Reihe war (siehe Stage-15-Diagnose: dutzende geerbte WARTUNG-
+      // Aufgaben aus früheren Stages verbrauchten Time/Wisdom jede Runde neu,
+      // bevor "Weltweite Kampagne planen" - die 1000 Wisdom braucht - je eine
+      // Chance bekam. "Time" landet hier besonders oft, weil so gut wie jeder
+      // Erzeuger Time kostet).
+      reserved.addAll(_pursueGoal(sim, idle, milestoneTask.name, _graphFor(sim)));
+    }
 
     // PRIO 3: Krisen - nur lösen, wenn wirklich leistbar (die Meilenstein-
     // Verfolgung oben hat schon zugegriffen, falls die Ressource knapp war)

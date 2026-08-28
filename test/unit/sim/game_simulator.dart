@@ -63,6 +63,11 @@ class GameSimulator {
 
   GameSimulator(this.game, {this.random});
 
+  /// Diagnose-Schalter (siehe _diag_probe_test.dart) - loggt jeden
+  /// startTask()-Aufruf mit Zeitstempel. Bleibt false in allen normalen
+  /// Testläufen, keine Auswirkung auf reguläre Suiten.
+  static bool debugLogStarts = false;
+
   bool isRunning(Task t) => runningTaskNames.contains(t.name);
 
   bool canAfford(Task t) =>
@@ -100,6 +105,12 @@ class GameSimulator {
 
   void startTask(Task t) {
     if (isRunning(t) || !canAfford(t)) return;
+    if (debugLogStarts) {
+      final timeBefore = Game.ressources["Time"]?.value ?? 0.0;
+      // ignore: avoid_print
+      print("[start] t=${nowMs.toStringAsFixed(0)} '${t.name}' "
+          "cost=${t.cost.map((c) => '${c.name}:${c.value}').join(',')} timeBefore=$timeBefore");
+    }
     for (final c in t.cost) {
       Game.ressources[c.name]?.subtract(c);
     }
@@ -240,6 +251,15 @@ class GameSimulator {
       _rollWeightedEvents();
     }
 
+    // hardCapMs ist eine Notbremse GEGEN DIESE EINE STAGE (Endlos-Loop-Schutz),
+    // kein Budget für den gesamten Durchlauf - nowMs läuft bei zusammenhängenden
+    // Mehr-Stage-Läufen (ContinuousPlaythrough) über runStage()-Aufrufe hinweg
+    // weiter. Ohne diesen Stage-relativen Vergleich hätten spätere Stages immer
+    // weniger von den 3 Stunden übrig, bis irgendwann gar keine Zeit mehr bleibt
+    // - das sah wie ein Balancing-Deadlock der späten Stage aus, war aber nur
+    // der aufgebrauchte Rest des Budgets früherer Stages (siehe Stage-15-
+    // Diagnose: Stage 9-14 allein verbrauchten schon ~172 der 180 Minuten).
+    final stageStartMs = nowMs;
     int steps = 0;
     while (true) {
       final member = Game.ressources["Member"]?.value ?? 0;
@@ -279,7 +299,7 @@ class GameSimulator {
             "vermutlich Endlos-Automatisierung ohne echten Fortschritt.";
         break;
       }
-      if (nowMs > hardCapMs) {
+      if (nowMs - stageStartMs > hardCapMs) {
         deadlock = true;
         deadlockReason = "hardCapMs (${(hardCapMs / 3600000).toStringAsFixed(1)}h virtuelle Zeit) "
             "überschritten ohne Zielerreichung.";

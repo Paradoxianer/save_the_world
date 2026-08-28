@@ -63,13 +63,27 @@ void main() {
 
       // Regressions-Schutz statt Alles-oder-Nichts: 33 Stages am Stück lösen
       // ist ein bewegliches Ziel (spätere Stages brauchen eigene Balancing-
-      // Arbeit, kein reines Bot-Problem mehr - siehe Deadlocks ab Stage 15
-      // OPTIMAL / 11 NORMAL trotz der Bot-Überarbeitung). Diese Untergrenze
-      // dokumentiert den aktuell erreichten Stand; wird bewusst nur erhöht,
-      // nie implizit gesenkt.
+      // Arbeit, kein reines Bot-Problem mehr). Diese Untergrenze dokumentiert
+      // den aktuell erreichten Stand; wird bewusst nur erhöht, nie implizit
+      // gesenkt.
+      //
+      // Optimal 15->23 (siehe Stage-15-Diagnose): zwei echte Bot-Bugs behoben.
+      // (1) _pursueGoal reservierte nur die direkten Kosten des NÄCHSTEN
+      // Kettenschritts, nicht die Ressourcen, an denen sein bester Erzeuger
+      // selbst hängt - PRIO 5s "starte alles Leistbare" räumte Time/Wisdom
+      // leer, bevor der Erzeuger je an der Reihe war, weil dutzende geerbte
+      // WARTUNG-Aufgaben aus Stages 3-14 (die nie "aussterben") jede Runde
+      // erneut um dieselbe knappe Time konkurrierten. (2) hardCapMs (3h) war
+      // eine globale Uhr statt einer Pro-Stage-Notbremse - bei zusammen-
+      // hängenden Mehrstage-Läufen lief nowMs über runStage()-Aufrufe hinweg
+      // weiter, sodass spätere Stages quasi kein Budget mehr übrig hatten
+      // (Stage 9-14 allein verbrauchten ~172 der 180 Minuten). Beides behoben;
+      // Normal bleibt bei 11 (Stage 11: Häufung nie endender Alt-Krisen aus
+      // Stages 4/8/9/10/11 erzeugt eine Mitglieder-Abwärtsspirale - sieht nach
+      // einem Content-/Balancing-Thema aus, nicht nach einem Bot-Bug).
       final optimalReached = optimal.where((r) => r.reachedGoal).length;
       final normalReached = normal.where((r) => r.reachedGoal).length;
-      const int minOptimalStages = 15;
+      const int minOptimalStages = 23;
       const int minNormalStages = 11;
 
       expect(optimalReached, greaterThanOrEqualTo(minOptimalStages),
