@@ -241,6 +241,12 @@ class GameSimulator {
   }) {
     _currentStageIndex = stageIndex;
     _currentRandomTaskNames = randomTaskNames;
+    // Echtes Game.stage mitziehen - der Simulator ruft initStage() bewusst
+    // nicht auf (siehe Klassenkommentar), daher blieb dieses Feld sonst für
+    // den ganzen Lauf auf dem Konstruktor-Default stehen. Ohne diese Zeile
+    // lief z.B. die Krisen-Verjährung in Game.addTask() (stage - firstSeen)
+    // ins Leere, weil "stage" nie über 0 hinauskam.
+    game.stage = stageIndex;
     // Stage-scoped wie in initStage(): Gewichtungen aus der vorigen Stage
     // gelten nicht automatisch weiter in der neuen.
     game.weightedRandomEvents.clear();

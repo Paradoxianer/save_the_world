@@ -78,14 +78,16 @@ class Game {
   /// zurückgesetzt wird.
   final Map<String, int> crisisFirstSeenStage = {};
 
-  /// Nach wie vielen Stages eine nie gelöste Krise nicht mehr zurückkehrt -
-  /// entspricht einem vollen Tier-Durchlauf (jeder benannte Tier hat 3
-  /// Level). Ohne diese Grenze häufen sich Alt-Krisen aus frühen Stages
-  /// unbegrenzt an (sie beleben sich beim Verpassen selbst per AddTask(self))
-  /// und konkurrieren mit jeder neuen Stage-Krise um dieselben knappen
+  /// Nach wie vielen Stages eine nie gelöste Krise nicht mehr zurückkehrt.
+  /// Ohne diese Grenze häufen sich Alt-Krisen aus frühen Stages unbegrenzt an
+  /// (sie beleben sich beim Verpassen selbst per AddTask(self)) und
+  /// konkurrieren mit jeder neuen Stage-Krise um dieselben knappen
   /// Ressourcen - siehe Stage-11-Diagnose: eine Mitglieder-Abwärtsspirale
-  /// durch 6+ nie endende Krisen aus Stages 4/8/9/10/11.
-  static const int crisisExpiryStages = 3;
+  /// durch 6+ nie endende Krisen aus Stages 4/8/9/10/11. Ursprünglich 3
+  /// (ein voller Tier-Durchlauf), auf 2 gesenkt, weil bei 3 die Krisen aus
+  /// Stage 8/9/10 beim Erreichen von Stage 11 selbst noch nicht verjährt
+  /// waren und die dortige Spirale dadurch unverändert blieb.
+  static const int crisisExpiryStages = 2;
 
   /// Ressourcenabhängige Zufallsevents (siehe AddToRandom), taskName ->
   /// Gewichtungs-Konfiguration. Stage-scoped, wird bei jedem initStage()
