@@ -21,7 +21,7 @@ final Stage stage11 = Stage(
   description: "Beeinflussende Kirche Level 1 - Deine Stimme hat Gewicht in der Gesellschaft.",
   activeTasks: [ "Bibellesen", "Beten",
     "Schlafen",
-    "Gesellschaftliche Präsenz zeigen",
+    "Anerkennung durch die Politik anhand der Bibel reflektieren",
     "Lobby-Arbeit aufbauen",
     "Regionale Konferenz veranstalten"
   ],
@@ -32,13 +32,25 @@ final Stage stage11 = Stage(
     baseSleep,
     holySpiritWorking,
     Task(
-      name: "Gesellschaftliche Präsenz zeigen",
-      description: "WARTUNG: Öffentliche Stellungnahmen, Community-Engagement, echte Präsenz im "
-          "gesellschaftlichen Diskurs - anders als Lobby-Arbeit geht es hier nicht um Zugang zu "
-          "Entscheidungsträgern, sondern um eine authentische, sichtbare Stimme für alle.",
+      name: "Anerkennung durch die Politik anhand der Bibel reflektieren",
+      description: "'Sie hatten die Ehre bei Menschen lieber als die Ehre bei Gott' (Johannes 12,43) - "
+          "Anerkennung von einflussreichen Politikern schmeichelt und öffnet Türen, aber sie kann leise zur "
+          "eigentlichen Motivation werden, wenn man nicht wachsam bleibt. Ein ehrlicher Blick vor Gott auf "
+          "diese Versuchung bewahrt die eigentliche Ausrichtung.",
       duration: 20000.0,
-      cost: [Time(value: 2.0), Wisdom(value: 50.0)],
-      award: [Faith(value: 20.0), Publicity(value: 10.0)],
+      cost: [Time(value: 3.0), Faith(value: 100.0)],
+      award: [Wisdom(value: 40.0)],
+      modifier: [AddTask(task: "Liebevolles, aber kritisches Gespräch mit einem Politiker führen")],
+    ),
+    Task(
+      name: "Liebevolles, aber kritisches Gespräch mit einem Politiker führen",
+      description: "Statt sich vereinnahmen zu lassen oder sich ganz zurückzuziehen, sucht die Bewegung das "
+          "offene Gespräch mit politisch Verantwortlichen - ehrlich in der Kritik, aber getragen von echter "
+          "Liebe statt Verachtung. 'Seid bereit, jedem Rede und Antwort zu stehen... aber mit Sanftmut und "
+          "Ehrfurcht' (1. Petrus 3,15-16).",
+      duration: 18000.0,
+      cost: [Time(value: 3.0), Wisdom(value: 30.0)],
+      award: [Faith(value: 30.0), Publicity(value: 80.0)],
     ),
     Task(
       name: "Lobby-Arbeit aufbauen",
@@ -83,7 +95,7 @@ final Stage stage11 = Stage(
           "Versuchung ist groß - Zugang zu Macht, Schutz, Fördergelder - aber wer sich vereinnahmen lässt, "
           "verliert die prophetische Distanz, die diese Stimme erst glaubwürdig macht.",
       duration: 12000.0,
-      timeToSolve: 50000.0,
+      timeToSolve: 100000.0,
       cost: [Wisdom(value: 400.0), Faith(value: 200.0)],
       award: [Publicity(value: 100.0)],
       modifier: [
