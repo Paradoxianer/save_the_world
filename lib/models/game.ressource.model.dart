@@ -71,6 +71,22 @@ class Game {
   /// egal ob AddTask-Modifier, Random-Event oder initStage sie anfordert.
   final Set<String> completedOnceTasks = {};
 
+  /// Verjährung wiederkehrender Krisen (siehe addTask()): Stage, in der eine
+  /// Krise (Task mit echter timeToSolve-Frist) zum ERSTEN Mal auftrat -
+  /// überlebt jedes spätere Verpassen+Neuanlegen per AddTask(self)
+  /// unverändert (putIfAbsent), damit ihr Alter nicht bei jedem Respawn
+  /// zurückgesetzt wird.
+  final Map<String, int> crisisFirstSeenStage = {};
+
+  /// Nach wie vielen Stages eine nie gelöste Krise nicht mehr zurückkehrt -
+  /// entspricht einem vollen Tier-Durchlauf (jeder benannte Tier hat 3
+  /// Level). Ohne diese Grenze häufen sich Alt-Krisen aus frühen Stages
+  /// unbegrenzt an (sie beleben sich beim Verpassen selbst per AddTask(self))
+  /// und konkurrieren mit jeder neuen Stage-Krise um dieselben knappen
+  /// Ressourcen - siehe Stage-11-Diagnose: eine Mitglieder-Abwärtsspirale
+  /// durch 6+ nie endende Krisen aus Stages 4/8/9/10/11.
+  static const int crisisExpiryStages = 3;
+
   /// Ressourcenabhängige Zufallsevents (siehe AddToRandom), taskName ->
   /// Gewichtungs-Konfiguration. Stage-scoped, wird bei jedem initStage()
   /// geleert - genau wie randomTasks nur zur Laufzeit durch Task-Modifier
@@ -190,6 +206,7 @@ class Game {
     hasCompletedGame = false;
     tasks.clear();
     completedOnceTasks.clear();
+    crisisFirstSeenStage.clear();
     initRes();
     initStage(0);
     _accumulatedStageTime = Duration.zero;
@@ -217,6 +234,7 @@ class Game {
     isLoading = true;
     tasks.clear();
     completedOnceTasks.clear();
+    crisisFirstSeenStage.clear();
     initRes();
     stage = targetStage;
     ressources["Stage"]?.setValue(stage.toDouble());
@@ -270,6 +288,22 @@ class Game {
     if (task.once && completedOnceTasks.contains(task.name)) {
       debugPrint("addTask: '${task.name}' ist eine erledigte Einmal-Aufgabe. Skipping.");
       return;
+    }
+    // Verjährung: eine Krise, die es seit mehr als crisisExpiryStages Stages
+    // gibt (auch über mehrfaches Verpassen+Neuanlegen per AddTask(self)
+    // hinweg), kehrt nicht mehr zurück - die Bewegung hat sie dauerhaft
+    // hinter sich gelassen (siehe Feldkommentar an crisisFirstSeenStage).
+    // Das letzte Verpassen hat seine normale Strafe (missed: SubtractRes...)
+    // bereits ausgelöst, BEVOR die Krise hier per AddTask(self) versucht,
+    // sich erneut zu melden - nur dieser Neuanlage-Versuch wird gestoppt.
+    if (task.timeToSolve != double.infinity) {
+      final firstSeen = crisisFirstSeenStage.putIfAbsent(task.name, () => stage);
+      if (stage - firstSeen > crisisExpiryStages) {
+        snackbarMessage = task.resolutionMessage ??
+            "AUFGEARBEITET: '${task.name}' konnte dauerhaft gelöst werden - das taucht nicht mehr auf.";
+        debugPrint("addTask: '${task.name}' ist verjährt (seit Stage $firstSeen). Kehrt nicht zurück.");
+        return;
+      }
     }
     if (needInit) tasks.removeWhere((t) => t.name == task.name);
     tasks.add(task);

@@ -23,6 +23,13 @@ class Task extends GameElement {
   List<Modifier> missed;
   List<Modifier> online;
 
+  /// Optionaler, thematisch passender Text für den Moment, in dem diese
+  /// (wiederkehrende) Krise wegen Verjährung nicht mehr zurückkehrt (siehe
+  /// Game.addTask()). Ohne eigenen Text nutzt Game einen generischen
+  /// Platzhalter mit dem Tasknamen - dieses Feld erlaubt es, für einzelne
+  /// Krisen später einen individuelleren Abschlusssatz zu hinterlegen.
+  String? resolutionMessage;
+
   late AnimationController controller;
 
   Task({
@@ -38,6 +45,7 @@ class Task extends GameElement {
     List<Modifier>? modifier,
     this.missed = const [],
     this.online = const [],
+    this.resolutionMessage,
     double? controllerValue,
     String? controllerStatus,
   })  : once = once ?? isMilestone,
@@ -95,6 +103,7 @@ class Task extends GameElement {
       modifier: deserializeModifiers(jsn['modifier']),
       missed: deserializeModifiers(jsn['missed']),
       online: deserializeModifiers(jsn['online']),
+      resolutionMessage: jsn['resolutionMessage'] as String?,
       controllerStatus: jsn['controllerStatus'] != null ? json.decode(jsn['controllerStatus'].toString()) as String? : null,
       controllerValue: jsn['controllerValue'] != null ? (json.decode(jsn['controllerValue'].toString()) as num?)?.toDouble() : null,
     );
@@ -115,6 +124,7 @@ class Task extends GameElement {
       'missed': json.encode(missed),
       'modifier': json.encode(myModifier),
       'online': json.encode(online),
+      'resolutionMessage': resolutionMessage,
       'controllerStatus': json.encode(controller.status.toString()),
       'controllerValue': json.encode(controller.value),
     };
