@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:save_the_world_flutter_app/data_manager.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
+import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -72,11 +73,24 @@ class Game {
   final Set<String> completedOnceTasks = {};
 
   /// Verjährung wiederkehrender Krisen (siehe addTask()): Stage, in der eine
-  /// Krise (Task mit echter timeToSolve-Frist) zum ERSTEN Mal auftrat -
-  /// überlebt jedes spätere Verpassen+Neuanlegen per AddTask(self)
-  /// unverändert (putIfAbsent), damit ihr Alter nicht bei jedem Respawn
-  /// zurückgesetzt wird.
+  /// sich selbst neu anlegende Krise (siehe isSelfPerpetuatingCrisis) zum
+  /// ERSTEN Mal auftrat - überlebt jedes spätere Verpassen+Neuanlegen per
+  /// AddTask(self) unverändert (putIfAbsent), damit ihr Alter nicht bei
+  /// jedem Respawn zurückgesetzt wird.
   final Map<String, int> crisisFirstSeenStage = {};
+
+  /// True nur für Aufgaben, die sich beim Verpassen per AddTask(self) selbst
+  /// wiederbeleben (das eigentliche "endlose Krise"-Muster, siehe
+  /// Stage-11-Diagnose). NICHT dasselbe wie "hat eine timeToSolve-Frist":
+  /// z.B. "FSJler bezahlen" (Stage 1) hat ebenfalls eine Frist, aber ihr
+  /// missed: legt beim Verpassen "FSJler einstellen" neu an, nicht sich
+  /// selbst - das ist eine dauerhafte Verpflichtung (Gehalt), keine Krise,
+  /// die irgendwann "für immer gelöst" sein sollte. Ohne diese Unterscheidung
+  /// hätte die Verjährung solche Daueraufgaben nach wenigen Stages fälschlich
+  /// stillgelegt.
+  static bool isSelfPerpetuatingCrisis(Task task) {
+    return task.missed.whereType<AddTask>().any((m) => m.nameOfTask == task.name);
+  }
 
   /// Nach wie vielen Stages eine nie gelöste Krise nicht mehr zurückkehrt.
   /// Ohne diese Grenze häufen sich Alt-Krisen aus frühen Stages unbegrenzt an
@@ -298,7 +312,7 @@ class Game {
     // Das letzte Verpassen hat seine normale Strafe (missed: SubtractRes...)
     // bereits ausgelöst, BEVOR die Krise hier per AddTask(self) versucht,
     // sich erneut zu melden - nur dieser Neuanlage-Versuch wird gestoppt.
-    if (task.timeToSolve != double.infinity) {
+    if (isSelfPerpetuatingCrisis(task)) {
       final firstSeen = crisisFirstSeenStage.putIfAbsent(task.name, () => stage);
       if (stage - firstSeen > crisisExpiryStages) {
         snackbarMessage = task.resolutionMessage ??
