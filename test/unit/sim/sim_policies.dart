@@ -113,6 +113,7 @@ bool _respectsReservation(Task t, Set<String> reserved) {
   return !t.cost.any((c) => reserved.contains(c.name) && !_netPositiveFor(t, c.name));
 }
 
+
 /// True, wenn t (direkt oder über eine AutoExecuteModifier-Automation, die t
 /// beim Abschluss registriert) irgendeine der genannten Ressourcen dauerhaft
 /// drained - unabhängig vom einmaligen cost/award. Ein Task kann für seine
@@ -306,10 +307,21 @@ class SmartPolicy {
 
     // PRIO 3: Krisen - nur lösen, wenn wirklich leistbar (die Meilenstein-
     // Verfolgung oben hat schon zugegriffen, falls die Ressource knapp war)
-    // UND ohne die für den Meilenstein reservierten Ressourcen anzugreifen.
+    // UND ohne die für den Meilenstein reservierten Ressourcen anzugreifen -
+    // AUSSER die Krise ist explizit als priorityCrisis markiert (siehe
+    // Task.priorityCrisis): für diese bewusst ausgewählten Einzelfälle
+    // überwiegt der Schaden durchs Verpassen so klar den Aufschub beim
+    // Meilenstein, dass sie ihn trotzdem lösen dürfen (siehe Stage-11-
+    // Diagnose: "Vereinnahmt von der Politik" wurde durch die Reservierung
+    // praktisch nie bezahlt und hat Member in einer Bodennähe-Oszillation
+    // gehalten). Bewusst NICHT automatisch aus der Verpasst-Strafe
+    // abgeleitet - ein Test wie "kostet bei Verpassen Member" hat sich in
+    // der Stage-5-Diagnose als zu grob erwiesen (siehe Task.priorityCrisis).
     if (handleCrises) {
       for (final t in idle.where((x) => x.timeToSolve != double.infinity)) {
-        if (_respectsReservation(t, reserved) && affordableWithSoftFloor(t)) sim.startTask(t);
+        if ((t.priorityCrisis || _respectsReservation(t, reserved)) && affordableWithSoftFloor(t)) {
+          sim.startTask(t);
+        }
       }
     }
 

@@ -30,6 +30,21 @@ class Task extends GameElement {
   /// Krisen später einen individuelleren Abschlusssatz zu hinterlegen.
   String? resolutionMessage;
 
+  /// Bewusstes Opt-in pro Krise (siehe SmartPolicy PRIO 3 im Bot-Simulator):
+  /// diese Krise darf gelöst werden, auch wenn sie dafür eine Ressource
+  /// verbraucht, die eigentlich für den aktuellen Meilenstein reserviert ist.
+  /// NICHT automatisch aus der Verpasst-Strafe abgeleitet (z.B. "kostet bei
+  /// Verpassen Member") - ein solcher automatischer Test hat sich in der
+  /// Stage-5-Diagnose als zu grob erwiesen: "Ein zwischenmenschliches Problem
+  /// klären" kostet bei Verpassen ebenfalls Member, aber ihr Löse-Preis
+  /// (Wisdom 30) gegen den viel kleineren Meilenstein (Wisdom 200) sollte
+  /// weiterhin geschützt bleiben. Nur bei bewusst gesetzten Einzelfällen wie
+  /// Stage 11s "Vereinnahmt von der Politik" (Löse-Preis Wisdom 400 vs.
+  /// Verpasst-Strafe Member -100, praktisch dauerhaft aktiv) überwiegt der
+  /// Schaden durchs Verpassen so klar, dass sich das lohnt - das ist eine
+  /// bewusste Balancing-Entscheidung pro Krise, keine allgemeine Regel.
+  bool priorityCrisis;
+
   late AnimationController controller;
 
   Task({
@@ -46,6 +61,7 @@ class Task extends GameElement {
     this.missed = const [],
     this.online = const [],
     this.resolutionMessage,
+    this.priorityCrisis = false,
     double? controllerValue,
     String? controllerStatus,
   })  : once = once ?? isMilestone,
@@ -104,6 +120,7 @@ class Task extends GameElement {
       missed: deserializeModifiers(jsn['missed']),
       online: deserializeModifiers(jsn['online']),
       resolutionMessage: jsn['resolutionMessage'] as String?,
+      priorityCrisis: jsn['priorityCrisis'] as bool? ?? false,
       controllerStatus: jsn['controllerStatus'] != null ? json.decode(jsn['controllerStatus'].toString()) as String? : null,
       controllerValue: jsn['controllerValue'] != null ? (json.decode(jsn['controllerValue'].toString()) as num?)?.toDouble() : null,
     );
@@ -125,6 +142,7 @@ class Task extends GameElement {
       'modifier': json.encode(myModifier),
       'online': json.encode(online),
       'resolutionMessage': resolutionMessage,
+      'priorityCrisis': priorityCrisis,
       'controllerStatus': json.encode(controller.status.toString()),
       'controllerValue': json.encode(controller.value),
     };
