@@ -24,7 +24,25 @@ class RemoveTask extends Modifier {
   void modify() {
     try {
       debugPrint("modify() $name \t $nameOfTask");
-      Task? found = Game.getInstance().getTask(nameOfTask);
+      // WICHTIG: NICHT über Game.getInstance().getTask() suchen - das
+      // durchsucht allTasks, und allTasks wird bei jedem Stage-Wechsel
+      // komplett ersetzt (siehe Game.initStage(): "allTasks =
+      // allStages[stg].allTasks"), nicht ergänzt. Eine aus einer früheren
+      // Stage geerbte Aufgabe, die sich selbst entfernen will, fand sich
+      // dort nach dem Stage-Wechsel nie wieder - RemoveTask(self) verpuffte
+      // lautlos, die Aufgabe blieb als Karteileiche für immer in
+      // Game.tasks/workOnList hängen (und im Bot-Simulator, der Fristen
+      // nach jedem Ereignis neu einplant, sogar in einer Endlos-Verpasst-
+      // Schleife). Stattdessen direkt in der Zielliste selbst suchen - dort
+      // liegt die tatsächlich aktive Instanz ohnehin bereits vor.
+      final List<Task> searchList = workOnList ?? Game.tasks;
+      Task? found;
+      for (final t in searchList) {
+        if (t.name == nameOfTask) {
+          found = t;
+          break;
+        }
+      }
       if (found != null) {
         if (workOnList != null) {
           workOnList!.remove(found);

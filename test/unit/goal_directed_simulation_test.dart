@@ -77,14 +77,28 @@ void main() {
       // eine globale Uhr statt einer Pro-Stage-Notbremse - bei zusammen-
       // hängenden Mehrstage-Läufen lief nowMs über runStage()-Aufrufe hinweg
       // weiter, sodass spätere Stages quasi kein Budget mehr übrig hatten
-      // (Stage 9-14 allein verbrauchten ~172 der 180 Minuten). Beides behoben;
-      // Normal bleibt bei 11 (Stage 11: Häufung nie endender Alt-Krisen aus
-      // Stages 4/8/9/10/11 erzeugt eine Mitglieder-Abwärtsspirale - sieht nach
-      // einem Content-/Balancing-Thema aus, nicht nach einem Bot-Bug).
+      // (Stage 9-14 allein verbrauchten ~172 der 180 Minuten).
+      //
+      // Normal 11->16 (siehe Stage-11-Tiefendiagnose): der eigentliche Grund
+      // für die dortige Mitglieder-Abwärtsspirale war ein waschechter Bug in
+      // RemoveTask.modify() (lib/models/removetask.model.dart), nicht Content
+      // oder Bot-Heuristik. RemoveTask suchte die zu entfernende Aufgabe über
+      // Game.getTask(), das NUR das aktuelle allTasks durchsucht - und
+      // allTasks wird bei jedem Stage-Wechsel komplett ERSETZT (siehe
+      // Game.initStage()), nicht ergänzt. Eine aus einer früheren Stage
+      // geerbte Krise, die sich per RemoveTask(self)+AddTask(self) selbst
+      // erneuern wollte, fand sich selbst nach dem Stage-Wechsel nie wieder -
+      // RemoveTask(self) verpuffte lautlos, die Instanz blieb als
+      // Karteileiche in Game.tasks hängen und wurde vom Simulator (der
+      // Fristen nach jedem Ereignis neu einplant) in eine Endlos-Verpasst-
+      // Schleife geschickt. Das betrifft NICHT nur den Bot-Simulator, sondern
+      // exakt denselben Code-Pfad im echten Spiel. Behoben, indem RemoveTask
+      // direkt in der Zielliste (Game.tasks bzw. workOnList) statt über
+      // allTasks sucht.
       final optimalReached = optimal.where((r) => r.reachedGoal).length;
       final normalReached = normal.where((r) => r.reachedGoal).length;
       const int minOptimalStages = 23;
-      const int minNormalStages = 11;
+      const int minNormalStages = 16;
 
       expect(optimalReached, greaterThanOrEqualTo(minOptimalStages),
           reason: "Optimal-Lauf erreicht nur $optimalReached Stages (erwartet mind. "
