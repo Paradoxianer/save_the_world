@@ -24,7 +24,7 @@ final Stage stage16 = Stage(
     "Bibellesen", "Beten", 
     "Schlafen", 
     "Kollekte", 
-    "Strategischer Stab berufen",
+    "Strategischen Stab gründen",
     "Kontinentales Netzwerk gründen"
   ],
   randomTasks: ["Spannungen zwischen Kontinental-Leitern (Krise)", "Der Heilige Geist möchte wirken"],
@@ -35,25 +35,38 @@ final Stage stage16 = Stage(
     collectMoney,
     holySpiritWorking,
     Task(
-      name: "Strategischer Stab berufen",
-      description: "DELEGATION: Ein Team von Experten übernimmt die globale Planung - viel Geld fließt "
-          "jetzt automatisch, aber rein administratives Wachstum ohne geistliche Rückkopplung zehrt auf "
+      name: "Strategischen Stab gründen",
+      description: "DELEGATION: Ein Team von Experten übernimmt die globale Planung - dafür braucht es "
+          "genug Ansehen, um überhaupt wichtige Köpfe dafür zu gewinnen, dazu erhebliches Kapital und "
+          "Weisheit für den Aufbau. Rein administratives Wachstum ohne geistliche Rückkopplung zehrt auf "
           "Dauer am Glauben der Bewegung.",
       duration: 20000.0,
-      cost: [Money(value: 200000.0), Wisdom(value: 1000.0)],
+      once: true,
+      bypassReservationResources: {"Publicity", "Money", "Wisdom"},
+      cost: [Publicity(value: 8000.0), Money(value: 500000.0), Wisdom(value: 1500.0)],
       award: [Time(value: 2.0)],
       modifier: [
-        MessageModifier(message: "SYSTEM: Der Stab automatisiert nun die internationale Kollekte."),
+        MessageModifier(message: "SYSTEM: Der Stab steht - ab jetzt kann er zu Sitzungen einberufen werden."),
+        AddTask(task: "Strategische Sitzung einberufen"),
+        AddTask(task: "Ich weiß es besser als der Stab"),
+        AddTask(task: "Den Stab ins Gebet führen"),
+      ],
+    ),
+    Task(
+      name: "Strategische Sitzung einberufen",
+      description: "Der Stab tritt zusammen und beschließt neue automatisierte Abläufe - teuer in der "
+          "Vorbereitung, aber jede Sitzung schaltet einen weiteren automatischen Geldgenerator frei. Wer zu "
+          "oft und zu hastig einberuft, verbrennt mehr, als er gewinnt - wer abwartet, bis sich genug "
+          "angesammelt hat, profitiert von der bereits laufenden Automatisierung.",
+      duration: 15000.0,
+      cost: [Money(value: 400000.0), Faith(value: 2000.0)],
+      modifier: [
         AutoExecuteModifier(
           intervalMs: 10000,
           modifiers: [
              MultiplyRes(targetResName: "Money", factorResName: "Member", multiplier: 0.12),
-             SubtractRes(ressources: [Faith(value: 400.0)]),
           ]
         ),
-        RemoveTask(task: "Strategischer Stab berufen"),
-        AddTask(task: "Ich weiß es besser als der Stab"),
-        AddTask(task: "Den Stab ins Gebet führen"),
       ],
     ),
     Task(
@@ -173,7 +186,7 @@ final Stage stage16 = Stage(
           "entschlossene, geistlich getragene Vermittlung kann die Einheit noch retten.",
       duration: 25000.0,
       timeToSolve: 100000.0,
-      priorityCrisis: true,
+      bypassReservationResources: {"Money", "Wisdom", "Faith"},
       cost: [Money(value: 300000.0), Wisdom(value: 3000.0), Faith(value: 1000.0)],
       award: [Wisdom(value: 500.0)],
       modifier: [

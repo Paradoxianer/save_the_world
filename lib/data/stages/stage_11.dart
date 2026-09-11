@@ -96,7 +96,7 @@ final Stage stage11 = Stage(
           "verliert die prophetische Distanz, die diese Stimme erst glaubwürdig macht.",
       duration: 12000.0,
       timeToSolve: 100000.0,
-      priorityCrisis: true,
+      bypassReservationResources: {"Wisdom", "Faith"},
       cost: [Wisdom(value: 400.0), Faith(value: 200.0)],
       award: [Publicity(value: 100.0)],
       modifier: [
