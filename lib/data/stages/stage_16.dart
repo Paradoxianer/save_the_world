@@ -150,6 +150,7 @@ final Stage stage16 = Stage(
         SetMax(ressource: "Member", newMax: 500000.0),
         RemoveTask(task: "Kontinentales Netzwerk gründen"),
         AddTask(task: "Netzwerk koordinieren"),
+        AddTask(task: "Gemeindegründungswellen durchs Netzwerk anstoßen"),
       ],
     ),
     Task(
@@ -159,6 +160,16 @@ final Stage stage16 = Stage(
       duration: 30000.0,
       cost: [Time(value: 6.0), Wisdom(value: 800.0)],
       award: [Faith(value: 300.0), Publicity(value: 200.0)],
+    ),
+    Task(
+      name: "Gemeindegründungswellen durchs Netzwerk anstoßen",
+      description: "'Die aber, vom Heiligen Geist ausgesandt, kamen nach Seleuzia und von dort weiter...' "
+          "(Apostelgeschichte 13,4) - das kontinentale Netzwerk wird wie einst Antiochia zur sendenden "
+          "Basis: es identifiziert, beauftragt und schickt gezielt neue Gemeindegründer in noch unerreichte "
+          "Regionen, getragen von der ganzen Struktur statt von Einzelnen.",
+      duration: 20000.0,
+      cost: [Time(value: 6.0), Money(value: 300000.0), Wisdom(value: 100.0)],
+      award: [Member(value: 3000.0)],
     ),
     Task(
       name: "Spannungen zwischen Kontinental-Leitern (Krise)",

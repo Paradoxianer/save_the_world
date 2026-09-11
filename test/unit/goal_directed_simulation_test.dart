@@ -95,10 +95,26 @@ void main() {
       // exakt denselben Code-Pfad im echten Spiel. Behoben, indem RemoveTask
       // direkt in der Zielliste (Game.tasks bzw. workOnList) statt über
       // allTasks sucht.
+      //
+      // Normal 16->17 (siehe Stage-16-Redesign): "Strategischer Stab berufen"
+      // wurde in eine echte Zwei-Schritt-Struktur aufgeteilt (einmalige
+      // Gründung mit Publicity/Money/Wisdom-Hürde, danach beliebig oft
+      // wiederholbare "Sitzung einberufen" mit einmaligem statt dauerhaft
+      // stapelndem Automatisierungspreis - eine gestapelte Dauerstrafe hätte
+      // Faith sonst auf -18 Mio. abstürzen lassen) sowie eine neue, zum
+      // kontinentalen Maßstab passende Mitgliederwachstums-Aufgabe ergänzt
+      // ("Gemeindegründungswellen durchs Netzwerk anstoßen", Apostelgeschichte
+      // 13,4 - das Netzwerk sendet wie Antiochia gezielt neue Gemeindegründer
+      // aus). Dafür ein präziser, pro Ressource einstellbarer Reservierungs-
+      // Bypass (Task.bypassReservationResources) statt eines pauschalen
+      // Bools - eine pauschale Variante hätte in Stage 16 die Geld-
+      // Reservierung mit umgangen und der Bot hätte jeden Zufluss sofort in
+      // neue Sitzungen reinvestiert, statt auf den 2-Mio-Meilenstein zu
+      // sparen.
       final optimalReached = optimal.where((r) => r.reachedGoal).length;
       final normalReached = normal.where((r) => r.reachedGoal).length;
       const int minOptimalStages = 23;
-      const int minNormalStages = 16;
+      const int minNormalStages = 17;
 
       expect(optimalReached, greaterThanOrEqualTo(minOptimalStages),
           reason: "Optimal-Lauf erreicht nur $optimalReached Stages (erwartet mind. "
