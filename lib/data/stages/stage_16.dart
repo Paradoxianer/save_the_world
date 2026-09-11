@@ -123,7 +123,7 @@ final Stage stage16 = Stage(
           "werden erst geistlich geprüft, dann getroffen.",
       duration: 20000.0,
       cost: [Time(value: 4.0), Wisdom(value: 300.0)],
-      award: [Wisdom(value: 250.0), Faith(value: 150.0), Publicity(value: 80.0)],
+      award: [Wisdom(value: 380.0), Faith(value: 150.0), Publicity(value: 80.0)],
     ),
     Task(
       name: "Kontinentales Netzwerk gründen",
@@ -172,7 +172,8 @@ final Stage stage16 = Stage(
       description: "FOLGE-KRISE: Ganze Regionen erwägen offen, sich vom Netzwerk loszusagen - nur "
           "entschlossene, geistlich getragene Vermittlung kann die Einheit noch retten.",
       duration: 25000.0,
-      timeToSolve: 60000.0,
+      timeToSolve: 100000.0,
+      priorityCrisis: true,
       cost: [Money(value: 300000.0), Wisdom(value: 3000.0), Faith(value: 1000.0)],
       award: [Wisdom(value: 500.0)],
       modifier: [
@@ -180,7 +181,7 @@ final Stage stage16 = Stage(
         RemoveTask(task: "Netzwerk droht zu zerbrechen (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 30000.0), Faith(value: 2000.0)]),
+        SubtractRes(ressources: [Member(value: 15000.0), Faith(value: 2000.0)]),
         MessageModifier(message: "ZERBROCHEN: Ganze Regionen lösen sich vom Netzwerk - der Kontinent zerfällt in Einzelteile."),
         RemoveTask(task: "Netzwerk droht zu zerbrechen (Krise)"),
         AddTask(task: "Netzwerk droht zu zerbrechen (Krise)"),
