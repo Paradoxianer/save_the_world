@@ -111,10 +111,23 @@ void main() {
       // Reservierung mit umgangen und der Bot hätte jeden Zufluss sofort in
       // neue Sitzungen reinvestiert, statt auf den 2-Mio-Meilenstein zu
       // sparen.
+      //
+      // Normal 17->23 (siehe Stage-17-Diagnose): dasselbe Muster ein drittes
+      // Mal, diesmal VOR statt nach dem Meilenstein - "Bibelschulen zur
+      // Theologischen Fakultät umbauen" (Wisdom 8000) hatte in der ganzen
+      // Vorlauf-Kette keine einzige wiederholbare Wisdom-Quelle (beide
+      // Vorlauf-Aufgaben sind einmalige Wisdom-Sinks). Neue, wiederholbare
+      // Aufgabe "Ein weltweites Ältestenkonzil einberufen" (Apostelgeschichte
+      // 15,6 - Apostel und Älteste kommen zur Beratung zusammen) von Beginn
+      // der Stage an verfügbar behebt das. Zusätzlich die Kaskaden-Krise
+      // "Die Bewegung spaltet sich" entschärft (Fristen verlängert,
+      // Verpasst-Strafe Member -150.000 -> -75.000, beide Krisen dürfen jetzt
+      // reservierte Ressourcen für ihre Lösung nutzen). Danach lief die Kette
+      // bis Stage 22 durch - Normal zieht mit Optimal gleich.
       final optimalReached = optimal.where((r) => r.reachedGoal).length;
       final normalReached = normal.where((r) => r.reachedGoal).length;
       const int minOptimalStages = 23;
-      const int minNormalStages = 17;
+      const int minNormalStages = 23;
 
       expect(optimalReached, greaterThanOrEqualTo(minOptimalStages),
           reason: "Optimal-Lauf erreicht nur $optimalReached Stages (erwartet mind. "

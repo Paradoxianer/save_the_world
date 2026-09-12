@@ -21,6 +21,7 @@ final Stage stage17 = Stage(
     "Bibellesen", "Beten",
     "Schlafen",
     "Lehrmaterial für die nächste Generation entwickeln",
+    "Ein weltweites Ältestenkonzil einberufen",
     "Bibelschulen zur Theologischen Fakultät umbauen"
   ],
   randomTasks: ["Lehrstreit gefährdet die Einheit (Krise)", "Der Heilige Geist möchte wirken"],
@@ -42,6 +43,15 @@ final Stage stage17 = Stage(
         AddTask(task: "Das Glaubensfundament dokumentieren"),
         RemoveTask(task: "Lehrmaterial für die nächste Generation entwickeln"),
       ],
+    ),
+    Task(
+      name: "Ein weltweites Ältestenkonzil einberufen",
+      description: "'Die Apostel aber und die Ältesten kamen zusammen, um über diese Frage zu beraten' "
+          "(Apostelgeschichte 15,6) - Vertreter aus allen Kontinenten kommen zusammen, um gemeinsam die "
+          "Lehre für kommende Generationen zu klären und zu festigen.",
+      duration: 25000.0,
+      cost: [Time(value: 8.0), Money(value: 200000.0), Faith(value: 300.0)],
+      award: [Wisdom(value: 600.0)],
     ),
     Task(
       name: "Das Glaubensfundament dokumentieren",
