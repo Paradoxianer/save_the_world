@@ -84,8 +84,8 @@ final Stage stage17 = Stage(
       name: "Fakultät wissenschaftlich leiten",
       description: "WARTUNG: Stetige Forschung und Lehre zur Bewahrung der DNA.",
       duration: 40000.0,
-      cost: [Time(value: 2.0), Wisdom(value: 1000.0)],
-      award: [Wisdom(value: 500.0), Faith(value: 200.0)],
+      cost: [Time(value: 2.0), Wisdom(value: 500.0)],
+      award: [Wisdom(value: 700.0), Faith(value: 200.0)],
     ),
     Task(
       name: "Die Fakultät geistlich neu ausrichten",
@@ -101,7 +101,8 @@ final Stage stage17 = Stage(
       description: "KRISE: Unterschiedliche Auslegungen der Kernlehre drohen die Bewegung zu spalten - nur "
           "eine gemeinsame, geistlich fundierte Klärung kann die Einheit bewahren.",
       duration: 20000.0,
-      timeToSolve: 60000.0,
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Faith"},
       cost: [Wisdom(value: 1500.0), Faith(value: 800.0)],
       award: [Wisdom(value: 300.0)],
       modifier: [
@@ -120,7 +121,8 @@ final Stage stage17 = Stage(
       description: "FOLGE-KRISE: Ganze Gruppen lösen sich mit eigener Lehrauslegung von der Bewegung - nur "
           "klare, aber demütige theologische Führung kann größeren Schaden noch abwenden.",
       duration: 30000.0,
-      timeToSolve: 70000.0,
+      timeToSolve: 110000.0,
+      bypassReservationResources: {"Money", "Wisdom", "Faith"},
       cost: [Money(value: 500000.0), Wisdom(value: 3000.0), Faith(value: 1500.0)],
       award: [Wisdom(value: 800.0)],
       modifier: [
@@ -128,7 +130,7 @@ final Stage stage17 = Stage(
         RemoveTask(task: "Die Bewegung spaltet sich (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 150000.0), Faith(value: 3000.0)]),
+        SubtractRes(ressources: [Member(value: 75000.0), Faith(value: 3000.0)]),
         MessageModifier(message: "SCHISMA: Die Bewegung zerbricht in konkurrierende Lehrrichtungen."),
         RemoveTask(task: "Die Bewegung spaltet sich (Krise)"),
         AddTask(task: "Die Bewegung spaltet sich (Krise)"),
