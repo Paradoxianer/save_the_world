@@ -5,7 +5,14 @@ import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 class AutoExecuteModifier extends Modifier {
   final List<Modifier> modifiers;
   final int intervalMs;
-  Timer? _timer;
+
+  /// Jede Aktivierung (jeder modify()-Aufruf) startet einen ZUSÄTZLICHEN,
+  /// unabhängigen Timer statt den vorherigen zu ersetzen - eine wiederholbare
+  /// Aufgabe wie "Strategische Sitzung einberufen" soll bei jeder erneuten
+  /// Aktivierung einen weiteren parallelen Generator hinzufügen, wie es ihr
+  /// eigener Beschreibungstext verspricht. Alle Timer dieser Instanz werden
+  /// gemeinsam gestoppt, sobald der Modifier von seinem Element entfernt wird.
+  final List<Timer> _timers = [];
 
   AutoExecuteModifier({
     required this.modifiers,
@@ -35,19 +42,21 @@ class AutoExecuteModifier extends Modifier {
 
   @override
   void modify() {
-    // Start the automation
-    _stopTimer();
-    debugPrint("[AUTOMATION] Starting AutoExecute every $intervalMs ms");
-    _timer = Timer.periodic(Duration(milliseconds: intervalMs), (timer) {
+    // Start a NEW, additional automation - siehe Klassenkommentar zu _timers.
+    debugPrint("[AUTOMATION] Starting AutoExecute every $intervalMs ms "
+        "(aktive Ketten dieser Aufgabe: ${_timers.length + 1})");
+    _timers.add(Timer.periodic(Duration(milliseconds: intervalMs), (timer) {
       for (var m in modifiers) {
         m.modify();
       }
-    });
+    }));
   }
 
   void _stopTimer() {
-    _timer?.cancel();
-    _timer = null;
+    for (final t in _timers) {
+      t.cancel();
+    }
+    _timers.clear();
   }
 
   // Ensure timer stops if the element is removed (logic to be expanded in Game/Task)

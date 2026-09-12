@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/weighted_random_event.model.dart';
 
@@ -129,7 +128,7 @@ class GameSimulator {
 
     for (final m in t.myModifier) {
       if (m is AutoExecuteModifier) {
-        _scheduleAutomation(m.modifiers, m.intervalMs.toDouble());
+        _scheduleAutomation(m);
       } else {
         m.modify();
       }
@@ -153,10 +152,19 @@ class GameSimulator {
     _reconcileTimeToSolve();
   }
 
-  void _scheduleAutomation(List<Modifier> mods, double intervalMs) {
+  /// Jede Aktivierung startet eine ZUSÄTZLICHE, für immer parallel
+  /// weiterlaufende Automatisierungs-Kette - genau wie im echten Spiel, wo
+  /// AutoExecuteModifier.modify() jetzt ebenfalls jedes Mal einen weiteren,
+  /// unabhängigen Timer registriert statt den vorherigen zu ersetzen (siehe
+  /// lib/models/autoexecute.model.dart). Ein wiederholbarer Task wie
+  /// "Strategische Sitzung einberufen" soll bei jeder erneuten Aktivierung
+  /// bewusst einen weiteren parallelen Generator hinzufügen.
+  void _scheduleAutomation(AutoExecuteModifier automation) {
+    final double intervalMs = automation.intervalMs.toDouble();
     if (intervalMs <= 0) return;
+
     void tick() {
-      for (final m in mods) {
+      for (final m in automation.modifiers) {
         m.modify();
       }
       _schedule(nowMs + intervalMs, tick);
