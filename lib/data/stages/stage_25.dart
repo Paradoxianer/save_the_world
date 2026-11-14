@@ -52,8 +52,8 @@ final Stage stage25 = Stage(
     Task(
       name: "Kontinentale Strategieplanung",
       description: "BEFÄHIGUNG: Erarbeitet die Vision für den Sprung auf 100 Millionen Mitglieder.",
-      duration: 100000.0,
-      cost: [Wisdom(value: 15000.0), Time(value: 50.0)],
+      duration: 150000.0,
+      cost: [Wisdom(value: 15000.0), Time(value: 12.0)],
       award: [Wisdom(value: 5000.0)],
       modifier: [
         AddTask(task: "Weltweite Allianz festigen"),

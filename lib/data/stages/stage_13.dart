@@ -37,8 +37,8 @@ final Stage stage13 = Stage(
           "Voraussetzung dafür, dass eine internationale Konferenz die Bewegung zusammenhält statt nur "
           "Menschen physisch an einen Ort zu bringen.",
       duration: 25000.0,
-      cost: [Time(value: 5.0), Wisdom(value: 500.0), Faith(value: 200.0)],
-      award: [Faith(value: 300.0), Wisdom(value: 200.0)],
+      cost: [Time(value: 5.0), Wisdom(value: 200.0), Faith(value: 200.0)],
+      award: [Faith(value: 300.0), Wisdom(value: 400.0)],
       modifier: [AddTask(task: "Internationale Konferenz")],
     ),
     Task(
@@ -86,15 +86,16 @@ final Stage stage13 = Stage(
       name: "Theologische Grundsatzfrage (Krise)",
       description: "KRISE: Eine DNA-Kontroverse gefährdet die Einheit der Bewegung!",
       duration: 20000.0,
-      timeToSolve: 60000.0,
-      cost: [Wisdom(value: 1000.0), Faith(value: 500.0)],
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Faith"},
+      cost: [Wisdom(value: 400.0), Faith(value: 500.0)],
       award: [Wisdom(value: 200.0)],
       modifier: [
         MessageModifier(message: "GELÖST: Die Identität der Bewegung wurde erfolgreich verteidigt."),
         RemoveTask(task: "Theologische Grundsatzfrage (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 2000.0), Faith(value: 500.0)]),
+        SubtractRes(ressources: [Member(value: 500.0), Faith(value: 500.0)]),
         MessageModifier(message: "SPALTUNG: Ungeklärte Fragen führten zu regionalen Abspaltungen."),
         RemoveTask(task: "Theologische Grundsatzfrage (Krise)"),
         AddTask(task: "Theologische Grundsatzfrage (Krise)"),

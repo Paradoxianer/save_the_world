@@ -67,7 +67,7 @@ final Stage stage24 = Stage(
       name: "Verfassungs-Entwurf",
       description: "BEFÄHIGUNG: Juristische Vorbereitung der globalen Satzung.",
       duration: 80000.0,
-      cost: [Wisdom(value: 10000.0), Time(value: 20.0)],
+      cost: [Wisdom(value: 10000.0), Time(value: 12.0)],
       award: [Wisdom(value: 2000.0)],
       modifier: [
         AddTask(task: "Globale Satzung verabschieden"),
@@ -77,9 +77,9 @@ final Stage stage24 = Stage(
     Task(
       name: "Globale Satzung verabschieden",
       description: "MEILENSTEIN: Rechtliche Anerkennung als weltweite Konfession (Limit 40.000.000).",
-      duration: 250000.0,
+      duration: 375000.0,
       isMilestone: true,
-      cost: [Wisdom(value: 60000.0), Time(value: 100.0), Faith(value: 45000.0)],
+      cost: [Wisdom(value: 60000.0), Time(value: 16.0), Faith(value: 45000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "ANERKENNUNG: Die Weltgemeinschaft akzeptiert eure Statuten. Limit 40.000.000!"),

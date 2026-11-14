@@ -78,8 +78,9 @@ final Stage stage22 = Stage(
       description: "KRISE: In einzelnen Ländern erreichen die Stipendien nicht die vorgesehenen "
           "Studierenden - Korruption oder schlicht mangelnde Kontrolle lässt Fördergelder versickern.",
       duration: 20000.0,
-      timeToSolve: 50000.0,
-      cost: [Wisdom(value: 5000.0), Money(value: 500000.0)],
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Money"},
+      cost: [Wisdom(value: 3000.0), Money(value: 500000.0)],
       award: [Wisdom(value: 1000.0)],
       modifier: [
         MessageModifier(message: "KONTROLLIERT: Strengere Prüfung sorgt dafür, dass die Mittel ankommen."),
@@ -97,14 +98,15 @@ final Stage stage22 = Stage(
       description: "FOLGE-KRISE: Öffentlich bekannt gewordene Misswirtschaft lässt Spender und Partner am "
           "ganzen Fonds zweifeln.",
       duration: 30000.0,
-      timeToSolve: 60000.0,
-      cost: [Money(value: 5000000.0), Wisdom(value: 8000.0), Publicity(value: 10000.0)],
+      timeToSolve: 110000.0,
+      bypassReservationResources: {"Money", "Wisdom", "Publicity"},
+      cost: [Money(value: 5000000.0), Wisdom(value: 5000.0), Publicity(value: 10000.0)],
       modifier: [
         MessageModifier(message: "WIEDERHERGESTELLT: Transparente Aufarbeitung gewinnt das Vertrauen zurück."),
         RemoveTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 200000.0), Publicity(value: 50000.0)]),
+        SubtractRes(ressources: [Member(value: 150000.0), Publicity(value: 50000.0)]),
         RemoveTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
         AddTask(task: "Vertrauen in den Bildungsfonds bricht weg (Krise)"),
       ],

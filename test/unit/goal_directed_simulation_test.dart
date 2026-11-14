@@ -124,10 +124,31 @@ void main() {
       // Verpasst-Strafe Member -150.000 -> -75.000, beide Krisen dürfen jetzt
       // reservierte Ressourcen für ihre Lösung nutzen). Danach lief die Kette
       // bis Stage 22 durch - Normal zieht mit Optimal gleich.
+      //
+      // 23->33 (komplettes Spiel inkl. GameWon), drei Ursachen:
+      // (1) CONTENT: 15 Aufgaben in Stage 23-32 verlangten Time 50-200 bei
+      // Time.max 24 (FSJler: 32) - konstruktiv unerreichbar, der Bot meldete
+      // nur "Deadlock". Jetzt 12/16, dafür längere Dauern; ein statischer Test
+      // (stage_integrity_test: "Kosten <= Basis-Maximum") fängt das künftig
+      // ohne Bot ab. (2) BOT-INFRASTRUKTUR: decide() lief nach JEDEM Ereignis
+      // und maxSteps zählte Automatisierungs-Ticks mit - bei ~130 "Sitzung
+      // einberufen"-Timern pro Stage (fixe Kosten, kein Grenznutzen-Verfall)
+      // war das Budget nach ~32 virtuellen Minuten weg, obwohl Stage 24 nur
+      // ~37 für die Mitglieder-Verdopplung brauchte (Member wächst ab Stage 9
+      // exponentiell ~2,2 %/min über geerbte Automatisierungen aus Stage 4/9).
+      // Jetzt: fester Entscheidungstakt (1 s virtuell), Heap statt Sort pro
+      // Schritt, Abbruch nur bei stehender virtueller Uhr, GameWon als Ziel
+      // der letzten Stage. (3) CONTENT, viertes bis siebtes Mal dasselbe
+      // Muster (Stage 13/20/21/22): Kaskaden-Krisen mit 50-70 s Frist, Wisdom
+      // 1000-8000 und Member-Strafen von 20-30 % pro Minute in Stages ohne
+      // eigene Wisdom-Quelle -> Abwärtsspirale (Stage 13: 10.880 -> 56 Member
+      // in 6 Minuten). Fix wie in 11/16/17: eine bestehende Wartungsaufgabe
+      // wird Wisdom-Quelle, Krisen dürfen reservierte Ressourcen nutzen,
+      // Fristen 90/110 s, Strafen auf 2-5 % des Stage-Bestands.
       final optimalReached = optimal.where((r) => r.reachedGoal).length;
       final normalReached = normal.where((r) => r.reachedGoal).length;
-      const int minOptimalStages = 23;
-      const int minNormalStages = 23;
+      const int minOptimalStages = 33;
+      const int minNormalStages = 33;
 
       expect(optimalReached, greaterThanOrEqualTo(minOptimalStages),
           reason: "Optimal-Lauf erreicht nur $optimalReached Stages (erwartet mind. "

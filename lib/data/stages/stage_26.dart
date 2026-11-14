@@ -51,9 +51,9 @@ final Stage stage26 = Stage(
       description: "MEILENSTEIN: Nicht eine neue Institution, sondern ein gemeinsames, weltweites "
           "Bekenntnis zu Jesus - über alle kulturellen und organisatorischen Grenzen hinweg (Limit "
           "160.000.000).",
-      duration: 300000.0,
+      duration: 450000.0,
       isMilestone: true,
-      cost: [Wisdom(value: 100000.0), Time(value: 100.0), Faith(value: 70000.0)],
+      cost: [Wisdom(value: 100000.0), Time(value: 16.0), Faith(value: 70000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "EINHEIT: Das gemeinsame Bekenntnis trägt über alle Grenzen hinweg. Limit 160.000.000!"),

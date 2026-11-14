@@ -67,8 +67,8 @@ final Stage stage23 = Stage(
     Task(
       name: "Globale Strategieklausur",
       description: "BEFÄHIGUNG: Erarbeitet das moralische Fundament für den nächsten globalen Schritt.",
-      duration: 100000.0,
-      cost: [Wisdom(value: 10000.0), Time(value: 50.0)],
+      duration: 150000.0,
+      cost: [Wisdom(value: 10000.0), Time(value: 12.0)],
       award: [Wisdom(value: 5000.0)],
       modifier: [
         AddTask(task: "Vom Einfluss zur Prägung"),
@@ -78,9 +78,9 @@ final Stage stage23 = Stage(
     Task(
       name: "Vom Einfluss zur Prägung",
       description: "MEILENSTEIN: Die Bewegung wird zum moralischen Kompass der Weltgemeinschaft (Limit 20.000.000).",
-      duration: 200000.0,
+      duration: 300000.0,
       isMilestone: true,
-      cost: [Wisdom(value: 50000.0), Time(value: 100.0), Faith(value: 40000.0)],
+      cost: [Wisdom(value: 50000.0), Time(value: 16.0), Faith(value: 40000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "GLOBAL: Eure Stimme prägt nun die Weltwerte. Limit 20.000.000!"),

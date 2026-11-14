@@ -1,6 +1,7 @@
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
+import 'package:save_the_world_flutter_app/models/gamewon.modifier.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 
@@ -292,9 +293,14 @@ class SmartPolicy {
     // gespart werden muss, bevor sie je die nötige Summe erreicht (siehe
     // Stage-4-Diagnose: Wisdom blieb dauerhaft nahe der Komfort-Untergrenze
     // hängen, weil Krisen sie sofort wieder abgriffen).
-    final milestone =
-        sim.game.allTasks.where((t) => t.isMilestone && !sim.game.completedOnceTasks.contains(t.name)).toList();
-    final milestoneTask = milestone.isNotEmpty ? milestone.first : null;
+    final notDone = sim.game.allTasks.where((t) => !sim.game.completedOnceTasks.contains(t.name));
+    final milestone = notDone.where((t) => t.isMilestone).toList();
+    // Letzte Stage: nach dem Meilenstein ist der eigentliche Abschluss die
+    // GameWon-Aufgabe ("Auf die Wiederkunft warten", Time 16) - ohne sie als
+    // Ziel würde PRIO 5 die Zeit laufend für Kleinkram ausgeben und die
+    // nötigen 16+8 (Soft-Floor) nie zusammen haben (Stage-32-Diagnose).
+    final gameWon = notDone.where((t) => t.myModifier.any((m) => m is GameWonModifier)).toList();
+    final milestoneTask = milestone.isNotEmpty ? milestone.first : (gameWon.isNotEmpty ? gameWon.first : null);
     final reserved = _reservedResourcesFor(milestoneTask);
     if (milestoneTask != null) {
       // Ressourcen, die für den GERADE VERFOLGTEN Zwischenschritt knapp sind,

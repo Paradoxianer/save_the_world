@@ -214,6 +214,29 @@ void main() {
   });
 
   group('Grundversorgung (Balancing-Minimum)', () {
+    test('Keine Kostenangabe übersteigt das Basis-Maximum ihrer Ressource', () {
+      // Eine frische Kosten-Instanz (z.B. Time(value: 50)) trägt ihr
+      // Konstruktor-Maximum (Time: 24) selbst - mehr kann der Spieler ohne
+      // SetMax-Erweiterung nie besitzen, canSubtract() schlägt dann für immer
+      // fehl. Siehe Stage-23-Diagnose: 15 Aufgaben in Stage 23-32 verlangten
+      // Time 50-200 und waren damit konstruktiv unerreichbar - der Bot meldete
+      // nur "Deadlock", nie den eigentlichen Grund. Bewusst gegen das
+      // BASIS-Maximum geprüft, nicht gegen erweiterte (FSJler: 32) - die
+      // Erweiterung kann wieder verloren gehen.
+      final List<String> errors = [];
+      for (final Stage stage in allStages) {
+        for (final t in stage.allTasks) {
+          for (final c in t.cost) {
+            if (c.value > c.max) {
+              errors.add("Stage ${stage.level}: '${t.name}' kostet ${c.name} "
+                  "${c.value}, Basis-Maximum ist aber ${c.max}.");
+            }
+          }
+        }
+      }
+      expect(errors, isEmpty, reason: '\n  ${errors.join("\n  ")}');
+    });
+
     test('Jede Stage hat eine Zeit-Regeneration (Schlafen)', () {
       for (final Stage stage in allStages) {
         final hasSleep = stage.allTasks.any((t) => t.name == baseSleep.name);

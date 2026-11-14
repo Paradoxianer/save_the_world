@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
@@ -27,7 +28,17 @@ class GameSimulator {
 
   double nowMs = 0.0;
   int clicks = 0;
-  final List<_SimEvent> _events = [];
+
+  /// Ereignis-Warteschlange als Heap: bei hunderten parallel laufenden
+  /// Automatisierungs-Ketten (siehe "Strategische Sitzung einberufen") liegen
+  /// dauerhaft ~1000 Ereignisse an - ein Sort pro Schritt wäre O(n log n) je
+  /// Ereignis. Gleichzeitige Ereignisse werden über die Einfüge-Reihenfolge
+  /// (seq) deterministisch FIFO abgearbeitet.
+  final HeapPriorityQueue<_SimEvent> _events = HeapPriorityQueue<_SimEvent>((a, b) {
+    final byTime = a.dueMs.compareTo(b.dueMs);
+    return byTime != 0 ? byTime : a.seq.compareTo(b.seq);
+  });
+  int _eventSeq = 0;
 
   /// Tasknamen, die aktuell "laufen" (Kosten schon bezahlt, Ergebnis kommt
   /// erst bei Fertigstellung) - verhindert Doppelstart desselben Tasks,
@@ -99,7 +110,7 @@ class GameSimulator {
   }
 
   void _schedule(double dueMs, void Function() run) {
-    _events.add(_SimEvent(dueMs, run));
+    _events.add(_SimEvent(dueMs, _eventSeq++, run));
   }
 
   void startTask(Task t) {
@@ -146,6 +157,10 @@ class GameSimulator {
     _missScheduledFor.remove(t.name);
     if (_missSuppressedFor.contains(t.name)) return; // laengst gestartet
     if (!Game.tasks.contains(t)) return; // laengst anderweitig geloest
+    if (debugLogStarts) {
+      // ignore: avoid_print
+      print("[miss] t=${nowMs.toStringAsFixed(0)} '${t.name}' ${_resSnapshot()}");
+    }
     for (final m in t.missed) {
       m.modify();
     }
@@ -244,7 +259,8 @@ class GameSimulator {
     required void Function(GameSimulator) decide,
     bool includeRandomEvents = true,
     double hardCapMs = 3 * 60 * 60 * 1000, // 3 virtuelle Stunden Notbremse
-    int maxSteps = 200000,
+    double decisionIntervalMs = 1000.0,
+    int maxEventsWithoutTimeAdvance = 50000,
     bool verbose = false,
   }) {
     _currentStageIndex = stageIndex;
@@ -275,9 +291,26 @@ class GameSimulator {
     // Diagnose: Stage 9-14 allein verbrauchten schon ~172 der 180 Minuten).
     final stageStartMs = nowMs;
     int steps = 0;
+    // Entscheidungen laufen in einem festen virtuellen Takt (wie ein Mensch,
+    // der höchstens etwa einmal pro Sekunde klickt) - NICHT nach jedem
+    // Ereignis. Sonst hängt die Reaktionsgeschwindigkeit des Bots an der
+    // Anzahl laufender Automatisierungs-Timer (900 Timer = 900 Entscheidungs-
+    // gelegenheiten pro 10 s, ein Timer = eine) und dieselbe Ökonomie spielt
+    // sich je nach Timer-Implementierung verschieden - siehe Stage-20/23-
+    // Diagnose. Der Takt macht das Ergebnis von diesem Detail unabhängig.
+    double lastDecisionMs = double.negativeInfinity;
+    // Endlosschleifen-Schutz über die virtuelle Zeit statt über eine absolute
+    // Ereignis-Zahl: Automatisierungs-Ticks sind legitime Ereignisse ohne
+    // "Fortschritt" und erschöpften vorher das Budget (200.000 Ereignisse
+    // waren bei ~130 Timern pro Stage nach ~32 virtuellen Minuten weg,
+    // Stage 24 brauchte für die Mitglieder-Verdopplung aber ~37). Ein echter
+    // Hänger zeigt sich dagegen daran, dass die virtuelle Uhr stehen bleibt.
+    int eventsAtCurrentTime = 0;
     while (true) {
       final member = Game.ressources["Member"]?.value ?? 0;
-      if (member > memberThreshold) {
+      // Die letzte Stage endet nicht über die Mitgliederschwelle (Cap ==
+      // Schwelle, "größer" ist unerreichbar), sondern über GameWonModifier.
+      if (member > memberThreshold || game.hasCompletedGame) {
         return SimStageResult(
           reachedGoal: true,
           durationMs: nowMs,
@@ -286,7 +319,10 @@ class GameSimulator {
         );
       }
 
-      decide(this);
+      if (nowMs - lastDecisionMs >= decisionIntervalMs || _events.isEmpty) {
+        decide(this);
+        lastDecisionMs = nowMs;
+      }
 
       if (_events.isEmpty) {
         deadlock = true;
@@ -295,8 +331,15 @@ class GameSimulator {
         break;
       }
 
-      _events.sort((a, b) => a.dueMs.compareTo(b.dueMs));
-      final ev = _events.removeAt(0);
+      final ev = _events.removeFirst();
+      if (ev.dueMs > nowMs) {
+        eventsAtCurrentTime = 0;
+      } else if (++eventsAtCurrentTime > maxEventsWithoutTimeAdvance) {
+        deadlock = true;
+        deadlockReason = "Endlosschleife: $maxEventsWithoutTimeAdvance Ereignisse ohne "
+            "Fortschritt der virtuellen Zeit bei t=${nowMs.toStringAsFixed(0)}ms - ${_resSnapshot()}";
+        break;
+      }
       nowMs = ev.dueMs;
       if (verbose && steps < 150) {
         // ignore: avoid_print
@@ -307,12 +350,6 @@ class GameSimulator {
       ev.run();
 
       steps++;
-      if (steps > maxSteps) {
-        deadlock = true;
-        deadlockReason = "maxSteps ($maxSteps) erreicht ohne Zielerreichung - "
-            "vermutlich Endlos-Automatisierung ohne echten Fortschritt.";
-        break;
-      }
       if (nowMs - stageStartMs > hardCapMs) {
         deadlock = true;
         deadlockReason = "hardCapMs (${(hardCapMs / 3600000).toStringAsFixed(1)}h virtuelle Zeit) "
@@ -333,15 +370,18 @@ class GameSimulator {
   String _resSnapshot() {
     return Game.ressources.entries
         .where((e) => ["Time", "Faith", "Money", "Member", "Wisdom"].contains(e.key))
-        .map((e) => "${e.key}: ${e.value.value.toStringAsFixed(1)}")
+        .map((e) => e.key == "Member"
+            ? "Member: ${e.value.value.toStringAsFixed(1)}/${e.value.max.toStringAsFixed(0)}"
+            : "${e.key}: ${e.value.value.toStringAsFixed(1)}")
         .join(" | ");
   }
 }
 
 class _SimEvent {
   final double dueMs;
+  final int seq;
   final void Function() run;
-  _SimEvent(this.dueMs, this.run);
+  _SimEvent(this.dueMs, this.seq, this.run);
 }
 
 class SimStageResult {

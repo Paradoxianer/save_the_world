@@ -63,7 +63,7 @@ final Stage stage32 = Stage(
           "durchlitten wurde, bleibt am Ende nur noch geduldiges, wachsames Warten in Gebet.",
       duration: 1800000.0,
       once: true,
-      cost: [Time(value: 100.0), Faith(value: 500000.0)],
+      cost: [Time(value: 16.0), Faith(value: 500000.0)],
       award: [Faith(value: 1000000.0)],
       modifier: [
         GameWonModifier(),

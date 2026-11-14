@@ -54,9 +54,9 @@ final Stage stage29 = Stage(
       name: "Ein Leib aus allen Völkern und Sprachen",
       description: "MEILENSTEIN: Aus allen Nationen, Stämmen, Völkern und Sprachen (vgl. Offenbarung 7,9) - "
           "der Bund trägt jetzt wirklich die ganze bewohnte Erde (Limit 2.560.000.000).",
-      duration: 800000.0,
+      duration: 1200000.0,
       isMilestone: true,
-      cost: [Faith(value: 600000.0), Wisdom(value: 400000.0), Time(value: 150.0)],
+      cost: [Faith(value: 600000.0), Wisdom(value: 400000.0), Time(value: 16.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "GESCHAFFT: Aus allen Nationen und Sprachen ein Leib in Jesus. Limit 2,56 Mrd!"),
@@ -70,7 +70,7 @@ final Stage stage29 = Stage(
       description: "WARTUNG: Gebet, Fasten, Lehre und gelebte Jüngerschaft bleiben die tragenden Säulen - "
           "über Generationen, Kulturen und Sprachen hinweg.",
       duration: 100000.0,
-      cost: [Time(value: 20.0), Wisdom(value: 50000.0)],
+      cost: [Time(value: 12.0), Wisdom(value: 50000.0)],
       award: [Faith(value: 20000.0), Publicity(value: 20000.0)],
     ),
     Task(

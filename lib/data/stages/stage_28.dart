@@ -66,8 +66,8 @@ final Stage stage28 = Stage(
       description: "BEFÄHIGUNG: Nicht Strategie oder Zählung - schon Davids Volkszählung hat ihn teuer zu "
           "stehen gekommen (2. Samuel 24) - sondern Gebet und Fasten stellen die eigentliche Frage neu: "
           "Wie erreichen wir die Welt wirklich für Jesus?",
-      duration: 100000.0,
-      cost: [Faith(value: 50000.0), Time(value: 50.0)],
+      duration: 150000.0,
+      cost: [Faith(value: 50000.0), Time(value: 12.0)],
       award: [Wisdom(value: 10000.0)],
       modifier: [
         AddTask(task: "Gespräche mit anderen christlichen Organisationen suchen"),
@@ -101,9 +101,9 @@ final Stage stage28 = Stage(
       description: "MEILENSTEIN: Ein Bund, der Christen verschiedenster Traditionen um das sammelt, was "
           "wirklich zählt - Gebet, Fasten, Lehre und gelebte Jüngerschaft, damit Menschen für Jesus "
           "gewonnen werden (vgl. Apostelgeschichte 2,42) (Limit 1.280.000.000).",
-      duration: 600000.0,
+      duration: 900000.0,
       isMilestone: true,
-      cost: [Wisdom(value: 400000.0), Time(value: 200.0), Faith(value: 250000.0)],
+      cost: [Wisdom(value: 400000.0), Time(value: 16.0), Faith(value: 250000.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "BUND GESCHLOSSEN: Viele Traditionen, eine Sendung. Limit 1.280.000.000!"),
@@ -118,7 +118,7 @@ final Stage stage28 = Stage(
       description: "WARTUNG: Die vier Säulen des Bundes lebendig halten, damit er nicht zur bloßen "
           "Erklärung erstarrt.",
       duration: 80000.0,
-      cost: [Time(value: 20.0), Wisdom(value: 20000.0)],
+      cost: [Time(value: 12.0), Wisdom(value: 20000.0)],
       award: [Faith(value: 10000.0), Publicity(value: 10000.0)],
     ),
     Task(

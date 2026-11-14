@@ -38,7 +38,7 @@ final Stage stage21 = Stage(
           "wichtiger wird es, sich aktiv daran zu erinnern, wem die Loyalität eigentlich gehört.",
       duration: 18000.0,
       cost: [Time(value: 6.0)],
-      award: [Faith(value: 400.0)],
+      award: [Faith(value: 400.0), Wisdom(value: 300.0)],
     ),
     Task(
       name: "Diplomatische Kanäle öffnen",
@@ -97,7 +97,8 @@ final Stage stage21 = Stage(
           "wirklich gelebt, oder nur noch behauptet? Bei dieser Größe merkt man schleichende Abweichungen "
           "erst, wenn aktiv hingeschaut wird.",
       duration: 15000.0,
-      timeToSolve: 60000.0,
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Faith"},
       cost: [Wisdom(value: 1500.0), Faith(value: 1000.0)],
       award: [Faith(value: 200.0)],
       modifier: [
@@ -117,15 +118,16 @@ final Stage stage21 = Stage(
           "öffentlich - die vernachlässigten Grundregeln rächen sich jetzt in aller Öffentlichkeit. Bei "
           "dieser Größe reicht ein Fall für weltweite Schlagzeilen.",
       duration: 20000.0,
-      timeToSolve: 55000.0,
-      cost: [Wisdom(value: 3000.0), Faith(value: 2000.0)],
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Faith"},
+      cost: [Wisdom(value: 2000.0), Faith(value: 2000.0)],
       award: [Wisdom(value: 500.0)],
       modifier: [
         MessageModifier(message: "AUFGEARBEITET: Ehrliche Aufarbeitung und echte Konsequenzen begrenzen den Schaden."),
         RemoveTask(task: "Moralischer Skandal (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Faith(value: 5000.0), Member(value: 200000.0)]),
+        SubtractRes(ressources: [Faith(value: 5000.0), Member(value: 100000.0)]),
         MessageModifier(message: "KASKADE: Vertuschungsversuche werden publik!"),
         RemoveTask(task: "Moralischer Skandal (Krise)"),
         AddTask(task: "Die Vertuschung fliegt auf (Krise)"),
@@ -137,15 +139,16 @@ final Stage stage21 = Stage(
           "Fehlverhalten, sondern den Versuch, es zu vertuschen - das zerstört Vertrauen oft mehr als der "
           "Skandal selbst.",
       duration: 25000.0,
-      timeToSolve: 50000.0,
-      cost: [Publicity(value: 30000.0), Wisdom(value: 5000.0), Faith(value: 3000.0)],
+      timeToSolve: 110000.0,
+      bypassReservationResources: {"Publicity", "Wisdom", "Faith"},
+      cost: [Publicity(value: 30000.0), Wisdom(value: 3000.0), Faith(value: 3000.0)],
       award: [Wisdom(value: 1000.0)],
       modifier: [
         MessageModifier(message: "BEREINIGT: Mühsame, ehrliche Transparenzoffensive hat den Schaden begrenzt."),
         RemoveTask(task: "Die Vertuschung fliegt auf (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 300000.0), Faith(value: 10000.0)]),
+        SubtractRes(ressources: [Member(value: 150000.0), Faith(value: 10000.0)]),
         RemoveTask(task: "Die Vertuschung fliegt auf (Krise)"),
         AddTask(task: "Die Vertuschung fliegt auf (Krise)"),
       ],

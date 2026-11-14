@@ -46,9 +46,9 @@ final Stage stage30 = Stage(
     Task(
       name: "Standhaftigkeit in Verfolgung",
       description: "MEILENSTEIN: Zeugnis geben bis zum Äußersten (Limit 5.120.000.000).",
-      duration: 600000.0,
+      duration: 900000.0,
       isMilestone: true,
-      cost: [Faith(value: 500000.0), Wisdom(value: 500000.0), Time(value: 100.0)],
+      cost: [Faith(value: 500000.0), Wisdom(value: 500000.0), Time(value: 16.0)],
       award: [Member(value: 1.0)],
       modifier: [
         MessageModifier(message: "ZEUGNIS: Euer Glaube hat die Welt erschüttert. Limit 5,12 Mrd!"),
@@ -135,7 +135,7 @@ final Stage stage30 = Stage(
       name: "Untergrund-Netzwerke aufbauen (Krise)",
       description: "FOLGE-KRISE: Repariere die zerschlagenen Strukturen im Verborgenen.",
       duration: 100000.0,
-      cost: [Wisdom(value: 200000.0), Time(value: 50.0)],
+      cost: [Wisdom(value: 200000.0), Time(value: 12.0)],
       modifier: [
         MessageModifier(message: "WIEDERHERGESTELLT: Die Netzwerke im Untergrund funktionieren."),
         RemoveTask(task: "Untergrund-Netzwerke aufbauen (Krise)"),

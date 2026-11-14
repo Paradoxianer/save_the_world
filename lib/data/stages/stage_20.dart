@@ -62,7 +62,7 @@ final Stage stage20 = Stage(
           "Gremium allein nie sehen würde.",
       duration: 18000.0,
       cost: [Time(value: 6.0)],
-      award: [Faith(value: 450.0)],
+      award: [Faith(value: 450.0), Wisdom(value: 300.0)],
     ),
     Task(
       name: "Globale Allianz gründen",
@@ -92,8 +92,9 @@ final Stage stage20 = Stage(
       description: "KRISE: Eine plötzliche Erkrankung des Gründers zeigt schonungslos: Es gibt keinen "
           "geregelten Übergang. Die ganze Allianz hängt an einer einzigen Person.",
       duration: 20000.0,
-      timeToSolve: 60000.0,
-      cost: [Wisdom(value: 2000.0), Faith(value: 1000.0)],
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Faith"},
+      cost: [Wisdom(value: 1000.0), Faith(value: 1000.0)],
       award: [Wisdom(value: 500.0)],
       modifier: [
         MessageModifier(message: "GEREGELT: Ein erster, echter Nachfolgeplan steht."),
@@ -111,15 +112,16 @@ final Stage stage20 = Stage(
       description: "FOLGE-KRISE: Mehrere Fraktionen kämpfen offen um die Führung - die Allianz droht an der "
           "ungelösten Machtfrage zu zerbrechen.",
       duration: 30000.0,
-      timeToSolve: 70000.0,
-      cost: [Money(value: 1000000.0), Wisdom(value: 4000.0), Faith(value: 2000.0)],
+      timeToSolve: 110000.0,
+      bypassReservationResources: {"Money", "Wisdom", "Faith"},
+      cost: [Money(value: 1000000.0), Wisdom(value: 2000.0), Faith(value: 2000.0)],
       award: [Wisdom(value: 1000.0)],
       modifier: [
         MessageModifier(message: "BEIGELEGT: Eine gemeinsam getragene Übergangslösung hält die Allianz zusammen."),
         RemoveTask(task: "Machtkampf um die Nachfolge (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Member(value: 500000.0), Faith(value: 4000.0)]),
+        SubtractRes(ressources: [Member(value: 100000.0), Faith(value: 4000.0)]),
         MessageModifier(message: "ZERBROCHEN: Ganze Fraktionen spalten sich in der ungelösten Machtfrage ab."),
         RemoveTask(task: "Machtkampf um die Nachfolge (Krise)"),
         AddTask(task: "Machtkampf um die Nachfolge (Krise)"),

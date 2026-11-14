@@ -65,7 +65,7 @@ final Stage stage31 = Stage(
       name: "Erweckung bewahren",
       description: "WARTUNG: Die Früchte der Erweckung durch Lehre und Gemeinschaft sichern.",
       duration: 120000.0,
-      cost: [Time(value: 20.0), Wisdom(value: 100000.0)],
+      cost: [Time(value: 12.0), Wisdom(value: 100000.0)],
       award: [Faith(value: 500000.0), Wisdom(value: 50000.0)],
     ),
     Task(
