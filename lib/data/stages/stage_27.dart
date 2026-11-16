@@ -25,6 +25,7 @@ final Stage stage27 = Stage(
   ],
   randomTasks: ["Die Stiftung wird zum Selbstzweck (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

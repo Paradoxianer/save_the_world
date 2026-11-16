@@ -6,17 +6,22 @@ class AutoExecuteModifier extends Modifier {
   final List<Modifier> modifiers;
   final int intervalMs;
 
-  /// Jede Aktivierung (jeder modify()-Aufruf) startet einen ZUSÄTZLICHEN,
-  /// unabhängigen Timer statt den vorherigen zu ersetzen - eine wiederholbare
+  /// Wie oft diese Automatisierung aktiviert wurde. Eine wiederholbare
   /// Aufgabe wie "Strategische Sitzung einberufen" soll bei jeder erneuten
-  /// Aktivierung einen weiteren parallelen Generator hinzufügen, wie es ihr
-  /// eigener Beschreibungstext verspricht. Alle Timer dieser Instanz werden
-  /// gemeinsam gestoppt, sobald der Modifier von seinem Element entfernt wird.
-  final List<Timer> _timers = [];
+  /// Aktivierung den Ertrag vervielfachen ("noch ein Generator"). Statt dafür
+  /// pro Aktivierung einen weiteren echten Timer zu registrieren - bei
+  /// hunderten Aktivierungen hunderte parallel laufende Timer, schlecht für
+  /// Akku/Performance auf dem Handy - wendet EIN EINZIGER Timer pro Tick die
+  /// Modifier-Liste activationCount-mal an. Wirtschaftlich identisch zu N
+  /// parallelen Timern, technisch konstanter Aufwand. Wird mitgespeichert,
+  /// damit der Ausbaustand einen Neustart der App überlebt.
+  int activationCount;
+  Timer? _timer;
 
   AutoExecuteModifier({
     required this.modifiers,
     required this.intervalMs,
+    this.activationCount = 0,
   }) : super(
           name: "AutoExecuteModifier",
           description: "Executes a list of modifiers periodically.",
@@ -28,6 +33,7 @@ class AutoExecuteModifier extends Modifier {
     return AutoExecuteModifier(
       modifiers: mods,
       intervalMs: jsn['intervalMs'] as int,
+      activationCount: (jsn['activationCount'] as int?) ?? 0,
     );
   }
 
@@ -37,26 +43,37 @@ class AutoExecuteModifier extends Modifier {
       'name': name,
       'modifiers': modifiers.map((m) => m.toJson()).toList(),
       'intervalMs': intervalMs,
+      'activationCount': activationCount,
     };
   }
 
   @override
   void modify() {
-    // Start a NEW, additional automation - siehe Klassenkommentar zu _timers.
-    debugPrint("[AUTOMATION] Starting AutoExecute every $intervalMs ms "
-        "(aktive Ketten dieser Aufgabe: ${_timers.length + 1})");
-    _timers.add(Timer.periodic(Duration(milliseconds: intervalMs), (timer) {
-      for (var m in modifiers) {
-        m.modify();
+    activationCount++;
+    if (_timer != null) return; // laeuft schon - der naechste Tick nutzt den neuen Zaehlerstand
+    debugPrint("[AUTOMATION] Starting AutoExecute every $intervalMs ms");
+    _timer = Timer.periodic(Duration(milliseconds: intervalMs), (timer) {
+      for (int i = 0; i < activationCount; i++) {
+        for (var m in modifiers) {
+          m.modify();
+        }
       }
-    }));
+    });
   }
 
   void _stopTimer() {
-    for (final t in _timers) {
-      t.cancel();
-    }
-    _timers.clear();
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  /// Für Game.resetGame()/jumpToStage(): diese Instanz lebt auf dem
+  /// statischen Stage-Objekt (allStages) und wird von initStage() direkt
+  /// wiederverwendet, nicht neu erzeugt - ohne expliziten Reset würde ein
+  /// neues Spiel den Ausbaustand aus einem vorherigen Durchlauf im selben
+  /// App-Prozess erben.
+  void resetActivation() {
+    _stopTimer();
+    activationCount = 0;
   }
 
   // Ensure timer stops if the element is removed (logic to be expanded in Game/Task)
@@ -68,6 +85,6 @@ class AutoExecuteModifier extends Modifier {
 
   @override
   String info() {
-    return "Automation: Executes ${modifiers.length} modifiers every ${intervalMs}ms";
+    return "Automation: Executes ${modifiers.length} modifiers every ${intervalMs}ms (x$activationCount)";
   }
 }

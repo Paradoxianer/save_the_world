@@ -28,6 +28,7 @@ final Stage stage25 = Stage(
   ],
   randomTasks: ["Währungskrise (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

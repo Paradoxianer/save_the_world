@@ -6,6 +6,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:save_the_world_flutter_app/data_manager.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -216,6 +217,20 @@ class Game {
     gameWonNotifier.removeListener(listener);
   }
 
+  /// Setzt alle AutoExecuteModifier-Instanzen (Timer + Ausbaustand) zurück.
+  /// initStage() referenziert die statischen allStages-Objekte direkt - ein
+  /// neues Spiel würde sonst z.B. den Ausbaustand von "Strategische Sitzung
+  /// einberufen" aus einem vorherigen Durchlauf im selben App-Prozess erben.
+  void resetAllAutomations() {
+    for (final s in allStages) {
+      for (final task in s.allTasks) {
+        for (final m in task.myModifier) {
+          if (m is AutoExecuteModifier) m.resetActivation();
+        }
+      }
+    }
+  }
+
   void resetGame() {
     isLoading = true;
     stage = 0;
@@ -223,6 +238,7 @@ class Game {
     tasks.clear();
     completedOnceTasks.clear();
     crisisFirstSeenStage.clear();
+    resetAllAutomations();
     initRes();
     initStage(0);
     _accumulatedStageTime = Duration.zero;
@@ -251,6 +267,7 @@ class Game {
     tasks.clear();
     completedOnceTasks.clear();
     crisisFirstSeenStage.clear();
+    resetAllAutomations();
     initRes();
     stage = targetStage;
     ressources["Stage"]?.setValue(stage.toDouble());

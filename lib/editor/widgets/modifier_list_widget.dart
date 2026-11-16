@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
-import 'package:save_the_world_flutter_app/models/addtorandom.model.dart';
+import 'package:save_the_world_flutter_app/models/AddToRandom.model.dart';
 import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/setmin.model.dart';
 import 'package:save_the_world_flutter_app/models/message.modifier.dart';

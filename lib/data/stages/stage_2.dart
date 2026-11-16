@@ -1,3 +1,4 @@
+import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -23,6 +24,7 @@ final Stage stage2 = Stage(
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Kollekte", "Gottesdienst in der Wohnung"],
   randomTasks: ["Rechnung nicht bezahlt"],
   allTasks: [
+    ...fsjQuestline,
     Task(name: "Schlafen", duration: 8000.0, cost: [Time(value: 8.0)], award: [Time(value: 24.0)]),
     Task(name: "Bibellesen", duration: 3000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),
     Task(name: "Beten", duration: 4000.0, cost: [Time(value: 1.0)], award: [Faith(value: 15.0)]),

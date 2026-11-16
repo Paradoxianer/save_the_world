@@ -26,6 +26,7 @@ final Stage stage8 = Stage(
     "Der Heilige Geist möchte wirken",
   ],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

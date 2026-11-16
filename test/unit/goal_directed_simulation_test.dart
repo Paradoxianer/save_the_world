@@ -145,6 +145,20 @@ void main() {
       // in 6 Minuten). Fix wie in 11/16/17: eine bestehende Wartungsaufgabe
       // wird Wisdom-Quelle, Krisen dürfen reservierte Ressourcen nutzen,
       // Fristen 90/110 s, Strafen auf 2-5 % des Stage-Bestands.
+      //
+      // Gleiche 33, aber ehrliche Ökonomie: "Strategische Sitzung einberufen"
+      // läuft jetzt als EIN skalierender Timer (AutoExecuteModifier.
+      // activationCount) mit geometrischen Kosten (Task.costGrowth 1.15) -
+      // 25 statt 176 Sitzungen in Stage 16, Stage 16 Normal 33 statt 137
+      // Minuten, Money am Spielende 10^12 statt 10^14. Dabei aufgedeckt: der
+      // Bot nahm die Versuchung "Ich weiß es besser als der Stab" als besten
+      // Money-Erzeuger für den Meilenstein (500k für Time 4) und zog sich die
+      // Dauerkrise "Ohne Rückhalt im Stab" zu - solange Geld unendlich war,
+      // fiel das nie auf. Jetzt meidet der Bot Aufgaben, die Krisen
+      // einblenden (_spawnsCrisis), und die Krise selbst ist überlebbar.
+      // FSJ-Kette einmal in common_tasks definiert und in jeder Stage
+      // auflösbar; "FSJler einstellen" verschwindet nach dem Einstellen (vorher
+      // ~2000 sinnlose Klicks pro Stage auf den dauerhaft sichtbaren Button).
       final optimalReached = optimal.where((r) => r.reachedGoal).length;
       final normalReached = normal.where((r) => r.reachedGoal).length;
       const int minOptimalStages = 33;
@@ -200,6 +214,11 @@ List<_StageDelta> _runContinuousPlaythrough({
   game.isLoading = true;
   Game.tasks.clear();
   game.completedOnceTasks.clear();
+  // allStages-Objekte sind statische Singletons (siehe initStage()) und
+  // werden vom Normal- UND vom Optimal-Lauf geteilt - ohne Reset erbte der
+  // zweite Lauf den Ausbaustand (AutoExecuteModifier.activationCount) des
+  // ersten.
+  game.resetAllAutomations();
   game.initRes(); // echter Spielstart: Faith 100, Money 20, Time 24, Member 2, Wisdom 10, Member.max 20
 
   final sim = GameSimulator(game, random: random);

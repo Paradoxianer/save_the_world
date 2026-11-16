@@ -29,6 +29,7 @@ final Stage stage20 = Stage(
   ],
   randomTasks: ["Wer kommt nach dir? (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

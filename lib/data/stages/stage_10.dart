@@ -33,6 +33,7 @@ final Stage stage10 = Stage(
     "Die Botschaft verliert sich in der Übersetzung",
   ],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

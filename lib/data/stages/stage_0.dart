@@ -16,6 +16,7 @@ final Stage stage0 = Stage(
   description: "Hausgemeinde - Lerne die Grundlagen von Save the World kennen.",
   activeTasks: ["Bibellesen", "Schlafen", "Freizeit"],
   allTasks: [
+    ...fsjQuestline,
     Task(
       name: "Bibellesen",
       description: "Zeit investieren, um 'Glauben' zu stärken - Erhöht deine Ressource \"Glauben\".",

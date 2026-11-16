@@ -26,6 +26,7 @@ final Stage stage13 = Stage(
   ],
   randomTasks: ["Theologische Grundsatzfrage (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

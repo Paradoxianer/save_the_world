@@ -25,6 +25,7 @@ final Stage stage32 = Stage(
   ],
   randomTasks: ["Finale theologische Anfechtung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

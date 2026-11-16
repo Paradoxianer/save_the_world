@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
@@ -56,6 +58,17 @@ class Task extends GameElement {
 
   bool get bypassReservation => bypassReservationResources.isNotEmpty;
 
+  /// Geometrische Kostensteigerung pro bereits aktivierter Automatisierungs-
+  /// Stufe (siehe AutoExecuteModifier.activationCount): effektive Kosten =
+  /// cost * costGrowth^Stufe. 1.0 = keine Steigerung (Default). Idle-Game-
+  /// Standard gegen unbegrenztes Stapeln: Bei "Strategische Sitzung
+  /// einberufen" (Stage 16) kostete jede weitere Sitzung gleich viel und
+  /// brachte gleich viel - der Grenznutzen sank nie, der Bot aktivierte sie
+  /// ~130-mal pro Stage, Money/Faith inflationierten auf 10^14. Mit 1.15
+  /// amortisiert sich die 20. Sitzung in ~36 statt 2,5 Minuten - ein
+  /// natürliches Gleichgewicht statt einer harten Obergrenze.
+  double costGrowth;
+
   late AnimationController controller;
 
   Task({
@@ -73,6 +86,7 @@ class Task extends GameElement {
     this.online = const [],
     this.resolutionMessage,
     this.bypassReservationResources = const {},
+    this.costGrowth = 1.0,
     double? controllerValue,
     String? controllerStatus,
   })  : once = once ?? isMilestone,
@@ -102,6 +116,25 @@ class Task extends GameElement {
   // ECHTER FIX: Ressourcen sauber freigeben
   void dispose() {
     controller.dispose();
+  }
+
+  /// Aktuell zu zahlende Kosten inkl. costGrowth (siehe dort). Ohne
+  /// Steigerung oder vor der ersten Aktivierung identisch mit [cost].
+  List<Ressource> get effectiveCost {
+    if (costGrowth == 1.0) return cost;
+    final level = myModifier.whereType<AutoExecuteModifier>().fold<int>(0, (p, m) => max(p, m.activationCount));
+    if (level == 0) return cost;
+    final factor = pow(costGrowth, level).toDouble();
+    return cost
+        .map((c) => Ressource(
+              name: c.name,
+              description: c.description,
+              icon: c.icon,
+              value: c.value * factor,
+              min: c.min,
+              max: c.max,
+            )..willAdd = false)
+        .toList();
   }
 
   factory Task.fromJson(Map<String, dynamic> jsn) {
@@ -134,6 +167,7 @@ class Task extends GameElement {
       bypassReservationResources: jsn['bypassReservationResources'] != null
           ? Set<String>.from(jsn['bypassReservationResources'] as List)
           : const {},
+      costGrowth: (jsn['costGrowth'] as num?)?.toDouble() ?? 1.0,
       controllerStatus: jsn['controllerStatus'] != null ? json.decode(jsn['controllerStatus'].toString()) as String? : null,
       controllerValue: jsn['controllerValue'] != null ? (json.decode(jsn['controllerValue'].toString()) as num?)?.toDouble() : null,
     );
@@ -156,6 +190,7 @@ class Task extends GameElement {
       'online': json.encode(online),
       'resolutionMessage': resolutionMessage,
       'bypassReservationResources': bypassReservationResources.toList(),
+      'costGrowth': costGrowth,
       'controllerStatus': json.encode(controller.status.toString()),
       'controllerValue': json.encode(controller.value),
     };
@@ -184,8 +219,8 @@ class Task extends GameElement {
       controller.stop();
       controller.reset();
       controller.duration = Duration(milliseconds: duration.toInt());
-      
-      for (var c in cost) {
+
+      for (var c in effectiveCost) {
         Game.ressources[c.name]?.subtract(c);
       }
       

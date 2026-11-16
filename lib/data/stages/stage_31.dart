@@ -24,6 +24,7 @@ final Stage stage31 = Stage(
   ],
   randomTasks: ["Globale Apathie (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

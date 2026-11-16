@@ -26,6 +26,7 @@ final Stage stage17 = Stage(
   ],
   randomTasks: ["Lehrstreit gefährdet die Einheit (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

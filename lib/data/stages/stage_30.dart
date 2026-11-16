@@ -28,6 +28,7 @@ final Stage stage30 = Stage(
   ],
   randomTasks: ["Globale Christenverfolgung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

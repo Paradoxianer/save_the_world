@@ -27,6 +27,7 @@ final Stage stage11 = Stage(
   ],
   randomTasks: ["Vereinnahmt von der Politik", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

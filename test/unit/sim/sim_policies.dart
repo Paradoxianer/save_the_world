@@ -35,7 +35,7 @@ const Map<String, double> _softFloor = {
 const Set<String> _survivalTasks = {"Schlafen", "Freizeit", "Vom Burnout erholen"};
 
 bool affordableWithSoftFloor(Task t) {
-  for (final c in t.cost) {
+  for (final c in t.effectiveCost) {
     final res = Game.ressources[c.name];
     if (res == null || !res.canSubtract(c)) return false;
     final floor = _softFloor[c.name];
@@ -104,14 +104,27 @@ Set<String> _reservedResourcesFor(Task? milestone) {
 /// True, wenn t bei resName in Summe mehr zurückgibt als kostet - solche
 /// Aufgaben dürfen die Reservierung ignorieren, weil sie ihr sogar helfen.
 bool _netPositiveFor(Task t, String resName) {
-  final costAmt = t.cost.where((c) => c.name == resName).fold(0.0, (p, c) => p + c.value);
+  final costAmt = t.effectiveCost.where((c) => c.name == resName).fold(0.0, (p, c) => p + c.value);
   final awardAmt = t.award.where((a) => a.name == resName).fold(0.0, (p, a) => p + a.value);
   return awardAmt > costAmt;
 }
 
+/// True, wenn t bei Abschluss eine Krise (Aufgabe mit Frist) einblendet -
+/// z.B. Stage 16s Versuchung "Ich weiß es besser als der Stab", die die
+/// Dauerkrise "Ohne Rückhalt im Stab" nach sich zieht. Ein aufmerksamer
+/// Spieler liest die Warnung im Beschreibungstext und lässt die Finger
+/// davon; der Catch-all (PRIO 5) soll solche Fallen nicht blind auslösen,
+/// nur weil sie gerade billig sind (Time 4).
+bool _spawnsCrisis(Task t, List<Task> allTasks) {
+  for (final m in t.myModifier.whereType<AddTask>()) {
+    if (allTasks.any((x) => x.name == m.nameOfTask && x.timeToSolve != double.infinity)) return true;
+  }
+  return false;
+}
+
 bool _respectsReservation(Task t, Set<String> reserved) {
   if (reserved.isEmpty) return true;
-  return !t.cost.any((c) =>
+  return !t.effectiveCost.any((c) =>
       reserved.contains(c.name) &&
       !t.bypassReservationResources.contains(c.name) &&
       !_netPositiveFor(t, c.name));
@@ -169,13 +182,13 @@ Set<String> _pursueGoal(GameSimulator sim, List<Task> idle, String goalName, Map
     // und nie über ~250 hinauswuchs, weil sie ständig wieder in Publicity
     // umgewandelt wurde).
     final shortForGoal = <String>{};
-    for (final c in t.cost) {
+    for (final c in t.effectiveCost) {
       final res = Game.ressources[c.name];
       final floor = _softFloor[c.name] ?? res?.min ?? 0.0;
       if (res == null || (res.value - c.value) < floor) shortForGoal.add(c.name);
     }
 
-    for (final cost in t.cost) {
+    for (final cost in t.effectiveCost) {
       if (!shortForGoal.contains(cost.name)) continue;
       // NUR echte Netto-Erzeuger dieser Ressource in Frage kommen lassen -
       // sonst kann ein Task mit hohem Brutto-Award, aber noch höheren
@@ -187,8 +200,12 @@ Set<String> _pursueGoal(GameSimulator sim, List<Task> idle, String goalName, Map
           .where((g) =>
               g.award.any((a) => a.name == cost.name) &&
               _netPositiveFor(g, cost.name) &&
-              !g.cost.any((gc) => gc.name != cost.name && shortForGoal.contains(gc.name)) &&
-              !_startsAutomationDraining(g, shortForGoal))
+              !g.effectiveCost.any((gc) => gc.name != cost.name && shortForGoal.contains(gc.name)) &&
+              !_startsAutomationDraining(g, shortForGoal) &&
+              // Stage 16: "Ich weiß es besser als der Stab" ist der beste
+              // Money-"Erzeuger" (500k für Time 4) - und zieht die
+              // Dauerkrise "Ohne Rückhalt im Stab" samt Faith-Drain nach sich.
+              !_spawnsCrisis(g, sim.game.allTasks))
           .toList()
         ..sort((a, b) {
           final va = a.award.firstWhere((x) => x.name == cost.name).value;
@@ -213,7 +230,7 @@ Set<String> _pursueGoal(GameSimulator sim, List<Task> idle, String goalName, Map
       // neu aufbrauchten).
       if (!started && generators.isNotEmpty) {
         final top = generators.first;
-        for (final gc in top.cost) {
+        for (final gc in top.effectiveCost) {
           final res = Game.ressources[gc.name];
           final floor = _softFloor[gc.name] ?? res?.min ?? 0.0;
           if (res == null || (res.value - gc.value) < floor) shortForGoal.add(gc.name);
@@ -345,6 +362,7 @@ class SmartPolicy {
     // Reservierung, sonst verpuffen Meilenstein-Ersparnisse hier.
     for (final t in idle) {
       if (sim.isRunning(t)) continue;
+      if (_spawnsCrisis(t, sim.game.allTasks)) continue;
       if (_respectsReservation(t, reserved) && affordableWithSoftFloor(t)) sim.startTask(t);
     }
   }

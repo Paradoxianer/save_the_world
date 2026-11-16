@@ -93,7 +93,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
   }
 
   bool get _canAfford {
-    for (var costRes in widget.task.cost) {
+    for (var costRes in widget.task.effectiveCost) {
       final gameRes = Game.ressources[costRes.name];
       if (gameRes == null || !gameRes.canSubtract(costRes)) {
         return false;
@@ -165,7 +165,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                     children: <Widget>[
                       SizedBox(
                         width: 70,
-                        child: RessourceTable(ressourceList: widget.task.cost, size: 22.0, isGlobal: false),
+                        child: RessourceTable(ressourceList: widget.task.effectiveCost, size: 22.0, isGlobal: false),
                       ),
                       const SizedBox(width: 12),
                       

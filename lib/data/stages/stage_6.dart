@@ -21,6 +21,7 @@ final Stage stage6 = Stage(
   activeTasks: ["Bibellesen", "Beten", "Schlafen", "Kollekte", "Professionalisierungskonzept entwickeln"],
   randomTasks: ["Jemand möchte heiraten", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

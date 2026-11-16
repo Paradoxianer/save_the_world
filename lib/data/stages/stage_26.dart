@@ -28,6 +28,7 @@ final Stage stage26 = Stage(
   ],
   randomTasks: ["Die Liebe erkaltet (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

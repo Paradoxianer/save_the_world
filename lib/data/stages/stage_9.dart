@@ -25,7 +25,6 @@ final Stage stage9 = Stage(
     "Beten",
     "Schlafen",
     "Kollekte",
-    "FSJler einstellen",
     "Bibelschule gründen",
   ],
   randomTasks: [
@@ -41,13 +40,7 @@ final Stage stage9 = Stage(
     collectMoney,
     holySpiritWorking,
     ...weddingQuestline,
-    Task(
-      name: "FSJler bezahlen",
-      description: "VERPFLICHTUNG: Dein Stab will regelmäßig bezahlt werden.",
-      duration: 8000.0,
-      cost: [Money(value: 300.0)],
-      award: [Publicity(value: 20.0), Wisdom(value: 10.0)],
-    ),
+    ...fsjQuestline,
     Task(
       name: "Streit in der Bewegung",
       description: "KRISE: Zwei Campus-Teams streiten über die Ausrichtung.",
@@ -63,18 +56,6 @@ final Stage stage9 = Stage(
         MessageModifier(message: "ESKALIERT: Der Streit hat Mitglieder und Vertrauen gekostet."),
         RemoveTask(task: "Streit in der Bewegung"),
         AddTask(task: "Streit in der Bewegung"),
-      ],
-    ),
-    Task(
-      name: "FSJler einstellen",
-      description: "DELEGATION: Administrative Entlastung schaltet den 32-Stunden-Tag frei.",
-      duration: 4000.0,
-      cost: [Money(value: 500.0), Publicity(value: 100.0), Wisdom(value: 50.0)],
-      award: [Time(value: 1.0)],
-      modifier: [
-        MessageModifier(message: "STRUKTUR: Dein Stab wächst. Zeit-Maximum auf 32h erhöht."),
-        SetMax(ressource: "Time", newMax: 32.0),
-        AddTask(task: "FSJler bezahlen"),
       ],
     ),
     Task(

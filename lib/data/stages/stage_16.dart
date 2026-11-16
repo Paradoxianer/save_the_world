@@ -29,6 +29,7 @@ final Stage stage16 = Stage(
   ],
   randomTasks: ["Spannungen zwischen Kontinental-Leitern (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,
@@ -59,6 +60,7 @@ final Stage stage16 = Stage(
           "oft und zu hastig einberuft, verbrennt mehr, als er gewinnt - wer abwartet, bis sich genug "
           "angesammelt hat, profitiert von der bereits laufenden Automatisierung.",
       duration: 15000.0,
+      costGrowth: 1.15,
       cost: [Money(value: 400000.0), Faith(value: 2000.0)],
       modifier: [
         AutoExecuteModifier(
@@ -116,15 +118,16 @@ final Stage stage16 = Stage(
       description: "FOLGE: Ohne den Rückhalt des Stabs triffst du jede schwierige Entscheidung allein - "
           "das kostet mehr Kraft und Weisheit, als eine einzelne Führungsperson eigentlich tragen sollte.",
       duration: 15000.0,
-      timeToSolve: 50000.0,
-      cost: [Wisdom(value: 1500.0), Time(value: 8.0)],
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Time"},
+      cost: [Wisdom(value: 600.0), Time(value: 8.0)],
       award: [Wisdom(value: 100.0)],
       modifier: [
         MessageModifier(message: "DURCHGESTANDEN: Diesmal ging es gerade noch gut - allein."),
         RemoveTask(task: "Ohne Rückhalt im Stab"),
       ],
       missed: [
-        SubtractRes(ressources: [Faith(value: 500.0), Member(value: 3000.0)]),
+        SubtractRes(ressources: [Faith(value: 500.0), Member(value: 1000.0)]),
         MessageModifier(message: "ÜBERFORDERT: Ohne den Stab bricht die Entscheidung unter dir zusammen."),
         RemoveTask(task: "Ohne Rückhalt im Stab"),
         AddTask(task: "Ohne Rückhalt im Stab"),
@@ -136,7 +139,7 @@ final Stage stage16 = Stage(
           "werden erst geistlich geprüft, dann getroffen.",
       duration: 20000.0,
       cost: [Time(value: 4.0), Wisdom(value: 300.0)],
-      award: [Wisdom(value: 380.0), Faith(value: 150.0), Publicity(value: 80.0)],
+      award: [Wisdom(value: 500.0), Faith(value: 150.0), Publicity(value: 80.0)],
     ),
     Task(
       name: "Kontinentales Netzwerk gründen",
@@ -177,15 +180,16 @@ final Stage stage16 = Stage(
           "Machtkonflikt um Ressourcen und Ausrichtung. Ohne schnelle Vermittlung drohen ganze Regionen "
           "sich zu spalten.",
       duration: 15000.0,
-      timeToSolve: 45000.0,
-      cost: [Wisdom(value: 1200.0), Faith(value: 400.0)],
+      timeToSolve: 90000.0,
+      bypassReservationResources: {"Wisdom", "Faith"},
+      cost: [Wisdom(value: 800.0), Faith(value: 400.0)],
       award: [Wisdom(value: 200.0)],
       modifier: [
         MessageModifier(message: "VERSÖHNT: Die Leiter finden zu gemeinsamer Ausrichtung zurück."),
         RemoveTask(task: "Spannungen zwischen Kontinental-Leitern (Krise)"),
       ],
       missed: [
-        SubtractRes(ressources: [Publicity(value: 4000.0), Member(value: 8000.0)]),
+        SubtractRes(ressources: [Publicity(value: 4000.0), Member(value: 5000.0)]),
         MessageModifier(message: "KASKADE: Der ungelöste Konflikt bedroht jetzt den Zusammenhalt des ganzen Netzwerks!"),
         RemoveTask(task: "Spannungen zwischen Kontinental-Leitern (Krise)"),
         AddTask(task: "Netzwerk droht zu zerbrechen (Krise)"), // Kaskade

@@ -1,3 +1,4 @@
+import 'package:save_the_world_flutter_app/data/stages/common_tasks.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/member.ressource.model.dart';
@@ -34,6 +35,7 @@ final Stage stage1 = Stage(
   ],
   randomTasks: ["Konflikt in der Gruppe"],
   allTasks: [
+    ...fsjQuestline,
     Task(
       name: "Bibellesen",
       description: "Die geistliche Grundlage für das Wachstum der Gemeinschaft legen.",
@@ -68,6 +70,10 @@ final Stage stage1 = Stage(
         RemoveTask(task: "Gottesdienst vorbereiten"),
         AddTask(task: "Gottesdienst feiern"),
         AddTask(task: "Gottesdienst koordinieren"),
+        // Einmalig hier statt bei jedem "Gottesdienst feiern": seit sich
+        // "FSJler einstellen" nach dem Einstellen selbst entfernt, würde jeder
+        // Gottesdienst den Button sonst erneut einblenden (Einstell-Schleife).
+        AddTask(task: "FSJler einstellen"),
       ],
     ),
     Task(
@@ -78,7 +84,6 @@ final Stage stage1 = Stage(
       award: [Member(value: 1.0), Money(value: 10.0,multiplierResourceName: "Member", multiplierValue: 0.1)],
       modifier: [
          MessageModifier(message: "KOLLEKTE: Die Gemeinde gibt großzügig. Nutze das Geld für wichtige Upgrades!"),
-         AddTask(task: "FSJler einstellen"),
       ]
     ),
     Task(
@@ -87,30 +92,6 @@ final Stage stage1 = Stage(
       duration: 10000.0,
       cost: [Time(value: 2.0), Faith(value: 5.0)],
       award: [Faith(value: 10.0), Wisdom(value: 2.0)],
-    ),
-    Task(
-      name: "FSJler einstellen",
-      description: "Entlastung für dich. Schaltet 32h-Tag frei.",
-      duration: 4000.0,
-      cost: [Money(value: 100.0)],
-      modifier: [
-        MessageModifier(message: "UPGRADE: Der FSJler ist da! Dein Zeit-Maximum wurde auf 32h erhöht."),
-        SetMax(ressource: "Time", newMax: 32.0),
-        AddTask(task: "FSJler bezahlen"),
-      ],
-    ),
-    Task(
-      name: "FSJler bezahlen",
-      description: "KRITISCH: Bezahle den FSJler pünktlich, sonst verlässt er die Gemeinschaft!",
-      duration: 10000.0,
-      timeToSolve: 80000.0,
-      cost: [Money(value: 50.0)],
-      award: [Time(value: 8.0)],
-      missed: [
-        SetMax(ressource: "Time", newMax: 24.0),
-        AddTask(task: "FSJler einstellen"),
-        MessageModifier(message: "VERLUST: Der FSJler hat gekündigt! Dein Zeit-Limit sinkt wieder auf 24h."),
-      ],
     ),
     Task(
       name: "Konflikt in der Gruppe",

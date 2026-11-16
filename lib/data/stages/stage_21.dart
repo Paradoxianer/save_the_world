@@ -27,6 +27,7 @@ final Stage stage21 = Stage(
   ],
   randomTasks: ["Innere Integrität prüfen", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

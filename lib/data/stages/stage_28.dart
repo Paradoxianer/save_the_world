@@ -29,6 +29,7 @@ final Stage stage28 = Stage(
   ],
   randomTasks: ["Verdacht der Vereinnahmung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

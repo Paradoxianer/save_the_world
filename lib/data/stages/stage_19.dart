@@ -27,6 +27,7 @@ final Stage stage19 = Stage(
   ],
   randomTasks: ["Globaler PR-Shitstorm (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

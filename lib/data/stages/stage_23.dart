@@ -28,6 +28,7 @@ final Stage stage23 = Stage(
   ],
   randomTasks: ["Wer hat euch dazu ernannt? (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

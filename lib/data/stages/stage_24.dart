@@ -29,6 +29,7 @@ final Stage stage24 = Stage(
   ],
   randomTasks: ["Der Glaube wird zur Herkunft (Krise)", "Finanzprüfung (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,

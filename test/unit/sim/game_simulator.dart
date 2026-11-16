@@ -81,7 +81,7 @@ class GameSimulator {
   bool isRunning(Task t) => runningTaskNames.contains(t.name);
 
   bool canAfford(Task t) =>
-      t.cost.every((c) => Game.ressources[c.name]?.canSubtract(c) ?? false);
+      t.effectiveCost.every((c) => Game.ressources[c.name]?.canSubtract(c) ?? false);
 
   /// Initiale Bestückung einer Stage - analog zu Game.initStage(), aber ohne
   /// die echte Animation/Controller-Initialisierung anzustoßen.
@@ -115,13 +115,14 @@ class GameSimulator {
 
   void startTask(Task t) {
     if (isRunning(t) || !canAfford(t)) return;
+    final cost = t.effectiveCost;
     if (debugLogStarts) {
       final timeBefore = Game.ressources["Time"]?.value ?? 0.0;
       // ignore: avoid_print
       print("[start] t=${nowMs.toStringAsFixed(0)} '${t.name}' "
-          "cost=${t.cost.map((c) => '${c.name}:${c.value}').join(',')} timeBefore=$timeBefore");
+          "cost=${cost.map((c) => '${c.name}:${c.value}').join(',')} timeBefore=$timeBefore");
     }
-    for (final c in t.cost) {
+    for (final c in cost) {
       Game.ressources[c.name]?.subtract(c);
     }
     clicks++;
@@ -167,20 +168,24 @@ class GameSimulator {
     _reconcileTimeToSolve();
   }
 
-  /// Jede Aktivierung startet eine ZUSÄTZLICHE, für immer parallel
-  /// weiterlaufende Automatisierungs-Kette - genau wie im echten Spiel, wo
-  /// AutoExecuteModifier.modify() jetzt ebenfalls jedes Mal einen weiteren,
-  /// unabhängigen Timer registriert statt den vorherigen zu ersetzen (siehe
-  /// lib/models/autoexecute.model.dart). Ein wiederholbarer Task wie
-  /// "Strategische Sitzung einberufen" soll bei jeder erneuten Aktivierung
-  /// bewusst einen weiteren parallelen Generator hinzufügen.
+  /// Eine Automatisierung läuft als EIN Ereignis-Strang pro Instanz, dessen
+  /// Wirkung mit automation.activationCount skaliert - genau wie im echten
+  /// Spiel (siehe AutoExecuteModifier.modify()): eine erneute Aktivierung
+  /// derselben wiederholbaren Aufgabe erhöht nur den Zähler, statt eine
+  /// weitere parallele Kette zu starten.
+  final Set<AutoExecuteModifier> _runningAutomations = {};
+
   void _scheduleAutomation(AutoExecuteModifier automation) {
     final double intervalMs = automation.intervalMs.toDouble();
     if (intervalMs <= 0) return;
+    automation.activationCount++;
+    if (!_runningAutomations.add(automation)) return; // laeuft schon - Tick nutzt neuen Zaehlerstand
 
     void tick() {
-      for (final m in automation.modifiers) {
-        m.modify();
+      for (int i = 0; i < automation.activationCount; i++) {
+        for (final m in automation.modifiers) {
+          m.modify();
+        }
       }
       _schedule(nowMs + intervalMs, tick);
     }

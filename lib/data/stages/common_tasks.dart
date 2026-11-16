@@ -5,6 +5,7 @@ import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/publicity.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/removetask.model.dart';
+import 'package:save_the_world_flutter_app/models/setmax.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/time.ressource.model.dart';
@@ -92,6 +93,44 @@ final Task holySpiritWorking = Task(
     MessageModifier(message: "Das Wirken Gottes wurde im Alltagsstress übersehen."),
   ],
 );
+
+// --- FSJ: ZEITKONTO-ERWEITERUNG ---
+
+/// Einstellen entfernt sich nach dem Einstellen selbst (vorher blieb der
+/// Button dauerhaft sichtbar und wurde zur sinnlosen Dauerklick-Option);
+/// eine verpasste Zahlung beendet die Zahlungspflicht (der FSJler ist weg)
+/// und bietet das Einstellen neu an. Damit diese Kette in JEDER Stage
+/// auflösbar ist (Game.getTask() sucht nur in der aktuellen Stage), nimmt
+/// jede Stage `...fsjQuestline` in allTasks auf.
+final Task fsjHire = Task(
+  name: "FSJler einstellen",
+  description: "Entlastung für dich. Schaltet 32h-Tag frei.",
+  duration: 4000.0,
+  cost: [Money(value: 100.0)],
+  modifier: [
+    MessageModifier(message: "UPGRADE: Der FSJler ist da! Dein Zeit-Maximum wurde auf 32h erhöht."),
+    SetMax(ressource: "Time", newMax: 32.0),
+    AddTask(task: "FSJler bezahlen"),
+    RemoveTask(task: "FSJler einstellen"),
+  ],
+);
+
+final Task fsjPayroll = Task(
+  name: "FSJler bezahlen",
+  description: "KRITISCH: Bezahle den FSJler pünktlich, sonst verlässt er die Gemeinschaft!",
+  duration: 10000.0,
+  timeToSolve: 80000.0,
+  cost: [Money(value: 50.0)],
+  award: [Time(value: 8.0)],
+  missed: [
+    SetMax(ressource: "Time", newMax: 24.0),
+    RemoveTask(task: "FSJler bezahlen"),
+    AddTask(task: "FSJler einstellen"),
+    MessageModifier(message: "VERLUST: Der FSJler hat gekündigt! Dein Zeit-Limit sinkt wieder auf 24h."),
+  ],
+);
+
+final List<Task> fsjQuestline = [fsjHire, fsjPayroll];
 
 // --- TODESFALL-QUESTREIHE ---
 final Task funeralGeneral = Task(

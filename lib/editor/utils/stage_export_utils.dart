@@ -50,6 +50,7 @@ class StageExportUtils {
       buffer.writeln('  duration: ${t.duration},');
       if (t.timeToSolve != double.infinity) buffer.writeln('  timeToSolve: ${t.timeToSolve},');
       buffer.writeln('  isMilestone: ${t.isMilestone},');
+      if (t.costGrowth != 1.0) buffer.writeln('  costGrowth: ${t.costGrowth},');
       buffer.writeln('  cost: [${_exportResources(t.cost)}],');
       buffer.writeln('  award: [${_exportResources(t.award)}], ');
       _writeModifiers(buffer, t);
@@ -87,6 +88,7 @@ class StageExportUtils {
         buffer.writeln('      duration: ${t.duration},');
         if (t.timeToSolve != double.infinity) buffer.writeln('      timeToSolve: ${t.timeToSolve},');
         buffer.writeln('      isMilestone: ${t.isMilestone},');
+        if (t.costGrowth != 1.0) buffer.writeln('      costGrowth: ${t.costGrowth},');
         buffer.writeln('      cost: [${_exportResources(t.cost)}],');
         buffer.writeln('      award: [${_exportResources(t.award)}],');
         _writeModifiers(buffer, t, indent: '      ');

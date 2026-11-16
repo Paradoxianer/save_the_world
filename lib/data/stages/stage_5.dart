@@ -20,6 +20,7 @@ final Stage stage5 = Stage(
     activeTasks: ["Bibellesen", "Beten", "Schlafen", "Koordinatoren ausbilden"],
     randomTasks: ["Ein zwischenmenschliches Problem klären", "Mitglieder wollen austreten"],
     allTasks: [
+      ...fsjQuestline,
       baseBible,
       basePrayer,
       baseSleep,

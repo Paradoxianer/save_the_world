@@ -45,7 +45,7 @@ void showTaskInfo(BuildContext context, Task tsk) {
           _buildInfoSection(
             "EINFLUSS",
             [
-              if (tsk.cost.isNotEmpty) _buildResourceRow("Kosten", tsk.cost),
+              if (tsk.cost.isNotEmpty) _buildResourceRow("Kosten", tsk.effectiveCost),
               if (tsk.award.isNotEmpty) _buildResourceRow("Gewinn", tsk.award),
             ],
           ),

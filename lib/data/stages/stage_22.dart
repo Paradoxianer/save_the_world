@@ -24,6 +24,7 @@ final Stage stage22 = Stage(
   ],
   randomTasks: ["Stipendiengelder versickern (Krise)", "Der Heilige Geist möchte wirken"],
   allTasks: [
+    ...fsjQuestline,
     baseBible,
     basePrayer,
     baseSleep,
