@@ -26,7 +26,10 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-          flutter-version: '3.24.0'
+          # Muss zu den SDK-gebundenen Paketversionen in pubspec.lock passen
+          # (matcher/test_api/meta ...) - sonst löst pub get bei jedem Lauf
+          # anders auf als lokal. 3.24 lag unter dem Lockfile-Minimum 3.35.
+          flutter-version: '3.41.9'
 
       - name: Install dependencies
         run: flutter pub get
