@@ -1,8 +1,8 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
+import '../helpers/test_storage.dart';
 
 class StepAnalysis {
   final Task task;
@@ -19,13 +19,7 @@ class StepAnalysis {
 }
 
 void main() {
-  const MethodChannel channel = MethodChannel('plugins.flutter.io/path_provider');
-  TestWidgetsFlutterBinding.ensureInitialized();
-  
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-    return "."; 
-  });
+  useTempDocumentsDirectory();
 
   group('🎯 Backwards Strategy Bot (The Architect)', () {
     late Game game;
@@ -90,7 +84,16 @@ void main() {
   });
 }
 
-void _findBestProvider(String resName, double amountNeeded, List<Task> tasks, {String indent = ""}) {
+/// [visiting] verhindert Endlosrekursion bei zyklischen Abhängigkeiten
+/// (Ressource A kommt aus einer Aufgabe, die B kostet, und umgekehrt) -
+/// vorher endete das in einem Stack Overflow ("did not complete").
+void _findBestProvider(String resName, double amountNeeded, List<Task> tasks,
+    {String indent = "", Set<String> visiting = const {}}) {
+    if (visiting.contains(resName)) {
+        print("$indent ↺ Zyklus bei $resName - Abbruch dieses Zweigs");
+        return;
+    }
+    final nextVisiting = {...visiting, resName};
     var providers = tasks.where((t) => t.award.any((a) => a.name == resName)).toList();
     if (providers.isEmpty) {
         print("$indent ⚠️ KEIN PROVIDER FÜR $resName GEFUNDEN!");
@@ -113,7 +116,7 @@ void _findBestProvider(String resName, double amountNeeded, List<Task> tasks, {S
     
     for (var cost in best.cost) {
         if (cost.name != "Time") {
-            _findBestProvider(cost.name, cost.value * clicks, tasks, indent: "$indent  ");
+            _findBestProvider(cost.name, cost.value * clicks, tasks, indent: "$indent  ", visiting: nextVisiting);
         } else {
             print("$indent    Kosten: ${cost.value * clicks} Zeit");
         }

@@ -3,6 +3,7 @@ import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/stages.dart';
+import '../helpers/test_storage.dart';
 
 class PathStep {
   final Task task;
@@ -19,6 +20,8 @@ class PathStep {
 }
 
 void main() {
+  useTempDocumentsDirectory();
+
   group('🧠 Architect Strategy Bot (Reverse Solver)', () {
     late Game game;
 

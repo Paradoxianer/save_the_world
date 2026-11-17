@@ -312,8 +312,12 @@ class Game {
       'stage': stage,
       'accumulatedStageTime': _accumulatedStageTime.inMilliseconds,
       'stageClicks': _stageClicks,
-      'stageHighscores': json.encode(stageHighscores.map((k, v) => MapEntry(k.toString(), v))),
+      // Als Map, NICHT als json.encode()-String: loadGame() erwartet - wie
+      // bei saveState() - eine Map. Der String warf dort einen Typfehler,
+      // den der catch-Zweig verschluckte und die Stage auf 0 zurücksetzte.
+      'stageHighscores': stageHighscores.map((k, v) => MapEntry(k.toString(), v)),
       'completedOnceTasks': completedOnceTasks.toList(),
+      'hasCompletedGame': hasCompletedGame,
     };
   }
 

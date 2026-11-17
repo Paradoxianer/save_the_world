@@ -1,36 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game_notifier.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/task.item.dart';
+import '../helpers/test_storage.dart';
 
-/// Ein Mock-TickerProvider, der keine echten Ticks im System registriert.
-/// Dies verhindert die "Animation still running" Fehler in Widget-Tests.
-class MockTickerProvider implements TickerProvider {
-  @override
-  Ticker createTicker(TickerCallback onTick) => Ticker(onTick);
+/// Game() startet im Konstruktor einen dauerhaft laufenden Ticker. Flutter
+/// prüft direkt am Ende des Testkörpers - also VOR tearDown -, ob noch
+/// Animationen laufen ("An animation is still running even after the widget
+/// tree was disposed"). Deshalb muss das Spiel am Ende jedes Tests selbst
+/// gestoppt werden. (Der frühere MockTickerProvider erzeugte ebenfalls einen
+/// echten Ticker und änderte daran nichts.)
+void _stopGame() {
+  Game.mInstance?.dispose();
+  Game.mInstance = null;
 }
 
 void main() {
   // Mock Platform Channels global
-  TestWidgetsFlutterBinding.ensureInitialized();
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (methodCall) async => ".");
+  useTempDocumentsDirectory();
 
   group('TaskItem Widget Tests', () {
     setUp(() {
-      // ARCHITEKTUR-HACK: Wir tauschen den Taktgeber aus, BEVOR das Game startet.
-      // So hat der globale Game-Loop keine Chance, das Test-Framework zu stören.
-      Game.tick = MockTickerProvider();
-      
-      if (Game.mInstance != null) {
-        Game.mInstance!.dispose();
-      }
-      Game.mInstance = null;
+      _stopGame();
       
       final game = Game.getInstance();
       game.isLoading = true; 
@@ -41,12 +35,7 @@ void main() {
       Game.stagenNotifier = GameNotifier();
     });
 
-    tearDown(() {
-      if (Game.mInstance != null) {
-        Game.mInstance!.dispose();
-      }
-      Game.mInstance = null;
-    });
+    tearDown(_stopGame);
 
     testWidgets('TaskItem displays lock icon when disabled', (WidgetTester tester) async {
       final task = Task(name: "Locked Task", description: "Test", enabled: false);
@@ -57,6 +46,7 @@ void main() {
 
       expect(find.byIcon(Icons.lock_outline), findsOneWidget);
       expect(find.text("LOCKED TASK"), findsOneWidget);
+      _stopGame();
     });
 
     testWidgets('TaskItem starts animation on tap', (WidgetTester tester) async {
@@ -75,8 +65,9 @@ void main() {
 
       expect(task.controller.isAnimating, isTrue);
       
-      // WICHTIG: Animation im Test beenden
+      // WICHTIG: Animationen im Test beenden
       task.controller.stop();
+      _stopGame();
     });
   });
 }

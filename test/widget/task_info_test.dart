@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game_notifier.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
@@ -7,11 +6,10 @@ import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/widgets/task.info.dart';
 import 'package:save_the_world_flutter_app/widgets/comic_panel_dialog.dart';
+import '../helpers/test_storage.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (methodCall) async => ".");
+  useTempDocumentsDirectory();
 
   group('TaskInfo Dialog Tests', () {
     setUp(() {

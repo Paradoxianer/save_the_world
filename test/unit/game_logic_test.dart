@@ -1,14 +1,13 @@
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/task_activation.modifier.dart';
+import '../helpers/test_storage.dart';
 
 void main() {
   // Mock für Path Provider, damit keine MissingPluginException fliegt
-  TestWidgetsFlutterBinding.ensureInitialized();
-  const MethodChannel('plugins.flutter.io/path_provider').setMockMethodCallHandler((methodCall) async => ".");
+  useTempDocumentsDirectory();
 
   group('Comprehensive Game Logic Tests', () {
     late Game game;
