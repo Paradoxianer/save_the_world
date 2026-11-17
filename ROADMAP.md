@@ -25,7 +25,7 @@
 - [x] **Widget Tests (UI Reaktivität):** Validierung von TaskItems, Resource-Feedback und allen Dialogen.
 - [ ] **Integration & Simulation (In Arbeit):**
     - [ ] `app_test.dart`: Automatisierter Onboarding-Flow (Fixing: Ticker-Leaks & Timing).
-    - [ ] `game_simulation_test.dart`: Headless Balancing Bot (Fixing: Ressourcen-Lock Erkennung).
+    - [x] `goal_directed_simulation_test.dart`: Headless Balancing Bot mit virtueller Uhr - spielt alle 33 Stages durch (Normal + Optimal). Ersetzt den alten `game_simulation_test.dart`.
 
 ### 3.3 Beta-Phase & Vorbereitung
 - [ ] **Performance Profiling:** Optimierung der Ressourcenlast (insb. Ticker-Logik).

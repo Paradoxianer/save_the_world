@@ -10,9 +10,10 @@ import 'package:save_the_world_flutter_app/models/weighted_random_event.model.da
 ///
 /// WARUM NICHT die echten Task.start()/AnimationController-Mechanik nutzen?
 /// In einem reinen `test()`-Block (ohne WidgetTester.pump()) feuert der an
-/// SchedulerBinding gebundene Ticker nie von selbst - deshalb rufen auch die
-/// bestehenden Bots (game_simulation_test.dart) Task.finished() direkt auf.
-/// Dieser Simulator geht einen Schritt weiter: er modelliert echte Dauer,
+/// SchedulerBinding gebundene Ticker nie von selbst. Der frühere Bot
+/// (game_simulation_test.dart, entfernt) rief deshalb Task.finished() sofort
+/// auf - ohne Dauer und ohne Automatisierungen. Dieser Simulator modelliert
+/// dagegen echte Dauer,
 /// Krisen-Fristen (timeToSolve) und Automatisierungs-Intervalle
 /// (AutoExecuteModifier) über eine eigene Ereignis-Warteschlange mit
 /// virtueller Zeit, statt alles synchron/instant zu behandeln.
