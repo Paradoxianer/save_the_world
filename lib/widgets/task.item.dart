@@ -221,7 +221,7 @@ class TaskItemState extends State<TaskItem> with SingleTickerProviderStateMixin 
                 if (!isEnabled)
                   Positioned.fill(
                     child: Container(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       child: const Center(
                         child: Icon(Icons.lock_outline, color: Colors.black54, size: 28),
                       ),

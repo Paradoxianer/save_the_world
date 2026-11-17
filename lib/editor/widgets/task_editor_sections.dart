@@ -72,9 +72,9 @@ class CrisisEditorSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isCrisis ? Colors.red.withOpacity(0.05) : Colors.white.withOpacity(0.02),
+        color: isCrisis ? Colors.red.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: isCrisis ? Colors.redAccent.withOpacity(0.3) : Colors.white10),
+        border: Border.all(color: isCrisis ? Colors.redAccent.withValues(alpha: 0.3) : Colors.white10),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +92,7 @@ class CrisisEditorSection extends StatelessWidget {
               ),
               Switch(
                 value: isCrisis,
-                activeColor: Colors.redAccent,
+                activeThumbColor: Colors.redAccent,
                 onChanged: onToggle,
               ),
             ],

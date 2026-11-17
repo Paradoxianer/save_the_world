@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:save_the_world_flutter_app/models/faith.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/gameelement.model.dart';
@@ -47,7 +46,7 @@ class Ressource extends GameElement {
 
   set value(double val) {
     _value = val;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   double get min => _min;
@@ -55,12 +54,12 @@ class Ressource extends GameElement {
 
   set min(double val) {
     _min = val;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   set max(double val) {
     _max = val;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   /// Hilfsmethode, um JSON-Werte (Zahl oder String) sicher in double umzuwandeln.
@@ -121,18 +120,18 @@ class Ressource extends GameElement {
   void subtract(Ressource other) {
     _value -= other.value;
     if (_value < _min) _value = _min;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   void add(Ressource other) {
     _value += other.value;
     if (_value > _max) _value = _max;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   void setValue(double newVal) {
     _value = newVal;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   bool canAdd(Ressource other) {

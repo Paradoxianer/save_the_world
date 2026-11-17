@@ -36,7 +36,7 @@ class ComicPanelDialog extends StatelessWidget {
               bottom: -6,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(24),
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:save_the_world_flutter_app/models/game_notifier.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
@@ -9,8 +10,8 @@ import 'package:save_the_world_flutter_app/widgets/comic_panel_dialog.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const MethodChannel('plugins.flutter.io/path_provider')
-      .setMockMethodCallHandler((methodCall) async => ".");
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (methodCall) async => ".");
 
   group('TaskInfo Dialog Tests', () {
     setUp(() {
@@ -18,8 +19,8 @@ void main() {
       Game.mInstance = null;
       
       // Felder initialisieren, die von Widgets erwartet werden
-      Game.notifier = ChangeNotifier();
-      Game.stagenNotifier = ChangeNotifier();
+      Game.notifier = GameNotifier();
+      Game.stagenNotifier = GameNotifier();
       Game.ressources.clear();
       Game.ressources["Money"] = Money(value: 100.0);
     });

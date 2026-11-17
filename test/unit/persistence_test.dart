@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/money.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/ressource.model.dart';
-import 'package:save_the_world_flutter_app/models/task.model.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

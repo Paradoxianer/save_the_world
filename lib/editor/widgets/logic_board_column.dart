@@ -51,11 +51,13 @@ class LogicBoardColumn extends StatelessWidget {
             _buildHeader(),
             Expanded(
               child: DragTarget<String>(
-                onWillAccept: (data) => true,
-                onAccept: onAccept,
+                onWillAcceptWithDetails: (_) => true,
+                onAcceptWithDetails: (details) => onAccept(details.data),
                 builder: (context, candidates, rejects) {
                   return ReorderableListView(
                     buildDefaultDragHandles: false,
+                    // onReorderItem (ohne newIndex-Korrektur) erst ab Flutter 3.41 - Projekt-Minimum laut pubspec.lock ist 3.35.
+                    // ignore: deprecated_member_use
                     onReorder: onReorder,
                     children: taskNames.map((name) {
                       final task = isLibrary 
@@ -111,7 +113,7 @@ class LogicBoardColumn extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 15, spreadRadius: 5, offset: const Offset(5, 5))
                 ],
               ),
               child: TaskBoardCard(task: task, isPrimarySelection: true),

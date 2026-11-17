@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:save_the_world_flutter_app/models/game_notifier.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
 
 class GameController with WidgetsBindingObserver {
   final Game game;
   static late Ticker tick;
-  static late ChangeNotifier notifier;
+  static late GameNotifier notifier;
   
   // Note: static stageNotifier removed to avoid confusion with Game.stagenNotifier
   
@@ -14,7 +15,7 @@ class GameController with WidgetsBindingObserver {
   late Duration saveDuration;
 
   GameController(this.game) {
-    notifier = ChangeNotifier();
+    notifier = GameNotifier();
     
     tick = Ticker(updateGame);
     saveDuration = const Duration(seconds: 10);
@@ -51,12 +52,12 @@ class GameController with WidgetsBindingObserver {
     if (needInit) Game.tasks.removeWhere((t) => t.name == task.name);
     Game.tasks.add(task);
     if (needInit) task.init();
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   void removeTask(Task task) {
     Game.tasks.remove(task);
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   void addListener(VoidCallback listener) {

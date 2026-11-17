@@ -31,7 +31,7 @@ class TaskBoardCard extends StatelessWidget {
     final bool isCrisis = task.timeToSolve != double.infinity;
     
     const Color selectionColor = Colors.cyanAccent;
-    final Color syncColor = Colors.cyanAccent.withOpacity(0.15);
+    final Color syncColor = Colors.cyanAccent.withValues(alpha: 0.15);
     const Color crisisColor = Colors.redAccent;
 
     return GestureDetector(
@@ -41,22 +41,22 @@ class TaskBoardCard extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: isPrimarySelection 
-              ? selectionColor.withOpacity(0.2) 
+              ? selectionColor.withValues(alpha: 0.2) 
               : (isSecondarySelection 
                   ? syncColor 
-                  : (isMilestone ? Colors.amber.withOpacity(0.08) : const Color(0xFF1E1E1E))),
+                  : (isMilestone ? Colors.amber.withValues(alpha: 0.08) : const Color(0xFF1E1E1E))),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isPrimarySelection 
                 ? selectionColor 
                 : (isSecondarySelection 
-                    ? selectionColor.withOpacity(0.4)
-                    : (isCrisis ? crisisColor.withOpacity(0.6) : (isMilestone ? Colors.amber.withOpacity(0.6) : Colors.white10))),
+                    ? selectionColor.withValues(alpha: 0.4)
+                    : (isCrisis ? crisisColor.withValues(alpha: 0.6) : (isMilestone ? Colors.amber.withValues(alpha: 0.6) : Colors.white10))),
             width: isPrimarySelection ? 2.0 : 1.0,
           ),
           boxShadow: isPrimarySelection 
-              ? [BoxShadow(color: selectionColor.withOpacity(0.3), blurRadius: 12)] 
-              : (isCrisis ? [BoxShadow(color: crisisColor.withOpacity(0.1), blurRadius: 4)] : []),
+              ? [BoxShadow(color: selectionColor.withValues(alpha: 0.3), blurRadius: 12)] 
+              : (isCrisis ? [BoxShadow(color: crisisColor.withValues(alpha: 0.1), blurRadius: 4)] : []),
         ),
         child: _buildBody(isMilestone, isCrisis, crisisColor),
       ),

@@ -157,9 +157,9 @@ class RessourceItemState extends State<RessourceItem> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1), 
+                color: Colors.orange.withValues(alpha: 0.1), 
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
               ),
               child: const Center(
                 child: Text(
@@ -252,7 +252,7 @@ class RessourceItemState extends State<RessourceItem> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.black.withOpacity(0.1), width: 1),
+        border: Border.all(color: Colors.black.withValues(alpha: 0.1), width: 1),
         boxShadow: const [
           BoxShadow(color: Colors.black12, offset: Offset(1, 1), blurRadius: 0, spreadRadius: 0),
         ],

@@ -48,7 +48,7 @@ class ResourceEditorSection extends StatelessWidget {
   Widget _buildResourceCard(BuildContext context, Ressource res) {
     final isMultiplied = res.multiplierResourceName != null;
     return Card(
-      color: Colors.white.withOpacity(0.03),
+      color: Colors.white.withValues(alpha: 0.03),
       child: Container(
         padding: const EdgeInsets.all(12),
         width: 200,
@@ -129,7 +129,7 @@ class ResourceEditorSection extends StatelessWidget {
     final types = ["Faith", "Member", "Money", "Publicity", "Time", "Wisdom"];
     return DropdownButtonFormField<String>(
       isDense: true,
-      value: types.contains(current) ? current : null,
+      initialValue: types.contains(current) ? current : null,
       decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.all(8), border: OutlineInputBorder()),
       items: types.map((n) => DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 11)))).toList(),
       onChanged: onChanged,

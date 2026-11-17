@@ -108,7 +108,7 @@ Widget _buildInfoSection(String title, List<Widget> children) {
         decoration: BoxDecoration(
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black.withOpacity(0.1), width: 1.5),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.1), width: 1.5),
         ),
         child: Column(children: children),
       ),

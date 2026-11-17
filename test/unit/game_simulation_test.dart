@@ -3,10 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:save_the_world_flutter_app/models/game.ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/task.model.dart';
-import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
-import 'package:save_the_world_flutter_app/stages.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('plugins.flutter.io/path_provider');

@@ -9,7 +9,6 @@ import 'package:save_the_world_flutter_app/models/message.modifier.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/models/removemodifier.model.dart';
 import 'package:save_the_world_flutter_app/models/subtractres.model.dart';
-import 'package:save_the_world_flutter_app/models/ressource.model.dart';
 import 'package:save_the_world_flutter_app/editor/widgets/resource_editor_section.dart';
 
 class ModifierListWidget extends StatelessWidget {
@@ -145,7 +144,7 @@ class ModifierListWidget extends StatelessWidget {
   Widget _buildTaskDropdown(String current, Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
       isDense: true,
-      value: allTaskNames.contains(current) ? current : null,
+      initialValue: allTaskNames.contains(current) ? current : null,
       decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.all(8), border: OutlineInputBorder()),
       items: allTaskNames.map((n) => DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 11)))).toList(),
       onChanged: onChanged,
@@ -155,7 +154,7 @@ class ModifierListWidget extends StatelessWidget {
   Widget _buildResDropdown(String current, Function(String?) onChanged) {
     return DropdownButtonFormField<String>(
       isDense: true,
-      value: resourceTypes.contains(current) ? current : null,
+      initialValue: resourceTypes.contains(current) ? current : null,
       decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.all(8), border: OutlineInputBorder()),
       items: resourceTypes.map((n) => DropdownMenuItem(value: n, child: Text(n, style: const TextStyle(fontSize: 11)))).toList(),
       onChanged: onChanged,

@@ -27,7 +27,7 @@ class EnableTaskModifier extends Modifier {
     final task = Game.getInstance().getTask(taskName);
     if (task != null) {
       task.enabled = true;
-      Game.notifier.notifyListeners();
+      Game.notifier.notify();
     }
   }
 
@@ -63,7 +63,7 @@ class DisableTaskModifier extends Modifier {
     final task = Game.getInstance().getTask(taskName);
     if (task != null) {
       task.enabled = false;
-      Game.notifier.notifyListeners();
+      Game.notifier.notify();
     }
   }
 

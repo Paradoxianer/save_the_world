@@ -201,7 +201,7 @@ class _StageEditorScreenState extends State<StageEditorScreen> {
               Expanded(child: EditorTextField(label: 'Basis-Dauer (ms)', controller: _durationController, onChanged: (v) => _updateCurrentTask(duration: double.tryParse(v) ?? 5000), isNumber: true)),
               const SizedBox(width: 32),
               const Text('Milestone?'),
-              Switch(value: _selectedTask!.isMilestone, activeColor: Colors.amber, onChanged: (v) => _updateCurrentTask(isMilestone: v)),
+              Switch(value: _selectedTask!.isMilestone, activeThumbColor: Colors.amber, onChanged: (v) => _updateCurrentTask(isMilestone: v)),
             ],
           ),
           const SizedBox(height: 16),

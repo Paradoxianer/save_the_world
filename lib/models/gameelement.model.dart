@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:save_the_world_flutter_app/models/game_notifier.dart';
 import 'package:save_the_world_flutter_app/models/gameitem.model.dart';
 import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 
 class GameElement extends GameItem {
-  late ChangeNotifier notifier;
+  late GameNotifier notifier;
   List<Modifier> myModifier;
 
   GameElement({
@@ -12,7 +13,7 @@ class GameElement extends GameItem {
     super.icon,
     List<Modifier>? myModifier,
   }) : myModifier = myModifier ?? [] {
-    notifier = ChangeNotifier();
+    notifier = GameNotifier();
   }
 
   void addModifyer(Modifier modifyThisElement) {

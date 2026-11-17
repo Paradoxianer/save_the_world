@@ -167,7 +167,7 @@ class StageItemState extends State<StageItem> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.black.withOpacity(0.15), width: 1.5),
+          border: Border.all(color: Colors.black.withValues(alpha: 0.15), width: 1.5),
           boxShadow: const [
             BoxShadow(color: Colors.black12, offset: Offset(1.5, 1.5), blurRadius: 0, spreadRadius: 0),
           ],

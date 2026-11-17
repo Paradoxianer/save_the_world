@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:save_the_world_flutter_app/models/modifier.model.dart';
 import 'package:save_the_world_flutter_app/models/autoexecute.model.dart';
 import 'package:save_the_world_flutter_app/editor/widgets/modifier_list_widget.dart';
 

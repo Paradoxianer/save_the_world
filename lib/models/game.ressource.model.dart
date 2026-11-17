@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:save_the_world_flutter_app/models/game_notifier.dart';
 import 'package:save_the_world_flutter_app/data_manager.dart';
 import 'package:save_the_world_flutter_app/globals.dart';
 import 'package:save_the_world_flutter_app/models/addtask.model.dart';
@@ -27,9 +28,9 @@ class GameTickerProvider implements TickerProvider {
 class Game {
   static Map<String, Ressource> ressources = {};
   static List<Task> tasks = [];
-  static late ChangeNotifier notifier;
-  static late ChangeNotifier stagenNotifier;
-  static late ChangeNotifier gameWonNotifier;
+  static late GameNotifier notifier;
+  static late GameNotifier stagenNotifier;
+  static late GameNotifier gameWonNotifier;
   static Game? mInstance;
   
   /// Der Taktgeber für alle Animationen und Timer im Spiel.
@@ -43,7 +44,7 @@ class Game {
   set snackbarMessage(String? value) {
     _snackbarMessage = value;
     if (value != null) {
-      notifier.notifyListeners();
+      notifier.notify();
     }
   }
 
@@ -121,9 +122,9 @@ class Game {
 
   Game({List<Task>? tasksList, List<Task>? allTasksList, int? stage}) : stage = stage ?? 0 {
     dataManager = DataManager();
-    notifier = ChangeNotifier();
-    stagenNotifier = ChangeNotifier();
-    gameWonNotifier = ChangeNotifier();
+    notifier = GameNotifier();
+    stagenNotifier = GameNotifier();
+    gameWonNotifier = GameNotifier();
     
     _ticker = tick.createTicker(updateGame);
     _ticker!.start();
@@ -179,7 +180,7 @@ class Game {
 
   void recordClick() {
     _stageClicks++;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   int get stageClicks => _stageClicks;
@@ -204,8 +205,8 @@ class Game {
     if (!hasCompletedGame) {
       hasCompletedGame = true;
       saveState();
-      gameWonNotifier.notifyListeners();
-      notifier.notifyListeners();
+      gameWonNotifier.notify();
+      notifier.notify();
     }
   }
 
@@ -250,8 +251,8 @@ class Game {
     saveState();
     
     isLoading = false;
-    notifier.notifyListeners();
-    stagenNotifier.notifyListeners();
+    notifier.notify();
+    stagenNotifier.notify();
   }
 
   int calculateScore(Duration duration, int clicks, int stgLevel) {
@@ -289,8 +290,8 @@ class Game {
 
     saveState();
     isLoading = false;
-    notifier.notifyListeners();
-    stagenNotifier.notifyListeners();
+    notifier.notify();
+    stagenNotifier.notify();
   }
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -341,7 +342,7 @@ class Game {
     if (needInit) tasks.removeWhere((t) => t.name == task.name);
     tasks.add(task);
     if (needInit) task.init();
-    notifier.notifyListeners();
+    notifier.notify();
     task.goOnline();
   }
 
@@ -352,7 +353,7 @@ class Game {
   void removeTask(Task task) {
     tasks.remove(task);
     _snackbarMessage = null;
-    notifier.notifyListeners();
+    notifier.notify();
   }
 
   Task? getTask(String name) {
@@ -413,8 +414,8 @@ class Game {
     loadGame(gameJsn);
     
     isLoading = false;
-    notifier.notifyListeners();
-    stagenNotifier.notifyListeners();
+    notifier.notify();
+    stagenNotifier.notify();
   }
 
   void loadRes(String? jsn) {
@@ -565,7 +566,7 @@ class Game {
       _stageClicks = 0;
       stage = found;
       ressources["Stage"]?.setValue(stage.toDouble());
-      stagenNotifier.notifyListeners();
+      stagenNotifier.notify();
       ressources[Member().name]?.max = levelList[found].toDouble();
       initStage(found);
       saveState();

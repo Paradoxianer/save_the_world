@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 
 enum FillDirection { leftToRight, rightToLeft }
@@ -19,7 +18,7 @@ class WavyTaskPainter extends CustomPainter {
     if (progress <= 0) return;
 
     final paint = Paint()
-      ..color = color.withOpacity(0.3) // Sanfter Hintergrund-Fill
+      ..color = color.withValues(alpha: 0.3) // Sanfter Hintergrund-Fill
       ..style = PaintingStyle.fill;
 
     final path = Path();
@@ -81,7 +80,7 @@ class WavyTaskPainter extends CustomPainter {
     
     // Optionale Kontur an der Wellenkante (für mehr Cartoon-Feeling)
     final borderPaint = Paint()
-      ..color = color.withOpacity(0.5)
+      ..color = color.withValues(alpha: 0.5)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
       
